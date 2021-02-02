@@ -4,7 +4,7 @@
     <h2>{{ payload }}</h2>
   </Suspense> -->
   <h3>{{ payload.userDetails }}</h3>
-  <h2 v-for="item in state" :key="item.id">{{ item.body }}</h2>
+  <!-- <h2 v-for="item in state" :key="item.id">{{ item.body }}</h2> -->
 </template>
 
 <script>
@@ -41,12 +41,12 @@ export default {
         payload.value = clientPrincipal;
       });
 
-    fetch("https://jsonplaceholder.typicode.com/posts")
-      .then(response => response.json())
-      .then(json => {
-        state.value = json;
-        console.log(json);
-      });
+    // fetch("https://jsonplaceholder.typicode.com/posts")
+    //   .then(response => response.json())
+    //   .then(json => {
+    //     state.value = json;
+    //     console.log(json);
+    //   });
     // async function getUserInfo() {
     //   const response = await fetch("/.auth/me");
     //   payload.value = await response.json();
