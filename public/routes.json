@@ -1,15 +1,17 @@
 {
     "routes": [
         {
+            "route": "/login",
+            "serve": "/.auth/login/aad"
+        },
+        {
+            "route": "/logout",
+            "serve": "/.auth/logout"
+        },
+        {
             "route": "/admin",
             "serve": "/.auth/login/aad",
             "allowedRoles": ["admin"]
-        },
-        {
-            "route": "/",
-            "serve": "/index.html",
-            "statusCode": 200
         }
-      
     ]
-  }
+}
