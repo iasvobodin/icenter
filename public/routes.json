@@ -1,9 +1,14 @@
 {
     "routes": [
-      {
-        "route": "/*",
-        "serve": "/index.html",
-        "statusCode": 200
-      }
+        {
+            "route": "/admin",
+            "serve": "/.auth/login/aad",
+            "allowedRoles": ["admin"]
+        },
+        {
+            "route": "/*",
+            "serve": "/index.html",
+            "statusCode": 200
+        }
     ]
   }
