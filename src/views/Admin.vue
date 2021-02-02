@@ -8,6 +8,16 @@
 
 import { ref } from "vue";
 import { defineComponent } from "vue";
+
+async function getUser() {
+  const response = await fetch("/api/testfunc");
+  const payload = await response.json();
+  const { clientPrincipal } = payload;
+  return clientPrincipal;
+}
+
+console.log(getUser(), "fromapi");
+
 async function getUserInfo() {
   const response = await fetch("/.auth/me");
   const payload = await response.json();
