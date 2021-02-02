@@ -37,7 +37,8 @@ export default {
     fetch("/.auth/me")
       .then(response => response.json())
       .then(data => {
-        payload.value = data;
+        const { clientPrincipal } = data;
+        payload.value = clientPrincipal;
       });
     // onMounted(async () => {
     //   const response = await fetch("/.auth/me");
