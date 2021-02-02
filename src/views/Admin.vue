@@ -40,10 +40,6 @@ export default {
         const { clientPrincipal } = data;
         payload.value = clientPrincipal;
       });
-    // onMounted(async () => {
-    //   const response = await fetch("/.auth/me");
-    //   payload.value = await response.json();
-    // });
 
     fetch("https://jsonplaceholder.typicode.com/posts")
       .then(response => response.json())
