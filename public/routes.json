@@ -5,10 +5,6 @@
             "serve": "/.auth/login/aad"
         },
         {
-            "route": "/logout",
-            "serve": "/.auth/logout"
-        },
-        {
             "route": "/admin/*",
             "serve": "/index.html",
             "allowedRoles": ["admin"]

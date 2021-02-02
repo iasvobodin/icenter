@@ -8,6 +8,10 @@ const routes = [
     component: Home
   },
   {
+    path: "/.auth/login/aad",
+    name: "login"
+  },
+  {
     path: "/User",
     name: "User",
     // route level code-splitting
@@ -19,7 +23,7 @@ const routes = [
   },
   {
     path: "/admin",
-    name: "Admin",
+    name: "admin",
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.

@@ -2,11 +2,12 @@
   <div id="nav">
     <router-link to="/">Home</router-link> |
     <router-link to="/User">User</router-link> |
-    <router-link to="/Admin">Admin</router-link>
+    <router-link to="/admin">Admin</router-link>
   </div>
   <router-link to="/login">login</router-link>
   <br />
-  <router-link to="/logout">log out</router-link>
+  <router-link to="/.auth/logout">log out</router-link>
+  <a href="/.auth/logout">Log out ahref</a>
   <router-view />
 </template>
 
