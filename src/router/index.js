@@ -22,13 +22,13 @@ const routes = [
     }
   },
   {
-    path: "/admin:id",
-    name: "admin",
+    path: "/admin/:id",
+    // name: "admin",
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
     component: function() {
-      return import(/* webpackChunkName: "about" */ "../views/admin_id.vue");
+      return import(/* webpackChunkName: "about" */ "../views/_id.vue");
     }
   },
   {

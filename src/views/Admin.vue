@@ -12,52 +12,29 @@
 
 import { ref, onMounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
-// import { defineComponent } from "vue";
-
-// async function getUser() {
-//   const response = await fetch("/api/testfunc");
-//   const payload = await response.json();
-//   const { clientPrincipal } = payload;
-//   return clientPrincipal;
-// }
-
-// console.log(getUser(), "fromapi");
-
-// async function getUserInfo() {
-//   const response = await fetch("/.auth/me");
-//   const payload = await response.json();
-//   const { clientPrincipal } = payload;
-//   return clientPrincipal;
-// }
-// console.log(getUserInfo(), "promises");
 
 export default {
   setup() {
-    console.log(router, "this");
     const payload = ref(null);
     const state = ref(null);
     const router = useRouter();
+    console.log(router, "this");
 
     fetch("/.auth/me")
       .then(response => response.json())
       .then(data => {
         const { clientPrincipal } = data;
-        router.push(`admin/${clientPrincipal.userId}`);
+        router.push(`/admin/${clientPrincipal.userId}`);
       });
 
-    // fetch("https://jsonplaceholder.typicode.com/posts")
+    // fetch("https://jsonplaceholder.typicode.com/users/1")
     //   .then(response => response.json())
     //   .then(json => {
-    //     state.value = json;
-    //     console.log(json);
+    //     router.push(`/admin/${json.id}`);
+    //     // state.value = json;
+    //     // console.log(json);
     //   });
-    // async function getUserInfo() {
-    //   const response = await fetch("/.auth/me");
-    //   payload.value = await response.json();
-    //   // const { clientPrincipal } = payload;
-    //   // return clientPrincipal;
-    // }
-    // const users = await getUserInfo();
+
     return { payload, state };
   }
 };
