@@ -11,6 +11,7 @@
 /* eslint-disable no-unused-vars */
 
 import { ref, onMounted } from "vue";
+import { useRouter, useRoute } from "vue-router";
 // import { defineComponent } from "vue";
 
 // async function getUser() {
@@ -32,13 +33,16 @@ import { ref, onMounted } from "vue";
 
 export default {
   setup() {
+    console.log(router, "this");
     const payload = ref(null);
     const state = ref(null);
+    const router = useRouter();
+
     fetch("/.auth/me")
       .then(response => response.json())
       .then(data => {
         const { clientPrincipal } = data;
-        this.$router.push(`admin/${clientPrincipal.userId}`);
+        router.push(`admin/${clientPrincipal.userId}`);
       });
 
     // fetch("https://jsonplaceholder.typicode.com/posts")

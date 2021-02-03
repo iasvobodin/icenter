@@ -3,9 +3,11 @@
 </template>
 
 <script>
+import { useRoute } from "vue-router";
 export default {
   setup() {
-    console.log(this.$route.params);
+    const route = useRoute();
+    console.log(route);
     // this.$watch(
     //   () => this.$route.params,
     //   (toParams, previousParams) => {
