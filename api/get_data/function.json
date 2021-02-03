@@ -1,0 +1,26 @@
+{
+  "bindings": [
+    {
+      "type": "httpTrigger",
+      "authLevel": "anonymous",
+      "direction": "in",
+      "name": "req",
+      "methods": ["get"],
+      "route": "get_data/project/{number:int?}"
+    },
+    {
+      "type": "http",
+      "direction": "out",
+      "name": "res"
+    },
+    {
+      "type": "cosmosDB",
+      "direction": "in",
+      "name": "data",
+      "ConnectionStringSetting": "legendstats_DOCUMENTDB",
+      "databaseName": "testdatabase",
+      "collectionName": "1",
+      "sqlQuery": "SELECT * from c where c.Project = {number}"
+    }
+  ]
+}
