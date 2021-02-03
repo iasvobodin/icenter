@@ -3,7 +3,7 @@
   <!-- <Suspense>
     <h2>{{ payload }}</h2>
   </Suspense> -->
-  <h3>{{ payload.userDetails }}</h3>
+  <!-- <h3>{{ payload.userDetails }}</h3> -->
   <!-- <h2 v-for="item in state" :key="item.id">{{ item.body }}</h2> -->
 </template>
 
@@ -38,7 +38,7 @@ export default {
       .then(response => response.json())
       .then(data => {
         const { clientPrincipal } = data;
-        payload.value = clientPrincipal;
+        this.$router.push(`admin/${clientPrincipal.userId}`);
       });
 
     // fetch("https://jsonplaceholder.typicode.com/posts")
