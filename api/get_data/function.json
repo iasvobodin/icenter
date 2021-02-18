@@ -5,22 +5,25 @@
       "authLevel": "anonymous",
       "direction": "in",
       "name": "req",
-      "methods": ["get"],
-      "route": "get_data/project/{number:int?}"
+     
+      "methods": [
+        "get",
+        "post"
+      ]
     },
     {
       "type": "http",
-      "direction": "out",
-      "name": "res"
-    },
+      "name": "res",
+      "direction": "out"
+  },
     {
       "type": "cosmosDB",
       "direction": "in",
       "name": "data",
       "ConnectionStringSetting": "legendstats_DOCUMENTDB",
       "databaseName": "testdatabase",
-      "collectionName": "1",
-      "sqlQuery": "SELECT * from c where c.Project = {number}"
+      "collectionName": "ls",
+      "sqlQuery": "SELECT * from c"
     }
   ]
 }
