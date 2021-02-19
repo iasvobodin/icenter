@@ -1,29 +1,29 @@
 {
   "bindings": [
     {
-      "type": "httpTrigger",
       "authLevel": "anonymous",
+      "type": "httpTrigger",
       "direction": "in",
       "name": "req",
-      "route": "cabinetList/{projectNumber}",
       "methods": [
         "get",
         "post"
-      ]
+      ],
+      "route": "projectstatus/{status}"
     },
     {
       "type": "http",
-      "name": "res",
-      "direction": "out"
-  },
+      "direction": "out",
+      "name": "res"
+    },
     {
       "type": "cosmosDB",
       "direction": "in",
       "name": "data",
       "ConnectionStringSetting": "legendstats_DOCUMENTDB",
       "databaseName": "testdatabase",
-      "collectionName": "ls",
-      "sqlQuery": "SELECT * from c where c.project = {projectNumber}"
+      "collectionName": "projectStatus",
+      "sqlQuery": "SELECT * from c where c.prStatus = {status}"
     }
   ]
 }
