@@ -9,10 +9,10 @@ export default {
   components: {
     addErr
   },
-  setup(props) {
-    console.log(props); // { user: '' }
+  // setup(props) {
+  //   // console.log(props); // { user: '' }
 
-    return {}; // anything returned here will be available for the rest of the component
-  }
+  //   return {}; // anything returned here will be available for the rest of the component
+  // }
 };
 </script>
