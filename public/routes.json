@@ -10,7 +10,7 @@
             "allowedRoles": ["admin"]
         },
         {
-          "route": "/api/**"
+          "route": "/api/*"
         }
     ],
     "platformErrorOverrides": [
