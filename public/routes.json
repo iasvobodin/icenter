@@ -1,8 +1,9 @@
 {
     "routes": [
         {
-            "route": "/login",
-            "serve": "/.auth/login/aad"
+          "route": "/*",
+          "serve": "/index.html",
+          "allowedRoles": ["authenticated"]
         },
         {
             "route": "/admin/*",
@@ -21,7 +22,7 @@
         {
           "errorType": "Unauthenticated",
           "statusCode": "302",
-          "serve": "/login"
+          "serve": "/.auth/login/aad"
         }
       ]
 }
