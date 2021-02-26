@@ -8,6 +8,9 @@
             "route": "/admin/*",
             "serve": "/index.html",
             "allowedRoles": ["admin"]
+        },
+        {
+          "route": "/api/**"
         }
     ],
     "platformErrorOverrides": [
