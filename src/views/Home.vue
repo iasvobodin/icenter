@@ -1,14 +1,17 @@
 <template>
   <h1>Test iCenterApp</h1>
-  <addErr />
+  <chooseCabinet />
+  <setError />
 </template>
 
 <script>
-import addErr from "../components/addErr";
+import chooseCabinet from "../components/chooseCabinet";
+import setError from "../components/setError";
 export default {
   components: {
-    addErr
-  },
+    chooseCabinet,
+    setError
+  }
   // setup(props) {
   //   // console.log(props); // { user: '' }
 
