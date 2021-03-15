@@ -49,7 +49,7 @@
   <div class="project">
 
     <!-- <button @click="getProject">Выбрать проект</button> -->
-    <input @focus="getProject" @input="listIsActive = true" class="project_input" v-model="message"
+    <input @focus="getProject" @input="listIsActive = true"  class="project_input" v-model="selectedProjectNumber"
       placeholder="Введите номер проекта" />
     <div v-if="listIsActive" class="project_list_holder">
       <ul class="project_list">
@@ -58,7 +58,10 @@
         </li>
       </ul>
     </div>
-    <h4 v-if="message">Выбранный проект №:{{ message }}</h4>
+    <div v-if="!listIsActive" class="project__info">
+    <h4 >Выбранный проект №:{{ selectedProjectNumber }}</h4>
+
+    </div>
   </div>
   <h2 v-if="selectedProject">Выберете шкаф</h2>
   <div class="project">
@@ -76,14 +79,14 @@
         <td>{{ wo.id }}</td>
         <td class="tg-0lax">{{ wo.cabinetInfo.cabName }}</td>
         <td class="tg-0lax">
-          <input type="checkbox" :value="wo.id" v-model="checkedNames" />
+          <input type="checkbox" :value="wo" v-model="checkedNames" />
         </td>
       </tr>
     </table>
 <div v-if="checkedNames" class="choose__information">
     <h4> Выбранные шкафы </h4>
     <ul v-for="(cabinet, index) in checkedNames " :key="index">
-      <li>{{cabinet}}</li>
+      <li>{{cabinet.id}}</li>
     </ul>
 </div>
 
@@ -108,6 +111,9 @@ import ProgressSpinner from "primevue/progressspinner";
 // eslint-disable-next-line no-unused-vars
 import { computed, reactive, ref, watch } from "vue";
 export default {
+     mounted () {
+        console.log(this.$store.state.testState, 'qqqqqqqqqqqqqqqqqqqq');;
+    },
   data() {
     return {
       checkedNames: [],
@@ -157,16 +163,23 @@ export default {
   },
   setup() {
     const selctedWO = reactive({ wo: null, cabName: null });
-    const message = ref(null);
+    const selectedProjectNumber = ref(null);
     const listIsActive = ref(null);
     const filterList = ref(null);
     const getProjectVisible = ref(null);
     const woList = ref(null);
+    // const loadingSpinner = ref(false);
     let dataProject;
 
     const getProject = async () => {
-     !dataProject && (dataProject = await (await fetch(`/api/projectstatus/Open`)).json())
-      getProjectVisible.value = true;
+      // loadingSpinner.value = true
+      if (!dataProject) {
+        dataProject = await (await fetch(`/api/projectstatus/Open`)).json()
+        getProjectVisible.value = true;
+      // loadingSpinner.value = false
+      }
+    //  !dataProject && (dataProject = await (await fetch(`/api/projectstatus/Open`)).json())
+      
     };
 
     const testFetch = async () => {
@@ -197,8 +210,8 @@ export default {
     // })();
     const chooseProject = async index => {
       listIsActive.value = false;
-      message.value = filterList.value[index];
-      let projectNumberQuery = message.value;
+      selectedProjectNumber.value = filterList.value[index];
+      let projectNumberQuery = selectedProjectNumber.value;
       if (!projectNumberQuery.includes(".")) {
         projectNumberQuery = projectNumberQuery + ".0";
       }
@@ -206,12 +219,12 @@ export default {
           await fetch(`/api/cabinetList/${projectNumberQuery}`)
         ).json();
     };
-    watch(message, async() => {
+    watch(selectedProjectNumber, async() => {
       await getProject()
-    filterList.value = dataProject.filter(el => el.includes(message.value));
+    filterList.value = dataProject.filter(el => el.includes(selectedProjectNumber.value));
     });
     return {
-      message,
+      selectedProjectNumber,
       filterList,
       chooseProject,
       listIsActive,
@@ -299,6 +312,9 @@ export default {
   width: 100%;
   height: 35px;
   text-align: center;
+}
+.loading {
+    background: url(http://www.xiconeditor.com/image/icons/loading.gif) no-repeat right center;
 }
 .project {
   margin: auto;

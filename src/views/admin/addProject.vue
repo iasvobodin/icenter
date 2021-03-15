@@ -2,14 +2,16 @@
     <div>
 ADD PROJECT
 <chooseCabinet/>
+<chooseProject/>
     </div>
 </template>
 
 <script>
 import chooseCabinet from "../../components/chooseCabinet";
+import chooseProject from "../../components/chooseProject";
 export default {
   components: {
-    chooseCabinet,
+    chooseCabinet,chooseProject,
   },
     setup () {
         
