@@ -35,7 +35,7 @@ export default {
   height: auto;
 }
 .admin_navigation{
-  position: absolute;
+  /* position: absolute; */
   top: 0;
   left: 0;
   width: 10vw;

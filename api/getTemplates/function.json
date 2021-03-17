@@ -5,7 +5,7 @@
       "authLevel": "anonymous",
       "direction": "in",
       "name": "req",
-      "route": "cabinetList/{projectNumber}",
+      "route": "templates/{partitionKeyValue}/{id}",
       "methods": [
         "get",
         "post"
@@ -22,8 +22,9 @@
       "name": "data",
       "ConnectionStringSetting": "legendstats_DOCUMENTDB",
       "databaseName": "testdatabase",
-      "collectionName": "legendStats",
-      "sqlQuery": "SELECT * from c where c.project = {projectNumber}"
+      "collectionName": "templates",
+      "Id": "{id}",
+      "PartitionKey": "{partitionKeyValue}"
     }
   ]
 }
