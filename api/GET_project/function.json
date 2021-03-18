@@ -1,10 +1,11 @@
 {
   "bindings": [
     {
-      "authLevel": "anonymous",
       "type": "httpTrigger",
+      "authLevel": "anonymous",
       "direction": "in",
       "name": "req",
+      "route": "project/{partitionKeyValue}/{id}",
       "methods": [
         "get",
         "post"
@@ -12,17 +13,18 @@
     },
     {
       "type": "http",
-      "direction": "out",
-      "name": "res"
-    },
+      "name": "res",
+      "direction": "out"
+  },
     {
       "type": "cosmosDB",
-      "direction": "out",
-      "name": "erorData",
+      "direction": "in",
+      "name": "data",
       "ConnectionStringSetting": "legendstats_DOCUMENTDB",
       "databaseName": "testdatabase",
-      "collectionName": "errors",
-      "createIfNotExists": true
+      "collectionName": "projects",
+      "Id": "{id}",
+      "PartitionKey": "{partitionKeyValue}"
     }
   ]
 }

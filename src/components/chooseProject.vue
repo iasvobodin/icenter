@@ -28,7 +28,7 @@
                     <tr style="border: solid 2px orange;" >
                         <th>WO</th>
                         <th>Шкаф</th>
-                        <th>Выбрать<input @click="checkAll" type="checkbox" /></th>
+                        <th>Выбрать всё<input @click="checkAll" type="checkbox" /></th>
                     </tr>
                     <tr style="cursor: pointer;" v-for="(value, key, index) in woList" :key="index">
                         <td>{{ value.cabinetInfo.wo }}</td>
@@ -49,81 +49,78 @@
 import projectInfo from './projectInfo.vue';
 export default {
     components: {
-        projectInfo,
-    },
-    data() {
-        return {
-            checkbox: [],
-            checkedCabinetsNames: [],
-            spinnerClass: false,
-            selectedProject: null,
-            filterProjectList: null,
-            woList: null,
-            listIsActive: null,
-            checkBoxAll:false
-        }
-    },
-    // mounted () {
-    //     console.log(this.$store.state.projectList, 'qqqqqqqqqqqqqqqqqqqq');;
-    // },
-    watch: {
-        async selectedProject() {
-            await this.getProjectList()
-            this.filterProjectList = Object.values(this.$store.state.projects.List).filter(el => el.includes(this.selectedProject));
-        }
-    },
-    methods: {
-        checkAll() {
-            this.checkBoxAll = !this.checkBoxAll
-            if (this.checkBoxAll) {
-                this.checkbox.forEach(e => e.checked = true)
-                this.checkedCabinetsNames = this.woList
-            } else {
-                this.checkbox.forEach(e => e.checked = false)
-                this.checkedCabinetsNames = []
-            }
-
+            projectInfo,
         },
-        setItemRef(el) {
-            console.log(el);
-            // if (el) {
-               !this.checkbox && this.checkbox.push(el)
-            // }
+        data() {
+            return {
+                checkbox: [],
+                checkedCabinetsNames: [],
+                spinnerClass: false,
+                selectedProject: null,
+                filterProjectList: null,
+                woList: null,
+                listIsActive: null,
+                checkBoxAll: false
+            }
         },
-        async chooseProject(index) {
-
-            if (this.filterProjectList) {
-                this.selectedProject = this.filterProjectList[index]
-            } else {
-                this.selectedProject = this.$store.state.projects.List[index]
+        // mounted () {
+        //     console.log(this.$store.state.projectList, 'qqqqqqqqqqqqqqqqqqqq');;
+        // },
+        watch: {
+            async selectedProject() {
+                await this.getProjectList()
+                this.filterProjectList = Object.values(this.$store.state.projects.List).filter(el => el.includes(this.selectedProject));
             }
-
-            //   this.filterProjectList && (this.selectedProject = this.filterProjectList[index])
-            let projectNumberQuery = this.selectedProject;
-            console.log(projectNumberQuery, "projectNumberQuery");
-            if (!projectNumberQuery.includes(".")) {
-                projectNumberQuery = projectNumberQuery + ".0";
-            }
-            this.woList = await (
-                await fetch(`/api/cabinetList/${projectNumberQuery}`)
-            ).json();
-            console.log(this.woList[0]);
-            this.listIsActive = false;
         },
-        async getProjectList() {
-            if (this.$store.state.projects.List) {
-                this.listIsActive = true
-                this.filterProjectList = this.$store.state.projects.List
-                return
-            } else {
-                this.spinnerClass = true
-                await this.$store.dispatch('GET_projectList')
-                this.spinnerClass = false
-                this.listIsActive = true
-            }
+        methods: {
+            checkAll() {
+                this.checkBoxAll = !this.checkBoxAll
+                if (this.checkBoxAll) {
+                    this.checkbox.forEach(e => e.checked = true)
+                    this.checkedCabinetsNames = this.woList
+                } else {
+                    this.checkbox.forEach(e => e.checked = false)
+                    this.checkedCabinetsNames = []
+                }
 
-        }
-    },
+            },
+            setItemRef(el) {
+                !this.checkbox && this.checkbox.push(el)
+            },
+            async chooseProject(index) {
+
+                if (this.filterProjectList) {
+                    this.selectedProject = this.filterProjectList[index]
+                } else {
+                    this.selectedProject = this.$store.state.projects.List[index]
+                }
+
+                //   this.filterProjectList && (this.selectedProject = this.filterProjectList[index])
+                let projectNumberQuery = this.selectedProject;
+                console.log(projectNumberQuery, "projectNumberQuery");
+                if (!projectNumberQuery.includes(".")) {
+                    projectNumberQuery = projectNumberQuery + ".0";
+                }
+                this.woList = await (
+                    await fetch(`/api/cabinetList/${projectNumberQuery}`)
+                ).json();
+                console.log(this.woList[0]);
+                this.listIsActive = false;
+            },
+            async getProjectList() {
+                if (this.$store.state.projects.List) {
+                    this.listIsActive = true
+                    this.filterProjectList = this.$store.state.projects.List
+                    return
+                } else {
+                    this.spinnerClass = true
+                    await this.$store.dispatch('GET_projectList')
+                    this.spinnerClass = false
+                    this.listIsActive = true
+                }
+
+            }
+        },
 }
 </script>
 
@@ -153,7 +150,7 @@ export default {
   text-align: center;
 }
 .loading {
-    background: url(http://www.xiconeditor.com/image/icons/loading.gif) no-repeat right center;
+    background: url(/img/loading.gif) no-repeat right center;
 }
 .project_list_holder {
   cursor: pointer;
