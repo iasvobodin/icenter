@@ -31,9 +31,10 @@
         <span>Name :{{ value["cab name"] }}</span>
       </div>
     </div>
-  </div>
-  <button @click="changeInfo = !changeInfo">Редактировать</button>
+    <button @click="changeInfo = !changeInfo">Редактировать</button>
   <button @click="postProject">Отправить</button>
+  </div>
+  
 </template>
 
 <script>

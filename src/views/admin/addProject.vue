@@ -9,12 +9,12 @@ ADD PROJECT
 </template>
 
 <script>
-import chooseCabinet from "../../components/chooseCabinet";
+// import chooseCabinet from "../../components/chooseCabinet";
 import chooseProject from "../../components/chooseProject";
 export default {
   components: {
     // eslint-disable-next-line vue/no-unused-components
-    chooseCabinet,chooseProject,
+    chooseProject,
   },
     setup () {
         

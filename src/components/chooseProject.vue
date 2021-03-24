@@ -20,8 +20,17 @@
                 </ul>
             </div>
             <div v-if="woList">
+                <h3>Информация по проекту</h3>
+                 <div
+      v-for="(value, key, index) in woList[0]['project info']"
+      :key="index"
+      class="project__info__row"
+    >
+      <span>{{ key }}</span>
+      <span>{{ value }}</span>
+    </div>
                 <h3>Заполните поля</h3>
-                <form @submit.prevent="validateData = !validateData" class="project__info">
+                <form @submit.prevent="postProject" class="project__info">
                     <div v-if="!fetchTemplate" class="fetchHolder">Load</div>
                     <div v-else v-for="(value, key, index) in fetchTemplate.template.base" :key="index"
                         class="project__info__row">
@@ -60,22 +69,23 @@
                             </tr>
                         </table>
                     </div>
-                    <input class="add__button" type="submit" value="Проверить данные" />
+                    <input class="add__button" type="submit" :value="fetchStatus" />
                 </form>
             </div>
         </div>
-        <project-info v-if="validateData" :cabinets="checkedCabinetsNames" :projectNumber="woList[0].project" :project="{...woList[0]['project info'], ...selected} " />
+        <!-- <project-info v-if="validateData" :cabinets="checkedCabinetsNames" :projectNumber="woList[0].project" :project="{...woList[0]['project info'], ...selected} " /> -->
     </div>
 </template>
 
 <script>
-import projectInfo from './projectInfo.vue';
+// import projectInfo from './projectInfo.vue';
 export default {
     components: {
-        projectInfo,
+        // projectInfo,
     },
     data() {
         return {
+            fetchStatus: 'Отправить в базу данных',
             validateData: false,
             fetchTemplate: null,
             selected: {},
@@ -108,37 +118,7 @@ export default {
         }
     },
     methods: {
-         async postProject() {
-            const cab = this.checkedCabinetsNames.map((el) => {
-                return {
-                    wo: el.wo,
-                    cabName: el['cab name'],
-                    "cabTime": {},
-                    "dimensions": "",
-                    "documentation": "",
-                    "weight": "",
-                    "hardwareEngineer": ""
-                }
-            })
-            await fetch("/api/POST_project", {
-                method: "POST", // или 'PUT'
-                body: JSON.stringify({
-                    id: this.project.project,
-                    status: 'open',
-                    info: {
-                        ["sz number"]: this.project.cabinetInfo.szNumber,
-                        ["project name"]: this.project.cabinetInfo.projectName,
-                        pm: this.project.cabinetInfo.pm,
-                        buyer: this.project.cabinetInfo.buyer,
-                        ["contract administrator"]: this.project.cabinetInfo.contractAdministrator,
-                        ["buyout administrator"]: this.project.cabinetInfo.buyoutAdministrator,
-                        ["lead engineer"]: this.project.cabinetInfo.leadEngineer,
-                    },
-                    extends: this.selected,
-                    cabinets: cab
-                })
-            });
-        },
+
         checkAll() {
             this.checkBoxAll = !this.checkBoxAll
             if (this.checkBoxAll) {
@@ -152,8 +132,19 @@ export default {
         setItemRef(el) {
             !this.checkbox && this.checkbox.push(el)
         },
+                async getProjectList() {
+            if (this.$store.state.projects.List) {
+                this.listIsActive = true
+                this.filterProjectList = this.$store.state.projects.List
+                return
+            } else {
+                this.spinnerClass = true
+                await this.$store.dispatch('GET_projectList')
+                this.spinnerClass = false
+                this.listIsActive = true
+            }
+        },
         async chooseProject(index) {
-
             if (this.filterProjectList) {
                 this.selectedProject = this.filterProjectList[index]
             } else {
@@ -167,21 +158,29 @@ export default {
             this.woList = await (
                 await fetch(`/api/cabinetList/${projectNumberQuery}`)
             ).json();
-            // console.log(this.woList[0]);
             this.listIsActive = false;
+            this.checkedCabinetsNames = [];
         },
-        async getProjectList() {
-            if (this.$store.state.projects.List) {
-                this.listIsActive = true
-                this.filterProjectList = this.$store.state.projects.List
-                return
-            } else {
-                this.spinnerClass = true
-                await this.$store.dispatch('GET_projectList')
-                this.spinnerClass = false
-                this.listIsActive = true
-            }
-        }
+                 async postProject() {
+            const cab = this.checkedCabinetsNames.map((el) => {
+                if(el.wo) return {
+                    wo: el.wo,
+                    ['cab name']: el['cab name'],
+                }
+            })
+            await fetch("/api/POST_project", {
+                method: "POST", // или 'PUT'
+                body: JSON.stringify({
+                    id: this.selectedProject,
+                    status: 'open',
+                    info: this.woList[0]['project info'],
+                    extends: this.selected,
+                    cabinets: cab
+                })
+            });
+            this.fetchStatus = "Проект успешно добавлен"
+        },
+
     },
 }
 </script>
@@ -227,7 +226,7 @@ tbody tr:hover {
     width: min(1600px, 95vw);
     display: grid;
     margin: auto;
-    grid-template-columns: repeat(auto-fit, minmax(max(30vw, 300px), 1fr));
+    grid-template-columns: minmax(300px, 50vw);
     justify-content: space-around;
     column-gap: 5vw;
 }

@@ -1,49 +1,5 @@
 <template>
-  <!-- <section class="add__error"> -->
-  <!-- <div class="p-grid p-mx-auto">
-  <Dropdown
-  style="width:300px"
-  class="p-col"
-    @before-show="getProjectTest"
-    @change="chooseProjectTest"
-    v-model="selectedProject"
-    :options="projectsList"
-    :filter="true"
-    scrollHeight="300px"
-    placeholder="Введите номер проекта"
-    :showClear="true"
-  >
-    <template #value="slotProps">
-      <div class="country-item country-item-value" v-if="slotProps.value">
-        <div>{{ slotProps.value }}</div>
-      </div>
-      <span v-else>
-        {{ slotProps.placeholder }}
-      </span>
-    </template>
-  </Dropdown>
-  <ProgressSpinner  class="preloader p-col" v-if="showPreloader" />
-</div>
 
-
-  <br />
-  <br />
-  <h2 v-if="selectedProject">Выберете шкаф</h2>
-  <DataTable
-  style="width:min(90vw, 400px); margin: auto;"
-  v-if="selectedProject"
-    :value="woListTest"
-    v-model:selection="selectedCabinet"
-    selectionMode="single"
-    dataKey="id"
-    class="p-datatable-sm"
-  >
-    <Column field="id" header="WO"></Column>
-    <Column field="cabName" header="Cabinet"></Column>
-  </DataTable> -->
-  <!-- </section> -->
-
-  <!-- <button @click="testFetch">TEST FETCH</button> -->
   <h2>Выберете проект</h2>
   <br>
   <div class="project">

@@ -1,7 +1,6 @@
 <template>
     <div>
-REPORTS
-<h1>страница в разработке</h1>
+<h1>Проекты</h1>
 <projectList/>
     </div>
 </template>
