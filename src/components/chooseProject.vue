@@ -1,7 +1,7 @@
 <template>
     <div class="project__holder">
         <div class="project">
-            <h2>Выберете проект</h2>
+            <h2>Выберете номер проекта</h2>
             <br>
             <input @focus="getProjectList" :class="{ loading: spinnerClass }" class="project_input"
                 v-model="selectedProject" placeholder="Введите номер проекта" />
@@ -19,29 +19,52 @@
                     </li>
                 </ul>
             </div>
-            <div class="cabinet__info">
-                <table v-if="woList" style="width: 100%">
-                    <colgroup>
-                        <col style="width: 20%" />
-                        <col style="width: 80%" />
-                    </colgroup>
-                    <tr style="border: solid 2px orange;" >
-                        <th>WO</th>
-                        <th>Шкаф</th>
-                        <th>Выбрать всё<input @click="checkAll" type="checkbox" /></th>
-                    </tr>
-                    <tr style="cursor: pointer;" v-for="(value, key, index) in woList" :key="index">
-                        <td>{{ value.cabinetInfo.wo }}</td>
-                        <td class="tg-0lax">{{ value.cabinetInfo.cabName }}</td>
-                        <td class="tg-0lax">
-                            <input :ref="setItemRef" type="checkbox" :value="value" v-model="checkedCabinetsNames" />
-                        </td>
-                    </tr>
-                    <!-- <button @click="checkAll">test</button> -->
-                </table>
+            <div v-if="woList">
+                <h3>Заполните поля</h3>
+                <form @submit.prevent="validateData = !validateData" class="project__info">
+                    <div v-if="!fetchTemplate" class="fetchHolder">Load</div>
+                    <div v-else v-for="(value, key, index) in fetchTemplate.template.base" :key="index"
+                        class="project__info__row">
+                        <span>{{key}}</span>
+                        <select required v-model="selected[key]">
+                            <option v-for="(fitter, index) in value" :key="index">{{fitter}}</option>
+                        </select>
+                    </div>
+                    <div v-if="!fetchTemplate" class="fetchHolder">Load</div>
+                    <div v-else v-for="(value, key, index) in fetchTemplate.template.extend" :key="index"
+                        class="project__info__row">
+                        <span>{{key}}</span>
+                        <textarea v-model="selected[key]" cols="30" rows="3"></textarea>
+                    </div>
+                    <div class="cabinet__info">
+                        <h3>
+                            Выберете шкафные линии
+                        </h3>
+                        <table v-if="woList" style="width: 100%">
+                            <colgroup>
+                                <col style="width: 20%" />
+                                <col style="width: 80%" />
+                            </colgroup>
+                            <tr style="border: solid 2px orange;">
+                                <th>WO</th>
+                                <th>Наименование</th>
+                                <th>Выбрать всё<input @click="checkAll" type="checkbox" /></th>
+                            </tr>
+                            <tr v-for="(value, key, index) in woList" :key="index">
+                                <td>{{ value.wo }}</td>
+                                <td class="tg-0lax">{{ value["cab name"] }}</td>
+                                <td class="tg-0lax">
+                                    <input :ref="setItemRef" type="checkbox" :value="value"
+                                        v-model="checkedCabinetsNames" />
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <input class="add__button" type="submit" value="Проверить данные" />
+                </form>
             </div>
         </div>
-        <project-info v-if="woList" :cabinets="checkedCabinetsNames" :project="woList[0]" />
+        <project-info v-if="validateData" :cabinets="checkedCabinetsNames" :projectNumber="woList[0].project" :project="{...woList[0]['project info'], ...selected} " />
     </div>
 </template>
 
@@ -49,90 +72,162 @@
 import projectInfo from './projectInfo.vue';
 export default {
     components: {
-            projectInfo,
-        },
-        data() {
-            return {
-                checkbox: [],
-                checkedCabinetsNames: [],
-                spinnerClass: false,
-                selectedProject: null,
-                filterProjectList: null,
-                woList: null,
-                listIsActive: null,
-                checkBoxAll: false
-            }
-        },
-        // mounted () {
-        //     console.log(this.$store.state.projectList, 'qqqqqqqqqqqqqqqqqqqq');;
-        // },
-        watch: {
-            async selectedProject() {
-                await this.getProjectList()
-                this.filterProjectList = Object.values(this.$store.state.projects.List).filter(el => el.includes(this.selectedProject));
-            }
-        },
-        methods: {
-            checkAll() {
-                this.checkBoxAll = !this.checkBoxAll
-                if (this.checkBoxAll) {
-                    this.checkbox.forEach(e => e.checked = true)
-                    this.checkedCabinetsNames = this.woList
-                } else {
-                    this.checkbox.forEach(e => e.checked = false)
-                    this.checkedCabinetsNames = []
-                }
-
-            },
-            setItemRef(el) {
-                !this.checkbox && this.checkbox.push(el)
-            },
-            async chooseProject(index) {
-
-                if (this.filterProjectList) {
-                    this.selectedProject = this.filterProjectList[index]
-                } else {
-                    this.selectedProject = this.$store.state.projects.List[index]
-                }
-
-                //   this.filterProjectList && (this.selectedProject = this.filterProjectList[index])
-                let projectNumberQuery = this.selectedProject;
-                console.log(projectNumberQuery, "projectNumberQuery");
-                if (!projectNumberQuery.includes(".")) {
-                    projectNumberQuery = projectNumberQuery + ".0";
-                }
-                this.woList = await (
-                    await fetch(`/api/cabinetList/${projectNumberQuery}`)
+        projectInfo,
+    },
+    data() {
+        return {
+            validateData: false,
+            fetchTemplate: null,
+            selected: {},
+            checkbox: [],
+            checkedCabinetsNames: [],
+            spinnerClass: false,
+            selectedProject: null,
+            filterProjectList: null,
+            woList: null,
+            listIsActive: null,
+            checkBoxAll: false
+        }
+    },
+    watch: {
+        async selectedProject() {
+            await this.getProjectList()
+            this.filterProjectList = Object.values(this.$store.state.projects.List).filter(el => el.includes(this.selectedProject));
+        }
+    },
+    async mounted() {
+        try {
+            if (!this.fetchTemplate) {
+                this.fetchTemplate = await (
+                    await fetch('/api/templates/project/projectTemplate')
                 ).json();
-                console.log(this.woList[0]);
-                this.listIsActive = false;
-            },
-            async getProjectList() {
-                if (this.$store.state.projects.List) {
-                    this.listIsActive = true
-                    this.filterProjectList = this.$store.state.projects.List
-                    return
-                } else {
-                    this.spinnerClass = true
-                    await this.$store.dispatch('GET_projectList')
-                    this.spinnerClass = false
-                    this.listIsActive = true
+            this.selected = {...this.fetchTemplate.template.base, ...this.fetchTemplate.template.extend}
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    },
+    methods: {
+         async postProject() {
+            const cab = this.checkedCabinetsNames.map((el) => {
+                return {
+                    wo: el.wo,
+                    cabName: el['cab name'],
+                    "cabTime": {},
+                    "dimensions": "",
+                    "documentation": "",
+                    "weight": "",
+                    "hardwareEngineer": ""
                 }
-
+            })
+            await fetch("/api/POST_project", {
+                method: "POST", // или 'PUT'
+                body: JSON.stringify({
+                    id: this.project.project,
+                    status: 'open',
+                    info: {
+                        ["sz number"]: this.project.cabinetInfo.szNumber,
+                        ["project name"]: this.project.cabinetInfo.projectName,
+                        pm: this.project.cabinetInfo.pm,
+                        buyer: this.project.cabinetInfo.buyer,
+                        ["contract administrator"]: this.project.cabinetInfo.contractAdministrator,
+                        ["buyout administrator"]: this.project.cabinetInfo.buyoutAdministrator,
+                        ["lead engineer"]: this.project.cabinetInfo.leadEngineer,
+                    },
+                    extends: this.selected,
+                    cabinets: cab
+                })
+            });
+        },
+        checkAll() {
+            this.checkBoxAll = !this.checkBoxAll
+            if (this.checkBoxAll) {
+                this.checkbox.forEach(e => e.checked = true)
+                this.checkedCabinetsNames = this.woList
+            } else {
+                this.checkbox.forEach(e => e.checked = false)
+                this.checkedCabinetsNames = []
             }
         },
+        setItemRef(el) {
+            !this.checkbox && this.checkbox.push(el)
+        },
+        async chooseProject(index) {
+
+            if (this.filterProjectList) {
+                this.selectedProject = this.filterProjectList[index]
+            } else {
+                this.selectedProject = this.$store.state.projects.List[index]
+            }
+            let projectNumberQuery = this.selectedProject;
+            console.log(projectNumberQuery, "projectNumberQuery");
+            if (!projectNumberQuery.includes(".")) {
+                projectNumberQuery = projectNumberQuery + ".0";
+            }
+            this.woList = await (
+                await fetch(`/api/cabinetList/${projectNumberQuery}`)
+            ).json();
+            // console.log(this.woList[0]);
+            this.listIsActive = false;
+        },
+        async getProjectList() {
+            if (this.$store.state.projects.List) {
+                this.listIsActive = true
+                this.filterProjectList = this.$store.state.projects.List
+                return
+            } else {
+                this.spinnerClass = true
+                await this.$store.dispatch('GET_projectList')
+                this.spinnerClass = false
+                this.listIsActive = true
+            }
+        }
+    },
 }
 </script>
 
 <style lang="css" scoped>
-.table__header{
-    
+.add__button{
+    margin: auto;
+    width: 50%;
+    height: 30px;
+    margin-top: 15px;
+    margin-bottom: 15px;
+    background-color: rgb(255, 164, 59);
+}
+table {
+  border-collapse: collapse;
+ 
+}
+td, th {
+  border: 1px solid #999;
+  padding: 0.5rem;
+   font-size: 12px;
+}
+tbody tr:nth-child(odd) {
+  background: #eee;
+}
+tbody tr:hover {
+  background: yellow;
+}
+.project__info__row{
+    border-bottom: solid 1px black;
+    /* background: rgba(214, 214, 214, 0.459); */
+    padding: 5px;
+   display: grid;
+   grid-template-columns: 1fr 2fr;
+}
+.project__info__row > span{
+    justify-self:stretch;
+    align-self: center;
+  /* place-self: start; */
+  text-align: start;
 }
 .project__holder{
     width: min(1600px, 95vw);
     display: grid;
     margin: auto;
-    grid-template-columns: repeat(auto-fill, minmax(max(30vw, 300px), 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(max(30vw, 300px), 1fr));
     justify-content: space-around;
     column-gap: 5vw;
 }
@@ -153,7 +248,7 @@ export default {
     background: url(/img/loading.gif) no-repeat right center;
 }
 .project_list_holder {
-  cursor: pointer;
+  /* cursor: pointer; */
   max-height: 40vh;
   overflow-y: scroll;
 }

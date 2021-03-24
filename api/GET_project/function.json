@@ -5,7 +5,7 @@
       "authLevel": "anonymous",
       "direction": "in",
       "name": "req",
-      "route": "project/{partitionKeyValue}/{id}",
+      "route": "project/{status}",
       "methods": [
         "get",
         "post"
@@ -19,12 +19,11 @@
     {
       "type": "cosmosDB",
       "direction": "in",
-      "name": "data",
+      "name": "projects",
       "ConnectionStringSetting": "legendstats_DOCUMENTDB",
       "databaseName": "testdatabase",
       "collectionName": "projects",
-      "Id": "{id}",
-      "PartitionKey": "{partitionKeyValue}"
+      "sqlQuery": "SELECT * from c where c.status = {status}",
     }
   ]
 }
