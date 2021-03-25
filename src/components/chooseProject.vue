@@ -1,7 +1,12 @@
 <template>
     <div class="project__holder">
         <div class="project">
-            <h2>Выберете номер проекта</h2>
+            <chooseProjectNumber
+ @input-project-event="fetchProjectList" 
+ @choose-project-number="choose"
+ :fetchUrl="projectData"
+ />
+            <!-- <h2>Выберете номер проекта</h2>
             <br>
             <input @focus="getProjectList" :class="{ loading: spinnerClass }" class="project_input"
                 v-model="selectedProject" placeholder="Введите номер проекта" />
@@ -18,17 +23,13 @@
                         {{ project }}
                     </li>
                 </ul>
-            </div>
+            </div> -->
             <div v-if="woList">
                 <h3>Информация по проекту</h3>
-                 <div
-      v-for="(value, key, index) in woList[0]['project info']"
-      :key="index"
-      class="project__info__row"
-    >
-      <span>{{ key }}</span>
-      <span>{{ value }}</span>
-    </div>
+                <div v-for="(value, key, index) in woList[0]['project info']" :key="index" class="project__info__row">
+                    <span>{{ key }}</span>
+                    <span>{{ value }}</span>
+                </div>
                 <h3>Заполните поля</h3>
                 <form @submit.prevent="postProject" class="project__info">
                     <div v-if="!fetchTemplate" class="fetchHolder">Load</div>
@@ -78,13 +79,15 @@
 </template>
 
 <script>
+import chooseProjectNumber from "@/components/chooseProjectNumber";
 // import projectInfo from './projectInfo.vue';
 export default {
     components: {
-        // projectInfo,
+        chooseProjectNumber
     },
     data() {
         return {
+            projectData: null,
             fetchStatus: 'Отправить в базу данных',
             validateData: false,
             fetchTemplate: null,
@@ -111,14 +114,29 @@ export default {
                 this.fetchTemplate = await (
                     await fetch('/api/templates/project/projectTemplate')
                 ).json();
-            this.selected = {...this.fetchTemplate.template.base, ...this.fetchTemplate.template.extend}
+                this.selected = {
+                    ...this.fetchTemplate.template.base,
+                    ...this.fetchTemplate.template.extend
+                }
             }
         } catch (error) {
             console.log(error);
         }
     },
     methods: {
-
+        async choose($event) {
+            this.woList = await (
+                await fetch(`/api/cabinetList/${$event}`)
+            ).json();
+            this.checkedCabinetsNames = [];
+            console.log($event, "$event");
+        },
+        async fetchProjectList() {
+            if (!this.projectData) {
+                let data = await (await fetch('/api/projectstatus/Open')).json()
+                this.projectData = data.filter(el => el.length > 6).sort()
+            }
+        },
         checkAll() {
             this.checkBoxAll = !this.checkBoxAll
             if (this.checkBoxAll) {
@@ -132,7 +150,7 @@ export default {
         setItemRef(el) {
             !this.checkbox && this.checkbox.push(el)
         },
-                async getProjectList() {
+        async getProjectList() {
             if (this.$store.state.projects.List) {
                 this.listIsActive = true
                 this.filterProjectList = this.$store.state.projects.List
@@ -161,9 +179,9 @@ export default {
             this.listIsActive = false;
             this.checkedCabinetsNames = [];
         },
-                 async postProject() {
+        async postProject() {
             const cab = this.checkedCabinetsNames.map((el) => {
-                if(el.wo) return {
+                if (el.wo) return {
                     wo: el.wo,
                     ['cab name']: el['cab name'],
                 }
