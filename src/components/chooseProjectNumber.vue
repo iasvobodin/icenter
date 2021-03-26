@@ -1,19 +1,32 @@
 <template>
   <!-- <h2>Введите номер проекта</h2> -->
   <br />
-  <div :class="{ border__project: listIsActive }" class="choose__project__holder">
-    <input @focus="getProjectList" :class="{ loading: spinnerClass }" class="project_input" v-model="selectedProject"
-      placeholder="Введите номер проекта" />
+  <div
+    :class="{ border__project: listIsActive }"
+    class="choose__project__holder"
+  >
+  <div class="input__holder">
+    <input
+      @focus="getProjectList"
+      :class="{ loading: spinnerClass }"
+      class="project_input"
+      v-model="selectedProject"
+      placeholder="Введите номер проекта"
+    />
+    <img v-if="selectedProject" @click="clearState" src="/img/cancel.svg" alt="">
+  </div>
+
     <div v-if="listIsActive" class="project_list_holder">
-      <ul v-if="!filterProjectList" class="project_list">
-        <li v-for="(project, index) in fetchUrl" :key="index" @click="chooseProject(index)" class="project_item">
-          <p>{{ project }}</p>
-        </li>
-      </ul>
-      <ul v-else class="project_list">
-        <li v-for="(project, index) in filterProjectList" :key="index" @click="chooseProject(index)"
-          class="project_item">
-          <p>{{ project }}</p>
+      <ul class="project_list">
+        <li
+          v-for="(project, index) in filterProject"
+          :key="index"
+          @click="chooseProject(index)"
+          class="project_item"
+        >
+         <span>
+           {{ project }}
+           </span> 
         </li>
       </ul>
     </div>
@@ -23,6 +36,10 @@
 <script>
 export default {
   props: {
+    zeroEnd: {
+      type: Boolean,
+      default: () => false
+    },
     fetchUrl: {
       type: Object,
       default: null
@@ -32,26 +49,44 @@ export default {
   data() {
     return {
       selectedProject: null,
+      projectNumberQuery: null,
       filterProjectList: null,
       listIsActive: false,
       spinnerClass: false
     };
   },
+    computed: {
+    filterProject() {
+      if (this.selectedProject) {
+        // eslint-disable-next-line vue/no-side-effects-in-computed-properties
+        return Object.values(this.fetchUrl).filter(el =>
+          el.includes(this.selectedProject)
+        );;
+      } else {
+        return this.fetchUrl;
+      }
+    }
+  },
   watch: {
-    async selectedProject() {
-      await this.getProjectList();
-      this.filterProjectList = Object.values(this.fetchUrl).filter(el =>
-        el.includes(this.selectedProject)
-      );
-    },
+    // selectedProject() {
+    //   if (this.fetchUrl) {
+    //     this.filterProjectList = Object.values(this.fetchUrl).filter(el =>
+    //       el.includes(this.selectedProject)
+    //     );
+    //   }
+    // },
     fetchUrl() {
       this.listIsActive = true;
       this.spinnerClass = false;
-      console.log('watch');
+      // console.log("watch");
     }
   },
   methods: {
-    async getProjectList() {
+    clearState(){
+      this.selectedProject = null
+      this.$emit("chooseProjectNumber", this.selectedProject);
+    },
+    getProjectList() {
       this.$emit("inputProjectEvent");
       this.spinnerClass = true;
       if (this.fetchUrl) {
@@ -66,11 +101,11 @@ export default {
       } else {
         this.selectedProject = this.fetchUrl[index];
       }
-      let projectNumberQuery = this.selectedProject;
-      if (!projectNumberQuery.includes(".")) {
-        projectNumberQuery = projectNumberQuery + ".0";
+       this.projectNumberQuery = this.selectedProject;
+      if (!this.projectNumberQuery.includes(".")&& this.zeroEnd) {
+        this.projectNumberQuery = this.projectNumberQuery + ".0";
       }
-      this.$emit("chooseProjectNumber", projectNumberQuery);
+      this.$emit("chooseProjectNumber", this.projectNumberQuery);
       // this.woList = await (
       //   await fetch(`/api/cabinetList/${projectNumberQuery}`)
       // ).json();
@@ -83,20 +118,34 @@ export default {
 </script>
 
 <style lang="css" scoped>
-.border__project{
+.input__holder{
+  position: relative;
+}
+.input__holder>img{
+  cursor: pointer;
+  height: 30px;
+  padding: 7px;
+  position: absolute;
+  right: 0px;
+}
+.border__project {
   padding: 10px;
   border: 1px solid rgb(0, 0, 0);
   border-radius: 5px;
 }
 .choose__project__holder {
   margin: auto;
-  width: min(95vw, 400px);
+  width: min(80vw, 400px);
 }
 input {
   height: 30px;
+  line-height: 30px;
   font-size: 16px;
   text-align: center;
   width: 100%;
+}
+span{
+  line-height: 30px;
 }
 .loading {
   background: url(/img/loading.gif) no-repeat right center;
@@ -120,17 +169,24 @@ input {
   padding: 0;
   height: inherit;
 }
-.project_item > p {
+li{
+  border-bottom: 1px solid black
+}
+ul{
+  border: 1px solid black;
+  border-radius: 5px;
+}
+.project_item  {
   height: 30px;
   font-size: 16px;
-  border-radius: 2px;
+  /* border-radius: 2px;
   padding: 2px;
-  margin: 2px;
+  margin: 2px; */
   list-style: none;
   cursor: pointer;
-  border: 1px solid rgb(112, 112, 112);
+  /* border: 1px solid rgb(112, 112, 112); */
 }
-.project_item > p:hover {
+.project_item:hover {
   background-color: rgba(55, 158, 255, 0.342);
 }
 </style>

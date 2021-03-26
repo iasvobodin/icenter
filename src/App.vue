@@ -3,9 +3,9 @@
     <router-link to="/">Home</router-link> |
     <router-link to="/User">User</router-link> |
     <router-link to="/admin">Admin</router-link>|
-      <a  href="/.auth/login/aad">Login</a>
+    <a href="/.auth/login/aad">Login</a>
   </div>
- 
+
   <!-- <router-link to="/.auth/login/aad">login</router-link>
   <br />
   <router-link to="/.auth/logout">log out</router-link> <br /> -->

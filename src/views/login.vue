@@ -12,9 +12,7 @@ export default {
     const router = useRouter();
     console.log(router, "this");
 
-    fetch("/.auth/login/aad").then(() =>
-      router.push(`/`)
-    );
+    fetch("/.auth/login/aad").then(() => router.push(`/`));
 
     // fetch("https://jsonplaceholder.typicode.com/users/1")
     //   .then(response => response.json())

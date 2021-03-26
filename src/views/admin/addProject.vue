@@ -8,7 +8,7 @@
  @choose-project-number="choose"
  :fetchUrl="projectData"
  /> -->
-    <chooseProject />
+    <chooseProject  />
   </div>
 </template>
 
@@ -35,11 +35,10 @@ export default {
   },
   components: {
     // eslint-disable-next-line vue/no-unused-components
-    chooseProject,chooseProjectNumber
+    chooseProject,
+    // eslint-disable-next-line vue/no-unused-components
+    chooseProjectNumber
   },
-  setup() {
-    return {};
-  }
 };
 </script>
 

@@ -1,19 +1,17 @@
 <template>
   <h1>User {{ $route.params.id }}</h1>
   <div class="amin_view">
- <Navigation class="admin_navigation" />
-  <router-view></router-view>
+    <Navigation class="admin_navigation" />
+    <router-view></router-view>
   </div>
- 
 </template>
 
 <script>
-
 import { useRoute } from "vue-router";
 import Navigation from "../../components/admin_navigation";
 export default {
   components: {
-    Navigation,
+    Navigation
   },
   setup() {
     const route = useRoute();
@@ -30,11 +28,11 @@ export default {
 </script>
 
 <style lang="css" scoped>
-.amin_view{
+.amin_view {
   position: relative;
   height: auto;
 }
-.admin_navigation{
+.admin_navigation {
   /* position: absolute; */
   top: 0;
   left: 0;

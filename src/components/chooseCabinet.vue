@@ -1,22 +1,29 @@
 <template>
-
   <h2>Выберете проект</h2>
-  <br>
+  <br />
   <div class="project">
-
     <!-- <button @click="getProject">Выбрать проект</button> -->
-    <input @focus="getProject" @input="listIsActive = true"  class="project_input" v-model="selectedProjectNumber"
-      placeholder="Введите номер проекта" />
+    <input
+      @focus="getProject"
+      @input="listIsActive = true"
+      class="project_input"
+      v-model="selectedProjectNumber"
+      placeholder="Введите номер проекта"
+    />
     <div v-if="listIsActive" class="project_list_holder">
       <ul class="project_list">
-        <li v-for="(project, index) in filterList" :key="index" @click="chooseProject(index)" class="project_item">
+        <li
+          v-for="(project, index) in filterList"
+          :key="index"
+          @click="chooseProject(index)"
+          class="project_item"
+        >
           {{ project }}
         </li>
       </ul>
     </div>
     <div v-if="!listIsActive" class="project__info">
-    <h4 >Выбранный проект №:{{ selectedProjectNumber }}</h4>
-
+      <h4>Выбранный проект №:{{ selectedProjectNumber }}</h4>
     </div>
   </div>
   <h2 v-if="selectedProject">Выберете шкаф</h2>
@@ -39,14 +46,13 @@
         </td>
       </tr>
     </table>
-<div v-if="checkedNames" class="choose__information">
-    <h4> Выбранные шкафы </h4>
-    <ul v-for="(cabinet, index) in checkedNames " :key="index">
-      <li>{{cabinet.id}}</li>
-    </ul>
-</div>
 
-
+    <div v-if="checkedNames" class="choose__information">
+      <h4>Выбранные шкафы</h4>
+      <ul v-for="(cabinet, index) in checkedNames" :key="index">
+        <li>{{ cabinet.id }}</li>
+      </ul>
+    </div>
 
     <!-- <ul class="project_list">
       <li class="project_item" v-for="(wo, index) in woList" :key="index">
@@ -67,9 +73,9 @@ import ProgressSpinner from "primevue/progressspinner";
 // eslint-disable-next-line no-unused-vars
 import { computed, reactive, ref, watch } from "vue";
 export default {
-     mounted () {
-        console.log(this.$store.state.testState, 'qqqqqqqqqqqqqqqqqqqq');;
-    },
+  mounted() {
+    console.log(this.$store.state.testState, "qqqqqqqqqqqqqqqqqqqq");
+  },
   data() {
     return {
       checkedNames: [],
@@ -130,12 +136,11 @@ export default {
     const getProject = async () => {
       // loadingSpinner.value = true
       if (!dataProject) {
-        dataProject = await (await fetch(`/api/projectstatus/Open`)).json()
+        dataProject = await (await fetch(`/api/projectstatus/Open`)).json();
         getProjectVisible.value = true;
-      // loadingSpinner.value = false
+        // loadingSpinner.value = false
       }
-    //  !dataProject && (dataProject = await (await fetch(`/api/projectstatus/Open`)).json())
-      
+      //  !dataProject && (dataProject = await (await fetch(`/api/projectstatus/Open`)).json())
     };
 
     const testFetch = async () => {
@@ -146,11 +151,9 @@ export default {
           data: "testChange2",
           newdata: {
             test: "testChange",
-             test1111: "testChange1111",
-             error: {status: "closed",
-             timestamp: Date.now()
-             }
-            }
+            test1111: "testChange1111",
+            error: { status: "closed", timestamp: Date.now() }
+          }
         })
       });
     };
@@ -171,13 +174,15 @@ export default {
       if (!projectNumberQuery.includes(".")) {
         projectNumberQuery = projectNumberQuery + ".0";
       }
-        woList.value = await (
-          await fetch(`/api/cabinetList/${projectNumberQuery}`)
-        ).json();
+      woList.value = await (
+        await fetch(`/api/cabinetList/${projectNumberQuery}`)
+      ).json();
     };
-    watch(selectedProjectNumber, async() => {
-      await getProject()
-    filterList.value = dataProject.filter(el => el.includes(selectedProjectNumber.value));
+    watch(selectedProjectNumber, async () => {
+      await getProject();
+      filterList.value = dataProject.filter(el =>
+        el.includes(selectedProjectNumber.value)
+      );
     });
     return {
       selectedProjectNumber,
@@ -270,7 +275,8 @@ export default {
   text-align: center;
 }
 .loading {
-    background: url(http://www.xiconeditor.com/image/icons/loading.gif) no-repeat right center;
+  background: url(http://www.xiconeditor.com/image/icons/loading.gif) no-repeat
+    right center;
 }
 .project {
   margin: auto;

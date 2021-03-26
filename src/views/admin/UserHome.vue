@@ -1,19 +1,15 @@
 <template>
-    <div>
-HOME
-    </div>
+  <div>
+    HOME
+  </div>
 </template>
 
 <script>
 export default {
-    setup () {
-        
-
-        return {}
-    }
-}
+  setup() {
+    return {};
+  }
+};
 </script>
 
-<style lang="scss" scoped>
-
-</style>
+<style lang="scss" scoped></style>

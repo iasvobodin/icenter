@@ -8,7 +8,7 @@
     >
       <span>{{ key }}</span>
 
-      <span v-if="!changeInfo" >{{ value }}</span>
+      <span v-if="!changeInfo">{{ value }}</span>
       <input v-else v-model="message[key]" :placeholder="value" />
     </div>
     <div v-if="cabinets.length === 0">
@@ -32,18 +32,17 @@
       </div>
     </div>
     <button @click="changeInfo = !changeInfo">Редактировать</button>
-  <button @click="postProject">Отправить</button>
+    <button @click="postProject">Отправить</button>
   </div>
-  
 </template>
 
 <script>
 export default {
   data() {
     return {
-        message: {},
-        changeInfo: false,
-      fetchTemplate: null,
+      message: {},
+      changeInfo: false,
+      fetchTemplate: null
     };
   },
   props: {
@@ -85,7 +84,7 @@ export default {
     }
   },
   async mounted() {
-      this.message = this.project
+    this.message = this.project;
     // try {
     //   this.fetchTemplate = await (
     //     await fetch("/api/templates/project/projectTemplate")

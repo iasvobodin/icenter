@@ -7,7 +7,7 @@ export default createStore({
   },
   mutations: {
     SET_projectList(state, payload) {
-      state.projects.List = payload.filter(el => el.length > 6).sort()
+      state.projects.List = payload.filter(el => el.length > 6).sort();
       // payload.filter(el => el.length > 6).sort().forEach(el => {
       //   state.projectList.push(el)
       // });
@@ -15,12 +15,11 @@ export default createStore({
     }
   },
   actions: {
-    async GET_projectList({
-      commit, state
-    }) {
+    async GET_projectList({ commit, state }) {
       let data;
-      !state.projects.List && (data = await (await fetch(`/api/projectstatus/Open`)).json())
-      commit('SET_projectList', data)
+      !state.projects.List &&
+        (data = await (await fetch(`/api/projectstatus/Open`)).json());
+      commit("SET_projectList", data);
     }
   },
   modules: {}
