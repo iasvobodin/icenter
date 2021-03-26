@@ -96,11 +96,11 @@ export default {
       }
     },
     async chooseProject(index) {
-      if (this.filterProjectList) {
-        this.selectedProject = this.filterProjectList[index];
-      } else {
-        this.selectedProject = this.fetchUrl[index];
-      }
+      // if (this.filterProjectList) {
+        this.selectedProject = this.filterProject[index];
+      // } else {
+      //   this.selectedProject = this.fetchUrl[index];
+      // }
        this.projectNumberQuery = this.selectedProject;
       if (!this.projectNumberQuery.includes(".")&& this.zeroEnd) {
         this.projectNumberQuery = this.projectNumberQuery + ".0";
