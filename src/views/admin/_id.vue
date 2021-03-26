@@ -1,5 +1,5 @@
 <template>
-  <h1>User {{ $route.params.id }}</h1>
+  <!-- <h1>User {{ $route.params.id }}</h1> -->
   <div class="amin_view">
     <Navigation class="admin_navigation" />
     <router-view></router-view>
