@@ -50,6 +50,7 @@
             <choose-wo-number
               :multiple-permission="true"
               :cabinetList="mappingWO"
+              @checked-wo="mapWO"
               v-if="woList"
             />
             <!-- <table v-if="woList" style="width: 100%">
@@ -139,11 +140,22 @@ export default {
     }
   },
   methods: {
+    mapWO(e) {
+      console.log(e);
+      this.checkedCabinetsNames = Object.values(e)
+        .filter(el => el.wo)
+        .map(el => {
+          return {
+            wo: el.wo,
+            ["cab name"]: el["cab name"]
+          };
+        });
+    },
     async choose($event) {
-        if (!$event) {
-            this.woList = false
-            return
-        }
+      if (!$event) {
+        this.woList = false;
+        return;
+      }
       this.woList = await (await fetch(`/api/cabinetList/${$event}`)).json();
       this.checkedCabinetsNames = [];
       this.selectedProject = $event;
@@ -168,22 +180,21 @@ export default {
       !this.checkbox && this.checkbox.push(el);
     },
     async postProject() {
-      const cab = this.checkedCabinetsNames
-        .filter(el => el.wo)
-        .map(el => {
-          return {
-            wo: el.wo,
-            ["cab name"]: el["cab name"]
-          };
-        });
+      let modifyEl;
+      if (this.selectedProject.endsWith(".0")) {
+        modifyEl = this.selectedProject.slice(0, -2);
+      }
       await fetch("/api/POST_project", {
         method: "POST", // или 'PUT'
         body: JSON.stringify({
-          id: this.selectedProject,
+          id: modifyEl,
           status: "open",
-          info: this.woList[0]["project info"],
-          extends: this.selected,
-          cabinets: cab
+          // ttl: 1,
+          info: {
+            base: this.woList[0]["project info"],
+            extends: this.selected
+          },
+          cabinets: this.checkedCabinetsNames
         })
       });
       this.fetchStatus = "Проект успешно добавлен";

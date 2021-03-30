@@ -7,7 +7,6 @@
   >
     <div class="input__holder">
       <input
-        @blur="bl"
         @focus="getProjectList"
         :class="{ loading: spinnerClass }"
         class="project_input"
@@ -22,7 +21,7 @@
       />
     </div>
 
-    <div v-show="listIsActive" class="project_list_holder">
+    <div v-if="listIsActive" class="project_list_holder">
       <ul class="project_list">
         <li
           v-for="(project, index) in filterProject"
@@ -30,18 +29,13 @@
           @click="chooseProject(index)"
           class="project_item"
         >
-          <p v-if="typeof project === 'object'">
+          <p>
             <span style="text-align: start;">
               {{ project.wo }}
             </span>
             -
             <span style="text-align: end;">
               {{ project["cab name"] }}
-            </span>
-          </p>
-          <p v-else>
-            <span>
-              {{ project }}
             </span>
           </p>
         </li>
@@ -75,20 +69,14 @@ export default {
   computed: {
     filterProject() {
       if (this.selectedProject) {
-        if (typeof Object.values(this.fetchUrl)[0] === "object") {
-          return Object.values(this.fetchUrl).filter(
-            el =>
-              (el.wo && el.wo.includes(this.selectedProject)) ||
-              (el["cab name"] &&
-                el["cab name"]
-                  .toLowerCase()
-                  .includes(this.selectedProject.toLowerCase()))
-          );
-        } else {
-          return Object.values(this.fetchUrl).filter(el =>
-            el.includes(this.selectedProject)
-          );
-        }
+        return Object.values(this.fetchUrl).filter(
+          el =>
+            (el.wo && el.wo.includes(this.selectedProject)) ||
+            (el["cab name"] &&
+              el["cab name"]
+                .toLowerCase()
+                .includes(this.selectedProject.toLowerCase()))
+        );
       } else {
         return this.fetchUrl;
       }
@@ -109,9 +97,6 @@ export default {
     }
   },
   methods: {
-    bl() {
-      setTimeout(() => (this.listIsActive = false), 200);
-    },
     clearState() {
       this.selectedProject = null;
       this.$emit("chooseProjectNumber", this.selectedProject);
@@ -126,30 +111,28 @@ export default {
       }
     },
     async chooseProject(index) {
-      this.selectedProject = this.filterProject[index];
+      this.selectedProject = `${this.fetchUrl[index].wo} ${this.fetchUrl[index]["cab name"]}`;
 
-      this.projectNumberQuery = this.selectedProject;
-      if (!this.projectNumberQuery.includes(".") && this.zeroEnd) {
-        this.projectNumberQuery = this.projectNumberQuery + ".0";
-      }
-      this.$emit("chooseProjectNumber", this.projectNumberQuery);
+      this.$emit("chooseProjectNumber", this.fetchUrl[index]);
 
-      this.bl();
+      this.$nextTick(() => {
+        this.listIsActive = false;
+      });
     }
   }
 };
 </script>
 
 <style lang="css" scoped>
+li > span {
+  display: block;
+  width: 50%;
+}
+li {
+  display: flex;
+}
 .input__holder {
   position: relative;
-}
-.input__holder > img {
-  cursor: pointer;
-  height: 30px;
-  padding: 7px;
-  position: absolute;
-  right: 0px;
 }
 p {
   margin: 0;
@@ -159,9 +142,23 @@ p {
 ul {
   margin: 0;
 }
+span {
+  padding-left: 5px;
+  padding-right: 5px;
+  line-height: 30px;
+  /* display: inline-block; */
+  /* width: 50%; */
+}
+.input__holder > img {
+  cursor: pointer;
+  height: 30px;
+  padding: 7px;
+  position: absolute;
+  right: 0px;
+}
 .border__project {
-  padding: 5px;
-  border: 1px solid orange;
+  padding: 10px;
+  border: 1px solid rgb(0, 0, 0);
   border-radius: 5px;
 }
 .choose__project__holder {
@@ -178,11 +175,7 @@ input {
   width: 100%;
 }
 span {
-  padding-left: 5px;
-  padding-right: 5px;
   line-height: 30px;
-  /* display: inline-block; */
-  /* width: 50%; */
 }
 .loading {
   background: url(/img/loading.gif) no-repeat right center;
@@ -197,7 +190,6 @@ span {
 }
 .project_list_holder {
   margin-top: 10px;
-  margin-bottom: 10px;
   /* cursor: pointer; */
   max-height: 35vh;
   overflow-y: scroll;
@@ -213,7 +205,6 @@ li {
 ul {
   border: 1px solid black;
   border-radius: 5px;
-  border-bottom: 0px;
 }
 .project_item {
   height: 30px;

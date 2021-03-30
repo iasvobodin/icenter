@@ -1,20 +1,20 @@
 <template>
   <div>
     <h2>
-      ADD PROJECT
+      Добавление нового проекта в базу данных
     </h2>
     <!-- <chooseProjectNumber
  @input-project-event="fetchProjectList" 
  @choose-project-number="choose"
  :fetchUrl="projectData"
  /> -->
-    <chooseProject  />
+    <add-project-db />
   </div>
 </template>
 
 <script>
 // import chooseCabinet from "../../components/chooseCabinet";
-import chooseProject from "@/components/chooseProject";
+import addProjectDb from "@/components/addProjectDb";
 import chooseProjectNumber from "@/components/chooseProjectNumber";
 export default {
   data() {
@@ -35,10 +35,10 @@ export default {
   },
   components: {
     // eslint-disable-next-line vue/no-unused-components
-    chooseProject,
+    addProjectDb,
     // eslint-disable-next-line vue/no-unused-components
     chooseProjectNumber
-  },
+  }
 };
 </script>
 

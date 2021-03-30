@@ -1,15 +1,19 @@
 <template>
   <div class="multiple" v-if="multiplePermission">
-    <input type="radio" id="one" :value="true" v-model="multipleCheck" />
-    <label for="one">Выбрать один WO</label>
-    <input type="radio" id="two" :value="false" v-model="multipleCheck" />
-    <label for="two">Выбрать несколько WO</label>
+    <fieldset>
+      <legend>Выбрать WO</legend>
+
+      <input type="radio" id="one" :value="true" v-model="multipleCheck" />
+      <label for="one">Один</label>
+      <input type="radio" id="two" :value="false" v-model="multipleCheck" />
+      <label for="two">Hесколько</label>
+    </fieldset>
   </div>
-     <input
+  <input
     class="wo__filter"
-      v-model="wo"
-      placeholder="Введите номер WO или название шкафа"
-    />
+    v-model="wo"
+    placeholder="Введите номер WO или название шкафа"
+  />
   <table style="width: 100%">
     <!-- <colgroup>
       <col style="width: 20%" />
@@ -50,6 +54,7 @@
 
 <script>
 export default {
+  emits: ["checkedWo"],
   data() {
     return {
       data: null,
@@ -72,17 +77,17 @@ export default {
     }
   },
   watch: {
+    checkedCabinetsNames() {
+      this.$emit("checkedWo", this.checkedCabinetsNames);
+    },
     multipleCheck() {
       this.checkedCabinetsNames = [];
       this.checkBoxAll = false;
-    //   this.wo = null
     }
   },
   computed: {
     filterWO() {
       if (this.wo) {
-        // eslint-disable-next-line vue/no-side-effects-in-computed-properties
-
         return Object.values(this.cabinetList).filter(
           el =>
             (el.wo && el.wo.includes(this.wo)) ||
@@ -92,11 +97,6 @@ export default {
       } else {
         return this.cabinetList;
       }
-      //     this.data = this.cabinetList
-      //   // eslint-disable-next-line vue/no-side-effects-in-computed-properties
-      //   return (this.data = this.cabinetList.filter(el =>
-      //     el.wo.includes(this.wo)
-      //   ));
     }
   },
   methods: {
@@ -123,15 +123,14 @@ export default {
 </script>
 
 <style lang="css" scoped>
-
 /* input {
   height: 30px;
   font-size: 16px;
   text-align: center;
   width: 100%;
 } */
-.multiple{
-    margin-top: 2vh;
+.multiple {
+  margin-top: 2vh;
 }
 button,
 input {
@@ -161,10 +160,11 @@ tbody tr:nth-child(odd) {
 tbody tr:hover {
   background: yellow;
 }
-.wo__filter{
-    width: 99%;
-    margin: auto;
-    margin-top: 2vh;
-    margin-bottom: 2vh;
+.wo__filter {
+  width: 99%;
+  height: 30px;
+  margin: auto;
+  margin-top: 2vh;
+  margin-bottom: 2vh;
 }
 </style>

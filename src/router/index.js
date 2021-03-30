@@ -1,10 +1,10 @@
 import { createRouter, createWebHistory } from "vue-router";
-import Home from "../views/Home.vue";
-import cabtime from "../views/admin/addCabTime.vue";
-import UserHome from "../views/admin/UserHome.vue";
-import UserProfile from "../views/admin/UserProfile.vue";
-import addProject from "../views/admin/addProject.vue";
-import reports from "../views/admin/reports.vue";
+import Home from "@/views/Home.vue";
+import cabtime from "@/views/admin/addCabTime.vue";
+import UserHome from "@/views/admin/UserHome.vue";
+import UserProfile from "@/views/admin/UserProfile.vue";
+import addProject from "@/views/admin/addProject.vue";
+import reports from "@/views/admin/reports.vue";
 const routes = [
   {
     path: "/",
@@ -14,16 +14,12 @@ const routes = [
   {
     path: "/User",
     name: "User",
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
     component: function() {
-      return import(/* webpackChunkName: "about" */ "../views/User.vue");
+      return import(/* webpackChunkName: "about" */ "@/views/User.vue");
     }
   },
   {
     path: "/admin/:id",
-    // name: "admin",
     children: [
       { path: "", component: UserHome },
       { path: "profile", component: UserProfile },
@@ -31,21 +27,31 @@ const routes = [
       { path: "reports", component: reports },
       { path: "addcabtime", component: cabtime }
     ],
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
     component: function() {
-      return import(/* webpackChunkName: "about" */ "../views/admin/_id.vue");
+      return import(/* webpackChunkName: "about" */ "@/views/admin/_id.vue");
+    }
+  },
+  {
+    path: "/projects/:projectnumber",
+    component: function() {
+      return import(
+        /* webpackChunkName: "about" */ "@/views/projects/_projectnumber/index.vue"
+      );
+    }
+  },
+  {
+    path: "/projects/:projectnumber/:wonumber",
+    component: function() {
+      return import(
+        /* webpackChunkName: "about" */ "@/views/projects/_projectnumber/_wonumber/index.vue"
+      );
     }
   },
   {
     path: "/admin",
     name: "admin",
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
     component: function() {
-      return import(/* webpackChunkName: "about" */ "../views/admin/index.vue");
+      return import(/* webpackChunkName: "about" */ "@/views/admin/index.vue");
     }
   },
   {
@@ -54,11 +60,8 @@ const routes = [
     beforeEnter() {
       window.open("http://www.google.com", "_blank");
     },
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
     component: function() {
-      return import(/* webpackChunkName: "about" */ "../views/login.vue");
+      return import(/* webpackChunkName: "about" */ "@/views/login.vue");
     }
   }
 ];
