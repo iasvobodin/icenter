@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 import Home from "@/views/Home.vue";
 import cabtime from "@/views/admin/addCabTime.vue";
-import UserHome from "@/views/admin/UserHome.vue";
+// import UserHome from "@/views/admin/UserHome.vue";
 import UserProfile from "@/views/admin/UserProfile.vue";
 import addProject from "@/views/admin/addProject.vue";
 import reports from "@/views/admin/reports.vue";
@@ -21,7 +21,7 @@ const routes = [
   {
     path: "/admin",
     children: [
-      { path: "", component: UserHome },
+      // { path: "", component: UserHome },
       { path: "profile", component: UserProfile },
       { path: "addproject", component: addProject },
       { path: "reports", component: reports },
