@@ -7,11 +7,12 @@
   >
     <div class="input__holder">
       <input
+        @blur="bl"
         @focus="getProjectList"
         :class="{ loading: spinnerClass }"
         class="project_input"
         v-model="selectedProject"
-        placeholder="Введите номер проекта"
+        placeholder="Введите номер WO"
       />
       <img
         v-if="selectedProject"
@@ -30,11 +31,11 @@
           class="project_item"
         >
           <p>
-            <span style="text-align: start;">
+            <span style="text-align: start">
               {{ project.wo }}
             </span>
             -
-            <span style="text-align: end;">
+            <span style="text-align: end">
               {{ project["cab name"] }}
             </span>
           </p>
@@ -49,12 +50,12 @@ export default {
   props: {
     zeroEnd: {
       type: Boolean,
-      default: () => false
+      default: () => false,
     },
     fetchUrl: {
       type: Object,
-      default: null
-    }
+      default: null,
+    },
   },
   emits: ["inputProjectEvent", "chooseProjectNumber"],
   data() {
@@ -63,14 +64,14 @@ export default {
       projectNumberQuery: null,
       filterProjectList: null,
       listIsActive: false,
-      spinnerClass: false
+      spinnerClass: false,
     };
   },
   computed: {
     filterProject() {
       if (this.selectedProject) {
         return Object.values(this.fetchUrl).filter(
-          el =>
+          (el) =>
             (el.wo && el.wo.includes(this.selectedProject)) ||
             (el["cab name"] &&
               el["cab name"]
@@ -80,7 +81,7 @@ export default {
       } else {
         return this.fetchUrl;
       }
-    }
+    },
   },
   watch: {
     // selectedProject() {
@@ -94,9 +95,12 @@ export default {
       this.listIsActive = true;
       this.spinnerClass = false;
       // console.log("watch");
-    }
+    },
   },
   methods: {
+    bl() {
+      setTimeout(() => (this.listIsActive = false), 200);
+    },
     clearState() {
       this.selectedProject = null;
       this.$emit("chooseProjectNumber", this.selectedProject);
@@ -118,8 +122,8 @@ export default {
       this.$nextTick(() => {
         this.listIsActive = false;
       });
-    }
-  }
+    },
+  },
 };
 </script>
 
@@ -151,10 +155,11 @@ span {
 }
 .input__holder > img {
   cursor: pointer;
-  height: 30px;
-  padding: 7px;
+  height: 20px;
+  /* padding: 7px; */
   position: absolute;
-  right: 0px;
+  right: 5px;
+  top: 5px;
 }
 .border__project {
   padding: 10px;
@@ -170,9 +175,11 @@ input {
   border: 1px solid orange;
   border-radius: 5px;
   line-height: 30px;
-  font-size: 16px;
+  font-size: 20px;
   text-align: center;
   width: 100%;
+  margin: auto;
+  padding: 0px;
 }
 span {
   line-height: 30px;
@@ -205,6 +212,7 @@ li {
 ul {
   border: 1px solid black;
   border-radius: 5px;
+  border-bottom: 0px;
 }
 .project_item {
   height: 30px;

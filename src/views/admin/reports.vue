@@ -1,7 +1,7 @@
 <template>
   <div>
     <h1>Отчёты</h1>
-    <fieldset>
+    <fieldset v-if="false">
       <legend>Выберете статус проекта</legend>
       <input
         checked
@@ -58,7 +58,7 @@ export default {
       woList: null,
       projectStatus: "open",
       woState: false,
-      cabinet: ""
+      cabinet: "",
     };
   },
   components: {
@@ -69,7 +69,7 @@ export default {
     chooseWo,
     chooseProjectNumber,
     // eslint-disable-next-line vue/no-unused-components
-    chooseWoNumber
+    chooseWoNumber,
   },
   watch: {
     projectStatus(oldv, newv) {
@@ -78,7 +78,7 @@ export default {
       }
       this.projectData = null;
       // this.choose();
-    }
+    },
   },
   methods: {
     chooseCabinet(e) {
@@ -92,7 +92,7 @@ export default {
         return;
       }
       this.woList = Object.values(this.fetchProject).filter(
-        e => e.id === $event
+        (e) => e.id === $event
       );
     },
     async fetchProjectList() {
@@ -100,14 +100,14 @@ export default {
         this.fetchProject = await (
           await fetch(`/api/project/${this.projectStatus}`)
         ).json();
-        this.projectData = this.fetchProject.map(el => el.id);
+        this.projectData = this.fetchProject.map((el) => el.id);
         // this.projectData = this.fetchProject.map(el => el.id);
       }
-    }
+    },
   },
   setup() {
     return {};
-  }
+  },
 };
 </script>
 

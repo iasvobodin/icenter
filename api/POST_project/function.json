@@ -20,7 +20,7 @@
       "direction": "out",
       "name": "projectOut",
       "ConnectionStringSetting": "legendstats_DOCUMENTDB",
-      "databaseName": "testdatabase",
+      "databaseName": "icenter",
       "collectionName": "projects"
     }
   ]

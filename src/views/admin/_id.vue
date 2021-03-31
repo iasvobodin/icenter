@@ -8,7 +8,7 @@
 
 <script>
 import { useRoute } from "vue-router";
-import Navigation from "@/components/admin_navigation";
+import Navigation from "@/components/adminNavigation";
 export default {
   components: {
     Navigation
@@ -36,8 +36,5 @@ export default {
   /* position: absolute; */
   top: 0;
   left: 0;
-  width: 10vw;
-  /* height: 100vh; */
-  display: grid;
 }
 </style>

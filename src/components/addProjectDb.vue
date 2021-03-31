@@ -28,9 +28,9 @@
           >
             <span>{{ key }}</span>
             <select required v-model="selected[key]">
-              <option v-for="(fitter, index) in value" :key="index">{{
-                fitter
-              }}</option>
+              <option v-for="(fitter, index) in value" :key="index">
+                {{ fitter }}
+              </option>
             </select>
           </div>
           <div v-if="!fetchTemplate" class="fetchHolder">Load</div>
@@ -44,9 +44,7 @@
             <textarea v-model="selected[key]" cols="30" rows="3"></textarea>
           </div>
           <div class="cabinet__info">
-            <h3>
-              Выберете шкафные линии
-            </h3>
+            <h3>Выберете шкафные линии</h3>
             <choose-wo-number
               :multiple-permission="true"
               :cabinetList="mappingWO"
@@ -162,7 +160,9 @@ export default {
     },
     async fetchProjectList() {
       if (!this.projectData) {
-        this.projectData = await (await fetch("/api/projectstatus/Open")).json();
+        this.projectData = await (
+          await fetch("/api/projectstatus/Open")
+        ).json();
         // // debugger
         // this.projectData = data//.filter(el => el.length > 6).sort();
         // console.log(this.projectData);
@@ -186,7 +186,7 @@ export default {
       if (this.selectedProject.endsWith(".0")) {
         modifyEl = this.selectedProject.slice(0, -2);
       } else {
-        modifyEl = this.selectedProject
+        modifyEl = this.selectedProject;
       }
       await fetch("/api/POST_project", {
         method: "POST", // или 'PUT'
@@ -195,7 +195,7 @@ export default {
           status: "open",
           // ttl: 1,
           info: {
-            base: this.woList[0]["project info"],
+            base: this.woList[0]["info"],
             extends: this.selected
           },
           cabinets: this.checkedCabinetsNames
@@ -288,9 +288,3 @@ tbody tr:hover {
   background-color: rgba(55, 158, 255, 0.658);
 }
 </style>
-
-
-
-
-
-
