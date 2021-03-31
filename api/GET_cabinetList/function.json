@@ -21,9 +21,9 @@
       "direction": "in",
       "name": "data",
       "ConnectionStringSetting": "legendstats_DOCUMENTDB",
-      "databaseName": "testdatabase",
+      "databaseName": "icenter",
       "collectionName": "legendStats",
-      "sqlQuery": "SELECT * from c where c.project = {projectNumber}"
+      "sqlQuery": "SELECT * from c where c.project = StringToNumber({projectNumber})"
     }
   ]
 }

@@ -23,7 +23,7 @@
       "ConnectionStringSetting": "legendstats_DOCUMENTDB",
       "databaseName": "testdatabase",
       "collectionName": "projects",
-      "sqlQuery": "SELECT * from c where c.status = {status}",
+      "sqlQuery": "SELECT * from c where c.status = {status}"
     }
   ]
 }

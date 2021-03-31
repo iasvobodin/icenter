@@ -10,7 +10,7 @@
       <div v-if="woList">
         <h3>Информация по проекту</h3>
         <div
-          v-for="(value, key, index) in woList[0]['project info']"
+          v-for="(value, key, index) in woList[0]['info']"
           :key="index"
           class="project__info__row"
         >
@@ -100,8 +100,8 @@ export default {
         this.woList &&
         this.woList.map(el => {
           return {
-            wo: el.wo,
-            ["cab name"]: el["cab name"]
+            wo: el.cabinet.wo,
+            ["cab name"]: el.cabinet["cabinet name"]
           };
         })
       );
@@ -128,7 +128,7 @@ export default {
     try {
       if (!this.fetchTemplate) {
         this.fetchTemplate = await (
-          await fetch("/api/templates/project/projectTemplate")
+          await fetch("/api/templates/templateProject/ver1")
         ).json();
         this.selected = {
           ...this.fetchTemplate.template.base,
@@ -162,8 +162,10 @@ export default {
     },
     async fetchProjectList() {
       if (!this.projectData) {
-        const data = await (await fetch("/api/projectstatus/Open")).json();
-        this.projectData = data.filter(el => el.length > 6).sort();
+        this.projectData = await (await fetch("/api/projectstatus/Open")).json();
+        // // debugger
+        // this.projectData = data//.filter(el => el.length > 6).sort();
+        // console.log(this.projectData);
       }
     },
     checkAll() {
@@ -183,6 +185,8 @@ export default {
       let modifyEl;
       if (this.selectedProject.endsWith(".0")) {
         modifyEl = this.selectedProject.slice(0, -2);
+      } else {
+        modifyEl = this.selectedProject
       }
       await fetch("/api/POST_project", {
         method: "POST", // или 'PUT'
@@ -284,3 +288,9 @@ tbody tr:hover {
   background-color: rgba(55, 158, 255, 0.658);
 }
 </style>
+
+
+
+
+
+

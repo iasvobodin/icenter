@@ -1,14 +1,7 @@
 module.exports = async function(context, req, data) {
-  const project = [];
-  data.forEach(el => {
-    if (el.id.endsWith(".0")) {
-      let modifyEl = el.id.slice(0, -2);
-      project.push(modifyEl);
-    } else {
-      project.push(el.id);
-    }
-  });
+  // const project = [];
+  // data.map(el => el.project);
   context.res = {
-    body: project.sort()
+    body:  data.map(el => el.project.toString()).filter(el => el.length > 6).sort()
   };
 };

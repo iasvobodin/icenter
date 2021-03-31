@@ -21,8 +21,8 @@
       "direction": "in",
       "name": "data",
       "ConnectionStringSetting": "legendstats_DOCUMENTDB",
-      "databaseName": "testdatabase",
-      "collectionName": "templates",
+      "databaseName": "icenter",
+      "collectionName": "template",
       "Id": "{id}",
       "PartitionKey": "{partitionKeyValue}"
     }
