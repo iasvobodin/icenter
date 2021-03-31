@@ -3,7 +3,9 @@
     <router-link to="/">Home</router-link> |
     <router-link to="/User">User</router-link> |
     <router-link to="/admin">Admin</router-link>|
-    <a href="/.auth/login/aad">Login</a>
+    <a target="blank" href="/.auth/login/aad?post_login_redirect_uri=/user"
+      >Login</a
+    >
   </div>
 
   <!-- <router-link to="/.auth/login/aad">login</router-link>
