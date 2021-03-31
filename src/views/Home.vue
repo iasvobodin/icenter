@@ -1,7 +1,8 @@
 <template>
   <h1>Test iCenterApp</h1>
-  <chooseCabinet />
-  <setError />
+  <p>this application is in development mode</p>
+  <!-- <chooseCabinet />
+  <setError /> -->
 </template>
 
 <script>
@@ -9,9 +10,11 @@ import chooseCabinet from "../components/chooseCabinet";
 import setError from "../components/setError";
 export default {
   components: {
+    // eslint-disable-next-line vue/no-unused-components
     chooseCabinet,
-    setError
-  }
+    // eslint-disable-next-line vue/no-unused-components
+    setError,
+  },
   // setup(props) {
   //   // console.log(props); // { user: '' }
 

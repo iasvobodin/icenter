@@ -1,11 +1,10 @@
 <template>
   <div id="nav">
-    <router-link to="/">Home</router-link> |
+    <!-- <router-link to="/">Home</router-link> |
     <router-link to="/User">User</router-link> |
-    <router-link to="/admin">Admin</router-link>|
-    <a target="blank" href="/.auth/login/aad?post_login_redirect_uri=/user"
-      >Login</a
-    >
+    <router-link to="/admin">Admin</router-link> | -->
+    <a href="/.auth/login/aad?post_login_redirect_uri=/user">Login</a> |
+    <a href="/.auth/logout?post_logout_redirect_uri=/">Log out</a>
   </div>
 
   <!-- <router-link to="/.auth/login/aad">login</router-link>
