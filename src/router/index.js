@@ -19,7 +19,7 @@ const routes = [
     }
   },
   {
-    path: "/admin/:id",
+    path: "/admin",
     children: [
       { path: "", component: UserHome },
       { path: "profile", component: UserProfile },
@@ -28,7 +28,7 @@ const routes = [
       { path: "addcabtime", component: cabtime }
     ],
     component: function() {
-      return import(/* webpackChunkName: "about" */ "@/views/admin/_id.vue");
+      return import(/* webpackChunkName: "about" */ "@/views/admin/index.vue");
     }
   },
   {
