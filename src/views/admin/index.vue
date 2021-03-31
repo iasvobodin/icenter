@@ -7,7 +7,7 @@
 </template>
 
 <script>
-import { useRoute } from "vue-router";
+// import { useRoute } from "vue-router";
 import Navigation from "@/components/adminNavigation";
 export default {
   components: {
