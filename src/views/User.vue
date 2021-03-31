@@ -13,13 +13,14 @@ export default {
     };
   },
   mounted() {
-    async function getUserInfo() {
+    const getUserInfo = async () => {
       const response = await fetch("/.auth/me");
       const payload = await response.json();
       const { clientPrincipal } = payload;
       this.user = clientPrincipal.userDetails;
       return clientPrincipal;
-    }
+    };
+    getUserInfo();
 
     console.log(getUserInfo());
   },
