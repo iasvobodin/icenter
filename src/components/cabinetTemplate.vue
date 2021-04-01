@@ -10,13 +10,23 @@
     <p>Данный блок в разработке</p>
   </div>
   <div>
-    <button>Добавить ошибку</button>
-    <button>Запустить задачу</button>
+    <button @click="error = !error">Добавить ошибку</button>
+    <set-error v-if="error" />
+    <!-- <button>Запустить задачу</button> -->
   </div>
 </template>
 
 <script>
+import setError from "@/components/setError";
 export default {
+  data() {
+    return {
+      error: false
+    };
+  },
+  components: {
+    setError
+  },
   props: {
     projectNumber: {
       type: String,

@@ -2,23 +2,27 @@ import { createStore } from "vuex";
 
 export default createStore({
   state: {
-    projects: {},
-    testState: "testState"
+    projectList: null,
+    testState: "testState",
+    selectedProjectNumber: "",
+    projectInfo:{}
   },
   mutations: {
+    SETprojectNumber(state, payload) {
+      state.selectedProjectNumber = payload
+      console.log(state.selectedProjectNumber,"this.$store.state.selectedProjectNumber");
+
+    },
     SET_projectList(state, payload) {
-      state.projects.List = payload.filter(el => el.length > 6).sort();
-      // payload.filter(el => el.length > 6).sort().forEach(el => {
-      //   state.projectList.push(el)
-      // });
-      // console.log(Object.values(state.projects.List));
+      state.projectList = payload;
     }
   },
   actions: {
-    async GET_projectList({ commit, state }) {
+    async GET_projectList({ commit, state }, payload) {
       let data;
       !state.projects.List &&
-        (data = await (await fetch(`/api/projectstatus/Open`)).json());
+        (data = await (await fetch(`${payload}${state.selectedProjectNumber}`)).json());
+        // console.log(data, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
       commit("SET_projectList", data);
     }
   },

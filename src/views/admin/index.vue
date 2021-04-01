@@ -11,8 +11,8 @@
 import Navigation from "@/components/adminNavigation";
 export default {
   components: {
-    Navigation,
-  },
+    Navigation
+  }
 };
 </script>
 

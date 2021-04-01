@@ -55,12 +55,12 @@ export default {
   props: {
     zeroEnd: {
       type: Boolean,
-      default: () => false,
+      default: () => false
     },
     fetchUrl: {
       type: Object,
-      default: null,
-    },
+      default: null
+    }
   },
   emits: ["inputProjectEvent", "chooseProjectNumber"],
   data() {
@@ -69,7 +69,7 @@ export default {
       projectNumberQuery: null,
       filterProjectList: null,
       listIsActive: false,
-      spinnerClass: false,
+      spinnerClass: false
     };
   },
   computed: {
@@ -77,7 +77,7 @@ export default {
       if (this.selectedProject) {
         if (typeof Object.values(this.fetchUrl)[0] === "object") {
           return Object.values(this.fetchUrl).filter(
-            (el) =>
+            el =>
               (el.wo && el.wo.includes(this.selectedProject)) ||
               (el["cab name"] &&
                 el["cab name"]
@@ -85,14 +85,14 @@ export default {
                   .includes(this.selectedProject.toLowerCase()))
           );
         } else {
-          return Object.values(this.fetchUrl).filter((el) =>
+          return Object.values(this.fetchUrl).filter(el =>
             el.includes(this.selectedProject)
           );
         }
       } else {
         return this.fetchUrl;
       }
-    },
+    }
   },
   watch: {
     // selectedProject() {
@@ -105,8 +105,7 @@ export default {
     fetchUrl() {
       this.listIsActive = true;
       this.spinnerClass = false;
-      // console.log("watch");
-    },
+    }
   },
   methods: {
     bl() {
@@ -115,6 +114,7 @@ export default {
     clearState() {
       this.selectedProject = null;
       this.$emit("chooseProjectNumber", this.selectedProject);
+      this.$store.commit('SETprojectNumber', null)
     },
     getProjectList() {
       this.$emit("inputProjectEvent");
@@ -125,18 +125,15 @@ export default {
         this.filterProjectList = this.fetchUrl;
       }
     },
-    async chooseProject(index) {
+    chooseProject(index) {
+      this.$store.commit('SETprojectNumber', this.filterProject[index])
       this.selectedProject = this.filterProject[index];
-
       this.projectNumberQuery = this.selectedProject;
-      if (!this.projectNumberQuery.includes(".") && this.zeroEnd) {
-        this.projectNumberQuery = this.projectNumberQuery + ".0";
-      }
       this.$emit("chooseProjectNumber", this.projectNumberQuery);
 
       this.bl();
-    },
-  },
+    }
+  }
 };
 </script>
 

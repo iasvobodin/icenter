@@ -13,8 +13,8 @@ export default {
     // eslint-disable-next-line vue/no-unused-components
     chooseCabinet,
     // eslint-disable-next-line vue/no-unused-components
-    setError,
-  },
+    setError
+  }
   // setup(props) {
   //   // console.log(props); // { user: '' }
 

@@ -5,11 +5,11 @@
   </div>
 </template>
 
- <script>
+<script>
 export default {
   data() {
     return {
-      user: null,
+      user: null
     };
   },
   async mounted() {
@@ -20,9 +20,8 @@ export default {
     this.user.userRoles.includes("admin") && this.$router.push(`/admin/`);
     this.user.userRoles.includes("fitter") && this.$router.push(`/fitter/`);
     this.user.userRoles.includes("engineer") && this.$router.push(`/engineer/`);
-  },
+  }
 };
 </script>
- 
- <style lang="scss" scoped>
-</style>
+
+<style lang="scss" scoped></style>

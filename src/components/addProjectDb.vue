@@ -151,10 +151,11 @@ export default {
     },
     async choose($event) {
       if (!$event) {
-        this.woList = false;
+        this.woList = null;
         return;
       }
       this.woList = await (await fetch(`/api/cabinetList/${$event}`)).json();
+      this.$store.dispatch("GET_projectList", "/api/cabinetList/")
       this.checkedCabinetsNames = [];
       this.selectedProject = $event;
     },
