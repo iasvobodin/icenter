@@ -114,7 +114,7 @@ export default {
     clearState() {
       this.selectedProject = null;
       this.$emit("chooseProjectNumber", this.selectedProject);
-      this.$store.commit('SETprojectNumber', null)
+      this.$store.commit("SETprojectNumber", null);
     },
     getProjectList() {
       this.$emit("inputProjectEvent");
@@ -126,7 +126,7 @@ export default {
       }
     },
     chooseProject(index) {
-      this.$store.commit('SETprojectNumber', this.filterProject[index])
+      this.$store.commit("SETprojectNumber", this.filterProject[index]);
       this.selectedProject = this.filterProject[index];
       this.projectNumberQuery = this.selectedProject;
       this.$emit("chooseProjectNumber", this.projectNumberQuery);

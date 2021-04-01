@@ -155,7 +155,7 @@ export default {
         return;
       }
       this.woList = await (await fetch(`/api/cabinetList/${$event}`)).json();
-      this.$store.dispatch("GET_projectList", "/api/cabinetList/")
+
       this.checkedCabinetsNames = [];
       this.selectedProject = $event;
     },

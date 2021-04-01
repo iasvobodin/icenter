@@ -9,9 +9,7 @@
       >
         {{ key }}
         <select v-if="typeof value === 'object'" v-model="errorBody[key]">
-          <option v-for="(opt, index) in value" :key="index">{{
-            opt
-          }}</option>
+          <option v-for="(opt, index) in value" :key="index">{{ opt }}</option>
         </select>
         <textarea
           v-else
@@ -34,19 +32,19 @@ export default {
       await fetch("/api/POST_error", {
         method: "POST", // или 'PUT'
         body: JSON.stringify({
-          id: `error_${Date.now()}`,
-          wo: "1234567",
+          id: `error_userid_${Date.now()}`,
+          wo: this.$store.state.projectInfo.wo,
           status: "open",
-          // ttl: 1,
-          body: this.errorBody
-        })
+          "senior fitter": this.$store.state.projectInfo["senior fitter"],
+          body: this.errorBody,
+        }),
       });
-    }
+    },
   },
   data() {
     return {
       errorTemplate: null,
-      errorBody: {}
+      errorBody: {},
     };
   },
   async mounted() {
@@ -59,7 +57,7 @@ export default {
     } catch (error) {
       console.log(error);
     }
-  }
+  },
 };
 </script>
 
