@@ -8,6 +8,7 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "@azure/cosmos": "^3.10.5",
     "element-plus": "^1.0.2-beta.32",
     "primeicons": "^4.1.0",
     "primevue": "^3.2.1",

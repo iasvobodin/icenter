@@ -1,0 +1,22 @@
+{
+  "bindings": [{
+      "type": "cosmosDBTrigger",
+      "name": "documents",
+      "direction": "in",
+      "leaseCollectionName": "testOut",
+      "ConnectionStringSetting": "legendstats_DOCUMENTDB",
+      "databaseName": "icenter",
+      "collectionName": "global",
+      "createLeaseCollectionIfNotExists": true
+    },
+    {
+      "type": "cosmosDB",
+      "direction": "out",
+      "name": "testOut",
+      "ConnectionStringSetting": "legendstats_DOCUMENTDB",
+      "databaseName": "icenter",
+      "collectionName": "test",
+      "createIfNotExists": true
+    }
+  ]
+}
