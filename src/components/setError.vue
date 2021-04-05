@@ -32,8 +32,10 @@ export default {
       await fetch("/api/POST_error", {
         method: "POST", // или 'PUT'
         body: JSON.stringify({
-          id: `error_userid_${Date.now()}`,
+          id: `error_${Date.now()}`,
           wo: this.$store.state.projectInfo.wo,
+          user: sessionStorage.getItem('mail'),
+          type: "error",
           status: "open",
           "senior fitter": this.$store.state.projectInfo["senior fitter"],
           body: this.errorBody

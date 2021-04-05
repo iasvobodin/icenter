@@ -5,9 +5,17 @@ export default createStore({
     projectList: null,
     testState: "testState",
     selectedProjectNumber: "",
-    projectInfo: {}
+    projectInfo: {},
+    user:{}
   },
   mutations: {
+    SETuser(state, payload){
+      // let data = sessionStorage.getItem('mail');
+      // !data&&
+      window.sessionStorage.setItem('mail', payload.userDetails);
+      state.user.mail = sessionStorage.getItem('mail');
+      console.log(sessionStorage.getItem('mail'));
+    },
     SETprojectNumber(state, payload) {
       state.selectedProjectNumber = payload;
       console.log(

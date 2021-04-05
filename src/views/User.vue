@@ -31,32 +31,34 @@ export default {
     };
   },
   async mounted() {
-    // const response = await fetch("/.auth/me");
-    // const payload = await response.json();
-    // const { clientPrincipal } = payload;
 
-    let clientPrincipal = {
-      userId: "1298",
-      mail: "test@mail.ru"
-    };
+    const response = await fetch("/.auth/me");
+    const payload = await response.json();
+    const { clientPrincipal } = payload;
+
+// clientPrincipal = {
+//       userId: "1298",
+//       mail: "test@mail.ru",
+//       userDetails:"super@mail.com"
+//     };
 
     const user = await fetch(`/api/user/${clientPrincipal.userId}`, {
       method: "POST", // или 'PUT'
       body: JSON.stringify({
         id: clientPrincipal.userId,
+        type: "info",
         authInfo: clientPrincipal,
-        userInfo: {},
-        tasks: {},
-        erors: {}
+        userInfo: {}
       })
     });
     const userData = await user.json();
     console.log(userData[0], "userData");
-
+    this.$store.commit("SETuser", clientPrincipal )
     this.user = userData[0];
     // this.user.userRoles.includes("admin") && this.$router.push(`/admin/`);
     // this.user.userRoles.includes("fitter") && this.$router.push(`/fitter/`);
     // this.user.userRoles.includes("engineer") && this.$router.push(`/engineer/`);
+    console.log(this.$store.state.user);
   }
 };
 </script>
