@@ -1,7 +1,7 @@
 <template>
   <div class="about">
     <h1>User page</h1>
-    <h2 v-if="user">{{ user.authInfo.mail }}</h2>
+    <h2 v-if="user">{{ user.authInfo.userDetails }}</h2>
     <!-- <div v-if="user && !user.userInfo.name">
       <h2>
         Укажите ваше имя <input type="text" v-model="userName" /> {{ userName }}
