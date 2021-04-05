@@ -57,7 +57,7 @@ export default {
       projectInformation: null,
       projectStatus: "open",
       woState: false,
-      cabinet: "",
+      cabinet: ""
     };
   },
   components: {
@@ -68,7 +68,7 @@ export default {
     chooseWo,
     chooseProjectNumber,
     // eslint-disable-next-line vue/no-unused-components
-    chooseWoNumber,
+    chooseWoNumber
   },
   watch: {
     projectStatus(oldv, newv) {
@@ -77,7 +77,7 @@ export default {
       }
       this.projectData = null;
       // this.choose();
-    },
+    }
   },
   methods: {
     chooseCabinet(e) {
@@ -91,7 +91,7 @@ export default {
         return;
       }
       this.projectInformation = Object.values(this.fetchProject).filter(
-        (e) => e.id === $event
+        e => e.id === $event
       )[0];
       this.$store.commit("SETprojectInfo", this.projectInformation);
     },
@@ -100,14 +100,14 @@ export default {
         this.fetchProject = await (
           await fetch(`/api/project/${this.projectStatus}`)
         ).json();
-        this.projectData = this.fetchProject.map((el) => el.id);
+        this.projectData = this.fetchProject.map(el => el.id);
         // this.projectData = this.fetchProject.map(el => el.id);
       }
-    },
+    }
   },
   setup() {
     return {};
-  },
+  }
 };
 </script>
 

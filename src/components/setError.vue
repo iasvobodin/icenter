@@ -36,15 +36,15 @@ export default {
           wo: this.$store.state.projectInfo.wo,
           status: "open",
           "senior fitter": this.$store.state.projectInfo["senior fitter"],
-          body: this.errorBody,
-        }),
+          body: this.errorBody
+        })
       });
-    },
+    }
   },
   data() {
     return {
       errorTemplate: null,
-      errorBody: {},
+      errorBody: {}
     };
   },
   async mounted() {
@@ -57,7 +57,7 @@ export default {
     } catch (error) {
       console.log(error);
     }
-  },
+  }
 };
 </script>
 

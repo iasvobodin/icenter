@@ -17,18 +17,17 @@ export default createStore({
     },
     SETprojectInfo(state, payload) {
       state.projectInfo = {
-        "project number" : payload.id,
+        "project number": payload.id,
         ...payload.info.base,
         ...payload.info.extends
-    };
-      
+      };
     },
     SETcabinetInfo(state, payload) {
       state.projectInfo = {
         ...state.projectInfo,
         ...payload
-    };
-    console.log(state.projectInfo, "state.projectInfo");
+      };
+      console.log(state.projectInfo, "state.projectInfo");
     },
     SET_projectList(state, payload) {
       state.projectList = payload;

@@ -1,0 +1,38 @@
+{
+  "bindings": [
+    {
+      "type": "httpTrigger",
+      "authLevel": "anonymous",
+      "direction": "in",
+      "name": "req",
+      "route": "user/{id}",
+      "methods": [
+        "get",
+        "post"
+      ]
+    },
+    {
+      "type": "http",
+      "direction": "out",
+      "name": "res"
+    },
+    {
+      "type": "cosmosDB",
+      "direction": "in",
+      "name": "user",
+      "ConnectionStringSetting": "legendstats_DOCUMENTDB",
+      "databaseName": "icenter",
+      "collectionName": "users",
+      "sqlQuery": "SELECT * from c where c.id = {id}"
+    },
+    {
+      "type": "cosmosDB",
+      "direction": "out",
+      "name": "userPost",
+      "ConnectionStringSetting": "legendstats_DOCUMENTDB",
+      "databaseName": "icenter",
+      "collectionName": "users"
+    }
+  ]
+}
+

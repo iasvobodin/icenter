@@ -1,6 +1,9 @@
-module.exports = function(context//, documents, testOut
+module.exports = async function(context//, documents, testOut
     ) {
-  context.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!",context.bindings);
-  // testOut = documents[0].id
-  context.done();
+  context.log("!!!!!!!!!!!!!!rr555555555555r!!!!!!!!!!!!!!!!",context.bindings);
+
+  return context.bindings.documents[0]
+  
+  //testOut = documents[0].id
+//   context.done();
 };
