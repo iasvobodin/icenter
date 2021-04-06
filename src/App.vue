@@ -35,3 +35,22 @@
   color: #42b983;
 }
 </style>
+<script>
+export default {
+
+  async mounted() {
+
+
+let clientPrincipal = {
+      userId: "1298",
+      mail: "test@mail.ru",
+      userDetails:"super@mail.com"
+    };
+
+    // const response = await fetch("/.auth/me");
+    // const payload = await response.json();
+    // const { clientPrincipal } = payload;
+    this.$store.commit("SETuser", clientPrincipal)
+  }
+  };
+</script>
