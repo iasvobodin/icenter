@@ -2,6 +2,12 @@
   <div class="about">
     <h1>User page</h1>
     <h2 v-if="user">{{ user.authInfo.userDetails }}</h2>
+    <div v-if="errors" >
+    <div v-for="(error, index) in errors" :key="index">
+      <p>error</p>
+    </div>
+
+    </div>
     <!-- <div v-if="user && !user.userInfo.name">
       <h2>
         Укажите ваше имя <input type="text" v-model="userName" /> {{ userName }}
@@ -15,6 +21,9 @@
 <script>
 export default {
   methods: {
+    async getUserErrors() {
+      this.errors = await (await fetch(`/api/user/${this.$store.state.user.mail}`)).json();
+    },
     async updateProfileInfo() {
       // eslint-disable-next-line no-unused-vars
       let clientPrincipal = {
@@ -27,10 +36,12 @@ export default {
   data() {
     return {
       user: null,
-      userName: ""
+      userName: "",
+      errors: null,
     };
   },
   async mounted() {
+    this.getUserErrors()
     // const response = await fetch("/.auth/me");
     // const payload = await response.json();
     // const { clientPrincipal } = payload;

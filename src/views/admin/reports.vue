@@ -93,7 +93,7 @@ export default {
       this.projectInformation = Object.values(this.fetchProject).filter(
         e => e.id === $event
       )[0];
-      console.log(this.projectInformation, 'this.projectInformation' );
+      console.log(this.projectInformation, "this.projectInformation");
       this.$store.commit("SETprojectInfo", this.projectInformation);
     },
     async fetchProjectList() {

@@ -30,11 +30,11 @@ export default {
   methods: {
     async postError() {
       this.error = {
-        id:"error__" + Date.now(),
+        id: "error__" + Date.now(),
         wo: this.$store.state.projectInfo.wo.toString(),
         user: sessionStorage.getItem("mail"),
-        'project number': this.$store.state.projectInfo['project number'],
-        "cab name": this.$store.state.projectInfo['cab name'],
+        "project number": this.$store.state.projectInfo["project number"],
+        "cab name": this.$store.state.projectInfo["cab name"],
         type: "error",
         status: "open",
         stage: 1,
@@ -45,9 +45,9 @@ export default {
       await fetch("/api/POST_error", {
         method: "POST", // или 'PUT'
         body: JSON.stringify({ ...this.error })
-        //         
-        // 
-        //        
+        //
+        //
+        //
       });
     }
   },

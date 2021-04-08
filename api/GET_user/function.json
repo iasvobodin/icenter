@@ -27,6 +27,15 @@
     },
     {
       "type": "cosmosDB",
+      "direction": "in",
+      "name": "userOut",
+      "ConnectionStringSetting": "legendstats_DOCUMENTDB",
+      "databaseName": "icenter",
+      "collectionName": "users",
+      "sqlQuery": "SELECT * from c where c.authInfo.userDetails = {id}"
+    },
+    {
+      "type": "cosmosDB",
       "direction": "out",
       "name": "userPost",
       "ConnectionStringSetting": "legendstats_DOCUMENTDB",

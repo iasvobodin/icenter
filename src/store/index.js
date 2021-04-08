@@ -29,10 +29,7 @@ export default createStore({
         ...payload.info.base,
         ...payload.info.extends
       };
-      console.log(
-        state.projectInfo,
-        "state.projectInfo"
-      );
+      console.log(state.projectInfo, "state.projectInfo");
     },
     SETcabinetInfo(state, payload) {
       state.projectInfo = {
