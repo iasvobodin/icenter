@@ -42,15 +42,15 @@ export default {
   },
   async mounted() {
     this.getUserErrors()
-    // const response = await fetch("/.auth/me");
-    // const payload = await response.json();
-    // const { clientPrincipal } = payload;
+    const response = await fetch("/.auth/me");
+    const payload = await response.json();
+    const { clientPrincipal } = payload;
 
-    let clientPrincipal = {
-      userId: "1298",
-      mail: "test@mail.ru",
-      userDetails: "super@mail.com"
-    };
+    // let clientPrincipal = {
+    //   userId: "1298",
+    //   mail: "test@mail.ru",
+    //   userDetails: "super@mail.com"
+    // };
 
     const user = await fetch(`/api/user/${clientPrincipal.userId}`, {
       method: "POST", // или 'PUT'
