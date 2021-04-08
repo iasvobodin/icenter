@@ -32,7 +32,7 @@
       "ConnectionStringSetting": "legendstats_DOCUMENTDB",
       "databaseName": "icenter",
       "collectionName": "users",
-      "sqlQuery": "SELECT * from c where c.authInfo.userDetails = {id}"
+      "sqlQuery": "SELECT * from c where c.authInfo.userDetails = {id} and  c.type = 'error'"
     },
     {
       "type": "cosmosDB",

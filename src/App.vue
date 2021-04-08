@@ -43,11 +43,44 @@ export default {
     //   mail: "test@mail.ru",
     //   userDetails: "super@mail.com"
     // };
+    let clientPrincipal;
 
-    const response = await fetch("/.auth/me");
-    const payload = await response.json();
-    const { clientPrincipal } = payload;
+    try {
+      const response = await fetch("/.auth/me");
+      try {
+        const payload = await response.json();
+        clientPrincipal = payload.clientPrincipal;
+      } catch (error) {
+        console.log("json error", error);
+        clientPrincipal = {
+          userId: "zzaaqq",
+          mail: "local@mail.com",
+          userDetails: "local@mail.com"
+        };
+      }
+    } catch (error) {
+      console.log("fetch error", error);
+    }
+
+    await fetch(`/api/user/${clientPrincipal.userId}`, {
+      method: "POST", // или 'PUT'
+      body: JSON.stringify({
+        id: clientPrincipal.userId,
+        type: "info",
+        authInfo: clientPrincipal,
+        userInfo: {}
+      })
+    });
+    // const userData = await user.json();
+    // console.log(userData[0], "userData");
+    // this.$store.commit("SETuser", clientPrincipal);
+    // this.user = userData[0];
+    // this.user.userRoles.includes("admin") && this.$router.push(`/admin/`);
+    // this.user.userRoles.includes("fitter") && this.$router.push(`/fitter/`);
+    // this.user.userRoles.includes("engineer") && this.$router.push(`/engineer/`);
+
     this.$store.commit("SETuser", clientPrincipal);
+    console.log(this.$store.state.user);
   }
 };
 </script>
