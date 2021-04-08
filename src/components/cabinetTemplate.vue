@@ -1,9 +1,9 @@
 <template>
   <div>
-    <h4>Номер проекта : {{ projectNumber }}</h4>
-    <h4>Название проекта : {{ projectName }}</h4>
-    <h4>Номер WO : {{ cabinetWo }}</h4>
-    <h4>Название шкафа : {{ cabinetName }}</h4>
+    <h4>Номер проекта : {{ $store.state.projectInfo['project number'] }}</h4>
+    <h4>Название проекта : {{ $store.state.projectInfo['project name'] }}</h4>
+    <h4>Номер WO : {{ $store.state.projectInfo.wo }}</h4>
+    <h4>Название шкафа : {{ $store.state.projectInfo['cab name'] }}</h4>
   </div>
   <div>
     <h2>Статус шкафа</h2>

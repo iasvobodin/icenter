@@ -21,7 +21,7 @@
       "name": "projectOut",
       "ConnectionStringSetting": "legendstats_DOCUMENTDB",
       "databaseName": "icenter",
-      "collectionName": "global"
+      "collectionName": "icenterDB"
     }
   ]
 }

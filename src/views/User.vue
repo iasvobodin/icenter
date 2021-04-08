@@ -31,15 +31,14 @@ export default {
     };
   },
   async mounted() {
-
     // const response = await fetch("/.auth/me");
     // const payload = await response.json();
     // const { clientPrincipal } = payload;
 
-let clientPrincipal = {
+    let clientPrincipal = {
       userId: "1298",
       mail: "test@mail.ru",
-      userDetails:"super@mail.com"
+      userDetails: "super@mail.com"
     };
 
     const user = await fetch(`/api/user/${clientPrincipal.userId}`, {
@@ -53,7 +52,7 @@ let clientPrincipal = {
     });
     const userData = await user.json();
     console.log(userData[0], "userData");
-    this.$store.commit("SETuser", clientPrincipal )
+    this.$store.commit("SETuser", clientPrincipal);
     this.user = userData[0];
     // this.user.userRoles.includes("admin") && this.$router.push(`/admin/`);
     // this.user.userRoles.includes("fitter") && this.$router.push(`/fitter/`);

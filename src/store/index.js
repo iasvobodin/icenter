@@ -6,15 +6,15 @@ export default createStore({
     testState: "testState",
     selectedProjectNumber: "",
     projectInfo: {},
-    user:{}
+    user: {}
   },
   mutations: {
-    SETuser(state, payload){
+    SETuser(state, payload) {
       // let data = sessionStorage.getItem('mail');
       // !data&&
-      window.sessionStorage.setItem('mail', payload.userDetails);
-      state.user.mail = sessionStorage.getItem('mail');
-      console.log(sessionStorage.getItem('mail'));
+      window.sessionStorage.setItem("mail", payload.userDetails);
+      state.user.mail = sessionStorage.getItem("mail");
+      console.log(sessionStorage.getItem("mail"));
     },
     SETprojectNumber(state, payload) {
       state.selectedProjectNumber = payload;
@@ -29,6 +29,10 @@ export default createStore({
         ...payload.info.base,
         ...payload.info.extends
       };
+      console.log(
+        state.projectInfo,
+        "state.projectInfo"
+      );
     },
     SETcabinetInfo(state, payload) {
       state.projectInfo = {

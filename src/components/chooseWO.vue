@@ -84,13 +84,6 @@ export default {
     }
   },
   watch: {
-    // selectedProject() {
-    //   if (this.fetchUrl) {
-    //     this.filterProjectList = Object.values(this.fetchUrl).filter(el =>
-    //       el.includes(this.selectedProject)
-    //     );
-    //   }
-    // },
     fetchUrl() {
       this.listIsActive = true;
       this.spinnerClass = false;
