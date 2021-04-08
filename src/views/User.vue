@@ -4,7 +4,7 @@
     <h2 v-if="user">{{ user.authInfo.userDetails }}</h2>
     <div v-if="errors" >
     <div v-for="(error, index) in errors" :key="index">
-      <p>error</p>
+      <p>{{error}}</p>
     </div>
 
     </div>
