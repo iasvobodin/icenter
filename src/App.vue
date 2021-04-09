@@ -43,34 +43,33 @@ export default {
     //   mail: "test@mail.ru",
     //   userDetails: "super@mail.com"
     // };
-    let clientPrincipal;
+    // let clientPrincipal;
 
-    try {
-      const response = await fetch("/.auth/me");
-      try {
-        const payload = await response.json();
-        clientPrincipal = payload.clientPrincipal;
-      } catch (error) {
-        console.log("json error", error);
-        clientPrincipal = {
-          userId: "zzaaqq",
-          mail: "local@mail.com",
-          userDetails: "local@mail.com"
-        };
-      }
-    } catch (error) {
-      console.log("fetch error", error);
-    }
+    // try {
+    //   const response = await fetch("/.auth/me");
+    //   try {
+    //     const payload = await response.json();
+    //     clientPrincipal = payload.clientPrincipal;
+    //   } catch (error) {
+    //     console.log("json error", error);
+    //     clientPrincipal = {
+    //       userId: "zzaaqq",
+    //       userDetails: "local@mail.com"
+    //     };
+    //   }
+    // } catch (error) {
+    //   console.log("fetch error", error);
+    // }
 
-    await fetch(`/api/user/${clientPrincipal.userId}`, {
-      method: "POST", // или 'PUT'
-      body: JSON.stringify({
-        id: clientPrincipal.userId,
-        type: "info",
-        authInfo: clientPrincipal,
-        userInfo: {}
-      })
-    });
+    // await fetch(`/api/user/${clientPrincipal.userId}`, {
+    //   method: "POST", // или 'PUT'
+    //   body: JSON.stringify({
+    //     id: clientPrincipal.userId,
+    //     type: "info",
+    //     authInfo: clientPrincipal,
+    //     userInfo: {}
+    //   })
+    // });
     // const userData = await user.json();
     // console.log(userData[0], "userData");
     // this.$store.commit("SETuser", clientPrincipal);
@@ -79,8 +78,10 @@ export default {
     // this.user.userRoles.includes("fitter") && this.$router.push(`/fitter/`);
     // this.user.userRoles.includes("engineer") && this.$router.push(`/engineer/`);
 
-    this.$store.commit("SETuser", clientPrincipal);
-    console.log(this.$store.state.user);
+    // this.$store.commit("SETuser", clientPrincipal);
+    this.$store.dispatch("GET_auth");
+
+    // console.log(this.$store.state.user);
   }
 };
 </script>

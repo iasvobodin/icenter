@@ -7,8 +7,8 @@
       <div v-for="(error, index) in errors" :key="index">
         <p>id {{ error.id }}</p>
         <p>статус {{ error.status }}</p>
-          <p>проект {{ error['project number'] }}</p>
-         <p>шкаф {{ error['cab name'] }}</p>
+        <p>проект {{ error["project number"] }}</p>
+        <p>шкаф {{ error["cab name"] }}</p>
       </div>
     </div>
     <!-- <div v-if="user && !user.userInfo.name">
@@ -25,9 +25,26 @@
 export default {
   methods: {
     async getUserErrors() {
-     sessionStorage.getItem("mail") && (this.errors = await (
-        await fetch(`/api/user/${sessionStorage.getItem("mail")}`)
-      ).json());
+      await this.$store.dispatch("GET_auth");
+      try {
+        const responsErrors = await fetch(
+          `/api/user/${window.sessionStorage.getItem("mail")}`
+        );
+
+        try {
+          this.errors = await responsErrors.json();
+        } catch (error) {
+          console.error("this.errors.json", error);
+        }
+      } catch (error) {
+        console.log("errors is not def", error);
+      }
+
+      
+      // sessionStorage.getItem("mail") &&
+      //   (this.errors = await (
+      //     await fetch(`/api/user/${window.sessionStorage.getItem("mail")}`)
+      //   ).json());
     }
   },
   data() {

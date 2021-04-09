@@ -43,6 +43,41 @@ export default createStore({
     }
   },
   actions: {
+    async GET_auth({ commit }) {
+      let clientPrincipal = null;
+
+      try {
+        const response = await fetch("/.auth/me");
+        try {
+          const payload = await response.json();
+          clientPrincipal = payload.clientPrincipal;
+          console.log(payload, "payload");
+        } catch (error) {
+          console.log("json error", error);
+          clientPrincipal = {
+            userId: "zzaaqq",
+            userDetails: "local@mail.com"
+          };
+        }
+      } catch (error) {
+        console.log("fetch error", error);
+      }
+      commit("SETuser", clientPrincipal);
+
+      try {
+        await fetch(`/api/user/${clientPrincipal.userId}`, {
+          method: "POST", // или 'PUT'
+          body: JSON.stringify({
+            id: clientPrincipal.userId,
+            type: "info",
+            authInfo: clientPrincipal,
+            userInfo: {}
+          })
+        });
+      } catch (error) {
+        console.log("user is not def", error);
+      }
+    },
     async GET_projectList({ commit, state }, payload) {
       let data;
       !state.projects.List &&
