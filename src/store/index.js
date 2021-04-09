@@ -6,7 +6,7 @@ export default createStore({
     testState: "testState",
     selectedProjectNumber: "",
     projectInfo: {},
-    user: {}
+    user: {},
   },
   mutations: {
     SETuser(state, payload) {
@@ -27,20 +27,20 @@ export default createStore({
       state.projectInfo = {
         "project number": payload.id,
         ...payload.info.base,
-        ...payload.info.extends
+        ...payload.info.extends,
       };
       console.log(state.projectInfo, "state.projectInfo");
     },
     SETcabinetInfo(state, payload) {
       state.projectInfo = {
         ...state.projectInfo,
-        ...payload
+        ...payload,
       };
       console.log(state.projectInfo, "state.projectInfo");
     },
     SET_projectList(state, payload) {
       state.projectList = payload;
-    }
+    },
   },
   actions: {
     async GET_auth({ commit }) {
@@ -56,7 +56,7 @@ export default createStore({
           console.log("json error", error);
           clientPrincipal = {
             userId: "zzaaqq",
-            userDetails: "local@mail.com"
+            userDetails: "local@mail.com",
           };
         }
       } catch (error) {
@@ -71,8 +71,8 @@ export default createStore({
             id: clientPrincipal.userId,
             type: "info",
             authInfo: clientPrincipal,
-            userInfo: {}
-          })
+            userInfo: {},
+          }),
         });
       } catch (error) {
         console.log("user is not def", error);
@@ -86,7 +86,7 @@ export default createStore({
         ).json());
       // console.log(data, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
       commit("SET_projectList", data);
-    }
+    },
   },
-  modules: {}
+  modules: {},
 });

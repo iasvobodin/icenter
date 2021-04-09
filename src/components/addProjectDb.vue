@@ -90,20 +90,20 @@ import chooseWoNumber from "@/components/chooseWoNumber";
 export default {
   components: {
     chooseProjectNumber,
-    chooseWoNumber
+    chooseWoNumber,
   },
   computed: {
     mappingWO() {
       return (
         this.woList &&
-        this.woList.map(el => {
+        this.woList.map((el) => {
           return {
             wo: el.cabinet.wo,
-            ["cab name"]: el.cabinet["cabinet name"]
+            ["cab name"]: el.cabinet["cabinet name"],
           };
         })
       );
-    }
+    },
   },
   data() {
     return {
@@ -119,7 +119,7 @@ export default {
       filterProjectList: null,
       woList: null,
       listIsActive: null,
-      checkBoxAll: false
+      checkBoxAll: false,
     };
   },
   async mounted() {
@@ -130,7 +130,7 @@ export default {
         ).json();
         this.selected = {
           ...this.fetchTemplate.template.base,
-          ...this.fetchTemplate.template.extend
+          ...this.fetchTemplate.template.extend,
         };
       }
     } catch (error) {
@@ -141,11 +141,11 @@ export default {
     mapWO(e) {
       console.log(e);
       this.checkedCabinetsNames = Object.values(e)
-        .filter(el => el.wo)
-        .map(el => {
+        .filter((el) => el.wo)
+        .map((el) => {
           return {
             wo: el.wo,
-            ["cab name"]: el["cab name"]
+            ["cab name"]: el["cab name"],
           };
         });
     },
@@ -172,10 +172,10 @@ export default {
     checkAll() {
       this.checkBoxAll = !this.checkBoxAll;
       if (this.checkBoxAll) {
-        this.checkbox.forEach(e => (e.checked = true));
+        this.checkbox.forEach((e) => (e.checked = true));
         this.checkedCabinetsNames = this.woList;
       } else {
-        this.checkbox.forEach(e => (e.checked = false));
+        this.checkbox.forEach((e) => (e.checked = false));
         this.checkedCabinetsNames = [];
       }
     },
@@ -197,14 +197,14 @@ export default {
           // ttl: 1,
           info: {
             base: this.woList[0]["info"],
-            extends: this.selected
+            extends: this.selected,
           },
-          cabinets: this.checkedCabinetsNames
-        })
+          cabinets: this.checkedCabinetsNames,
+        }),
       });
       this.fetchStatus = "Проект успешно добавлен";
-    }
-  }
+    },
+  },
 };
 </script>
 

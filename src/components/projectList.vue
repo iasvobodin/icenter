@@ -55,7 +55,7 @@ export default {
   data() {
     return {
       projectList: null,
-      status: "open"
+      status: "open",
     };
   },
   async mounted() {
@@ -66,7 +66,7 @@ export default {
     } catch (error) {
       console.log(error);
     }
-  }
+  },
 };
 </script>
 

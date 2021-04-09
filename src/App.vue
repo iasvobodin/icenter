@@ -82,6 +82,6 @@ export default {
     this.$store.dispatch("GET_auth");
 
     // console.log(this.$store.state.user);
-  }
+  },
 };
 </script>

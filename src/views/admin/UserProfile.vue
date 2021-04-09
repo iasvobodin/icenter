@@ -1,14 +1,12 @@
 <template>
-  <div>
-    PROFILE
-  </div>
+  <div>PROFILE</div>
 </template>
 
 <script>
 export default {
   setup() {
     return {};
-  }
+  },
 };
 </script>
 

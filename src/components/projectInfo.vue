@@ -24,7 +24,12 @@
         <span v-if="value.wo"> WO: {{ value.wo }}</span>
         <span
           v-else
-          style="padding: 5px; color: white; background-color: red; font-size:10px;"
+          style="
+            padding: 5px;
+            color: white;
+            background-color: red;
+            font-size: 10px;
+          "
         >
           Номер WO должен быть заполнен
         </span>
@@ -42,26 +47,26 @@ export default {
     return {
       message: {},
       changeInfo: false,
-      fetchTemplate: null
+      fetchTemplate: null,
     };
   },
   props: {
     projectNumber: {
       type: String,
-      default: () => ""
+      default: () => "",
     },
     project: {
       type: Object,
-      default: () => {}
+      default: () => {},
     },
     cabinets: {
       type: Array,
-      default: () => []
-    }
+      default: () => [],
+    },
   },
   methods: {
     async postProject() {
-      const cab = this.cabinets.map(el => {
+      const cab = this.cabinets.map((el) => {
         return {
           wo: el.wo,
           cabName: el["cab name"],
@@ -69,7 +74,7 @@ export default {
           dimensions: "",
           documentation: "",
           weight: "",
-          hardwareEngineer: ""
+          hardwareEngineer: "",
         };
       });
       await fetch("/api/POST_project", {
@@ -78,10 +83,10 @@ export default {
           id: this.projectNumber,
           status: "open",
           info: this.message,
-          cabinets: cab
-        })
+          cabinets: cab,
+        }),
       });
-    }
+    },
   },
   async mounted() {
     this.message = this.project;
@@ -92,7 +97,7 @@ export default {
     // } catch (error) {
     //   console.log(error);
     // }
-  }
+  },
 };
 </script>
 

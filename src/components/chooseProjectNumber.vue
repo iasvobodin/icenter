@@ -55,12 +55,12 @@ export default {
   props: {
     zeroEnd: {
       type: Boolean,
-      default: () => false
+      default: () => false,
     },
     fetchUrl: {
       type: Object,
-      default: null
-    }
+      default: null,
+    },
   },
   emits: ["inputProjectEvent", "chooseProjectNumber"],
   data() {
@@ -69,7 +69,7 @@ export default {
       projectNumberQuery: null,
       filterProjectList: null,
       listIsActive: false,
-      spinnerClass: false
+      spinnerClass: false,
     };
   },
   computed: {
@@ -77,7 +77,7 @@ export default {
       if (this.selectedProject) {
         if (typeof Object.values(this.fetchUrl)[0] === "object") {
           return Object.values(this.fetchUrl).filter(
-            el =>
+            (el) =>
               (el.wo && el.wo.includes(this.selectedProject)) ||
               (el["cab name"] &&
                 el["cab name"]
@@ -85,14 +85,14 @@ export default {
                   .includes(this.selectedProject.toLowerCase()))
           );
         } else {
-          return Object.values(this.fetchUrl).filter(el =>
+          return Object.values(this.fetchUrl).filter((el) =>
             el.includes(this.selectedProject)
           );
         }
       } else {
         return this.fetchUrl;
       }
-    }
+    },
   },
   watch: {
     // selectedProject() {
@@ -105,7 +105,7 @@ export default {
     fetchUrl() {
       this.listIsActive = true;
       this.spinnerClass = false;
-    }
+    },
   },
   methods: {
     bl() {
@@ -132,8 +132,8 @@ export default {
       this.$emit("chooseProjectNumber", this.projectNumberQuery);
 
       this.bl();
-    }
-  }
+    },
+  },
 };
 </script>
 

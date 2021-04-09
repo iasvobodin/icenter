@@ -21,30 +21,30 @@ import setError from "@/components/setError";
 export default {
   data() {
     return {
-      error: false
+      error: false,
     };
   },
   components: {
-    setError
+    setError,
   },
   props: {
     projectNumber: {
       type: String,
-      default: "t"
+      default: "t",
     },
     projectName: {
       type: String,
-      default: "t"
+      default: "t",
     },
     cabinetWo: {
       type: String,
-      default: "t"
+      default: "t",
     },
     cabinetName: {
       type: String,
-      default: "t"
-    }
-  }
+      default: "t",
+    },
+  },
 };
 </script>
 

@@ -1,8 +1,6 @@
 <template>
   <div>
-    <h2>
-      Добавление нового проекта в базу данных
-    </h2>
+    <h2>Добавление нового проекта в базу данных</h2>
     <!-- <chooseProjectNumber
  @input-project-event="fetchProjectList" 
  @choose-project-number="choose"
@@ -19,7 +17,7 @@ import chooseProjectNumber from "@/components/chooseProjectNumber";
 export default {
   data() {
     return {
-      projectData: null
+      projectData: null,
     };
   },
   methods: {
@@ -29,16 +27,16 @@ export default {
     async fetchProjectList() {
       if (!this.projectData) {
         let data = await (await fetch("/api/projectstatus/Open")).json();
-        this.projectData = data.filter(el => el.length > 6).sort();
+        this.projectData = data.filter((el) => el.length > 6).sort();
       }
-    }
+    },
   },
   components: {
     // eslint-disable-next-line vue/no-unused-components
     addProjectDb,
     // eslint-disable-next-line vue/no-unused-components
-    chooseProjectNumber
-  }
+    chooseProjectNumber,
+  },
 };
 </script>
 

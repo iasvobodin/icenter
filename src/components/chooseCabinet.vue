@@ -38,7 +38,7 @@
         <th>Шкаф</th>
         <th>Выбрать</th>
       </tr>
-      <tr style="cursor: pointer;" v-for="(wo, index) in woList" :key="index">
+      <tr style="cursor: pointer" v-for="(wo, index) in woList" :key="index">
         <td>{{ wo.id }}</td>
         <td class="tg-0lax">{{ wo.cabinetInfo.cabName }}</td>
         <td class="tg-0lax">
@@ -64,11 +64,6 @@
 </template>
 
 <script>
-import Button from "primevue/button";
-import Dropdown from "primevue/dropdown";
-import DataTable from "primevue/datatable";
-import Column from "primevue/column";
-import ProgressSpinner from "primevue/progressspinner";
 // import ColumnGroup from 'primevue/columngroup';
 // eslint-disable-next-line no-unused-vars
 import { computed, reactive, ref, watch } from "vue";
@@ -84,7 +79,7 @@ export default {
       woListTest: null,
       selectedProjectCorrection: null,
       selectedCabinet: null,
-      showPreloader: false
+      showPreloader: false,
     };
   },
   methods: {
@@ -104,7 +99,7 @@ export default {
       let list = await (
         await fetch(`/api/cabinetList/${this.selectedProject}`)
       ).json();
-      this.woListTest = list.map(el => {
+      this.woListTest = list.map((el) => {
         return {
           id: el.id,
           szNumber: el.cabinetInfo.szNumber,
@@ -117,11 +112,11 @@ export default {
           contractAdministrator: el.cabinetInfo.contractAdministrator,
           buyoutAdministrator: el.cabinetInfo.buyoutAdministrator,
           leadEngineer: el.cabinetInfo.leadEngineer,
-          hardwareEngineer: el.cabinetInfo.hardwareEngineer
+          hardwareEngineer: el.cabinetInfo.hardwareEngineer,
         };
       });
       this.showPreloader = false;
-    }
+    },
   },
   setup() {
     const selctedWO = reactive({ wo: null, cabName: null });
@@ -152,13 +147,13 @@ export default {
           newdata: {
             test: "testChange",
             test1111: "testChange1111",
-            error: { status: "closed", timestamp: Date.now() }
-          }
-        })
+            error: { status: "closed", timestamp: Date.now() },
+          },
+        }),
       });
     };
 
-    const chooseWO = index => {
+    const chooseWO = (index) => {
       console.log(
         woList.value[index].id,
         woList.value[index].cabinetInfo.cabName
@@ -167,7 +162,7 @@ export default {
     // (async function() {
     //   dataProject = await (await fetch(`/api/projectstatus/Open`)).json();
     // })();
-    const chooseProject = async index => {
+    const chooseProject = async (index) => {
       listIsActive.value = false;
       selectedProjectNumber.value = filterList.value[index];
       let projectNumberQuery = selectedProjectNumber.value;
@@ -180,7 +175,7 @@ export default {
     };
     watch(selectedProjectNumber, async () => {
       await getProject();
-      filterList.value = dataProject.filter(el =>
+      filterList.value = dataProject.filter((el) =>
         el.includes(selectedProjectNumber.value)
       );
     });
@@ -194,21 +189,10 @@ export default {
       getProjectVisible,
       testFetch,
       chooseWO,
-      selctedWO
+      selctedWO,
     };
   },
-  components: {
-    // eslint-disable-next-line vue/no-unused-components
-    Button: Button,
-    // eslint-disable-next-line vue/no-unused-components
-    Dropdown: Dropdown,
-    // eslint-disable-next-line vue/no-unused-components
-    DataTable: DataTable,
-    // eslint-disable-next-line vue/no-unused-components
-    Column: Column,
-    // eslint-disable-next-line vue/no-unused-components
-    ProgressSpinner: ProgressSpinner
-  }
+  components: {},
 };
 </script>
 

@@ -9,14 +9,14 @@ const routes = [
   {
     path: "/",
     name: "Home",
-    component: Home
+    component: Home,
   },
   {
     path: "/User",
     name: "User",
-    component: function() {
+    component: function () {
       return import(/* webpackChunkName: "about" */ "@/views/User.vue");
-    }
+    },
   },
   {
     path: "/admin",
@@ -25,34 +25,34 @@ const routes = [
       { path: "profile", component: UserProfile },
       { path: "addproject", component: addProject },
       { path: "reports", component: reports },
-      { path: "addcabtime", component: cabtime }
+      { path: "addcabtime", component: cabtime },
     ],
-    component: function() {
+    component: function () {
       return import(/* webpackChunkName: "about" */ "@/views/admin/index.vue");
-    }
+    },
   },
   {
     path: "/projects/:projectnumber",
-    component: function() {
+    component: function () {
       return import(
         /* webpackChunkName: "about" */ "@/views/projects/_projectnumber/index.vue"
       );
-    }
+    },
   },
   {
     path: "/projects/:projectnumber/:wonumber",
-    component: function() {
+    component: function () {
       return import(
         /* webpackChunkName: "about" */ "@/views/projects/_projectnumber/_wonumber/index.vue"
       );
-    }
+    },
   },
   {
     path: "/admin",
     name: "admin",
-    component: function() {
+    component: function () {
       return import(/* webpackChunkName: "about" */ "@/views/admin/index.vue");
-    }
+    },
   },
   {
     path: "/login",
@@ -60,15 +60,15 @@ const routes = [
     beforeEnter() {
       window.open("http://www.google.com", "_blank");
     },
-    component: function() {
+    component: function () {
       return import(/* webpackChunkName: "about" */ "@/views/login.vue");
-    }
-  }
+    },
+  },
 ];
 
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
-  routes
+  routes,
 });
 
 export default router;

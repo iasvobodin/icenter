@@ -19,7 +19,7 @@
       <col style="width: 20%" />
       <col style="width: 80%" />
     </colgroup> -->
-    <tr style="border: solid 2px orange;">
+    <tr style="border: solid 2px orange">
       <th>WO</th>
       <th>Наименование</th>
 
@@ -63,18 +63,18 @@ export default {
       checkbox: [],
       checkedCabinetsNames: [],
       checkBoxAll: null,
-      picked: ""
+      picked: "",
     };
   },
   props: {
     multiplePermission: {
       type: Boolean,
-      default: () => false
+      default: () => false,
     },
     cabinetList: {
       type: Array,
-      default: () => []
-    }
+      default: () => [],
+    },
   },
   watch: {
     checkedCabinetsNames() {
@@ -83,13 +83,13 @@ export default {
     multipleCheck() {
       this.checkedCabinetsNames = [];
       this.checkBoxAll = false;
-    }
+    },
   },
   computed: {
     filterWO() {
       if (this.wo) {
         return Object.values(this.cabinetList).filter(
-          el =>
+          (el) =>
             (el.wo && el.wo.includes(this.wo)) ||
             (el["cab name"] &&
               el["cab name"].toLowerCase().includes(this.wo.toLowerCase()))
@@ -97,7 +97,7 @@ export default {
       } else {
         return this.cabinetList;
       }
-    }
+    },
   },
   methods: {
     multipleChange() {
@@ -108,17 +108,17 @@ export default {
     checkAll() {
       this.checkBoxAll = !this.checkBoxAll;
       if (this.checkBoxAll) {
-        this.checkbox.forEach(e => (e.checked = true));
+        this.checkbox.forEach((e) => (e.checked = true));
         this.checkedCabinetsNames = this.cabinetList;
       } else {
-        this.checkbox.forEach(e => (e.checked = false));
+        this.checkbox.forEach((e) => (e.checked = false));
         this.checkedCabinetsNames = [];
       }
     },
     setItemRef(el) {
       !this.checkbox && this.checkbox.push(el);
-    }
-  }
+    },
+  },
 };
 </script>
 

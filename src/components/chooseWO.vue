@@ -50,12 +50,12 @@ export default {
   props: {
     zeroEnd: {
       type: Boolean,
-      default: () => false
+      default: () => false,
     },
     fetchUrl: {
       type: Object,
-      default: null
-    }
+      default: null,
+    },
   },
   emits: ["inputProjectEvent", "chooseProjectNumber"],
   data() {
@@ -64,14 +64,14 @@ export default {
       projectNumberQuery: null,
       filterProjectList: null,
       listIsActive: false,
-      spinnerClass: false
+      spinnerClass: false,
     };
   },
   computed: {
     filterProject() {
       if (this.selectedProject) {
         return Object.values(this.fetchUrl).filter(
-          el =>
+          (el) =>
             (el.wo && el.wo.includes(this.selectedProject)) ||
             (el["cab name"] &&
               el["cab name"]
@@ -81,14 +81,14 @@ export default {
       } else {
         return this.fetchUrl;
       }
-    }
+    },
   },
   watch: {
     fetchUrl() {
       this.listIsActive = true;
       this.spinnerClass = false;
       // console.log("watch");
-    }
+    },
   },
   methods: {
     bl() {
@@ -115,8 +115,8 @@ export default {
       this.$nextTick(() => {
         this.listIsActive = false;
       });
-    }
-  }
+    },
+  },
 };
 </script>
 

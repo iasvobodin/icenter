@@ -2,15 +2,21 @@
   <div class="about">
     <h1>User page</h1>
     <h2 v-if="$store.state.user.mail">{{ $store.state.user.mail }}</h2>
-    <div v-if="errors">
-      Ошибки!!!
-      <div v-for="(error, index) in errors" :key="index">
-        <p>id {{ error.id }}</p>
-        <p>статус {{ error.status }}</p>
-        <p>проект {{ error["project number"] }}</p>
-        <p>шкаф {{ error["cab name"] }}</p>
-      </div>
+    <!-- <div v-if="errors">
+      Ошибки!!! -->
+
+    <!-- <user-errors /> -->
+
+    <div v-for="(error, index) in errors" :key="index">
+      <p>id {{ error.id }}</p>
+      <p>статус {{ error.status }}</p>
+      <p>проект {{ error["project number"] }}</p>
+      <p>шкаф {{ error["cab name"] }}</p>
     </div>
+    <!-- </div> -->
+    <!-- <div v-else>
+      В данный момент нет открытых вами ошибок.
+    </div> -->
     <!-- <div v-if="user && !user.userInfo.name">
       <h2>
         Укажите ваше имя <input type="text" v-model="userName" /> {{ userName }}
@@ -22,36 +28,36 @@
 </template>
 
 <script>
+import userErrors from "@/components/userErrors";
 export default {
+  components: {
+    // eslint-disable-next-line vue/no-unused-components
+    userErrors,
+  },
   methods: {
     async getUserErrors() {
       await this.$store.dispatch("GET_auth");
+      console.log(window.sessionStorage.getItem("mail"), "11111");
       try {
         const responsErrors = await fetch(
           `/api/user/${window.sessionStorage.getItem("mail")}`
         );
-
         try {
           this.errors = await responsErrors.json();
         } catch (error) {
           console.error("this.errors.json", error);
+          this.errors = [];
         }
       } catch (error) {
         console.log("errors is not def", error);
       }
-
-      
-      // sessionStorage.getItem("mail") &&
-      //   (this.errors = await (
-      //     await fetch(`/api/user/${window.sessionStorage.getItem("mail")}`)
-      //   ).json());
-    }
+    },
   },
   data() {
     return {
       user: null,
       userName: "",
-      errors: null
+      errors: null,
     };
   },
   async mounted() {
@@ -86,7 +92,7 @@ export default {
     // // this.user.userRoles.includes("fitter") && this.$router.push(`/fitter/`);
     // // this.user.userRoles.includes("engineer") && this.$router.push(`/engineer/`);
     //
-  }
+  },
 };
 </script>
 

@@ -23,7 +23,7 @@ export default {
     //   });
 
     return { payload, state };
-  }
+  },
 };
 </script>
 

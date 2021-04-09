@@ -3,8 +3,8 @@ module.exports = {
     proxy: {
       "^/api": {
         target: "http://localhost:7071",
-        changeOrigin: true
-      }
-    }
-  }
+        changeOrigin: true,
+      },
+    },
+  },
 };

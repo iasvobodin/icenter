@@ -11,7 +11,7 @@ import { useRoute } from "vue-router";
 import Navigation from "@/components/adminNavigation";
 export default {
   components: {
-    Navigation
+    Navigation,
   },
   setup() {
     const route = useRoute();
@@ -23,7 +23,7 @@ export default {
     //   }
     // );
     return {};
-  }
+  },
 };
 </script>
 
