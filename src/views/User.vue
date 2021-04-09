@@ -4,15 +4,21 @@
     <h2 v-if="$store.state.user.mail">{{ $store.state.user.mail }}</h2>
     <!-- <div v-if="errors">
       Ошибки!!! -->
+    <Suspense>
+      <template #default>
+      <user-errors />
+      </template>
+          <template #fallback>
+      <div>Loading errrorrrrrs</div>
+      </template>
+    </Suspense>
 
-    <!-- <user-errors /> -->
-
-    <div v-for="(error, index) in errors" :key="index">
+    <!-- <div v-for="(error, index) in errors" :key="index">
       <p>id {{ error.id }}</p>
       <p>статус {{ error.status }}</p>
       <p>проект {{ error["project number"] }}</p>
       <p>шкаф {{ error["cab name"] }}</p>
-    </div>
+    </div> -->
     <!-- </div> -->
     <!-- <div v-else>
       В данный момент нет открытых вами ошибок.
