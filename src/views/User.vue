@@ -6,10 +6,10 @@
       Ошибки!!! -->
     <Suspense>
       <template #default>
-      <user-errors />
+        <user-errors />
       </template>
-          <template #fallback>
-      <div>Loading errrorrrrrs</div>
+      <template #fallback>
+        <div>Loading errrorrrrrs</div>
       </template>
     </Suspense>
 
@@ -102,4 +102,4 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="css" scoped></style>

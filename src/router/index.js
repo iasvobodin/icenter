@@ -48,6 +48,22 @@ const routes = [
     },
   },
   {
+    path: "/errors",
+    component: function () {
+      return import(
+        /* webpackChunkName: "about" */ "@/views/errors/index.vue"
+      );
+    },
+  },
+  {
+    path: "/errors/:errorID",
+    component: function () {
+      return import(
+        /* webpackChunkName: "about" */ "@/views/errors/_errorID/index.vue"
+      );
+    },
+  },
+  {
     path: "/admin",
     name: "admin",
     component: function () {

@@ -1,0 +1,6 @@
+module.exports = async function(context) {
+    context.res = {
+      body:  context.bindings.errorData[0]
+    };
+  };
+  

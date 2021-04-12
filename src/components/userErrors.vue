@@ -1,16 +1,54 @@
 <template>
-  <div v-for="(error, index) in errors" :key="index">
+  <!-- <div v-for="(error, index) in errors" :key="index">
       <p>id {{ error.id }}</p>
       <p>статус {{ error.status }}</p>
       <p>проект {{ error["project number"] }}</p>
       <p>шкаф {{ error["cab name"] }}</p>
-    </div>
+    </div> -->
+  <table style="width: 100%">
+    <tr style="border: solid 2px orange">
+      <!-- <th>id</th> -->
+      <th>статус</th>
+      <th>проект</th>
+      <th>шкаф</th>
+      <th>Описание</th>
+      <!-- <th>
+        Выбрать всё<input @click="checkAll" type="checkbox" />
+      </th> -->
+    </tr>
+    <tr
+      @click="chosseError(value.id)"
+      v-for="(value, key, index) in errors"
+      :key="index"
+    >
+      <!-- <td>{{ value.id }}</td> -->
+      <td>{{ value.status }}</td>
+      <td>{{ value["project number"] }}</td>
+      <td>{{ value["cab name"] }}</td>
+      <td>{{ value["description"] }}</td>
+      <!-- <td>
+        <input
+          v-if="!multipleCheck"
+          :ref="setItemRef"
+          type="checkbox"
+          :value="value"
+          v-model="checkedCabinetsNames"
+        />
+         <button>Выбрать</button> 
+      </td> -->
+    </tr>
+  </table>
 </template>
 
 <script>
 import { ref } from "vue";
 import { useStore } from "vuex";
 export default {
+  methods: {
+    chosseError(e) {
+      this.$router.push(`/errors/${e}`);
+    },
+  },
   async setup() {
     const errors = ref(null);
     const store = useStore();
@@ -33,4 +71,21 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="css" scoped>
+table {
+  margin-top: 2vh;
+  border-collapse: collapse;
+  border-radius: 5px;
+}
+td {
+  border: 1px solid rgb(0, 0, 0);
+  padding: 0.5rem;
+  font-size: 12px;
+}
+tbody tr:nth-child(odd) {
+  background: #eee;
+}
+tbody tr:hover {
+  background: yellow;
+}
+</style>

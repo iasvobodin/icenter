@@ -8,14 +8,19 @@
         :key="index"
       >
         {{ key }}
-        <select v-if="typeof value === 'object'" v-model="errorBody[key]">
+        <select
+          required
+          v-if="typeof value === 'object'"
+          v-model="errorBody[key]"
+        >
           <option v-for="(opt, index) in value" :key="index">{{ opt }}</option>
         </select>
         <textarea
           v-else
+          required
           v-model="errorBody[key]"
-          cols="30"
-          rows="10"
+          cols="50"
+          rows="3"
         ></textarea>
       </div>
       <input class="add__button" type="submit" value="добавить в базу" />
@@ -38,17 +43,15 @@ export default {
         type: "error",
         status: "open",
         stage: 1,
-        ttl: 600,
+        ttl: 6000,
         "senior fitter": this.$store.state.projectInfo["senior fitter"],
         body: this.errorBody,
       };
       await fetch("/api/POST_error", {
         method: "POST", // или 'PUT'
         body: JSON.stringify({ ...this.error }),
-        //
-        //
-        //
       });
+      this.errorBody = {};
     },
   },
   data() {
