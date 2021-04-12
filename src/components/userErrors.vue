@@ -16,17 +16,18 @@
         Выбрать всё<input @click="checkAll" type="checkbox" />
       </th> -->
     </tr>
-    <tr
-      @click="chosseError(value.id)"
-      v-for="(value, key, index) in errors"
-      :key="index"
-    >
-      <!-- <td>{{ value.id }}</td> -->
-      <td>{{ value.status }}</td>
-      <td>{{ value["project number"] }}</td>
-      <td>{{ value["cab name"] }}</td>
-      <td>{{ value["description"] }}</td>
-      <!-- <td>
+    <tbody>
+      <tr
+        @click="chosseError(value.id)"
+        v-for="(value, key, index) in errors"
+        :key="index"
+      >
+        <!-- <td>{{ value.id }}</td> -->
+        <td>{{ value.status }}</td>
+        <td>{{ value["project number"] }}</td>
+        <td>{{ value["cab name"] }}</td>
+        <td>{{ value["description"] }}</td>
+        <!-- <td>
         <input
           v-if="!multipleCheck"
           :ref="setItemRef"
@@ -36,7 +37,8 @@
         />
          <button>Выбрать</button> 
       </td> -->
-    </tr>
+      </tr>
+    </tbody>
   </table>
 </template>
 
@@ -86,6 +88,9 @@ tbody tr:nth-child(odd) {
   background: #eee;
 }
 tbody tr:hover {
-  background: yellow;
+  background: rgba(255, 166, 0, 0.425);
+}
+tbody tr {
+  cursor: pointer;
 }
 </style>
