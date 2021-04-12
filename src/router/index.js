@@ -50,9 +50,7 @@ const routes = [
   {
     path: "/errors",
     component: function () {
-      return import(
-        /* webpackChunkName: "about" */ "@/views/errors/index.vue"
-      );
+      return import(/* webpackChunkName: "about" */ "@/views/errors/index.vue");
     },
   },
   {

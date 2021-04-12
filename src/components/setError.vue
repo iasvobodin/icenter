@@ -47,11 +47,15 @@ export default {
         "senior fitter": this.$store.state.projectInfo["senior fitter"],
         body: this.errorBody,
       };
-      await fetch("/api/POST_error", {
-        method: "POST", // или 'PUT'
-        body: JSON.stringify({ ...this.error }),
-      });
-      this.errorBody = {};
+
+      try {
+        await fetch("/api/POST_error", {
+          method: "POST", // или 'PUT'
+          body: JSON.stringify({ ...this.error }),
+        });
+      } finally {
+        this.errorBody = {};
+      }
     },
   },
   data() {

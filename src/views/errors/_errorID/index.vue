@@ -5,7 +5,7 @@
     <!-- {{error}} -->
   </div>
   <div v-for="(value, key, index) in error" :key="index">
-     <p> {{key}} {{value}} </p> 
+    <p>{{ key }} {{ value }}</p>
   </div>
 </template>
 
@@ -18,7 +18,7 @@ export default {
   },
   methods: {
     async getUserErrors() {
-        console.log(this.$route.params.errorID);
+      console.log(this.$route.params.errorID);
       try {
         const responsError = await fetch(
           `/api/errors/${this.$route.params.errorID}`
@@ -34,7 +34,7 @@ export default {
     },
   },
   created() {
-      this.getUserErrors()
+    this.getUserErrors();
   },
 };
 </script>
