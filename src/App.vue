@@ -9,7 +9,8 @@
       >Login |</a
     >
     <router-link v-else to="/User">{{ $store.state.user.mail }} | </router-link>
-    <a href="/.auth/logout?post_logout_redirect_uri=/">Log out</a>
+    <a href="/.auth/logout?post_logout_redirect_uri=/">Log out | </a>
+    <router-link to="/admin">Admin</router-link>
   </div>
   <router-view />
 </template>

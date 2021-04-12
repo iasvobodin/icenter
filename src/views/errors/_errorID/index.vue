@@ -1,8 +1,6 @@
 <template>
   <div>
-    ERRORID
     <h1>{{ $route.params.errorID }}</h1>
-    <!-- {{error}} -->
   </div>
   <div v-for="(value, key, index) in error" :key="index">
     <p>{{ key }} {{ value }}</p>
