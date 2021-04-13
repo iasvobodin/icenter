@@ -4,11 +4,11 @@
     <router-link to="/User">User</router-link> |
     <router-link to="/admin">Admin</router-link> | -->
     <a
-      v-if="!$store.state.user.mail"
+      v-if="!$store.state.user.authInfo"
       href="/.auth/login/aad?post_login_redirect_uri=/user"
       >Login |</a
     >
-    <router-link v-else to="/User">{{ $store.state.user.mail }} | </router-link>
+    <router-link v-else to="/User">{{ $store.state.user.authInfo.userDetails }} | </router-link>
     <a href="/.auth/logout?post_logout_redirect_uri=/">Log out | </a>
     <router-link to="/admin">Admin</router-link>
   </div>

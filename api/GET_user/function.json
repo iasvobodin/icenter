@@ -28,7 +28,7 @@
     {
       "type": "cosmosDB",
       "direction": "in",
-      "name": "userOut",
+      "name": "userErors",
       "ConnectionStringSetting": "legendstats_DOCUMENTDB",
       "databaseName": "icenter",
       "collectionName": "users",

@@ -57,7 +57,7 @@ export default {
     await store.dispatch("GET_auth");
     try {
       const responsErrors = await fetch(
-        `/api/user/${window.sessionStorage.getItem("mail")}`
+        `/api/user/${window.sessionStorage.getItem("userDetails")}`
       );
       // try {
       errors.value = await responsErrors.json();

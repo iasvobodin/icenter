@@ -37,7 +37,7 @@ export default {
       this.error = {
         id: "error__" + Date.now(),
         wo: this.$store.state.projectInfo.wo.toString(),
-        fitter: sessionStorage.getItem("mail"),
+        fitter: sessionStorage.getItem("userDetails"),
         "project number": this.$store.state.projectInfo["project number"],
         "cab name": this.$store.state.projectInfo["cab name"],
         type: "error",
