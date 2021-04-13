@@ -5,11 +5,12 @@ module.exports = async function (context, req, user) {
       body: context.bindings.userErors,
     };
     return;
-  } else {
-    context.res = {
-      status: 404,
-    };
-  }
+  } 
+  // else {
+  //   context.res = {
+  //     status: 404,
+  //   };
+  // }
   // context.log(context.bindings.userOut)
   if (!user[0]) {
     context.res = {
