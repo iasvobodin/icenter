@@ -12,11 +12,11 @@ export default createStore({
     setUserAuth(state, payload) {
       window.sessionStorage.setItem("userDetails", payload.userDetails);
       state.user.authInfo = payload
-      console.info(state.user, "kjhhljvpoweif-20iwpogjsvjsldvnn");
+      // console.info(state.user, "kjhhljvpoweif-20iwpogjsvjsldvnn");
     },
     setUserInfo(state, payload) {
       state.user.userInfo = payload.userInfo;
-      console.log(state.user,"state.user");
+      // console.log(state.user,"state.user");
     },
     SETprojectNumber(state, payload) {
       state.selectedProjectNumber = payload;
