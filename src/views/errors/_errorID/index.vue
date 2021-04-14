@@ -5,7 +5,7 @@
   <div v-for="(value, key, index) in error" :key="index">
     <p>{{ key }} {{ value }}</p>
   </div>
-  <p v-if="errorIsNotDef" >{{errorIsNotDef}}</p>
+  <p v-if="errorIsNotDef">{{ errorIsNotDef }}</p>
 </template>
 
 <script>
@@ -24,8 +24,8 @@ export default {
           `/api/errors/${this.$route.params.errorID}`
         );
         if (!responsError.ok) {
-          this.errorIsNotDef = "Данной ошибки не существует"
-          console.log('error is not exist');
+          this.errorIsNotDef = "Данной ошибки не существует";
+          console.log("error is not exist");
         }
         try {
           this.error = await responsError.json();

@@ -5,7 +5,7 @@
       <p>проект {{ error["project number"] }}</p>
       <p>шкаф {{ error["cab name"] }}</p>
     </div> -->
-  <table style="width: 100%">
+  <table v-if="errors" style="width: 100%">
     <tr style="border: solid 2px orange">
       <!-- <th>id</th> -->
       <th>статус</th>
@@ -40,6 +40,7 @@
       </tr>
     </tbody>
   </table>
+  <div v-else>Нет открытых ошибок</div>
 </template>
 
 <script>

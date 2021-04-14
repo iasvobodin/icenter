@@ -11,12 +11,12 @@ export default createStore({
   mutations: {
     setUserAuth(state, payload) {
       window.sessionStorage.setItem("userDetails", payload.userDetails);
-      state.user.authInfo = payload
+      state.user.authInfo = payload;
       console.info(state.user, "kjhhljvpoweif-20iwpogjsvjsldvnn");
     },
     setUserInfo(state, payload) {
       state.user.userInfo = payload.userInfo;
-      console.log(state.user,"state.user");
+      console.log(state.user, "state.user");
     },
     SETprojectNumber(state, payload) {
       state.selectedProjectNumber = payload;
@@ -68,10 +68,10 @@ export default createStore({
         console.log("fetch error", error);
       }
       // console.log(clientPrincipal,"clientPrincipal");
-      !state.user.authInfo&&commit("setUserAuth", clientPrincipal);
+      !state.user.authInfo && commit("setUserAuth", clientPrincipal);
 
-      try{
-      const userRes =  await fetch(`/api/user/${clientPrincipal.userId}`, {
+      try {
+        const userRes = await fetch(`/api/user/${clientPrincipal.userId}`, {
           method: "POST", // или 'PUT'
           body: JSON.stringify({
             id: clientPrincipal.userId,
@@ -80,8 +80,8 @@ export default createStore({
             userInfo: {},
           }),
         });
-        const user = await userRes.json()
-        !state.user.userInfo&&commit("setUserInfo", user);
+        const user = await userRes.json();
+        !state.user.userInfo && commit("setUserInfo", user);
         // console.log(state.user,user, "state.user.info");
       } catch (error) {
         console.log("user is not def", error);
