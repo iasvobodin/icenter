@@ -2,11 +2,13 @@
   <div>
     <h1>{{ $route.params.errorID }}</h1>
   </div>
+<input type="file"> <button @click="sendFile" >send</button>
+<br>
   <div v-if="error">
-    <p>Проект {{ error["project number"] }}</p>
-    <p>Шкаф {{ error["cab name"] }}</p>
-    <p>Ошибку добавил {{ error.fitter }}</p>
-    <p>Мастер проекта {{ error["senior fitter"] }}</p>
+       <p>Проект: {{ error["project number"] }}</p>
+    <p>Шкаф: {{ error["cab name"] }}</p>
+    <p>Ошибку добавил: {{ error.fitter }}</p>
+    <p>Мастер проекта: {{ error["senior fitter"] }}</p>
     <p>Статус {{ error["status"] }}</p>
     <p>Тип ошибки - {{ error.body["Тип ошибки"] }}</p>
     <p>Описание {{ error.body.Описание }}</p>
@@ -15,9 +17,9 @@
     </p>
   </div>
 
-  <div v-for="(value, key, index) in error" :key="index">
-    <!-- <p>{{ key }} {{ value }}</p> -->
-  </div>
+   <!-- <div v-for="(value, key, index) in error" :key="index">
+     <p>{{ key }} {{ value }}</p> 
+  </div>  -->
   <p v-if="errorIsNotDef">{{ errorIsNotDef }}</p>
   <div
     v-if="
@@ -27,7 +29,7 @@
     You are master
   </div>
   <div
-    v-else-if="
+    v-if="
       error && error['fitter'] === $store.state.user.authInfo.userDetails
     "
   >
@@ -38,6 +40,7 @@
 
 <script>
 export default {
+  // setup
   data() {
     return {
       error: null,
@@ -46,6 +49,10 @@ export default {
     };
   },
   async mounted() {
+
+
+
+
     try {
       if (!this.errorTemplate) {
         this.errorTemplate = await (
@@ -57,6 +64,25 @@ export default {
     }
   },
   methods: {
+    async sendFile() {
+
+const formData = new FormData();
+const fileField = document.querySelector('input[type="file"]');
+
+// formData.append('username', 'abc123');
+formData.append('photo', fileField.files[0]);
+
+try {
+  const response = await fetch('/api/blob', {
+    method: 'POST',
+    body: formData
+  });
+  const result = await response.json();
+  console.log('Успех:', JSON.stringify(result));
+} catch (error) {
+  console.error('Ошибка:', error);
+}
+},
     async getUserErrors() {
       // console.log(this.$route.params.errorID);
       try {

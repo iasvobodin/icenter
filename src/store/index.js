@@ -60,8 +60,8 @@ export default createStore({
         } catch (error) {
           console.log("Use local user", error.message);
           clientPrincipal = {
-            userId: "LOCALUSERID",
-            userDetails: "local@mail.com",
+            userId: "5d2ba18226de49aa931985d4b6549977",
+            userDetails: "Ivan.Svobodin@Emerson.com",
           };
         }
       } catch (error) {
@@ -86,6 +86,7 @@ export default createStore({
       } catch (error) {
         console.log("user is not def", error);
       }
+      console.log('GETAUTH');
     },
     async GET_projectList({ commit, state }, payload) {
       let data;

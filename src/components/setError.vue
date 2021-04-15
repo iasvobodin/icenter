@@ -23,6 +23,7 @@
           rows="3"
         ></textarea>
       </div>
+        <input type="file">
       <input class="add__button" type="submit" value="добавить в базу" />
     </form>
 
@@ -34,6 +35,12 @@
 export default {
   methods: {
     async postError() {
+      const fileField = document.querySelector('input[type="file"]');
+const formData = new FormData();
+// formData.append('username', 'abc123');
+formData.append('photo', fileField.files[0]);
+
+
       this.error = {
         id: "error__" + Date.now(),
         wo: this.$store.state.projectInfo.wo.toString(),
@@ -43,6 +50,7 @@ export default {
         type: "error",
         status: "open",
         stage: 1,
+        photo: formData,
         ttl: 6000,
         "senior fitter": this.$store.state.projectInfo["senior fitter"],
         body: this.errorBody,
@@ -56,6 +64,10 @@ export default {
       } finally {
         this.errorBody = {};
       }
+        await fetch(`/api/blob?fileName=${this.error.id}`, {
+    method: 'POST',
+    body: formData
+  });
     },
   },
   data() {
@@ -63,6 +75,7 @@ export default {
       errorTemplate: null,
       errorBody: {},
       error: {},
+      photo: null,
     };
   },
   async mounted() {

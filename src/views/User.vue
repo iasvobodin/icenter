@@ -24,7 +24,7 @@ export default {
   },
   methods: {
     async getUserErrors() {
-      await this.$store.dispatch("GET_auth");
+    !window.sessionStorage.getItem("userDetails") &&  await this.$store.dispatch("GET_auth");
       // console.log(window.sessionStorage.getItem("userDetails"), "11111");
       try {
         const responsErrors = await fetch(
