@@ -2,8 +2,36 @@
   <div>
     <h1>{{ $route.params.errorID }}</h1>
   </div>
+  <div v-if="error">
+    <p>Проект {{ error["project number"] }}</p>
+    <p>Шкаф {{ error["cab name"] }}</p>
+    <p>Ошибку добавил {{ error.fitter }}</p>
+    <p>Мастер проекта {{ error["senior fitter"] }}</p>
+    <p>Статус {{ error["status"] }}</p>
+    <p>Тип ошибки - {{ error.body["Тип ошибки"] }}</p>
+    <p>Описание {{ error.body.Описание }}</p>
+    <p v-if="error.stage === 1">
+      Мастеру проекта необходимо изменить статус ошибки
+    </p>
+  </div>
+
   <div v-for="(value, key, index) in error" :key="index">
-    <p>{{ key }} {{ value }}</p>
+    <!-- <p>{{ key }} {{ value }}</p> -->
+  </div>
+  <p v-if="errorIsNotDef">{{ errorIsNotDef }}</p>
+  <div
+    v-if="
+      error && error['senior fitter'] === $store.state.user.authInfo.userDetails
+    "
+  >
+    You are master
+  </div>
+  <div
+    v-else-if="
+      error && error['fitter'] === $store.state.user.authInfo.userDetails
+    "
+  >
+    You are fitter
   </div>
   <p v-if="errorIsNotDef">{{ errorIsNotDef }}</p>
 </template>
@@ -14,7 +42,19 @@ export default {
     return {
       error: null,
       errorIsNotDef: null,
+      errorTemplate: null,
     };
+  },
+  async mounted() {
+    try {
+      if (!this.errorTemplate) {
+        this.errorTemplate = await (
+          await fetch("/api/templates/templateProject/ver1")
+        ).json();
+      }
+    } catch (error) {
+      console.log(error);
+    }
   },
   methods: {
     async getUserErrors() {
