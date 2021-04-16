@@ -7,7 +7,7 @@
         v-for="(value, key, index) in $store.state.template.error.stage1"
         :key="index"
       >
-       <p>{{ key }}</p> 
+        <p>{{ key }}</p>
         <br />
         <select
           required
@@ -26,7 +26,7 @@
           rows="3"
         ></textarea>
       </div>
-      <input type="file" />
+      <!-- <input type="file" /> -->
       <input class="add__button" type="submit" value="добавить в базу" />
     </form>
     <!-- {{errorTemplate.error.body}} -->
@@ -50,10 +50,10 @@ export default {
   // },
   methods: {
     async postError() {
-      const fileField = document.querySelector('input[type="file"]');
-      const formData = new FormData();
-      // formData.append('username', 'abc123');
-      formData.append("photo", fileField.files[0]);
+      // const fileField = document.querySelector('input[type="file"]');
+      // const formData = new FormData();
+      // // formData.append('username', 'abc123');
+      // formData.append("photo", fileField.files[0]);
 
       this.error = {
         id: "error__" + Date.now(),
@@ -64,7 +64,6 @@ export default {
         type: "error",
         status: "open",
         stage: 1,
-        photo: formData,
         ttl: 6000,
         "senior fitter": this.$store.state.projectInfo["senior fitter"],
         body: this.errorBody,
@@ -78,10 +77,10 @@ export default {
       } finally {
         this.errorBody = {};
       }
-      await fetch(`/api/blob?fileName=${this.error.id}`, {
-        method: "POST",
-        body: formData,
-      });
+      // await fetch(`/api/blob?fileName=${this.error.id}`, {
+      //   method: "POST",
+      //   body: formData,
+      // });
     },
   },
   created() {

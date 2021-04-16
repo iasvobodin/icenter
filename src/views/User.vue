@@ -9,7 +9,10 @@
         <user-errors />
       </template>
       <template #fallback>
-        <div>Loading errrorrrrrs</div>
+        <div>
+          <p>Loading errrorrrrrs</p>
+          <div class="loading" />
+        </div>
       </template>
     </Suspense>
   </div>
@@ -55,4 +58,11 @@ export default {
 };
 </script>
 
-<style lang="css" scoped></style>
+<style lang="css" scoped>
+.loading {
+  margin: auto;
+  width: 30px;
+  height: 30px;
+  background: url(/img/loading.gif) no-repeat center bottom;
+}
+</style>

@@ -18,10 +18,18 @@
     {
       "type": "cosmosDB",
       "direction": "out",
-      "name": "projectOut",
+      "name": "errorOut",
       "ConnectionStringSetting": "legendstats_DOCUMENTDB",
       "databaseName": "icenter",
       "collectionName": "icenterDB"
+    },
+    {
+      "type": "cosmosDB",
+      "direction": "out",
+      "name": "userErrorOut",
+      "ConnectionStringSetting": "legendstats_DOCUMENTDB",
+      "databaseName": "icenter",
+      "collectionName": "users"
     }
   ]
 }

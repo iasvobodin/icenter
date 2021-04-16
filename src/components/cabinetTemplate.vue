@@ -73,10 +73,10 @@ export default {
 </script>
 
 <style lang="css" scoped>
-div{
+div {
   box-sizing: border-box;
 }
-.cabinet{
+.cabinet {
   border: 1px solid orange;
   border-radius: 4px;
   margin: auto;
@@ -86,7 +86,7 @@ div{
   padding: 10px;
   box-sizing: border-box;
 }
-h3{
+h3 {
   margin: 10px;
 }
 .cabinet__info {
@@ -109,6 +109,6 @@ h3{
 .cabinet__info__item > p {
   justify-self: end;
   text-align: end;
-  align-self: center;
+  align-self: end;
 }
 </style>

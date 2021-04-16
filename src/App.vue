@@ -18,7 +18,7 @@
 </template>
 
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400&display=swap");
 
 h4 {
   margin: 0;
@@ -33,9 +33,6 @@ select {
 textarea {
   /* height: 30px; */
   width: 100%;
-}
-body{
-  box-sizing: border-box;
 }
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
@@ -56,8 +53,13 @@ body{
 #nav a.router-link-exact-active {
   color: #42b983;
 }
-h1,h2,h3,h4,h5,h6{
-  font-family: 'Roboto Slab', serif;
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: "Roboto Slab", serif;
   font-weight: normal;
 }
 </style>
