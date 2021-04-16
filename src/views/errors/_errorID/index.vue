@@ -39,9 +39,17 @@
       </div>
       <div class="cabinet__info__item">
         <h3>Тип ошибки:</h3>
-        <p>
+        <p v-if="!changeInfo" >
           {{ error.body["Тип ошибки"] }}
         </p>
+                  <select
+            v-else
+            v-model="error.body['Тип ошибки']"
+          >
+            <option v-for="(opt, index) in $store.state.template.error.stage1['Тип ошибки']" :key="index">
+              {{ opt }}
+            </option>
+          </select>
       </div>
       <div class="cabinet__info__desc">
         <h3>Описание</h3>
@@ -53,7 +61,39 @@
       <div
         v-if="
           changeInfo &&
-          error &&
+          error.stage === 1 &&
+          error['senior fitter'] === $store.state.user.authInfo.userDetails
+        "
+      >
+        <div
+          class="error__field"
+          v-for="(value, key, index) in $store.state.template.error.stage2"
+          :key="index"
+        >
+          <p>{{ key }}</p>
+          <br />
+          <select
+            required
+            v-if="typeof value === 'object'"
+            v-model="errorBody[key]"
+          >
+            <option v-for="(opt, index) in value" :key="index">
+              {{ opt }}
+            </option>
+          </select>
+          <textarea
+            v-else
+            required
+            v-model="errorBody[key]"
+            cols="50"
+            rows="3"
+          ></textarea>
+        </div>
+      </div>
+            <div
+        v-if="
+          changeInfo &&
+          error.stage === 2 &&
           error['senior fitter'] === $store.state.user.authInfo.userDetails
         "
       >
