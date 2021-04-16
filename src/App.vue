@@ -70,7 +70,7 @@ export default {
   //   // because it has not been created yet when this guard is called!
   // },
   created() {
-   !this.$store.state.user.authInfo && this.$store.dispatch("GET_auth");
+    !this.$store.state.user.authInfo && this.$store.dispatch("GET_auth");
   },
 };
 </script>

@@ -2,6 +2,7 @@ import { createStore } from "vuex";
 
 export default createStore({
   state: {
+    template: null,
     projectList: null,
     testState: "testState",
     selectedProjectNumber: "",
@@ -18,6 +19,11 @@ export default createStore({
       state.user.userInfo = payload.userInfo;
       console.log(state.user, "state.user");
     },
+
+    setTemplate(state, payload) {
+      state.template = payload;
+    },
+
     SETprojectNumber(state, payload) {
       state.selectedProjectNumber = payload;
       console.log(
@@ -45,6 +51,20 @@ export default createStore({
     },
   },
   actions: {
+    async GET_template({ commit, state }) {
+      try {
+        if (!state.template) {
+          const resposeTemplate = await fetch(
+            "/api/templates/templateProject/ver1"
+          );
+          const template = await resposeTemplate.json();
+          commit("setTemplate", template);
+        }
+      } catch (error) {
+        console.log(error, "GETTEMPLATEERROR");
+      }
+      console.log(state.template, "state.template");
+    },
     async GET_auth({ commit, state }) {
       let clientPrincipal = null;
       let responseUser;
@@ -86,7 +106,7 @@ export default createStore({
       } catch (error) {
         console.log("user is not def", error);
       }
-      console.log('GETAUTH');
+      console.log("GETAUTH");
     },
     async GET_projectList({ commit, state }, payload) {
       let data;

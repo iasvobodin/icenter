@@ -40,8 +40,12 @@ export default {
   async setup() {
     const errors = ref(null);
     const store = useStore();
-    console.log(window.sessionStorage.getItem("userDetails"),"window.sessionStorage.getItem;")
-  !window.sessionStorage.getItem("userDetails") &&  await store.dispatch("GET_auth");
+    console.log(
+      window.sessionStorage.getItem("userDetails"),
+      "window.sessionStorage.getItem;"
+    );
+    !window.sessionStorage.getItem("userDetails") &&
+      (await store.dispatch("GET_auth"));
     try {
       const responsErrors = await fetch(
         `/api/user/${window.sessionStorage.getItem("userDetails")}`

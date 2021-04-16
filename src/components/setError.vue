@@ -1,10 +1,11 @@
 <template>
   <div>SET ERROR</div>
-  <div v-if="errorTemplate">
+  <div v-if="$store.state.template">
+    <!-- <Suspense> -->
     <form @submit.prevent="postError">
       <div
         class="error__field"
-        v-for="(value, key, index) in errorTemplate.error.stage1"
+        v-for="(value, key, index) in $store.state.template.error.stage1"
         :key="index"
       >
         {{ key }}
@@ -13,7 +14,9 @@
           v-if="typeof value === 'object'"
           v-model="errorBody[key]"
         >
-          <option v-for="(opt, index) in value" :key="index">{{ opt }}</option>
+          <option v-for="(opt, index) in value" :key="index">
+            {{ opt }}
+          </option>
         </select>
         <textarea
           v-else
@@ -23,23 +26,36 @@
           rows="3"
         ></textarea>
       </div>
-        <input type="file">
+      <input type="file" />
       <input class="add__button" type="submit" value="добавить в базу" />
     </form>
+    <!-- </Suspense> -->
 
     <!-- {{errorTemplate.error.body}} -->
   </div>
 </template>
 
 <script>
+// import { useStore } from "vuex";
+// import { computed } from "vue";
 export default {
+  // async setup() {
+  //   const store = useStore();
+  //   // const template = computed(() => store.state.template);
+  //   // store.dispatch("GET_template")
+  //   // console.log(store.state.template, "this.$store.state.template");
+  //   return {
+  //     // template,
+  //     // access an action
+  //     asyncTemplate: () => store.dispatch("GET_template"),
+  //   };
+  // },
   methods: {
     async postError() {
       const fileField = document.querySelector('input[type="file"]');
-const formData = new FormData();
-// formData.append('username', 'abc123');
-formData.append('photo', fileField.files[0]);
-
+      const formData = new FormData();
+      // formData.append('username', 'abc123');
+      formData.append("photo", fileField.files[0]);
 
       this.error = {
         id: "error__" + Date.now(),
@@ -64,11 +80,14 @@ formData.append('photo', fileField.files[0]);
       } finally {
         this.errorBody = {};
       }
-        await fetch(`/api/blob?fileName=${this.error.id}`, {
-    method: 'POST',
-    body: formData
-  });
+      await fetch(`/api/blob?fileName=${this.error.id}`, {
+        method: "POST",
+        body: formData,
+      });
     },
+  },
+  created() {
+    !this.$store.state.template && this.$store.dispatch("GET_template");
   },
   data() {
     return {
@@ -78,17 +97,18 @@ formData.append('photo', fileField.files[0]);
       photo: null,
     };
   },
-  async mounted() {
-    try {
-      if (!this.errorTemplate) {
-        this.errorTemplate = await (
-          await fetch("/api/templates/templateProject/ver1")
-        ).json();
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  },
+
+  // async mounted() {
+  //   try {
+  //     if (!this.errorTemplate) {
+  //       this.errorTemplate = await (
+  //         await fetch("/api/templates/templateProject/ver1")
+  //       ).json();
+  //     }
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // },
 };
 </script>
 

@@ -10,8 +10,8 @@
     <p>Данный блок в разработке</p>
   </div>
   <div>
-    <button @click="error = !error">Добавить ошибку</button>
-    <set-error v-if="error" />
+    <!-- <button @click="error = !error">Добавить ошибку</button> -->
+    <set-error />
     <!-- <button>Запустить задачу</button> -->
   </div>
 </template>
