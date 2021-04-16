@@ -143,11 +143,11 @@ export default {
 }
 .input__holder > img {
   cursor: pointer;
-  height: 20px;
+  height: 12px;
   /* padding: 7px; */
   position: absolute;
-  right: 5px;
-  top: 5px;
+  right: 9px;
+  top: 9px;
 }
 p {
   margin: 0;
@@ -171,7 +171,7 @@ input {
   border: 1px solid orange;
   border-radius: 5px;
   line-height: 30px;
-  font-size: 20px;
+  font-size: 18px;
   text-align: center;
   width: 100%;
   margin: auto;

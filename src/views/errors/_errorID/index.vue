@@ -1,27 +1,71 @@
 <template>
+ <div class="cabinet">
   <div>
     <h1>{{ $route.params.errorID }}</h1>
   </div>
-  <!-- <input type="file"> <button @click="sendFile" >send</button> -->
   <br />
-  <div v-if="error">
-    <p>Проект: {{ error["project number"] }}</p>
-    <p>Шкаф: {{ error["cab name"] }}</p>
-    <p>Ошибку добавил: {{ error.fitter }}</p>
-    <p>Мастер проекта: {{ error["senior fitter"] }}</p>
-    <p>Статус {{ error["status"] }}</p>
-    <p>Тип ошибки - {{ error.body["Тип ошибки"] }}</p>
-    <p>Описание {{ error.body.Описание }}</p>
+     <div v-if="error" class="cabinet__info">
+      <div class="cabinet__info__item">
+        <h4>Проект:</h4>
+        <p>
+{{ error["project number"] }}
+        </p>
+      </div>
+      <div class="cabinet__info__item">
+        <h4>Шкаф:</h4>
+        <p>
+ {{ error["cab name"] }}
+        </p>
+      </div>
+      <div class="cabinet__info__item">
+        <h4>Ошибку добавил:</h4>
+        <p>
+{{ error.fitter }}
+        </p>
+      </div>
+      <div class="cabinet__info__item">
+        <h4>Мастер проекта:</h4>
+        <p>
+{{ error["senior fitter"] }}
+        </p>
+      </div>
+        <div class="cabinet__info__item">
+        <h4>Статус:</h4>
+        <p>
+{{ error["status"] }}
+        </p>
+      </div>
+        <div class="cabinet__info__item">
+        <h4>Тип ошибки -</h4>
+        <p>
+{{ error.body["Тип ошибки"] }}
+        </p>
+      </div>
+            <div class="cabinet__info__item">
+        <h4>Описание</h4>
+        <p>
+ {{ error.body.Описание }}
+        </p>
+      </div>
+    </div>
+  <!-- <div v-if="error">
+    <p>Проект: </p>
+    <p>Шкаф:</p>
+    <p>Ошибку добавил: </p>
+    <p>Мастер проекта: </p>
+    <p>Статус </p>
+    <p>Тип ошибки - </p>
+    <p>Описание</p>
     <p v-if="error.stage === 1">
       Мастеру проекта необходимо изменить статус ошибки
     </p>
-  </div>
+  </div> -->
 
   <!-- <div v-for="(value, key, index) in error" :key="index">
      <p>{{ key }} {{ value }}</p> 
   </div>  -->
   <p v-if="errorIsNotDef">{{ errorIsNotDef }}</p>
-  <div
+  <!-- <div
     v-if="
       error && error['senior fitter'] === $store.state.user.authInfo.userDetails
     "
@@ -33,7 +77,8 @@
   >
     You are fitter
   </div>
-  <p v-if="errorIsNotDef">{{ errorIsNotDef }}</p>
+  <p v-if="errorIsNotDef">{{ errorIsNotDef }}</p>-->
+   </div> 
 </template>
 
 <script>
@@ -102,4 +147,38 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="css" scoped>
+.cabinet{
+  border: 1px solid orange;
+  border-radius: 4px;
+  margin: auto;
+  margin-top: 1vh;
+  margin-bottom: 1vh;
+  width: min(95vw, 500px);
+  padding: 10px;
+  box-sizing: border-box;
+}
+h1{
+  margin: 10px;
+}
+.cabinet__info {
+  /* width: min(95vw, 400px); */
+  margin: auto;
+}
+.cabinet__info__item {
+  border-bottom: 1px solid black;
+  padding: 5px;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 2fr 3fr;
+}
+.cabinet__info__item > h4 {
+  justify-self: start;
+  align-self: center;
+  text-align: start;
+}
+.cabinet__info__item > p {
+  justify-self: end;
+  text-align: start;
+  align-self: center;
+}</style>

@@ -1,14 +1,14 @@
 <template>
-  <div>SET ERROR</div>
+  <!-- <div>SET ERROR</div> -->
   <div v-if="$store.state.template">
-    <!-- <Suspense> -->
     <form @submit.prevent="postError">
       <div
         class="error__field"
         v-for="(value, key, index) in $store.state.template.error.stage1"
         :key="index"
       >
-        {{ key }}
+       <p>{{ key }}</p> 
+        <br />
         <select
           required
           v-if="typeof value === 'object'"
@@ -29,8 +29,6 @@
       <input type="file" />
       <input class="add__button" type="submit" value="добавить в базу" />
     </form>
-    <!-- </Suspense> -->
-
     <!-- {{errorTemplate.error.body}} -->
   </div>
 </template>
@@ -115,5 +113,6 @@ export default {
 <style lang="css" scoped>
 .error__field {
   margin: 10px;
+  box-sizing: border-box;
 }
 </style>
