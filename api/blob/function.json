@@ -20,7 +20,7 @@
       "name": "myOutputBlob",
       "type": "blob",
       "path": "testcontainer/{fileName}.jpg",
-      "connection": "AzureWebJobsStorage",
+      "connection": "MyStorageConnectionAppSetting",
       "direction": "out"
     }
   ]
