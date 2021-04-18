@@ -39,17 +39,19 @@
       </div>
       <div class="cabinet__info__item">
         <h3>Тип ошибки:</h3>
-        <p v-if="!changeInfo" >
+        <p v-if="!changeInfo">
           {{ error.body["Тип ошибки"] }}
         </p>
-                  <select
-            v-else
-            v-model="error.body['Тип ошибки']"
+        <select v-else v-model="error.body['Тип ошибки']">
+          <option
+            v-for="(opt, index) in $store.state.template.error.stage1[
+              'Тип ошибки'
+            ]"
+            :key="index"
           >
-            <option v-for="(opt, index) in $store.state.template.error.stage1['Тип ошибки']" :key="index">
-              {{ opt }}
-            </option>
-          </select>
+            {{ opt }}
+          </option>
+        </select>
       </div>
       <div class="cabinet__info__desc">
         <h3>Описание</h3>
@@ -66,12 +68,11 @@
         "
       >
         <div
-          class="error__field"
+          class="cabinet__info__item"
           v-for="(value, key, index) in $store.state.template.error.stage2"
           :key="index"
         >
-          <p>{{ key }}</p>
-          <br />
+          <h3>{{ key }}</h3>
           <select
             required
             v-if="typeof value === 'object'"
@@ -90,20 +91,19 @@
           ></textarea>
         </div>
       </div>
-            <div
+      <div
         v-if="
           changeInfo &&
-          error.stage === 2 &&
           error['senior fitter'] === $store.state.user.authInfo.userDetails
         "
       >
         <div
-          class="error__field"
-          v-for="(value, key, index) in $store.state.template.error.stage2"
+          class="cabinet__info__item"
+          :class="{ cabinet__info__desc: typeof value === 'object' }"
+          v-for="(value, key, index) in $store.state.template.error.stage3"
           :key="index"
         >
-          <p>{{ key }}</p>
-          <br />
+          <h3>{{ key }}</h3>
           <select
             required
             v-if="typeof value === 'object'"
@@ -235,9 +235,9 @@ h1 {
   margin: auto;
 }
 .cabinet__info__desc {
-  border-bottom: 1px solid black;
+  /* border-bottom: 1px solid black; */
   padding: 5px;
-  width: 100%;
+  /* width: 100%; */
 }
 .cabinet__info__desc > h3 {
   margin-top: 1vh;
