@@ -1,10 +1,17 @@
 <template>
-  <!-- <h2>Введите номер проекта</h2> -->
+  <h2>Введите номер !!!!!!!!!!!</h2>
+
   <br />
   <div
     :class="{ border__project: listIsActive }"
     class="choose__project__holder"
   >
+    <!-- <input  @focus="getProjectList"
+        :class="{ loading: spinnerClass }"  class="project_input" list="test">
+  <datalist id="test">
+    <option  v-for="(project, index) in filterProject"
+          :key="index" :value="project"></option>
+    </datalist> -->
     <div class="input__holder">
       <input
         @blur="bl"
@@ -138,6 +145,10 @@ export default {
 </script>
 
 <style lang="css" scoped>
+datalist {
+  height: 30vh;
+  max-height: 30vh;
+}
 .input__holder {
   position: relative;
 }

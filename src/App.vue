@@ -33,6 +33,8 @@ select {
 textarea {
   /* height: 30px; */
   width: 100%;
+  box-sizing: border-box;
+  border-radius: 4px;
 }
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;

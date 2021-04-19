@@ -37,7 +37,10 @@
           {{ error["status"] }}
         </p>
       </div>
-      <div class="cabinet__info__item">
+      <div  style="border: 1px solid red; margin: 5px; padding: 5px;">
+
+      <h2 v-if="changeInfo" >Открыто</h2>
+      <div class="cabinet__info__item" >
         <h3>Тип ошибки:</h3>
         <p v-if="!changeInfo">
           {{ error.body["Тип ошибки"] }}
@@ -53,22 +56,26 @@
           </option>
         </select>
       </div>
-      <div class="cabinet__info__desc">
+      <div class="description__area" >
         <h3>Описание</h3>
         <p v-if="!changeInfo">
           {{ error.body.Описание }}
         </p>
         <textarea rows="6" v-else v-model="error.body.Описание" />
       </div>
+      </div>
+
       <div
+      style="border: 1px solid yellow; margin: 5px; padding: 5px;"
         v-if="
           changeInfo &&
           error.stage === 1 &&
           error['senior fitter'] === $store.state.user.authInfo.userDetails
         "
       >
+        <h2>Утверждено</h2>
         <div
-          class="cabinet__info__item"
+         :class="{ cabinet__info__item : typeof value === 'object' }"
           v-for="(value, key, index) in $store.state.template.error.stage2"
           :key="index"
         >
@@ -85,21 +92,21 @@
           <textarea
             v-else
             required
-            v-model="errorBody[key]"
+            v-model="errorBody[`${key} 2`]"
             cols="50"
-            rows="3"
+            rows="6"
           ></textarea>
         </div>
       </div>
-      <div
+      <div style="border: 1px solid green; margin: 5px; padding: 5px;"
         v-if="
           changeInfo &&
           error['senior fitter'] === $store.state.user.authInfo.userDetails
         "
       >
+        <h2>Закрыто</h2>
         <div
-          class="cabinet__info__item"
-          :class="{ cabinet__info__desc: typeof value === 'object' }"
+          :class="{ cabinet__info__item : typeof value === 'object' }"
           v-for="(value, key, index) in $store.state.template.error.stage3"
           :key="index"
         >
@@ -116,15 +123,14 @@
           <textarea
             v-else
             required
-            v-model="errorBody[key]"
+            v-model="errorBody[`${key} 3`]"
             cols="50"
-            rows="3"
+            rows="6"
           ></textarea>
         </div>
       </div>
     </div>
     <div v-else class="loading" />
-
     <p v-if="errorIsNotDef">{{ errorIsNotDef }}</p>
   </div>
 
@@ -203,6 +209,9 @@ export default {
 </script>
 
 <style lang="css" scoped>
+.description__area{
+  width: inherit;
+}
 .loading {
   margin: auto;
   width: 30px;
@@ -213,7 +222,7 @@ p {
   font-size: 16px;
 }
 h3 {
-  margin: 0;
+  margin: 5px;
 }
 .cabinet {
   border: 1px solid orange;
@@ -227,6 +236,9 @@ h3 {
 }
 h1 {
   margin: 10px;
+}
+h2{
+  margin: 7px;
 }
 .cabinet__info {
   /* width: min(95vw, 400px); */
@@ -260,4 +272,10 @@ h1 {
   text-align: end;
   align-self: center;
 }
+.cabinet__info__item > select {
+  justify-self: end;
+  text-align: end;
+  align-self: center;
+}
+
 </style>
