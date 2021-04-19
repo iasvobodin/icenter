@@ -45,7 +45,7 @@
         <p v-if="!changeInfo">
           {{ error.body["Тип ошибки"] }}
         </p>
-        <select v-else v-model="error.body['Тип ошибки']">
+        <select v-else v-model="errorBody['Тип ошибки']">
           <option
             v-for="(opt, index) in $store.state.template.error.stage1[
               'Тип ошибки'
