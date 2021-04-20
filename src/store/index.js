@@ -13,11 +13,11 @@ export default createStore({
     setUserAuth(state, payload) {
       window.sessionStorage.setItem("userDetails", payload.userDetails);
       state.user.authInfo = payload;
-      console.info(state.user, "kjhhljvpoweif-20iwpogjsvjsldvnn");
+      // console.info(state.user, "kjhhljvpoweif-20iwpogjsvjsldvnn");
     },
     setUserInfo(state, payload) {
       state.user.userInfo = payload.userInfo;
-      console.log(state.user, "state.user");
+      // console.log(state.user, "state.user");
     },
 
     setTemplate(state, payload) {
@@ -67,14 +67,20 @@ export default createStore({
     },
     async GET_auth({ commit, state }) {
       let clientPrincipal = null;
-      let responseUser;
+      // let responseUser;
 
-      try {
-        if (!state.user.authInfo) {
-          responseUser = await fetch("/.auth/me");
+      if (!state.user.authInfo) {
+        const responseUser = await fetch("/.auth/me");
+        const payload = await responseUser.json();
+
+        if (responseUser.status === "404") {
+          //user local
+        } else {
+          return payload;
         }
+      }
+      try {
         try {
-          const payload = await responseUser.json();
           clientPrincipal = payload.clientPrincipal;
           // console.log(payload, "payload");
         } catch (error) {
@@ -87,6 +93,25 @@ export default createStore({
       } catch (error) {
         console.log("fetch error", error);
       }
+
+      // try {
+      //   if (!state.user.authInfo) {
+      //     responseUser = await fetch("/.auth/me");
+      //   }
+      //   try {
+      //     const payload = await responseUser.json();
+      //     clientPrincipal = payload.clientPrincipal;
+      //     // console.log(payload, "payload");
+      //   } catch (error) {
+      //     console.log("Use local user", error.message);
+      //     clientPrincipal = {
+      //       userId: "5d2ba18226de49aa931985d4b6549977",
+      //       userDetails: "Ivan.Svobodin@Emerson.com",
+      //     };
+      //   }
+      // } catch (error) {
+      //   console.log("fetch error", error);
+      // }
       // console.log(clientPrincipal,"clientPrincipal");
       !state.user.authInfo && commit("setUserAuth", clientPrincipal);
 
