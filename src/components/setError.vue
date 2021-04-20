@@ -57,16 +57,18 @@ export default {
 
       this.error = {
         id: "error__" + Date.now(),
-        wo: this.$store.state.projectInfo.wo.toString(),
-        fitter: sessionStorage.getItem("userDetails"),
-        "project number": this.$store.state.projectInfo["project number"],
-        "cab name": this.$store.state.projectInfo["cab name"],
-        type: "error",
+        info: {
+          wo: this.$store.state.projectInfo.wo.toString(),
+          "cab name": this.$store.state.projectInfo["cab name"],
+          "project number": this.$store.state.projectInfo["project number"],
+          fitter: sessionStorage.getItem("userDetails"),
+          "senior fitter": this.$store.state.projectInfo["senior fitter"],
+          type: "error",
+        },
         status: "open",
         stage: 1,
         ttl: 6000,
-        "senior fitter": this.$store.state.projectInfo["senior fitter"],
-        body: this.errorBody,
+        body: [this.errorBody],
       };
 
       try {

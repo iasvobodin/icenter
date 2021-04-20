@@ -37,45 +37,59 @@
           {{ error["status"] }}
         </p>
       </div>
-      <div  style="border: 1px solid red; margin: 5px; padding: 5px;">
-
-      <h2 v-if="changeInfo" >Открыто</h2>
-      <div class="cabinet__info__item" >
-        <h3>Тип ошибки:</h3>
-        <p v-if="!changeInfo">
-          {{ error.body["Тип ошибки"] }}
-        </p>
-        <select v-else v-model="errorBody['Тип ошибки']">
-          <option
-            v-for="(opt, index) in $store.state.template.error.stage1[
-              'Тип ошибки'
-            ]"
-            :key="index"
-          >
-            {{ opt }}
-          </option>
-        </select>
-      </div>
-      <div class="description__area" >
-        <h3>Описание</h3>
-        <p v-if="!changeInfo">
-          {{ error.body.Описание }}
-        </p>
-        <textarea rows="6" v-else v-model="error.body.Описание" />
-      </div>
-      </div>
-
       <div
-      style="border: 1px solid yellow; margin: 5px; padding: 5px;"
+        v-if="changeInfo"
+        style="border: 1px solid red; margin: 5px; padding: 5px"
+      >
+        <h2>Открыто</h2>
+        <div
+          :class="{ cabinet__info__item: typeof value === 'object' }"
+          v-for="(value, key, index) in $store.state.template.error.stage1"
+          :key="index"
+        >
+          <h3>{{ key }}</h3>
+          <select
+            required
+            v-if="typeof value === 'object'"
+            v-model="stage1[key]"
+          >
+            <option v-for="(opt, index) in value" :key="index">
+              {{ opt }}
+            </option>
+          </select>
+          <textarea
+            v-else
+            required
+            v-model="stage1[`${key}`]"
+            cols="50"
+            rows="6"
+          ></textarea>
+        </div>
+      </div>
+      <div v-else>
+        <h2>Открыто</h2>
+        <div
+          v-for="(value, key, index) in stage1"
+          :key="index"
+          class="cabinet__info__item"
+        >
+          <h3>{{ key }}</h3>
+          <p>
+            {{ value }}
+          </p>
+        </div>
+      </div>
+      <div
+        style="border: 1px solid yellow; margin: 5px; padding: 5px"
         v-if="
           changeInfo &&
           error.stage === 1 &&
           error['senior fitter'] === $store.state.user.authInfo.userDetails
         "
       >
-        <h2>Утверждено</h2>
+        <h2>Принято</h2>
         <div
-         :class="{ cabinet__info__item : typeof value === 'object' }"
+          :class="{ cabinet__info__item: typeof value === 'object' }"
           v-for="(value, key, index) in $store.state.template.error.stage2"
           :key="index"
         >
@@ -83,7 +97,7 @@
           <select
             required
             v-if="typeof value === 'object'"
-            v-model="errorBody[key]"
+            v-model="stage2[key]"
           >
             <option v-for="(opt, index) in value" :key="index">
               {{ opt }}
@@ -92,13 +106,27 @@
           <textarea
             v-else
             required
-            v-model="errorBody[`${key} 2`]"
+            v-model="stage2[`${key}`]"
             cols="50"
             rows="6"
           ></textarea>
         </div>
       </div>
-      <div style="border: 1px solid green; margin: 5px; padding: 5px;"
+      <div v-else>
+        <h2 v-if="Object.keys(stage2)[0]">Принято</h2>
+        <div
+          v-for="(value, key, index) in stage2"
+          :key="index"
+          class="cabinet__info__item"
+        >
+          <h3>{{ key }}</h3>
+          <p>
+            {{ value }}
+          </p>
+        </div>
+      </div>
+      <div
+        style="border: 1px solid green; margin: 5px; padding: 5px"
         v-if="
           changeInfo &&
           error['senior fitter'] === $store.state.user.authInfo.userDetails
@@ -106,7 +134,7 @@
       >
         <h2>Закрыто</h2>
         <div
-          :class="{ cabinet__info__item : typeof value === 'object' }"
+          :class="{ cabinet__info__item: typeof value === 'object' }"
           v-for="(value, key, index) in $store.state.template.error.stage3"
           :key="index"
         >
@@ -114,7 +142,7 @@
           <select
             required
             v-if="typeof value === 'object'"
-            v-model="errorBody[key]"
+            v-model="stage3[key]"
           >
             <option v-for="(opt, index) in value" :key="index">
               {{ opt }}
@@ -123,10 +151,23 @@
           <textarea
             v-else
             required
-            v-model="errorBody[`${key} 3`]"
+            v-model="stage3[`${key}`]"
             cols="50"
             rows="6"
           ></textarea>
+        </div>
+      </div>
+      <div v-else>
+        <h2 v-if="Object.keys(stage3)[0]">Закрыто</h2>
+        <div
+          v-for="(value, key) in stage3"
+          :key="key"
+          class="cabinet__info__item"
+        >
+          <h3>{{ key }}</h3>
+          <p>
+            {{ value }}
+          </p>
         </div>
       </div>
     </div>
@@ -134,14 +175,28 @@
     <p v-if="errorIsNotDef">{{ errorIsNotDef }}</p>
   </div>
 
-  <button @click="changeInfo = !changeInfo">Редактировать</button>
+  <button v-if="!changeInfo" @click="changeInfo = !changeInfo">
+    Редактировать
+  </button>
+  <button v-else @click="updateErorData">Обновить</button>
 </template>
 
 <script>
 export default {
+  //   computed: {
+  //   stage1sort() {
+  //     // const sortObject = o =>
+  //     return Object.keys(this.stage2).sort().reduce((r, k) => (r[k] = this.stage2[k], r), {})
+
+  //     // Object.entries(this.stage1).sort((a,b)=>b[0]-a[0])
+  //   }
+  // },
   // setup
   data() {
     return {
+      stage1: {},
+      stage2: {},
+      stage3: {},
       errorBody: {},
       changeInfo: false,
       error: null,
@@ -150,18 +205,35 @@ export default {
     };
   },
   async mounted() {
-    try {
-      if (!this.errorTemplate) {
-        this.errorTemplate = await (
-          await fetch("/api/templates/templateProject/ver1")
-        ).json();
-      }
-    } catch (error) {
-      console.log(error);
-    }
+    // try {
+    //   if (!this.errorTemplate) {
+    //     this.errorTemplate = await (
+    //       await fetch("/api/templates/templateProject/ver1")
+    //     ).json();
+    //   }
+    // } catch (error) {
+    //   console.log(error);
+    // }
   },
 
   methods: {
+    async updateErorData() {
+      const updateErorBody = {};
+
+      try {
+        await fetch("/api/POST_error", {
+          method: "POST", // или 'PUT'
+          body: JSON.stringify({ ...updateErorBody }),
+        });
+      } finally {
+        this.changeInfo = !this.changeInfo;
+      }
+    },
+    stageSort(o) {
+      return Object.keys(o)
+        .sort((a, b) => b[0] - a[0])
+        .reduce((r, k) => ((r[k] = o[k]), r), {});
+    },
     async sendFile() {
       const formData = new FormData();
       const fileField = document.querySelector('input[type="file"]');
@@ -192,6 +264,7 @@ export default {
         }
         try {
           this.error = await responsError.json();
+          this.stage1 = this.error.body;
         } catch (error) {
           console.error("this.errors.json", error.message);
         }
@@ -209,7 +282,7 @@ export default {
 </script>
 
 <style lang="css" scoped>
-.description__area{
+.description__area {
   width: inherit;
 }
 .loading {
@@ -237,7 +310,7 @@ h3 {
 h1 {
   margin: 10px;
 }
-h2{
+h2 {
   margin: 7px;
 }
 .cabinet__info {
@@ -277,5 +350,4 @@ h2{
   text-align: end;
   align-self: center;
 }
-
 </style>
