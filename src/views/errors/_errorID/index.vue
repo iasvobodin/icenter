@@ -260,7 +260,7 @@ export default {
         );
         if (!responsError.ok) {
           this.errorIsNotDef = "Данной ошибки не существует";
-          console.log("error is not exist");
+          // console.log("error is not exist");
         }
         try {
           this.error = await responsError.json();
