@@ -34,41 +34,25 @@
 </template>
 
 <script>
-// import { useStore } from "vuex";
-// import { computed } from "vue";
 export default {
-  // async setup() {
-  //   const store = useStore();
-  //   // const template = computed(() => store.state.template);
-  //   // store.dispatch("GET_template")
-  //   // console.log(store.state.template, "this.$store.state.template");
-  //   return {
-  //     // template,
-  //     // access an action
-  //     asyncTemplate: () => store.dispatch("GET_template"),
-  //   };
-  // },
   methods: {
     async postError() {
-      // const fileField = document.querySelector('input[type="file"]');
-      // const formData = new FormData();
-      // // formData.append('username', 'abc123');
-      // formData.append("photo", fileField.files[0]);
-
       this.error = {
         id: "error__" + Date.now(),
         info: {
           wo: this.$store.state.projectInfo.wo.toString(),
           "cab name": this.$store.state.projectInfo["cab name"],
           "project number": this.$store.state.projectInfo["project number"],
-          fitter: sessionStorage.getItem("userDetails"),
-          "senior fitter": this.$store.state.projectInfo["senior fitter"],
+          fitter: sessionStorage.getItem("userDetails").toLowerCase(),
+          "senior fitter": this.$store.state.projectInfo[
+            "senior fitter"
+          ].toLowerCase(),
           type: "error",
         },
         status: "open",
         stage: 1,
         ttl: 6000,
-        body: [this.errorBody],
+        body: [{stage1 : this.errorBody}],
       };
 
       try {
@@ -86,7 +70,7 @@ export default {
     },
   },
   created() {
-    !this.$store.state.template && this.$store.dispatch("GET_template");
+    // !this.$store.state.template && this.$store.dispatch("GET_template");
   },
   data() {
     return {

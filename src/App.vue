@@ -4,12 +4,12 @@
     <router-link to="/User">User</router-link> |
     <router-link to="/admin">Admin</router-link> | -->
     <a
-      v-if="!$store.state.user.authInfo"
+      v-if="!$store.state.user.info"
       href="/.auth/login/aad?post_login_redirect_uri=/user"
       >Login |</a
     >
     <router-link v-else to="/User"
-      >{{ $store.state.user.authInfo.userDetails }} |
+      >{{ $store.state.user.info.userDetails }} |
     </router-link>
     <a href="/.auth/logout?post_logout_redirect_uri=/">Log out | </a>
     <router-link to="/admin">Admin</router-link>
@@ -95,8 +95,27 @@ export default {
   //   // does NOT have access to `this` component instance,
   //   // because it has not been created yet when this guard is called!
   // },
+  mounted() {
+    function formatDate(date) {
+      return (
+        date.getDate() +
+        "/" +
+        "0" +
+        (date.getMonth() + 1) +
+        "/" +
+        date.getFullYear() +
+        " " +
+        date.getHours() +
+        ":" +
+        date.getMinutes()
+      );
+    }
+    const dd = new Date();
+    console.log(formatDate(dd));
+  },
   created() {
-    !this.$store.state.user.authInfo && this.$store.dispatch("GET_auth");
+    !this.$store.state.user.info && this.$store.dispatch("GET_auth");
+    !this.$store.state.template && this.$store.dispatch("GET_template");
   },
 };
 </script>

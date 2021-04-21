@@ -12,8 +12,8 @@ export default createStore({
   mutations: {
     setUserAuth(state, payload) {
       window.sessionStorage.setItem("userDetails", payload.userDetails);
-      state.user.authInfo = payload;
-      // console.info(state.user, "kjhhljvpoweif-20iwpogjsvjsldvnn");
+      state.user.info = payload;
+      console.info(state.user, "kjhhljvpoweif-20iwpogjsvjsldvnn");
     },
     setUserInfo(state, payload) {
       state.user.userInfo = payload.userInfo;
@@ -67,39 +67,20 @@ export default createStore({
     },
     async GET_auth({ commit, state }) {
       let clientPrincipal = null;
-      // let responseUser;
+      let responseUser;
 
-      if (!state.user.authInfo) {
-        const responseUser = await fetch("/.auth/me");
-        const payload = await responseUser.json();
+      // if (!state.user.info) {
+      //   const responseUser = await fetch("/.auth/me");
+      //   const payload = await responseUser.json();
 
-        if (responseUser.status === "404") {
-          //user local
-        } else {
-          return payload;
-        }
-      }
-      try {
-        try {
-          clientPrincipal = payload.clientPrincipal;
-          // console.log(payload, "payload");
-        } catch (error) {
-          console.log("Use local user", error.message);
-          clientPrincipal = {
-            userId: "5d2ba18226de49aa931985d4b6549977",
-            userDetails: "Ivan.Svobodin@Emerson.com",
-          };
-        }
-      } catch (error) {
-        console.log("fetch error", error);
-      }
-
-      // try {
-      //   if (!state.user.authInfo) {
-      //     responseUser = await fetch("/.auth/me");
+      //   if (responseUser.status === "404") {
+      //     //user local
+      //   } else {
+      //     return payload;
       //   }
+      // }
+      // try {
       //   try {
-      //     const payload = await responseUser.json();
       //     clientPrincipal = payload.clientPrincipal;
       //     // console.log(payload, "payload");
       //   } catch (error) {
@@ -112,8 +93,28 @@ export default createStore({
       // } catch (error) {
       //   console.log("fetch error", error);
       // }
+
+      try {
+        if (!state.user.info) {
+          responseUser = await fetch("/.auth/me");
+        }
+        try {
+          const payload = await responseUser.json();
+          clientPrincipal = payload.clientPrincipal;
+          // console.log(payload, "payload");
+        } catch (error) {
+          console.log("Use local user", error.message);
+          clientPrincipal = {
+            userId: "5d2ba18226de49aa931985d4b6549977",
+            userDetails: "Ivan.Svobodin@Emerson.com",
+          };
+        }
+      } catch (error) {
+        console.log("fetch error", error);
+      }
       // console.log(clientPrincipal,"clientPrincipal");
-      !state.user.authInfo && commit("setUserAuth", clientPrincipal);
+      clientPrincipal.userDetails = clientPrincipal.userDetails.toLowerCase();
+      !state.user.info && commit("setUserAuth", clientPrincipal);
 
       try {
         const userRes = await fetch(`/api/user/${clientPrincipal.userId}`, {
@@ -121,16 +122,17 @@ export default createStore({
           body: JSON.stringify({
             id: clientPrincipal.userId,
             type: "info",
-            authInfo: clientPrincipal,
-            userInfo: {},
+            info: clientPrincipal,
+            body: {},
           }),
         });
         const user = await userRes.json();
-        !state.user.userInfo && commit("setUserInfo", user);
+        !state.user.body && commit("setUserInfo", user);
         // console.log(state.user,user, "state.user.info");
       } catch (error) {
         console.log("user is not def", error);
       }
+
       console.log("GETAUTH");
     },
     async GET_projectList({ commit, state }, payload) {

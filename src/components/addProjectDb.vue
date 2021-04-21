@@ -1,6 +1,10 @@
 <template>
   <div class="project__holder">
     <div class="project">
+      <p v-if="lastUpdate">
+        Время последенего обновления LegendStats : {{ lastUpdate }}
+      </p>
+      <!-- <button @click="runDataFactory" >update</button> -->
       <choose-project-number
         @input-project-event="fetchProjectList"
         @choose-project-number="choose"
@@ -51,29 +55,6 @@
               @checked-wo="mapWO"
               v-if="woList"
             />
-            <!-- <table v-if="woList" style="width: 100%">
-              <colgroup>
-                <col style="width: 20%" />
-                <col style="width: 80%" />
-              </colgroup>
-              <tr style="border: solid 2px orange;">
-                <th>WO</th>
-                <th>Наименование</th>
-                <th>Выбрать всё<input @click="checkAll" type="checkbox" /></th>
-              </tr>
-              <tr v-for="(value, key, index) in woList" :key="index">
-                <td>{{ value.wo }}</td>
-                <td class="tg-0lax">{{ value["cab name"] }}</td>
-                <td class="tg-0lax">
-                  <input
-                    :ref="setItemRef"
-                    type="checkbox"
-                    :value="value"
-                    v-model="checkedCabinetsNames"
-                  />
-                </td>
-              </tr>
-            </table> -->
           </div>
           <input class="add__button" type="submit" :value="fetchStatus" />
         </form>
@@ -120,6 +101,7 @@ export default {
       woList: null,
       listIsActive: null,
       checkBoxAll: false,
+      lastUpdate: null,
     };
   },
   async mounted() {
@@ -138,6 +120,27 @@ export default {
     }
   },
   methods: {
+    async runDataFactory() {
+      const uri =
+        "https://management.azure.com/subscriptions/33ffdf9c-5499-414c-b962-a4ce5553d7e1/resourceGroups/Masstrikov_ICenter/providers/Microsoft.DataFactory/factories/icenter/pipelines/icenter/createRun?api-version=2017-03-01-preview";
+      await fetch(uri, {
+        method: "POST",
+      });
+    },
+    formatDate(date) {
+      return (
+        date.getDate() +
+        "/" +
+        "0" +
+        (date.getMonth() + 1) +
+        "/" +
+        date.getFullYear() +
+        " " +
+        date.getHours() +
+        ":" +
+        date.getMinutes()
+      );
+    },
     mapWO(e) {
       console.log(e);
       this.checkedCabinetsNames = Object.values(e)
@@ -161,9 +164,18 @@ export default {
     },
     async fetchProjectList() {
       if (!this.projectData) {
-        this.projectData = await (
-          await fetch("/api/projectstatus/Open")
-        ).json();
+        const projectDataRes = await fetch("/api/projectstatus/Open");
+        const projectData = await projectDataRes.json();
+        this.projectData = projectData.data;
+
+        // console.log(typeof projectData.lastUpdate,  this.formatDate(new Date(projectData.lastUpdate*1000)));
+        this.lastUpdate = this.formatDate(
+          new Date(projectData.lastUpdate * 1000)
+        );
+        // this.projectData = await (
+        //   await fetch("/api/projectstatus/Open")
+        // ).json();
+        //  console.log(this.formatDate(this.projectData.lastUpdate));
         // // debugger
         // this.projectData = data//.filter(el => el.length > 6).sort();
         // console.log(this.projectData);

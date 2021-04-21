@@ -14,12 +14,28 @@ module.exports = async function (context, req, user) {
   // context.log(context.bindings.userOut)
   if (!user[0]) {
     context.res = {
-      body: req.body,
+      status: 404,
+      // body: user[0],
     };
     return (context.bindings.userPost = req.body);
   } else {
     context.res = {
+      status: 200,
       body: user[0],
     };
+    // return
+    // return (context.bindings.userPost = req.body);
   }
+
+  // if (!user[0]) {
+  //   context.res = {
+  //     body: req.body,
+  //   };
+  //   return (context.bindings.userPost = req.body);
+  // } else {
+  //   context.res = {
+  //     body: user[0],
+  //   };
+  // }
+
 };

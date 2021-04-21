@@ -1,7 +1,7 @@
 <template>
   <div class="cabinet">
     <div>
-      <h1>{{ $route.params.errorID }}</h1>
+      <h1>{{ $route.params.errorId }}</h1>
     </div>
     <br />
     <!-- <span v-if="!changeInfo">{{ value }}</span>
@@ -10,25 +10,25 @@
       <div class="cabinet__info__item">
         <h3>Проект:</h3>
         <p>
-          {{ error["project number"] }}
+          {{ error.info["project number"] }}
         </p>
       </div>
       <div class="cabinet__info__item">
         <h3>Шкаф:</h3>
         <p>
-          {{ error["cab name"] }}
+          {{ error.info["cab name"] }}
         </p>
       </div>
       <div class="cabinet__info__item">
         <h3>Ошибку добавил:</h3>
         <p>
-          {{ error.fitter }}
+          {{ error.info.fitter }}
         </p>
       </div>
       <div class="cabinet__info__item">
         <h3>Мастер проекта:</h3>
         <p>
-          {{ error["senior fitter"] }}
+          {{ error.info["senior fitter"] }}
         </p>
       </div>
       <div class="cabinet__info__item">
@@ -51,7 +51,7 @@
           <select
             required
             v-if="typeof value === 'object'"
-            v-model="stage1[key]"
+            v-model="errorBody.stage1[key]"
           >
             <option v-for="(opt, index) in value" :key="index">
               {{ opt }}
@@ -60,7 +60,7 @@
           <textarea
             v-else
             required
-            v-model="stage1[`${key}`]"
+            v-model="errorBody.stage1[`${key}`]"
             cols="50"
             rows="6"
           ></textarea>
@@ -69,7 +69,7 @@
       <div v-else>
         <h2>Открыто</h2>
         <div
-          v-for="(value, key, index) in stage1"
+          v-for="(value, key, index) in errorBody.stage1"
           :key="index"
           class="cabinet__info__item"
         >
@@ -84,7 +84,7 @@
         v-if="
           changeInfo &&
           error.stage === 1 &&
-          error['senior fitter'] === $store.state.user.authInfo.userDetails
+          error.info['senior fitter'] === $store.state.user.info.userDetails
         "
       >
         <h2>Принято</h2>
@@ -97,7 +97,7 @@
           <select
             required
             v-if="typeof value === 'object'"
-            v-model="stage2[key]"
+            v-model="errorBody.stage2[key]"
           >
             <option v-for="(opt, index) in value" :key="index">
               {{ opt }}
@@ -106,16 +106,16 @@
           <textarea
             v-else
             required
-            v-model="stage2[`${key}`]"
+            v-model="errorBody.stage2[`${key}`]"
             cols="50"
             rows="6"
           ></textarea>
         </div>
       </div>
       <div v-else>
-        <h2 v-if="Object.keys(stage2)[0]">Принято</h2>
+        <h2 v-if=" Object.keys(errorBody.stage2)[0]">Принято</h2>
         <div
-          v-for="(value, key, index) in stage2"
+          v-for="(value, key, index) in errorBody.stage2"
           :key="index"
           class="cabinet__info__item"
         >
@@ -129,7 +129,7 @@
         style="border: 1px solid green; margin: 5px; padding: 5px"
         v-if="
           changeInfo &&
-          error['senior fitter'] === $store.state.user.authInfo.userDetails
+          error.info['senior fitter'] === $store.state.user.info.userDetails
         "
       >
         <h2>Закрыто</h2>
@@ -142,7 +142,7 @@
           <select
             required
             v-if="typeof value === 'object'"
-            v-model="stage3[key]"
+            v-model="errorBody.stage3[key]"
           >
             <option v-for="(opt, index) in value" :key="index">
               {{ opt }}
@@ -151,16 +151,16 @@
           <textarea
             v-else
             required
-            v-model="stage3[`${key}`]"
+            v-model="errorBody.stage3[`${key}`]"
             cols="50"
             rows="6"
           ></textarea>
         </div>
       </div>
       <div v-else>
-        <h2 v-if="Object.keys(stage3)[0]">Закрыто</h2>
+        <h2 v-if=" Object.keys(errorBody.stage3)[0]">Закрыто</h2>
         <div
-          v-for="(value, key) in stage3"
+          v-for="(value, key) in errorBody.stage3"
           :key="key"
           class="cabinet__info__item"
         >
@@ -175,10 +175,8 @@
     <p v-if="errorIsNotDef">{{ errorIsNotDef }}</p>
   </div>
 
-  <button v-if="!changeInfo" @click="changeInfo = !changeInfo">
-    Редактировать
-  </button>
-  <button v-else @click="updateErorData">Обновить</button>
+  <button @click="changeInfo = !changeInfo">Редактировать</button>
+  <button @click="updateErorData">Обновить</button>
 </template>
 
 <script>
@@ -194,10 +192,11 @@ export default {
   // setup
   data() {
     return {
-      stage1: {},
-      stage2: {},
-      stage3: {},
-      errorBody: {},
+      errorBody: {
+        stage1: {},
+        stage2: {},
+        stage3: {},
+      },
       changeInfo: false,
       error: null,
       errorIsNotDef: null,
@@ -218,7 +217,10 @@ export default {
 
   methods: {
     async updateErorData() {
-      const updateErorBody = {};
+      const updateErorBody = {
+        body: this.error.body.push(this.errorBody),
+      ...this.error,
+      };
 
       try {
         await fetch("/api/POST_error", {
@@ -253,10 +255,10 @@ export default {
       }
     },
     async getUserErrors() {
-      // console.log(this.$route.params.errorID);
+      // console.log(this.$route.params.errorId);
       try {
         const responsError = await fetch(
-          `/api/errors/${this.$route.params.errorID}`
+          `/api/errors/${this.$route.params.errorId}`
         );
         if (!responsError.ok) {
           this.errorIsNotDef = "Данной ошибки не существует";
@@ -264,7 +266,12 @@ export default {
         }
         try {
           this.error = await responsError.json();
-          this.stage1 = this.error.body;
+          this.errorBody = {
+            ...this.errorBody,
+            ...this.error.body[this.error.body.length - 1],
+          };
+          //  this.stage2 = this.error.body[this.error.body.length - 1].stage2;
+          //   this.stage3 = this.error.body[this.error.body.length - 1].stage3;
         } catch (error) {
           console.error("this.errors.json", error.message);
         }
@@ -276,7 +283,7 @@ export default {
 
   created() {
     this.getUserErrors();
-    !this.$store.state.template && this.$store.dispatch("GET_template");
+    // !this.$store.state.template && this.$store.dispatch("GET_template");
   },
 };
 </script>

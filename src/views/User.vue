@@ -1,8 +1,8 @@
 <template>
   <div class="about">
     <h1>User page</h1>
-    <h2 v-if="$store.state.user.authInfo.userDetails.userDetails">
-      {{ $store.state.user.authInfo.userDetails.userDetails }}
+    <h2 v-if="$store.state.user.info.userDetails.userDetails">
+      {{ $store.state.user.info.userDetails.userDetails }}
     </h2>
     <Suspense>
       <template #default>

@@ -22,7 +22,7 @@
       "name": "user",
       "ConnectionStringSetting": "legendstats_DOCUMENTDB",
       "databaseName": "icenter",
-      "collectionName": "users",
+      "collectionName": "icenterUsers",
       "sqlQuery": "SELECT * from c where c.id = {id}"
     },
     {
@@ -31,8 +31,8 @@
       "name": "userErors",
       "ConnectionStringSetting": "legendstats_DOCUMENTDB",
       "databaseName": "icenter",
-      "collectionName": "users",
-      "sqlQuery": "SELECT * from c where c.authInfo.userDetails = {id} and  c.type = 'error'"
+      "collectionName": "icenterUsers",
+      "sqlQuery": "SELECT * from c where c.info.userDetails = {id} and  c.type = 'error'"
     },
     {
       "type": "cosmosDB",
@@ -40,7 +40,7 @@
       "name": "userPost",
       "ConnectionStringSetting": "legendstats_DOCUMENTDB",
       "databaseName": "icenter",
-      "collectionName": "users"
+      "collectionName": "icenterUsers"
     }
   ]
 }

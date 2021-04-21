@@ -8,6 +8,16 @@
     <router-link :to="`/admin/addproject`">Добавить проект</router-link>
     |
     <router-link :to="`/admin/addcabtime`">Расчёт CabTime</router-link>
+    |
+    <router-link :to="`/errors`">Ошибки</router-link>
+    |
+    <router-link :to="`/tasks`">Задачи</router-link>
+    |
+    <router-link :to="`/projects`">Проекты</router-link>
+    |
+    <router-link :to="`/cabinets`">Шкафы</router-link>
+    |
+    <router-link :to="`/cabtimes`">CabTimes</router-link>
   </nav>
 </template>
 

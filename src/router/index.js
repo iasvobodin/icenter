@@ -31,22 +31,22 @@ const routes = [
       return import(/* webpackChunkName: "about" */ "@/views/admin/index.vue");
     },
   },
-  {
-    path: "/projects/:projectnumber",
-    component: function () {
-      return import(
-        /* webpackChunkName: "about" */ "@/views/projects/_projectnumber/index.vue"
-      );
-    },
-  },
-  {
-    path: "/projects/:projectnumber/:wonumber",
-    component: function () {
-      return import(
-        /* webpackChunkName: "about" */ "@/views/projects/_projectnumber/_wonumber/index.vue"
-      );
-    },
-  },
+  // {
+  //   path: "/projects/:projectnumber",
+  //   component: function () {
+  //     return import(
+  //       /* webpackChunkName: "about" */ "@/views/projects/_projectnumber/index.vue"
+  //     );
+  //   },
+  // },
+  // {
+  //   path: "/projects/:projectnumber/:wonumber",
+  //   component: function () {
+  //     return import(
+  //       /* webpackChunkName: "about" */ "@/views/projects/_projectnumber/_wonumber/index.vue"
+  //     );
+  //   },
+  // },
   {
     path: "/errors",
     component: function () {
@@ -54,10 +54,72 @@ const routes = [
     },
   },
   {
-    path: "/errors/:errorID",
+    path: "/errors/:errorId",
     component: function () {
       return import(
-        /* webpackChunkName: "about" */ "@/views/errors/_errorID/index.vue"
+        /* webpackChunkName: "about" */ "@/views/errors/_errorId/index.vue"
+      );
+    },
+  },
+  {
+    path: "/tasks",
+    component: function () {
+      return import(/* webpackChunkName: "about" */ "@/views/tasks/index.vue");
+    },
+  },
+  {
+    path: "/tasks/:taskId",
+    component: function () {
+      return import(
+        /* webpackChunkName: "about" */ "@/views/tasks/_taskId/index.vue"
+      );
+    },
+  },
+  {
+    path: "/cabinets",
+    component: function () {
+      return import(
+        /* webpackChunkName: "about" */ "@/views/cabinets/index.vue"
+      );
+    },
+  },
+  {
+    path: "/cabinets/:cabinetId",
+    component: function () {
+      return import(
+        /* webpackChunkName: "about" */ "@/views/cabinets/_cabinetId/index.vue"
+      );
+    },
+  },
+  {
+    path: "/cabtimes",
+    component: function () {
+      return import(
+        /* webpackChunkName: "about" */ "@/views/cabtimes/index.vue"
+      );
+    },
+  },
+  {
+    path: "/cabtimes/:cabtimeId",
+    component: function () {
+      return import(
+        /* webpackChunkName: "about" */ "@/views/cabtimes/_cabtimeId/index.vue"
+      );
+    },
+  },
+  {
+    path: "/projects",
+    component: function () {
+      return import(
+        /* webpackChunkName: "about" */ "@/views/projects/index.vue"
+      );
+    },
+  },
+  {
+    path: "/projects/:projectId",
+    component: function () {
+      return import(
+        /* webpackChunkName: "about" */ "@/views/projects/_projectId/index.vue"
       );
     },
   },

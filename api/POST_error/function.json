@@ -29,7 +29,7 @@
       "name": "userErrorOut",
       "ConnectionStringSetting": "legendstats_DOCUMENTDB",
       "databaseName": "icenter",
-      "collectionName": "users"
+      "collectionName": "icenterUsers"
     }
   ]
 }
