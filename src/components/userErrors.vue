@@ -103,7 +103,7 @@ export default {
   display: grid;
   /* width: 90%;
   margin: auto; */
-  grid-template-columns: repeat(auto-fit, minmax(max(35vw, 250px), 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(max(25vw, 250px), 1fr));
   column-gap: 2vh;
   row-gap: 2vh;
 }

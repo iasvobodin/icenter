@@ -8,7 +8,8 @@
       "methods": [
         "get",
         "post"
-      ]
+      ],
+      "route": "errors"
     },
     {
       "type": "http",
@@ -17,19 +18,12 @@
     },
     {
       "type": "cosmosDB",
-      "direction": "out",
-      "name": "errorOut",
+      "direction": "in",
+      "name": "data",
       "ConnectionStringSetting": "legendstats_DOCUMENTDB",
       "databaseName": "icenter",
-      "collectionName": "icenterDB"
-    },
-    {
-      "type": "cosmosDB",
-      "direction": "out",
-      "name": "userErrorOut",
-      "ConnectionStringSetting": "legendstats_DOCUMENTDB",
-      "databaseName": "icenter",
-      "collectionName": "icenterErrors"
+      "collectionName": "icenterErrors",
+      "sqlQuery": "SELECT * from c where c.status = {status}"
     }
   ]
 }

@@ -4,7 +4,7 @@
     <form @submit.prevent="postError">
       <div
         class="error__field"
-        v-for="(value, key, index) in $store.state.template.error.stage1"
+        v-for="(value, key, index) in $store.state.template.error.body.Открыто"
         :key="index"
       >
         <p>{{ key }}</p>
@@ -40,19 +40,17 @@ export default {
       this.error = {
         id: "error__" + Date.now(),
         info: {
+          Проект: this.$store.state.projectInfo["project number"],
+          Шкаф: this.$store.state.projectInfo["cab name"],
           wo: this.$store.state.projectInfo.wo.toString(),
-          "cab name": this.$store.state.projectInfo["cab name"],
-          "project number": this.$store.state.projectInfo["project number"],
-          fitter: sessionStorage.getItem("userDetails").toLowerCase(),
-          "senior fitter": this.$store.state.projectInfo[
-            "senior fitter"
-          ].toLowerCase(),
-          type: "error",
+          Добавил: sessionStorage.getItem("userDetails").toLowerCase(),
+          Мастер: this.$store.state.projectInfo["senior fitter"].toLowerCase(),
         },
+        type: "error",
         status: "open",
         stage: 1,
         ttl: 6000,
-        body: [{stage1 : this.errorBody}],
+        body: [{ Открыто: this.errorBody, Принято: {}, Закрыто: {} }],
       };
 
       try {

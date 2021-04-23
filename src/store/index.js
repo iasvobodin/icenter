@@ -8,8 +8,12 @@ export default createStore({
     selectedProjectNumber: "",
     projectInfo: {},
     user: {},
+    currentError: null,
   },
   mutations: {
+    SETERROR(state, pay) {
+      state.currentError = pay;
+    },
     setUserAuth(state, payload) {
       window.sessionStorage.setItem("userDetails", payload.userDetails);
       state.user.info = payload;

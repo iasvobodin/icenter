@@ -19,32 +19,29 @@ module.exports = async function(context, req) {
   // };
 
   context.bindings.errorOut = req.rawBody
-  context.bindings.userErrorOut = [ 
+  context.bindings.userErrorOut = 
+  // [ 
     {
        id: req.body.id,
-       info:{
-        userDetails: req.body.info["senior fitter"],
-       },
+       info: {...req.body.info, Описание: req.body.body[req.body.body.length - 1].Открыто["Описание"]},
         type: "error",
         status: req.body.status,
         ttl: 6000,
-        "project number": req.body.info['project number'],
-        "cab name": req.body.info['cab name'],
-        description: req.body.body[req.body.body.length - 1].stage1["Описание"]
-   },
-   {
-       id: req.body.id,
-      info:{
-        userDetails: req.body.info.fitter,
-       },
-        type: "error",
-        status: req.body.status,
-        ttl: 6000,
-        "project number": req.body.info['project number'],
-        "cab name": req.body.info['cab name'],
-        description: req.body.body[req.body.body.length - 1].stage1["Описание"]
+      
    }
+  //  {
+  //      id: req.body.id,
+  //     info:{
+  //       userDetails: req.body.info.fitter,
+  //      },
+  //       type: "error",
+  //       status: req.body.status,
+  //       ttl: 6000,
+  //       "project number": req.body.info['project number'],
+  //       "cab name": req.body.info['cab name'],
+  //       description: req.body.body[req.body.body.length - 1].stage1["Описание"]
+  //  }
 
-]
+// ]
   // context.done();
 };
