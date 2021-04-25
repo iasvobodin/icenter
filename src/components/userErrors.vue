@@ -98,7 +98,7 @@ export default {
 };
 </script>
 
-<style lang="css" scoped>
+<style lang="css">
 .errors__holder {
   display: grid;
   /* width: 90%;
