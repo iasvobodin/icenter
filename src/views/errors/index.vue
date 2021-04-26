@@ -1,5 +1,15 @@
 <template>
-  <div class="errors__holder">
+  <div class="selectStatus">
+    <h3>Выберете статус</h3>
+    <select class="change__status" v-model="selectedStatus">
+      <option value="open">Открыто</option>
+      <option value="confirmed">Принято</option>
+    </select>
+    <br />
+    <button class="update__button" @click="getErrors">Обновить</button>
+  </div>
+  <br />
+  <div v-if="errors" class="errors__holder">
     <div
       v-for="(value, key, index) in errors"
       :key="index"
@@ -18,6 +28,7 @@
       </div>
     </div>
   </div>
+  <div v-else class="loading" />
 </template>
 
 <script>
@@ -25,6 +36,7 @@ export default {
   data() {
     return {
       errors: null,
+      selectedStatus: "open",
     };
   },
   methods: {
@@ -32,7 +44,10 @@ export default {
       this.$router.push(`/errors/${e}`);
     },
     async getErrors() {
-      const resErrors = await fetch(`/api/errors?status=${"open"}`);
+      this.errors = null;
+      const resErrors = await fetch(
+        `/api/errors?status=${this.selectedStatus}`
+      );
       this.errors = await resErrors.json();
     },
   },
@@ -43,11 +58,17 @@ export default {
 </script>
 
 <style lang="css" scoped>
+.change__status {
+  width: min(400px, 95vw);
+}
+.update__button {
+  margin-top: 1vh;
+}
 .errors__holder {
   display: grid;
-  /* width: 90%;
-  margin: auto; */
-  grid-template-columns: repeat(auto-fit, minmax(max(30vw, 300px), 1fr));
+  width: 98%;
+  margin: auto;
+  grid-template-columns: repeat(auto-fit, minmax(max(25vw, 250px), 1fr));
   column-gap: 2vh;
   row-gap: 2vh;
 }
@@ -78,5 +99,11 @@ export default {
   text-align: end;
   align-self: center;
   margin: 0;
+}
+.loading {
+  margin: auto;
+  width: 30px;
+  height: 30px;
+  background: url(/img/loading.gif) no-repeat center bottom;
 }
 </style>
