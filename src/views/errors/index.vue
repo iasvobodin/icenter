@@ -1,53 +1,73 @@
 <template>
-<div class="errors__holder" >
+  <div class="selectStatus">
+    <h3>Выберете статус</h3>
+    <select class="change__status" v-model="selectedStatus">
+      <option value="open">Открыто</option>
+      <option value="confirmed">Принято</option>
+    </select>
+    <br />
+    <button class="update__button" @click="getErrors">Обновить</button>
+  </div>
+  <br />
+  <div v-if="errors" class="errors__holder">
     <div
       v-for="(value, key, index) in errors"
       :key="index"
       class="errors__card"
       @click="chosseError(value.id)"
     >
-              <div  v-for="(val, key, index) in value.info"
-          :key="index" class="error__item">
+      <div
+        v-for="(val, key, index) in value.info"
+        :key="index"
+        class="error__item"
+      >
         <h3 class="error__item__title">{{ key }}:</h3>
         <p class="error__item__desc">
-         {{ val }}
+          {{ val }}
         </p>
       </div>
     </div>
-    
-  <div>
-      <!-- <h1 @click="$router.push(`/errors/${errors[0].id}`)" v-if="errors">{{errors}}</h1> -->
   </div>
-  </div>
+  <div v-else class="loading" />
 </template>
 
 <script>
 export default {
-    data() {
-        return {
-            errors: null
-        }
-    },
-    methods: {
-          chosseError(e) {
+  data() {
+    return {
+      errors: null,
+      selectedStatus: "open",
+    };
+  },
+  methods: {
+    chosseError(e) {
       this.$router.push(`/errors/${e}`);
     },
-      async  getErrors() {
-       const resErrors =   await fetch(`/api/errors?status=${"open"}`)
-       this.errors = await resErrors.json()
-        }
+    async getErrors() {
+      this.errors = null;
+      const resErrors = await fetch(
+        `/api/errors?status=${this.selectedStatus}`
+      );
+      this.errors = await resErrors.json();
     },
-    created () {
-       this.getErrors() ;
-    },
+  },
+  created() {
+    this.getErrors();
+  },
 };
 </script>
 
 <style lang="css" scoped>
+.change__status {
+  width: min(400px, 95vw);
+}
+.update__button {
+  margin-top: 1vh;
+}
 .errors__holder {
   display: grid;
-  /* width: 90%;
-  margin: auto; */
+  width: 98%;
+  margin: auto;
   grid-template-columns: repeat(auto-fit, minmax(max(25vw, 250px), 1fr));
   column-gap: 2vh;
   row-gap: 2vh;
@@ -79,4 +99,11 @@ export default {
   text-align: end;
   align-self: center;
   margin: 0;
-}</style>
+}
+.loading {
+  margin: auto;
+  width: 30px;
+  height: 30px;
+  background: url(/img/loading.gif) no-repeat center bottom;
+}
+</style>

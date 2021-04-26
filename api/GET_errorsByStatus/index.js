@@ -1,7 +1,17 @@
-module.exports = async function(context, req, data) {
+module.exports = async function (context, req, data, ) {
   // const project = [];
   // data.map(el => el.project);
-  context.res = {
-    body:  data
-  };
+  // if (errorOut[0]) {
+  // }
+
+  if (data[0]) {
+    context.res = {
+      body: data,
+      status: 200,
+    };
+  } else {
+    context.res = {
+      status: 210,
+    };
+  }
 };

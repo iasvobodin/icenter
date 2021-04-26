@@ -50,7 +50,7 @@ export default {
         status: "open",
         stage: 1,
         ttl: 6000,
-        body: [{ Открыто: this.errorBody, Принято: {}, Закрыто: {} }],
+        body: [{ Открыто: this.errorBody, Принято: {}, Устранено: {} }],
       };
 
       try {
