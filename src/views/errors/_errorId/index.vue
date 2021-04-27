@@ -37,40 +37,38 @@
             v-for="(value, key, index) in $store.state.template.error.body2"
             :key="index"
           >
-            <p>{{ key }}</p>
-          <div
-            class="error__field"
-            v-for="(v, k, i) in value"
-            :key="i"
-          >
-          <br>
-          <p>{{ k }}</p>
-            <br />
-            <select v-model="error.body[key][k]"
-              v-if="Object.values(v)[0] === 'select'"
-              name=""
-              id=""
-            >
-              <option v-for="(j, k) in Object.values(v)[1]" :key="k">
-                {{ j }}
-              </option>
-            </select>
-            <input v-model="error.body[key][k]"
-              v-if="Object.values(v)[0] === 'checkbox'"
-              type="checkbox"
-            />
-            <input v-model="error.body[key][k]"
-              v-if="Object.values(v)[0] === 'number'"
-              type="number"
-            />
-            <textarea v-model="error.body[key][k]"
-              v-if="Object.values(v)[0] === 'textarea'"
-              name=""
-              id=""
-              cols="30"
-              rows="5"
-            ></textarea>
-          </div>
+            <h2>{{ key }}</h2>
+            <div class="error__item__desc" v-for="(v, k, i) in value" :key="i">
+              <h3 class="error__item__vertical__title">{{ k }}</h3>
+              <select
+                v-model="error.body[key][k]"
+                v-if="Object.values(v)[0] === 'select'"
+                name=""
+                id=""
+              >
+                <option v-for="(j, k) in Object.values(v)[1]" :key="k">
+                  {{ j }}
+                </option>
+              </select>
+              <input
+                v-model="error.body[key][k]"
+                v-if="Object.values(v)[0] === 'checkbox'"
+                type="checkbox"
+              />
+              <input
+                v-model="error.body[key][k]"
+                v-if="Object.values(v)[0] === 'number'"
+                type="number"
+              />
+              <textarea
+                v-model="error.body[key][k]"
+                v-if="Object.values(v)[0] === 'textarea'"
+                name=""
+                id=""
+                cols="30"
+                rows="5"
+              ></textarea>
+            </div>
           </div>
         </form>
         <!-- <form @submit.prevent="updateErorData" id="errorData">
@@ -225,7 +223,16 @@
     <p v-if="errorIsNotDef">{{ errorIsNotDef }}</p>
   </div>
 
-  <button v-if="!changeInfo" @click="changeData">Редактировать</button>
+  <button
+    v-if="
+      error &&
+      !changeInfo &&
+      error.info.Добавил === $store.state.user.info.userDetails
+    "
+    @click="changeData"
+  >
+    Редактировать
+  </button>
   <button
     v-if="!closeError && changeInfo && error.body.Принято['Описание']"
     @click="closeError = !closeError"
