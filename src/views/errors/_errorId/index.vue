@@ -19,10 +19,10 @@
       </section>
       <section v-if="!changeInfo" class="eror__body">
         <div
-          v-show="Object.values(val)[1]"
-          v-for="(val, key, index) in error.body[error.body.length - 1]"
+          v-show="Object.values(val)[1]&&!key.startsWith('_')"
+          v-for="(val, key, index) in error.body"
           :key="index"
-        >
+        > 
           <h2>{{ key }}</h2>
           <div class="cabinet__info__item" v-for="(v, k, i) in val" :key="i">
             <h3>{{ k }}:</h3>
@@ -42,7 +42,7 @@
                 form="errorData"
                 required
                 v-model="
-                  error.body[error.body.length - 1].Открыто['Тип ошибки']
+                  error.body.Открыто['Тип ошибки']
                 "
               >
                 <option
@@ -61,7 +61,7 @@
               <textarea
                 class="error__item__vertical__desc"
                 required
-                v-model="error.body[error.body.length - 1].Открыто['Описание']"
+                v-model="error.body.Открыто['Описание']"
                 cols="50"
                 rows="6"
               ></textarea>
@@ -76,7 +76,7 @@
               <select
                 required
                 v-model="
-                  error.body[error.body.length - 1].Принято['Статус решения']
+                  error.body.Принято['Статус решения']
                 "
               >
                 <option
@@ -95,7 +95,7 @@
               <textarea
                 required
                 form="errorData"
-                v-model="error.body[error.body.length - 1].Принято['Описание']"
+                v-model="error.body.Принято['Описание']"
                 cols="50"
                 rows="6"
               ></textarea>
@@ -103,7 +103,7 @@
           </div>
           <!-- DISABLED AREA -->
           <div
-            v-else-if="error.body[error.body.length - 1].Принято['Описание']"
+            v-else-if="error.body.Принято['Описание']"
           >
             <h2>Принято</h2>
             <div class="cabinet__info__item">
@@ -114,7 +114,7 @@
                 disabled
                 required
                 v-model="
-                  error.body[error.body.length - 1].Принято['Статус решения']
+                  error.body.Принято['Статус решения']
                 "
               >
                 <option
@@ -134,7 +134,7 @@
                 disabled
                 required
                 form="errorData"
-                v-model="error.body[error.body.length - 1].Принято['Описание']"
+                v-model="error.body.Принято['Описание']"
                 cols="50"
                 rows="6"
               ></textarea>
@@ -151,7 +151,7 @@
               <select
                 required
                 v-model="
-                  error.body[error.body.length - 1].Устранено[
+                  error.body.Устранено[
                     'Статус коррекции'
                   ]
                 "
@@ -174,7 +174,7 @@
               <textarea
                 required
                 v-model="
-                  error.body[error.body.length - 1].Устранено['Описание']
+                  error.body.Устранено['Описание']
                 "
                 cols="50"
                 rows="6"
@@ -190,7 +190,7 @@
                 type="number"
                 required
                 v-model="
-                  error.body[error.body.length - 1].Устранено[
+                  error.body.Устранено[
                     'Время на устранение'
                   ]
                 "
@@ -209,7 +209,7 @@
     v-if="
       !closeError &&
       changeInfo &&
-      error.body[error.body.length - 1].Принято['Описание']
+      error.body.Принято['Описание']
     "
     @click="closeError = !closeError"
   >
@@ -218,7 +218,6 @@
   <button v-if="changeInfo" type="submit" form="errorData">
     Сохранить изменения
   </button>
-  <button @click="deleteErrror">DELETE</button>
 </template>
 
 <script>
@@ -226,12 +225,6 @@ export default {
   data() {
     return {
       closeError: null,
-      openType: null,
-      openDesc: null,
-      confirmedType: null,
-      confirmedDesc: null,
-      closedType: null,
-      closedDesc: null,
       dataModel: null,
       changeInfo: false,
       error: null,
@@ -241,42 +234,58 @@ export default {
     };
   },
   methods: {
-    async deleteErrror() {
-      const err = await this.getCurrentError();
-      (this.error.status = Object.values(
-        this.error.body[this.error.body.length - 1].Устранено
-      )[0]
-        ? "closed"
-        : Object.values(this.error.body[this.error.body.length - 1].Принято)[0]
-        ? "confirmed"
-        : "open"),
-        console.log("deleteErrror()", err.status, this.error.status);
-    },
     changeData() {
       this.changeInfo = !this.changeInfo;
     },
     async updateErorData() {
+      const err = await this.getCurrentError();
       const updateErorBody = {
-        id: this.$store.state.currentError.id,
+        id: this.error.id,
         status: Object.values(
-          this.error.body[this.error.body.length - 1].Устранено
+          this.error.body.Устранено
         )[0]
           ? "closed"
           : Object.values(
-              this.error.body[this.error.body.length - 1].Принято
+              this.error.body.Принято
             )[0]
           ? "confirmed"
           : "open",
-        info: this.$store.state.currentError.info,
-        body: [this.error.body[this.error.body.length - 1]],
-        // .push(this.$store.state.currentError.body)
-        // .push(this.modifiedErrorBody), // this.error.push(this.modifiedErrorBody),
+        info: this.error.info,
+        body:[...err.body, {...this.error.body,
+        _changed: sessionStorage.getItem("userDetails").toLowerCase(),
+        _time: `${Date.now()}`
+        }]
       };
-      console.log(updateErorBody);
+      const openError = {
+        id: this.error.id,
+        info: {
+          ...this.error.info,
+          Описание: this.error.body.Открыто['Описание'],
+        },
+        type: "error",
+        status: updateErorBody.status,
+        ttl: 6000,
+      };
+
+      if (err.status != updateErorBody.status||updateErorBody.status==="closed") {
+        console.log('comparestatus');
+        await fetch("/api/POST_openError", {
+          method: "POST", // или 'PUT'
+          body: JSON.stringify({id:err.id, status: err.status,ttl: 1}),
+        });
+      }
+      // console.log(updateErorBody);
       try {
         await fetch("/api/POST_error", {
           method: "POST", // или 'PUT'
           body: JSON.stringify({ ...updateErorBody }),
+        });
+        if (updateErorBody.status==="closed") {
+          return
+        }
+        await fetch("/api/POST_openError", {
+          method: "POST", // или 'PUT'
+          body: JSON.stringify({ ...openError }),
         });
       } finally {
         this.changeInfo = !this.changeInfo;
@@ -327,6 +336,8 @@ export default {
 
   async created() {
     this.error = await this.getCurrentError();
+    this.error.body = this.error.body[this.error.body.length -1]
+    console.log('here');
   },
 };
 </script>

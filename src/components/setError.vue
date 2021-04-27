@@ -53,10 +53,25 @@ export default {
         body: [{ Открыто: this.errorBody, Принято: {}, Устранено: {} }],
       };
 
+      const openError = {
+        id: this.error.id,
+        info: {
+          ...this.error.info,
+          Описание: this.errorBody["Описание"],
+        },
+        type: "error",
+        status: "open",
+        ttl: 6000,
+      };
+
       try {
         await fetch("/api/POST_error", {
           method: "POST", // или 'PUT'
           body: JSON.stringify({ ...this.error }),
+        });
+        await fetch("/api/POST_openError", {
+          method: "POST", // или 'PUT'
+          body: JSON.stringify({ ...openError }),
         });
       } finally {
         this.errorBody = {};
