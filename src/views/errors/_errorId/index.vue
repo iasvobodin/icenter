@@ -32,6 +32,48 @@
       </section>
       <section v-else class="mod__error__body">
         <form @submit.prevent="updateErorData" id="errorData">
+          <div
+            class="error__field"
+            v-for="(value, key, index) in $store.state.template.error.body2"
+            :key="index"
+          >
+            <p>{{ key }}</p>
+          <div
+            class="error__field"
+            v-for="(v, k, i) in value"
+            :key="i"
+          >
+          <br>
+          <p>{{ k }}</p>
+            <br />
+            <select v-model="error.body[key][k]"
+              v-if="Object.values(v)[0] === 'select'"
+              name=""
+              id=""
+            >
+              <option v-for="(j, k) in Object.values(v)[1]" :key="k">
+                {{ j }}
+              </option>
+            </select>
+            <input v-model="error.body[key][k]"
+              v-if="Object.values(v)[0] === 'checkbox'"
+              type="checkbox"
+            />
+            <input v-model="error.body[key][k]"
+              v-if="Object.values(v)[0] === 'number'"
+              type="number"
+            />
+            <textarea v-model="error.body[key][k]"
+              v-if="Object.values(v)[0] === 'textarea'"
+              name=""
+              id=""
+              cols="30"
+              rows="5"
+            ></textarea>
+          </div>
+          </div>
+        </form>
+        <!-- <form @submit.prevent="updateErorData" id="errorData">
           <div>
             <h2>Открыто</h2>
             <div class="cabinet__info__item">
@@ -94,7 +136,7 @@
               ></textarea>
             </div>
           </div>
-          <!-- DISABLED AREA -->
+       
           <div v-else-if="error.body.Принято['Описание']">
             <h2>Принято</h2>
             <div class="cabinet__info__item">
@@ -176,7 +218,7 @@
               />
             </div>
           </div>
-        </form>
+        </form> -->
       </section>
     </div>
     <div v-else class="loading" />

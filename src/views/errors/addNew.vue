@@ -1,15 +1,101 @@
 <template>
-    <div>
-ADD NEW
+  <div>
+    <h2>Добавление новой ошибки.</h2>
+    <choose-project-number
+      @input-project-event="fetchProjectList"
+      @choose-project-number="choose"
+      :fetchUrl="projectData"
+    />
+    <div v-if="projectInformation">
+      <choose-wo
+        @choose-project-number="chooseCabinet"
+        :fetchUrl="projectInformation.cabinets"
+      />
+      <div v-if="cabinet">
+        <cabinet-template
+          class="cabinet__template"
+          :project-number="projectInformation.id"
+          :project-name="projectInformation.info.base['project name']"
+          :cabinet-wo="cabinet.wo"
+          :cabinet-name="cabinet['cab name']"
+        />
+      </div>
     </div>
+  </div>
 </template>
 
 <script>
-    export default {
-        
-    }
+import chooseProjectNumber from "@/components/chooseProjectNumber";
+import chooseWoNumber from "@/components/chooseWoNumber";
+import cabinetTemplate from "@/components/cabinetTemplate";
+import chooseWo from "@/components/chooseWO";
+import projectList from "@/components/projectList";
+export default {
+  data() {
+    return {
+      projectData: null,
+      fetchProject: null,
+      projectInformation: null,
+      projectStatus: "open",
+      woState: false,
+      cabinet: "",
+    };
+  },
+  components: {
+    cabinetTemplate,
+    // eslint-disable-next-line vue/no-unused-components
+    projectList,
+    // eslint-disable-next-line vue/no-unused-components
+    chooseWo,
+    chooseProjectNumber,
+    // eslint-disable-next-line vue/no-unused-components
+    chooseWoNumber,
+  },
+  watch: {
+    projectStatus(oldv, newv) {
+      if (newv === "closed") {
+        this.fetchProjectList();
+      }
+      this.projectData = null;
+      // this.choose();
+    },
+  },
+  methods: {
+    chooseCabinet(e) {
+      this.cabinet = e;
+      this.$store.commit("SETcabinetInfo", e);
+      this.woState = true;
+    },
+    choose($event) {
+      if (!$event) {
+        this.projectInformation = false;
+        return;
+      }
+      this.projectInformation = Object.values(this.fetchProject).filter(
+        (e) => e.id === $event
+      )[0];
+      console.log(this.projectInformation, "this.projectInformation");
+      this.$store.commit("SETprojectInfo", this.projectInformation);
+    },
+    async fetchProjectList() {
+      if (!this.projectData) {
+        this.fetchProject = await (
+          await fetch(`/api/project/${this.projectStatus}`)
+        ).json();
+        this.projectData = this.fetchProject.map((el) => el.id);
+        // this.projectData = this.fetchProject.map(el => el.id);
+      }
+    },
+  },
+  setup() {
+    return {};
+  },
+};
 </script>
 
-<style lang="scss" scoped>
-
+<style lang="css" scoped>
+fieldset {
+  width: 500px;
+  margin: auto;
+}
 </style>

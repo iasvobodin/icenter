@@ -1,12 +1,13 @@
 <template>
+  <router-link to="/errors/addnew">Добавить новую ошибку</router-link>
+  <br />
+  <br />
   <div class="selectStatus">
-    <h3>Выберете статус</h3>
+    <h3>Выберете статус ошибки</h3>
     <select class="change__status" v-model="selectedStatus">
       <option value="open">Открыто</option>
       <option value="confirmed">Принято</option>
     </select>
-    <br />
-    <button class="update__button" @click="getErrors">Обновить</button>
   </div>
   <br />
   <div v-if="errors" class="errors__holder">
@@ -28,7 +29,7 @@
       </div>
     </div>
   </div>
-  <div v-if="errorMessage">{{errorMessage}}</div>
+  <div v-if="errorMessage">{{ errorMessage }}</div>
   <div v-if="fetchStatus" class="loading" />
 </template>
 
@@ -40,35 +41,32 @@ export default {
       selectedStatus: "open",
       resErrors: null,
       fetchStatus: null,
-      errorMessage:""
+      errorMessage: "",
     };
+  },
+  watch: {
+    selectedStatus() {
+      this.getErrors();
+    },
   },
   methods: {
     chosseError(e) {
       this.$router.push(`/errors/${e}`);
     },
     async getErrors() {
-      this.fetchStatus = true
+      this.fetchStatus = true;
       this.errors = null;
-       this.errorMessage = ""
+      this.errorMessage = "";
       try {
         this.resErrors = await fetch(
           `/api/errors?status=${this.selectedStatus}`
         );
         this.errors = await this.resErrors.json();
       } catch (error) {
-        this.errorMessage = "Нет ошибок с выбранным статусом"
-      } finally{
-        this.fetchStatus = false
+        this.errorMessage = "Нет ошибок с выбранным статусом";
+      } finally {
+        this.fetchStatus = false;
       }
-
-      // const resErrors = await fetch(
-      //   `/api/errors?status=${this.selectedStatus}`
-      // );
-      // this.errors = await resErrors.json();
-      // if (resErrors.status === "210") {
-
-      // }
     },
   },
   created() {
@@ -78,8 +76,11 @@ export default {
 </script>
 
 <style lang="css" scoped>
+.selectStatus > h3 {
+  display: inline;
+}
 .change__status {
-  width: min(400px, 95vw);
+  width: auto;
 }
 .update__button {
   margin-top: 1vh;

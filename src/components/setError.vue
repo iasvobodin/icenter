@@ -2,7 +2,15 @@
   <!-- <div>SET ERROR</div> -->
   <div v-if="$store.state.template">
     <form @submit.prevent="postError">
-      <div
+      <div v-if="$store.state.user.info.userRoles.includes('admin')">
+        <select class="change__status" v-model="role">
+          <option selected value="fitter">Сборщик</option>
+          <option value="testEngeneer">Тестировщик</option>
+        </select>
+        <!-- <button>Fitter</button><button>TetsEngeneer</button> -->
+      </div>
+      <!-- eslint-disable-next-line vue/no-use-v-if-with-v-for -->
+      <div v-if="role === 'fitter'"
         class="error__field"
         v-for="(value, key, index) in $store.state.template.error.body.Открыто"
         :key="index"
@@ -23,14 +31,70 @@
           required
           v-model="errorBody[key]"
           cols="50"
-          rows="3"
+          rows="5"
         ></textarea>
       </div>
+      <div v-else>
+        <div
+          class="error__field"
+          v-for="(value, key, index) in $store.state.template.error
+            .testEngeneer"
+          :key="index"
+        >
+          <p>{{ key }}</p>
+          <br />
+          <select
+            v-model="errorBody[key]"
+            v-if="Object.values(value)[0] === 'select'"
+            name=""
+            id=""
+          >
+            <option v-for="(v, i) in Object.values(value)[1]" :key="i">
+              {{ v }}
+            </option>
+          </select>
+          <input
+            v-model="errorBody[key]"
+            v-if="Object.values(value)[0] === 'checkbox'"
+            type="checkbox"
+          />
+          <input
+            v-model="errorBody[key]"
+            v-if="Object.values(value)[0] === 'number'"
+            type="number"
+          />
+          <textarea
+            v-model="errorBody[key]"
+            v-if="Object.values(value)[0] === 'textarea'"
+            name=""
+            id=""
+            cols="30"
+            rows="5"
+          ></textarea>
+        </div>
+      </div>
+
       <!-- <input type="file" /> -->
       <input class="add__button" type="submit" value="добавить в базу" />
     </form>
     <!-- {{errorTemplate.error.body}} -->
   </div>
+  <!-- <select
+          required
+          v-if="typeof value === 'object'"
+          v-model="errorBody[key]"
+        >
+          <option v-for="(opt, index) in value" :key="index">
+            {{ opt }}
+          </option>
+        </select>
+        <textarea
+          v-else
+          required
+          v-model="errorBody[key]"
+          cols="50"
+          rows="5"
+        ></textarea> -->
 </template>
 
 <script>
@@ -91,6 +155,7 @@ export default {
       errorBody: {},
       error: {},
       photo: null,
+      role: "fitter",
     };
   },
 
@@ -112,5 +177,9 @@ export default {
 .error__field {
   margin: 10px;
   box-sizing: border-box;
+}
+form {
+  width: min(95vw, 400px);
+  margin: auto;
 }
 </style>

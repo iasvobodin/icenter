@@ -1,68 +1,12 @@
 <template>
-  <div class="about">
-    <h1>User page</h1>
-    <h2 v-if="$store.state.user.info.userDetails.userDetails">
-      {{ $store.state.user.info.userDetails.userDetails }}
-    </h2>
-    <Suspense>
-      <template #default>
-        <user-errors />
-      </template>
-      <template #fallback>
-        <div>
-          <p>Loading errrorrrrrs</p>
-          <div class="loading" />
-        </div>
-      </template>
-    </Suspense>
+  <div>
+    <h1>Личная старница {{ $store.state.user.info.userDetails }}</h1>
+    <p>в разработке</p>
   </div>
 </template>
 
 <script>
-import userErrors from "@/components/userErrors";
-export default {
-  components: {
-    // eslint-disable-next-line vue/no-unused-components
-    userErrors,
-  },
-  methods: {
-    async getUserErrors() {
-      !window.sessionStorage.getItem("userDetails") &&
-        (await this.$store.dispatch("GET_auth"));
-      // console.log(window.sessionStorage.getItem("userDetails"), "11111");
-      try {
-        const responsErrors = await fetch(
-          `/api/user/${window.sessionStorage.getItem("userDetails")}`
-        );
-        try {
-          this.errors = await responsErrors.json();
-        } catch (error) {
-          console.error("this.errors.json", error);
-          this.errors = [];
-        }
-      } catch (error) {
-        console.log("errors is not def", error);
-      }
-    },
-  },
-  data() {
-    return {
-      user: null,
-      userName: "",
-      errors: null,
-    };
-  },
-  created() {
-    this.getUserErrors();
-  },
-};
+export default {};
 </script>
 
-<style lang="css" scoped>
-.loading {
-  margin: auto;
-  width: 30px;
-  height: 30px;
-  background: url(/img/loading.gif) no-repeat center bottom;
-}
-</style>
+<style lang="scss" scoped></style>

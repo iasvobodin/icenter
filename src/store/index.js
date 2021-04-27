@@ -67,36 +67,11 @@ export default createStore({
       } catch (error) {
         console.log(error, "GETTEMPLATEERROR");
       }
-      console.log(state.template, "state.template");
+      // console.log(state.template, "state.template");
     },
     async GET_auth({ commit, state }) {
       let clientPrincipal = null;
       let responseUser;
-
-      // if (!state.user.info) {
-      //   const responseUser = await fetch("/.auth/me");
-      //   const payload = await responseUser.json();
-
-      //   if (responseUser.status === "404") {
-      //     //user local
-      //   } else {
-      //     return payload;
-      //   }
-      // }
-      // try {
-      //   try {
-      //     clientPrincipal = payload.clientPrincipal;
-      //     // console.log(payload, "payload");
-      //   } catch (error) {
-      //     console.log("Use local user", error.message);
-      //     clientPrincipal = {
-      //       userId: "5d2ba18226de49aa931985d4b6549977",
-      //       userDetails: "Ivan.Svobodin@Emerson.com",
-      //     };
-      //   }
-      // } catch (error) {
-      //   console.log("fetch error", error);
-      // }
 
       try {
         if (!state.user.info) {
@@ -111,6 +86,7 @@ export default createStore({
           clientPrincipal = {
             userId: "5d2ba18226de49aa931985d4b6549977",
             userDetails: "Ivan.Svobodin@Emerson.com",
+            userRoles: ["admin", "anonymous", "authenticated"],
           };
         }
       } catch (error) {

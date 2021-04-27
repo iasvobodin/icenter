@@ -1,7 +1,4 @@
 <template>
-  <h2>Введите номер !!!!!!!!!!!</h2>
-
-  <br />
   <div
     :class="{ border__project: listIsActive }"
     class="choose__project__holder"
