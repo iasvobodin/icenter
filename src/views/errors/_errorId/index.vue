@@ -19,10 +19,10 @@
       </section>
       <section v-if="!changeInfo" class="eror__body">
         <div
-          v-show="Object.values(val)[1]&&!key.startsWith('_')"
+          v-show="Object.values(val)[1] && !key.startsWith('_')"
           v-for="(val, key, index) in error.body"
           :key="index"
-        > 
+        >
           <h2>{{ key }}</h2>
           <div class="cabinet__info__item" v-for="(v, k, i) in val" :key="i">
             <h3>{{ k }}:</h3>
@@ -41,9 +41,7 @@
               <select
                 form="errorData"
                 required
-                v-model="
-                  error.body.Открыто['Тип ошибки']
-                "
+                v-model="error.body.Открыто['Тип ошибки']"
               >
                 <option
                   v-for="(opt, index) in $store.state.template.error.body
@@ -73,12 +71,7 @@
               <h3>
                 {{ Object.keys($store.state.template.error.body.Принято)[0] }}:
               </h3>
-              <select
-                required
-                v-model="
-                  error.body.Принято['Статус решения']
-                "
-              >
+              <select required v-model="error.body.Принято['Статус решения']">
                 <option
                   v-for="(opt, index) in $store.state.template.error.body
                     .Принято['Статус решения']"
@@ -102,9 +95,7 @@
             </div>
           </div>
           <!-- DISABLED AREA -->
-          <div
-            v-else-if="error.body.Принято['Описание']"
-          >
+          <div v-else-if="error.body.Принято['Описание']">
             <h2>Принято</h2>
             <div class="cabinet__info__item">
               <h3>
@@ -113,9 +104,7 @@
               <select
                 disabled
                 required
-                v-model="
-                  error.body.Принято['Статус решения']
-                "
+                v-model="error.body.Принято['Статус решения']"
               >
                 <option
                   v-for="(opt, index) in $store.state.template.error.body
@@ -150,11 +139,7 @@
               </h3>
               <select
                 required
-                v-model="
-                  error.body.Устранено[
-                    'Статус коррекции'
-                  ]
-                "
+                v-model="error.body.Устранено['Статус коррекции']"
               >
                 <option
                   v-for="(opt, index) in $store.state.template.error.body
@@ -173,9 +158,7 @@
               </h3>
               <textarea
                 required
-                v-model="
-                  error.body.Устранено['Описание']
-                "
+                v-model="error.body.Устранено['Описание']"
                 cols="50"
                 rows="6"
               ></textarea>
@@ -189,11 +172,7 @@
               <input
                 type="number"
                 required
-                v-model="
-                  error.body.Устранено[
-                    'Время на устранение'
-                  ]
-                "
+                v-model="error.body.Устранено['Время на устранение']"
               />
             </div>
           </div>
@@ -206,11 +185,7 @@
 
   <button v-if="!changeInfo" @click="changeData">Редактировать</button>
   <button
-    v-if="
-      !closeError &&
-      changeInfo &&
-      error.body.Принято['Описание']
-    "
+    v-if="!closeError && changeInfo && error.body.Принято['Описание']"
     @click="closeError = !closeError"
   >
     Закрыть ошибку
@@ -241,37 +216,40 @@ export default {
       const err = await this.getCurrentError();
       const updateErorBody = {
         id: this.error.id,
-        status: Object.values(
-          this.error.body.Устранено
-        )[0]
+        status: Object.values(this.error.body.Устранено)[0]
           ? "closed"
-          : Object.values(
-              this.error.body.Принято
-            )[0]
+          : Object.values(this.error.body.Принято)[0]
           ? "confirmed"
           : "open",
         info: this.error.info,
-        body:[...err.body, {...this.error.body,
-        _changed: sessionStorage.getItem("userDetails").toLowerCase(),
-        _time: `${Date.now()}`
-        }]
+        body: [
+          ...err.body,
+          {
+            ...this.error.body,
+            _changed: sessionStorage.getItem("userDetails").toLowerCase(),
+            _time: `${Date.now()}`,
+          },
+        ],
       };
       const openError = {
         id: this.error.id,
         info: {
           ...this.error.info,
-          Описание: this.error.body.Открыто['Описание'],
+          Описание: this.error.body.Открыто["Описание"],
         },
         type: "error",
         status: updateErorBody.status,
         ttl: 6000,
       };
 
-      if (err.status != updateErorBody.status||updateErorBody.status==="closed") {
-        console.log('comparestatus');
+      if (
+        err.status != updateErorBody.status ||
+        updateErorBody.status === "closed"
+      ) {
+        console.log("comparestatus");
         await fetch("/api/POST_openError", {
           method: "POST", // или 'PUT'
-          body: JSON.stringify({id:err.id, status: err.status,ttl: 1}),
+          body: JSON.stringify({ id: err.id, status: err.status, ttl: 1 }),
         });
       }
       // console.log(updateErorBody);
@@ -280,8 +258,8 @@ export default {
           method: "POST", // или 'PUT'
           body: JSON.stringify({ ...updateErorBody }),
         });
-        if (updateErorBody.status==="closed") {
-          return
+        if (updateErorBody.status === "closed") {
+          return;
         }
         await fetch("/api/POST_openError", {
           method: "POST", // или 'PUT'
@@ -336,8 +314,8 @@ export default {
 
   async created() {
     this.error = await this.getCurrentError();
-    this.error.body = this.error.body[this.error.body.length -1]
-    console.log('here');
+    this.error.body = this.error.body[this.error.body.length - 1];
+    console.log("here");
   },
 };
 </script>

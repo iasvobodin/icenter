@@ -62,6 +62,14 @@ const routes = [
     },
   },
   {
+    path: "/errors/addNew",
+    component: function () {
+      return import(
+        /* webpackChunkName: "about" */ "@/views/errors/addNew.vue"
+      );
+    },
+  },
+  {
     path: "/tasks",
     component: function () {
       return import(/* webpackChunkName: "about" */ "@/views/tasks/index.vue");

@@ -28,7 +28,8 @@
       </div>
     </div>
   </div>
-  <div v-else class="loading" />
+  <div v-if="errorMessage">{{errorMessage}}</div>
+  <div v-if="fetchStatus" class="loading" />
 </template>
 
 <script>
@@ -37,6 +38,9 @@ export default {
     return {
       errors: null,
       selectedStatus: "open",
+      resErrors: null,
+      fetchStatus: null,
+      errorMessage:""
     };
   },
   methods: {
@@ -44,11 +48,27 @@ export default {
       this.$router.push(`/errors/${e}`);
     },
     async getErrors() {
+      this.fetchStatus = true
       this.errors = null;
-      const resErrors = await fetch(
-        `/api/errors?status=${this.selectedStatus}`
-      );
-      this.errors = await resErrors.json();
+       this.errorMessage = ""
+      try {
+        this.resErrors = await fetch(
+          `/api/errors?status=${this.selectedStatus}`
+        );
+        this.errors = await this.resErrors.json();
+      } catch (error) {
+        this.errorMessage = "Нет ошибок с выбранным статусом"
+      } finally{
+        this.fetchStatus = false
+      }
+
+      // const resErrors = await fetch(
+      //   `/api/errors?status=${this.selectedStatus}`
+      // );
+      // this.errors = await resErrors.json();
+      // if (resErrors.status === "210") {
+
+      // }
     },
   },
   created() {
