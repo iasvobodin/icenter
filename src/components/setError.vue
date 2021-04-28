@@ -13,152 +13,66 @@
         </select>
       </div>
       <div v-if="role === 'fitter'">
-        <div
-          :class="{ error__item__desc: key === 'Описание' }"
-          class="error__item"
-          v-for="(value, key, index) in $store.state.template.error.body2
-            .Открыто"
-          :key="index"
-        >
-          <h4
-            :class="{ error__item__vertical__title: key === 'Описание' }"
-            class="error__item__title"
-          >
-            {{ key }}
-          </h4>
-          <select
-            required
-            class="error__item__desc"
-            v-model="errorBody[key]"
-            v-if="Object.values(value)[0] === 'select'"
-          >
-            <option v-for="(v, i) in Object.values(value)[1]" :key="i">
-              {{ v }}
-            </option>
-          </select>
-          <input
-            required
-            v-model="errorBody[key]"
-            v-if="Object.values(value)[0] === 'checkbox'"
-            type="checkbox"
-          />
-          <input
-            required
-            v-model="errorBody[key]"
-            v-if="Object.values(value)[0] === 'number'"
-            type="number"
-          />
-          <textarea
-            required
-            v-model="errorBody[key]"
-            v-if="Object.values(value)[0] === 'textarea'"
-            cols="30"
-            rows="5"
-          ></textarea>
-        </div>
+        <h3>Статус ошибки: Открыто</h3>
+        <conditional-render
+          v-model="errorBody.Открыто"
+          :dataRender="$store.state.template.error.bodyF.Открыто"
+        />
       </div>
-      <div v-else>
+      <div v-if="role === 'testEngeneer'">
+        <h3>Статус ошибки: Открыто</h3>
+        <conditional-render
+          v-model="errorBody.Открыто"
+          :dataRender="$store.state.template.error.bodyT.Открыто"
+        />
         <div
-          :class="{ error__item__desc: key === 'Описание' }"
-          class="error__item"
-          v-for="(value, key, index) in $store.state.template.error
-            .testEngeneer"
-          :key="index"
+          v-if="errorBody.Открыто&&errorBody.Открыто['Ошибку допустил'] && role === 'testEngeneer'"
         >
-          <h4
-            :class="{ error__item__vertical__title: key === 'Описание' }"
-            class="error__item__title"
-          >
-            {{ key }}
-          </h4>
-          <select
-            required
-            class="error__item__desc"
-            v-model="errorBody[key]"
-            v-if="Object.values(value)[0] === 'select'"
-          >
-            <option v-for="(v, i) in Object.values(value)[1]" :key="i">
-              {{ v }}
-            </option>
-          </select>
-          <input
-            required
-            v-model="errorBody[key]"
-            v-if="Object.values(value)[0] === 'checkbox'"
-            type="checkbox"
-          />
-          <input
-            required
-            v-model="errorBody[key]"
-            v-if="Object.values(value)[0] === 'number'"
-            type="number"
-          />
-          <textarea
-            required
-            v-model="errorBody[key]"
-            v-if="Object.values(value)[0] === 'textarea'"
-            cols="30"
-            rows="5"
-          ></textarea>
-        </div>
-      </div>
-      <div v-if="errorBody['Ошибку допустил'] && role === 'testEngeneer'">
-        <div
-          class="error__item"
-          v-if="errorBody['Ошибку допустил'] === 'Инженер-проектировщик'"
-        >
-          <h4 class="error__item__title">Инженер</h4>
-          <select required class="error__item__desc" name="" id="">
-            <option
-              v-for="(value, key, index) in $store.state.template.engeneers"
-              :key="index"
-              value=""
+          <div class="error__item">
+            <h4 class="error__item__title">
+              {{ errorBody.Открыто["Ошибку допустил"] }}
+            </h4>
+            <select
+              v-model="errorBody.Открыто['_Ошибку допустил']"
+              required
+              class="error__item__desc"
             >
-              {{ value }}
-            </option>
-          </select>
+              <option
+                v-for="(value, key, index) in $store.state.template[
+                  errorBody.Открыто['Ошибку допустил']
+                ]"
+                :key="index"
+              >
+                {{ value }}
+              </option>
+            </select>
+          </div>
         </div>
-        <div
-          class="error__item"
-          v-if="errorBody['Ошибку допустил'] === 'Сборщик'"
-        >
-          <h4 class="error__item__title">Сборщик</h4>
-          <select required class="error__item__desc" name="" id="">
-            <option
-              v-for="(value, key, index) in $store.state.template.fitters"
-              :key="index"
-              value=""
-            >
-              {{ value }}
-            </option>
-          </select>
-        </div>
+        <section v-if="statusConfirmed" >
+          <h3>Статус ошибки: Принято</h3>
+          <conditional-render
+            v-model="errorBody.Принято"
+            :dataRender="$store.state.template.error.bodyT.Принято"
+          />
+        </section>
+        <section  v-if="statusClosed" >
+          <h3>Статус ошибки: Устранено</h3>
+          <conditional-render
+            v-model="errorBody.Устранено"
+            :dataRender="$store.state.template.error.bodyT.Устранено"
+          />
+        </section>
       </div>
-      <!-- <input type="file" /> -->
-      <br>
+      <br />
       <input class="add__button" type="submit" value="Добавить" />
     </form>
-    <!-- {{errorTemplate.error.body}} -->
+    <button @click="statusClosed = !statusClosed" >Подтвердить</button>
+    <button @click="statusConfirmed = !statusConfirmed" >Закрыть</button>
   </div>
-  <!-- <select
-          required
-          v-if="typeof value === 'object'"
-          v-model="errorBody[key]"
-        >
-          <option v-for="(opt, index) in value" :key="index">
-            {{ opt }}
-          </option>
-        </select>
-        <textarea
-          v-else
-          required
-          v-model="errorBody[key]"
-          cols="50"
-          rows="5"
-        ></textarea> -->
 </template>
 
 <script>
+import conditionalRender from "@/components/conditionalRender";
 export default {
   methods: {
     async postError() {
@@ -175,7 +89,7 @@ export default {
         status: "open",
         stage: 1,
         ttl: 6000,
-        body: [{ Открыто: this.errorBody, Принято: {}, Устранено: {} }],
+        body: [this.errorBody],
       };
 
       const openError = {
@@ -210,13 +124,18 @@ export default {
   created() {
     // !this.$store.state.template && this.$store.dispatch("GET_template");
   },
+  components: {
+    conditionalRender,
+  },
   data() {
     return {
       errorTemplate: null,
-      errorBody: {},
+      errorBody: { Открыто: {}, Принято: {}, Устранено: {} },
       error: {},
       photo: null,
       role: "fitter",
+      statusConfirmed: false,
+      statusClosed: false,
     };
   },
 
@@ -254,12 +173,6 @@ export default {
   justify-self: start;
   align-self: center;
   text-align: start;
-  margin: 0;
-}
-.error__item__desc {
-  justify-self: end;
-  text-align: end;
-  align-self: center;
   margin: 0;
 }
 .error__field {

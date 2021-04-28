@@ -13,7 +13,6 @@
       />
       <div v-if="cabinet">
         <cabinet-template
-          class="cabinet__template"
           :project-number="projectInformation.id"
           :project-name="projectInformation.info.base['project name']"
           :cabinet-wo="cabinet.wo"
