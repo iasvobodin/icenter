@@ -1,5 +1,4 @@
 <template>
-  <!-- <div>SET ERROR</div> -->
   <div v-if="$store.state.template">
     <form id="postError" @submit.prevent="postError">
       <div
@@ -8,66 +7,26 @@
       >
         <h4 class="error__item__title">Выберете роль</h4>
         <select class="change__status error__item__desc" v-model="role">
-          <option selected value="fitter">Сборщик</option>
-          <option value="testEngeneer">Тестировщик</option>
+          <option selected value="bodyF">Сборщик</option>
+          <option value="bodyT">Тестировщик</option>
         </select>
       </div>
-      <div v-if="role === 'fitter'">
-        <h3>Статус ошибки: Открыто</h3>
-        <conditional-render
-          v-model="errorBody.Открыто"
-          :dataRender="$store.state.template.error.bodyF.Открыто"
-        />
-      </div>
-      <div v-if="role === 'testEngeneer'">
-        <h3>Статус ошибки: Открыто</h3>
-        <conditional-render
-          v-model="errorBody.Открыто"
-          :dataRender="$store.state.template.error.bodyT.Открыто"
-        />
-        <div
-          v-if="errorBody.Открыто&&errorBody.Открыто['Ошибку допустил'] && role === 'testEngeneer'"
-        >
-          <div class="error__item">
-            <h4 class="error__item__title">
-              {{ errorBody.Открыто["Ошибку допустил"] }}
-            </h4>
-            <select
-              v-model="errorBody.Открыто['_Ошибку допустил']"
-              required
-              class="error__item__desc"
-            >
-              <option
-                v-for="(value, key, index) in $store.state.template[
-                  errorBody.Открыто['Ошибку допустил']
-                ]"
-                :key="index"
-              >
-                {{ value }}
-              </option>
-            </select>
-          </div>
-        </div>
-        <section v-if="statusConfirmed" >
-          <h3>Статус ошибки: Принято</h3>
-          <conditional-render
-            v-model="errorBody.Принято"
-            :dataRender="$store.state.template.error.bodyT.Принято"
-          />
-        </section>
-        <section  v-if="statusClosed" >
-          <h3>Статус ошибки: Устранено</h3>
-          <conditional-render
-            v-model="errorBody.Устранено"
-            :dataRender="$store.state.template.error.bodyT.Устранено"
-          />
+      <div
+        v-for="(value, key, index) in $store.state.template.error[role]"
+        :key="index"
+      >
+        <section v-if="returnRender(key)">
+          <h3>Статус ошибки: {{ key }}</h3>
+          <conditional-render v-model="errorBody[key]" :dataRender="value" />
         </section>
       </div>
       <br />
       <input class="add__button" type="submit" value="Добавить" />
     </form>
-    <button @click="statusClosed = !statusClosed" >Подтвердить</button>
-    <button @click="statusConfirmed = !statusConfirmed" >Закрыть</button>
+    <button @click="statusConfirmed = !statusConfirmed">
+      Подтвердить ошибку
+    </button>
+    <button @click="statusClosed = !statusClosed">Закрыть ошибку</button>
   </div>
 </template>
 
@@ -75,6 +34,17 @@
 import conditionalRender from "@/components/conditionalRender";
 export default {
   methods: {
+    returnRender(key) {
+      if (key === "Открыто") {
+        return true;
+      }
+      if (key === "Принято" && this.statusConfirmed) {
+        return true;
+      }
+      if (key === "Устранено" && this.statusClosed) {
+        return true;
+      }
+    },
     async postError() {
       this.error = {
         id: "error__" + Date.now(),
@@ -85,9 +55,12 @@ export default {
           Добавил: sessionStorage.getItem("userDetails").toLowerCase(),
           Мастер: this.$store.state.projectInfo["senior fitter"].toLowerCase(),
         },
-        type: "error",
-        status: "open",
-        stage: 1,
+        type: this.role === "bodyF" ? "error" : "t_error",
+        status: Object.values(this.errorBody.Устранено)[0]
+          ? "closed"
+          : Object.values(this.errorBody.Принято)[0]
+          ? "confirmed"
+          : "open",
         ttl: 6000,
         body: [this.errorBody],
       };
@@ -96,10 +69,10 @@ export default {
         id: this.error.id,
         info: {
           ...this.error.info,
-          Описание: this.errorBody["Описание"],
+          Описание: this.errorBody.Открыто["Описание"],
         },
-        type: "error",
-        status: "open",
+        type: this.error.type,
+        status: this.error.status,
         ttl: 6000,
       };
 
@@ -113,7 +86,7 @@ export default {
           body: JSON.stringify({ ...openError }),
         });
       } finally {
-        this.errorBody = {};
+        this.errorBody = { Открыто: {}, Принято: {}, Устранено: {} };
       }
       // await fetch(`/api/blob?fileName=${this.error.id}`, {
       //   method: "POST",
@@ -133,7 +106,7 @@ export default {
       errorBody: { Открыто: {}, Принято: {}, Устранено: {} },
       error: {},
       photo: null,
-      role: "fitter",
+      role: "bodyF",
       statusConfirmed: false,
       statusClosed: false,
     };

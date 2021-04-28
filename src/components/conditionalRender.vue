@@ -18,7 +18,7 @@
           [key]: $event.target.value,
         })
       "
-      value=" "
+      :value="modelValue[key]"
       required
       class="error__item__desc"
       v-if="Object.values(value)[0] === 'select'"
@@ -34,7 +34,7 @@
           [key]: $event.target.value,
         })
       "
-      value=" "
+      :value="modelValue[key]"
       required
       v-if="Object.values(value)[0] === 'checkbox'"
       type="checkbox"
@@ -46,7 +46,7 @@
           [key]: $event.target.value,
         })
       "
-      value=" "
+      :value="modelValue[key]"
       required
       v-if="Object.values(value)[0] === 'number'"
       type="number"
@@ -58,11 +58,39 @@
           [key]: $event.target.value,
         })
       "
+      :value="modelValue[key]"
       required
       v-if="Object.values(value)[0] === 'textarea'"
       cols="30"
       rows="5"
     ></textarea>
+  </div>
+  <div v-if="modelValue && modelValue['Ошибку допустил']">
+    <div class="error__item">
+      <h4 class="error__item__title">
+        {{ modelValue["Ошибку допустил"] }}
+      </h4>
+      <select
+        @input="
+          $emit('update:modelValue', {
+            ...modelValue,
+            ['_Ошибку допустил']: $event.target.value,
+          })
+        "
+        :value="modelValue['_Ошибку допустил']"
+        required
+        class="error__item__desc"
+      >
+        <option
+          v-for="(value, key, index) in $store.state.template[
+            modelValue['Ошибку допустил']
+          ]"
+          :key="index"
+        >
+          {{ value }}
+        </option>
+      </select>
+    </div>
   </div>
 </template>
 
