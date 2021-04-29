@@ -6,6 +6,11 @@
     "start": "func start",
     "test": "echo \"No tests yet...\""
   },
-  "dependencies": {},
+  "dependencies": {
+    "@azure/storage-blob": "^12.5.0",
+    "azure-storage": "^2.10.3",
+    "parse-multipart": "^1.0.4",
+    "streamifier": "^0.1.1"
+  },
   "devDependencies": {}
 }

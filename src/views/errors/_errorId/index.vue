@@ -12,9 +12,7 @@
           class="cabinet__info__item"
         >
           <h3>{{ key }}:</h3>
-          <p>
-            {{ val }}
-          </p>
+          <p>{{ val }}</p>
         </div>
       </section>
       <section v-if="!changeInfo" class="eror__body">

@@ -24,12 +24,20 @@
       <input class="add__button" type="submit" value="Добавить" />
     </form>
     <br />
-    <input @input="checkFile" multiple type="file" id="imageFile" capture="user" accept="image/*" />
-    <br>
-    <div v-if="files">
-    <p v-for="f in files" :key="f.lastModified" >{{f.name}}</p></div>
+    <input
+      @input="checkFile"
+      multiple
+      type="file"
+      id="imageFile"
+      capture="user"
+      accept="image/*"
+    />
     <br />
-    <br>
+    <div v-if="files">
+      <p v-for="f in files" :key="f.lastModified">{{ f.name }}</p>
+    </div>
+    <br />
+    <br />
     <button @click="statusConfirmed = !statusConfirmed">
       Подтвердить ошибку
     </button>
@@ -42,7 +50,7 @@
 <script>
 import conditionalRender from "@/components/conditionalRender";
 export default {
-    data() {
+  data() {
     return {
       files: null,
       errorTemplate: null,
@@ -55,12 +63,12 @@ export default {
     };
   },
   methods: {
-    checkFile(){
-var fileInput = document.getElementById("imageFile");
+    checkFile() {
+      var fileInput = document.getElementById("imageFile");
 
-// files is a FileList object (similar to NodeList)
-this.files = fileInput.files;
-// console.log(files);
+      // files is a FileList object (similar to NodeList)
+      this.files = Object.values(fileInput.files);
+      // console.log(files);
     },
     returnRender(key) {
       if (key === "Открыто") {
@@ -109,6 +117,25 @@ this.files = fileInput.files;
         status: this.error.status,
         ttl: 6000,
       };
+      // const fileField = document.querySelector('input[type="file"]');
+
+      // formData.append("photo", this.files.files[0]);
+      console.log(Array.isArray(this.files) , this.files);
+      this.files.forEach((e, i) => {
+        const formData = new FormData();
+        formData.append(`photo${i}`, e);
+            (async () =>  await fetch(
+        `/api/blob?fileName=${i+this.error.id}`,
+        {
+          method: "POST",
+          body: formData,
+        }
+      ))()
+      });
+
+// for (let i = 0; i < this.files.files.length; i++) {
+//   formData.append('photos', this.files.files[i]);
+// }
 
       try {
         await fetch("/api/POST_error", {
@@ -122,10 +149,13 @@ this.files = fileInput.files;
       } finally {
         this.errorBody = { Открыто: {}, Принято: {}, Устранено: {} };
       }
-      // await fetch(`/api/blob?fileName=${this.error.id}`, {
-      //   method: "POST",
-      //   body: formData,
-      // });
+      // await fetch(
+      //   `/api/blob?folder=${this.error.id}&fileName=${this.error.id}`,
+      //   {
+      //     method: "POST",
+      //     body: formData,
+      //   }
+      // );
     },
   },
   created() {
@@ -134,7 +164,6 @@ this.files = fileInput.files;
   components: {
     conditionalRender,
   },
-
 
   // async mounted() {
   //   try {

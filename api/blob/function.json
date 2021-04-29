@@ -19,7 +19,8 @@
     {
       "name": "myOutputBlob",
       "type": "blob",
-      "path": "testcontainer/{fileName}.jpg",
+      "connection": "MyStorageConnectionAppSetting",
+      "path": "errors-photo/{fileName}.jpg",
       "direction": "out"
     }
   ]
