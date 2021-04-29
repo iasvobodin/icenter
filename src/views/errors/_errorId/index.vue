@@ -33,190 +33,20 @@
       <section v-else class="mod__error__body">
         <form @submit.prevent="updateErorData" id="errorData">
           <div
-            class="error__field"
-            v-for="(value, key, index) in $store.state.template.error.body2"
+            v-for="(value, key, index) in $store.state.template.error[
+              error.type
+            ]"
             :key="index"
           >
-            <h2>{{ key }}</h2>
-            <div class="error__item__desc" v-for="(v, k, i) in value" :key="i">
-              <h3 class="error__item__vertical__title">{{ k }}</h3>
-              <select
-                v-model="error.body[key][k]"
-                v-if="Object.values(v)[0] === 'select'"
-                name=""
-                id=""
-              >
-                <option v-for="(j, k) in Object.values(v)[1]" :key="k">
-                  {{ j }}
-                </option>
-              </select>
-              <input
-                v-model="error.body[key][k]"
-                v-if="Object.values(v)[0] === 'checkbox'"
-                type="checkbox"
+            <section v-if="returnRender(key)">
+              <h3>Статус ошибки: {{ key }}</h3>
+              <conditional-render
+                v-model="error.body[key]"
+                :dataRender="value"
               />
-              <input
-                v-model="error.body[key][k]"
-                v-if="Object.values(v)[0] === 'number'"
-                type="number"
-              />
-              <textarea
-                v-model="error.body[key][k]"
-                v-if="Object.values(v)[0] === 'textarea'"
-                name=""
-                id=""
-                cols="30"
-                rows="5"
-              ></textarea>
-            </div>
+            </section>
           </div>
         </form>
-        <!-- <form @submit.prevent="updateErorData" id="errorData">
-          <div>
-            <h2>Открыто</h2>
-            <div class="cabinet__info__item">
-              <h3>
-                {{ Object.keys($store.state.template.error.body.Открыто)[0] }}:
-              </h3>
-              <select
-                form="errorData"
-                required
-                v-model="error.body.Открыто['Тип ошибки']"
-              >
-                <option
-                  v-for="(opt, index) in $store.state.template.error.body
-                    .Открыто['Тип ошибки']"
-                  :key="index"
-                >
-                  {{ opt }}
-                </option>
-              </select>
-            </div>
-            <div class="error__item__desc">
-              <h3 class="error__item__vertical__title">
-                {{ Object.keys($store.state.template.error.body.Открыто)[1] }}:
-              </h3>
-              <textarea
-                class="error__item__vertical__desc"
-                required
-                v-model="error.body.Открыто['Описание']"
-                cols="50"
-                rows="6"
-              ></textarea>
-            </div>
-          </div>
-          <div v-if="error.info.Мастер === $store.state.user.info.userDetails">
-            <h2>Принято</h2>
-            <div class="cabinet__info__item">
-              <h3>
-                {{ Object.keys($store.state.template.error.body.Принято)[0] }}:
-              </h3>
-              <select required v-model="error.body.Принято['Статус решения']">
-                <option
-                  v-for="(opt, index) in $store.state.template.error.body
-                    .Принято['Статус решения']"
-                  :key="index"
-                >
-                  {{ opt }}
-                </option>
-              </select>
-            </div>
-            <div class="error__item__desc">
-              <h3 class="error__item__vertical__title">
-                {{ Object.keys($store.state.template.error.body.Принято)[1] }}:
-              </h3>
-              <textarea
-                required
-                form="errorData"
-                v-model="error.body.Принято['Описание']"
-                cols="50"
-                rows="6"
-              ></textarea>
-            </div>
-          </div>
-       
-          <div v-else-if="error.body.Принято['Описание']">
-            <h2>Принято</h2>
-            <div class="cabinet__info__item">
-              <h3>
-                {{ Object.keys($store.state.template.error.body.Принято)[0] }}:
-              </h3>
-              <select
-                disabled
-                required
-                v-model="error.body.Принято['Статус решения']"
-              >
-                <option
-                  v-for="(opt, index) in $store.state.template.error.body
-                    .Принято['Статус решения']"
-                  :key="index"
-                >
-                  {{ opt }}
-                </option>
-              </select>
-            </div>
-            <div class="error__item__desc">
-              <h3 class="error__item__vertical__title">
-                {{ Object.keys($store.state.template.error.body.Принято)[1] }}:
-              </h3>
-              <textarea
-                disabled
-                required
-                form="errorData"
-                v-model="error.body.Принято['Описание']"
-                cols="50"
-                rows="6"
-              ></textarea>
-            </div>
-          </div>
-          <div v-if="closeError">
-            <h2>Устранено</h2>
-            <div class="cabinet__info__item">
-              <h3>
-                {{
-                  Object.keys($store.state.template.error.body.Устранено)[0]
-                }}:
-              </h3>
-              <select
-                required
-                v-model="error.body.Устранено['Статус коррекции']"
-              >
-                <option
-                  v-for="(opt, index) in $store.state.template.error.body
-                    .Устранено['Статус коррекции']"
-                  :key="index"
-                >
-                  {{ opt }}
-                </option>
-              </select>
-            </div>
-            <div class="error__item__desc">
-              <h3 class="error__item__vertical__title">
-                {{
-                  Object.keys($store.state.template.error.body.Устранено)[1]
-                }}:
-              </h3>
-              <textarea
-                required
-                v-model="error.body.Устранено['Описание']"
-                cols="50"
-                rows="6"
-              ></textarea>
-            </div>
-            <div class="cabinet__info__item">
-              <h3>
-                {{
-                  Object.keys($store.state.template.error.body.Устранено)[2]
-                }}:
-              </h3>
-              <input
-                type="number"
-                required
-                v-model="error.body.Устранено['Время на устранение']"
-              />
-            </div>
-          </div>
-        </form> -->
       </section>
     </div>
     <div v-else class="loading" />
@@ -233,10 +63,10 @@
   >
     Редактировать
   </button>
-  <button
-    v-if="!closeError && changeInfo && error.body.Принято['Описание']"
-    @click="closeError = !closeError"
-  >
+  <button @click="statusConfirmed = !statusConfirmed">
+    Подтвердить ошибку
+  </button>
+  <button v-if="statusConfirmed" @click="statusClosed = !statusClosed">
     Закрыть ошибку
   </button>
   <button v-if="changeInfo" type="submit" form="errorData">
@@ -245,9 +75,12 @@
 </template>
 
 <script>
+import conditionalRender from "@/components/conditionalRender";
 export default {
   data() {
     return {
+      statusConfirmed: false,
+      statusClosed: false,
       closeError: null,
       dataModel: null,
       changeInfo: false,
@@ -257,7 +90,21 @@ export default {
       test: null,
     };
   },
+  components: {
+    conditionalRender,
+  },
   methods: {
+    returnRender(key) {
+      if (key === "Открыто") {
+        return true;
+      }
+      if (key === "Принято" && this.statusConfirmed) {
+        return true;
+      }
+      if (key === "Устранено" && this.statusClosed && this.statusConfirmed) {
+        return true;
+      }
+    },
     changeData() {
       this.changeInfo = !this.changeInfo;
     },
@@ -265,12 +112,13 @@ export default {
       const err = await this.getCurrentError();
       const updateErorBody = {
         id: this.error.id,
+        info: this.error.info,
         status: Object.values(this.error.body.Устранено)[0]
           ? "closed"
           : Object.values(this.error.body.Принято)[0]
           ? "confirmed"
           : "open",
-        info: this.error.info,
+        type: this.error.type,
         body: [
           ...err.body,
           {

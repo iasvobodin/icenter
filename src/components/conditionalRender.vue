@@ -65,25 +65,25 @@
       rows="5"
     ></textarea>
   </div>
-  <div v-if="modelValue && modelValue['Ошибку допустил']">
+  <div v-if="modelValue && modelValue['Ответственный']">
     <div class="error__item">
       <h4 class="error__item__title">
-        {{ modelValue["Ошибку допустил"] }}
+        {{ modelValue["Ответственный"] }}
       </h4>
       <select
         @input="
           $emit('update:modelValue', {
             ...modelValue,
-            ['_Ошибку допустил']: $event.target.value,
+            ['Ошибку допустил']: $event.target.value,
           })
         "
-        :value="modelValue['_Ошибку допустил']"
+        :value="modelValue['Ошибку допустил']"
         required
         class="error__item__desc"
       >
         <option
           v-for="(value, key, index) in $store.state.template[
-            modelValue['Ошибку допустил']
+            modelValue['Ответственный']
           ]"
           :key="index"
         >

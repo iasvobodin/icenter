@@ -7,8 +7,8 @@
       >
         <h4 class="error__item__title">Выберете роль</h4>
         <select class="change__status error__item__desc" v-model="role">
-          <option selected value="bodyF">Сборщик</option>
-          <option value="bodyT">Тестировщик</option>
+          <option selected value="f_error">Сборщик</option>
+          <option value="t_error">Тестировщик</option>
         </select>
       </div>
       <div
@@ -23,17 +23,45 @@
       <br />
       <input class="add__button" type="submit" value="Добавить" />
     </form>
+    <br />
+    <input @input="checkFile" multiple type="file" id="imageFile" capture="user" accept="image/*" />
+    <br>
+    <div v-if="files">
+    <p v-for="f in files" :key="f.lastModified" >{{f.name}}</p></div>
+    <br />
+    <br>
     <button @click="statusConfirmed = !statusConfirmed">
       Подтвердить ошибку
     </button>
-    <button @click="statusClosed = !statusClosed">Закрыть ошибку</button>
+    <button v-if="statusConfirmed" @click="statusClosed = !statusClosed">
+      Закрыть ошибку
+    </button>
   </div>
 </template>
 
 <script>
 import conditionalRender from "@/components/conditionalRender";
 export default {
+    data() {
+    return {
+      files: null,
+      errorTemplate: null,
+      errorBody: { Открыто: {}, Принято: {}, Устранено: {} },
+      error: {},
+      photo: null,
+      role: "f_error",
+      statusConfirmed: false,
+      statusClosed: false,
+    };
+  },
   methods: {
+    checkFile(){
+var fileInput = document.getElementById("imageFile");
+
+// files is a FileList object (similar to NodeList)
+this.files = fileInput.files;
+// console.log(files);
+    },
     returnRender(key) {
       if (key === "Открыто") {
         return true;
@@ -41,7 +69,7 @@ export default {
       if (key === "Принято" && this.statusConfirmed) {
         return true;
       }
-      if (key === "Устранено" && this.statusClosed) {
+      if (key === "Устранено" && this.statusClosed && this.statusConfirmed) {
         return true;
       }
     },
@@ -55,14 +83,20 @@ export default {
           Добавил: sessionStorage.getItem("userDetails").toLowerCase(),
           Мастер: this.$store.state.projectInfo["senior fitter"].toLowerCase(),
         },
-        type: this.role === "bodyF" ? "error" : "t_error",
+        type: this.role,
         status: Object.values(this.errorBody.Устранено)[0]
           ? "closed"
           : Object.values(this.errorBody.Принято)[0]
           ? "confirmed"
           : "open",
         ttl: 6000,
-        body: [this.errorBody],
+        body: [
+          {
+            ...this.errorBody,
+            _changed: sessionStorage.getItem("userDetails").toLowerCase(),
+            _time: `${Date.now()}`,
+          },
+        ],
       };
 
       const openError = {
@@ -100,17 +134,7 @@ export default {
   components: {
     conditionalRender,
   },
-  data() {
-    return {
-      errorTemplate: null,
-      errorBody: { Открыто: {}, Принято: {}, Устранено: {} },
-      error: {},
-      photo: null,
-      role: "bodyF",
-      statusConfirmed: false,
-      statusClosed: false,
-    };
-  },
+
 
   // async mounted() {
   //   try {
