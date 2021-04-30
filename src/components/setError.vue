@@ -82,8 +82,10 @@ export default {
       }
     },
     async postError() {
-      this.error = {
-        id: "error__" + Date.now(),
+      const id = "error__" + Date.now();
+      const link = "https://icaenter.blob.core.windows.net/errors-photo/";
+      const error = {
+        id,
         info: {
           Проект: this.$store.state.projectInfo["project number"],
           Шкаф: this.$store.state.projectInfo["cab name"],
@@ -91,6 +93,7 @@ export default {
           Добавил: sessionStorage.getItem("userDetails").toLowerCase(),
           Мастер: this.$store.state.projectInfo["senior fitter"].toLowerCase(),
         },
+        photos: [],
         type: this.role,
         status: Object.values(this.errorBody.Устранено)[0]
           ? "closed"
@@ -108,39 +111,45 @@ export default {
       };
 
       const openError = {
-        id: this.error.id,
+        id,
         info: {
-          ...this.error.info,
+          ...error.info,
           Описание: this.errorBody.Открыто["Описание"],
         },
-        type: this.error.type,
-        status: this.error.status,
+        type: error.type,
+        status: error.status,
         ttl: 6000,
       };
       // const fileField = document.querySelector('input[type="file"]');
 
       // formData.append("photo", this.files.files[0]);
-      console.log(Array.isArray(this.files) , this.files);
-      this.files.forEach((e, i) => {
-        const formData = new FormData();
-        formData.append(`photo${i}`, e);
-            (async () =>  await fetch(
-        `/api/blob?fileName=${i+this.error.id}`,
-        {
-          method: "POST",
-          body: formData,
-        }
-      ))()
-      });
+      // console.log(Array.isArray(error.photos) , error.photos);
+      this.files &&
+        this.files.forEach((e, i) => {
+          const formData = new FormData();
+          formData.append(`photo${i}`, e);
+          error.photos.push(
+            `${link}${id}__${sessionStorage
+              .getItem("userDetails")
+              .toLowerCase()}__${e.name}`
+          );
 
-// for (let i = 0; i < this.files.files.length; i++) {
-//   formData.append('photos', this.files.files[i]);
-// }
+          (async () =>
+            await fetch(
+              `/api/blob?fileName=${id}__${sessionStorage
+                .getItem("userDetails")
+                .toLowerCase()}__${e.name}`,
+              {
+                method: "POST",
+                body: formData,
+              }
+            ))();
+        });
 
       try {
         await fetch("/api/POST_error", {
           method: "POST", // или 'PUT'
-          body: JSON.stringify({ ...this.error }),
+          body: JSON.stringify({ ...error }),
         });
         await fetch("/api/POST_openError", {
           method: "POST", // или 'PUT'

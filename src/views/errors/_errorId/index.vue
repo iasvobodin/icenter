@@ -50,26 +50,45 @@
     <div v-else class="loading" />
     <p v-if="errorIsNotDef">{{ errorIsNotDef }}</p>
   </div>
+  <div v-if="error && error.photos && showPhotos" class="photos">
+    <div
+      v-for="(value, index) in error.photos"
+      :key="index"
+      class="photo__holder"
+    >
+      <a :href="value">
+        <img class="error__photos" :src="value" alt="" />
+      </a>
+    </div>
+  </div>
+  <br />
+  <button v-if="!showPhotos&&error && error.photos" @click="showPhotos = !showPhotos">Показать фотографии</button>
+  <button v-else @click="showPhotos = !showPhotos">Скрыть фотографии</button>
+  <br />
+  <br />
+  <div class="button__block">
+    <button
+      v-if="
+        error &&
+        !changeInfo &&
+        error.info.Добавил === $store.state.user.info.userDetails
+      "
+      @click="changeData"
+    >
+      Редактировать
+    </button>
+    <button @click="statusConfirmed = !statusConfirmed">
+      Подтвердить ошибку
+    </button>
+    <button v-if="statusConfirmed" @click="statusClosed = !statusClosed">
+      Закрыть ошибку
+    </button>
+    <button v-if="changeInfo" type="submit" form="errorData">
+      Сохранить изменения
+    </button>
+  </div>
 
-  <button
-    v-if="
-      error &&
-      !changeInfo &&
-      error.info.Добавил === $store.state.user.info.userDetails
-    "
-    @click="changeData"
-  >
-    Редактировать
-  </button>
-  <button @click="statusConfirmed = !statusConfirmed">
-    Подтвердить ошибку
-  </button>
-  <button v-if="statusConfirmed" @click="statusClosed = !statusClosed">
-    Закрыть ошибку
-  </button>
-  <button v-if="changeInfo" type="submit" form="errorData">
-    Сохранить изменения
-  </button>
+  <!-- <img crossorigin="anonymous" src="https://icaenter.blob.core.windows.net/errors-photo/21-01-04-12-30-23.jpg" alt="11"> -->
 </template>
 
 <script>
@@ -77,6 +96,7 @@ import conditionalRender from "@/components/conditionalRender";
 export default {
   data() {
     return {
+      showPhotos: false,
       statusConfirmed: false,
       statusClosed: false,
       closeError: null,
@@ -216,6 +236,29 @@ export default {
 </script>
 
 <style lang="css" scoped>
+.photos {
+  display: grid;
+  /* grid-template-columns: repeat(auto-fit, minmax(max(25vw, 150px), 1fr)); */
+  column-gap: 1vh;
+  row-gap: 1vh;
+}
+.photo__holder {
+  width: max(30vw, 250px);
+  height: max(30vw, 250px);
+  place-self: center;
+  margin: auto;
+  margin-top: 1vh;
+  margin-bottom: 1vh;
+  box-sizing: border-box;
+  overflow: hidden;
+  border-radius: 4px;
+}
+.error__photos {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
 .description__area {
   width: inherit;
 }

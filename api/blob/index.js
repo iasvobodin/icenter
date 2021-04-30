@@ -48,8 +48,8 @@ module.exports = async function (context, req) {
   var bodyBuffer = Buffer.from(req.body);
   var boundary = multipart.getBoundary(req.headers["content-type"]);
   var parts = multipart.Parse(bodyBuffer, boundary);
-  const blockBlobClient = containerClient.getBlockBlobClient(parts[0].filename);
-
+  // const blockBlobClient = containerClient.getBlockBlobClient(parts[0].filename);
+  const blockBlobClient = containerClient.getBlockBlobClient(req.query.fileName);
   const uploadBlobResponse = await blockBlobClient.upload(
     parts[0].data,
     parts[0].data.length,
