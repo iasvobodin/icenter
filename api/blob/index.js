@@ -30,6 +30,7 @@
 // };
 
 const multipart = require("parse-multipart");
+const sharp = require("sharp");
 const { BlobServiceClient } = require("@azure/storage-blob");
 
 module.exports = async function (context, req) {
@@ -40,16 +41,34 @@ module.exports = async function (context, req) {
     AZURE_STORAGE_CONNECTION_STRING
   );
 
-
   // Get a reference to a container
-  const containerClient = blobServiceClient.getContainerClient('errors-photo');
-
+  const containerClient = blobServiceClient.getContainerClient("errors-photo");
 
   var bodyBuffer = Buffer.from(req.body);
   var boundary = multipart.getBoundary(req.headers["content-type"]);
   var parts = multipart.Parse(bodyBuffer, boundary);
+
   // const blockBlobClient = containerClient.getBlockBlobClient(parts[0].filename);
-  const blockBlobClient = containerClient.getBlockBlobClient(req.query.fileName);
+  // context.bindings.myOutputBlob = sharp(parts[0].data).toFile("test.jpg");
+
+  sharp(parts[0].data)
+    .resize({ width: 1920 })
+    .toBuffer({ resolveWithObject: true }, async (err, data, info) => {
+      context.log(data);
+
+      const uploadDataBlockBlobClient = containerClient.getBlockBlobClient(
+        "!!!!!" + req.query.fileName
+      );
+      await uploadDataBlockBlobClient.uploadData(data.buffer, {
+        blobHTTPHeaders: {
+          blobContentType: parts[0].type,
+        },
+      });
+    });
+
+  const blockBlobClient = containerClient.getBlockBlobClient(
+    req.query.fileName
+  );
   const uploadBlobResponse = await blockBlobClient.upload(
     parts[0].data,
     parts[0].data.length,
@@ -64,7 +83,6 @@ module.exports = async function (context, req) {
     uploadBlobResponse.requestId
   );
 
-  
   context.res = {
     // status defaults to 200 */
     body: "ok",

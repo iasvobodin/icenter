@@ -20,7 +20,7 @@
       "name": "myOutputBlob",
       "type": "blob",
       "connection": "MyStorageConnectionAppSetting",
-      "path": "errors-photo/{fileName}.jpg",
+      "path": "errors-photo",
       "direction": "out"
     }
   ]
