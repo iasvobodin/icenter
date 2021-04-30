@@ -128,10 +128,13 @@ export default {
         this.files.forEach((e, i) => {
           const formData = new FormData();
           formData.append(`photo${i}`, e);
-          error.photos.push(
+          error.photos.push({ link :
             `${link}${id}__${sessionStorage
               .getItem("userDetails")
-              .toLowerCase()}__${e.name}`
+              .toLowerCase()}__${e.name}`,
+              thumb: `${link}thumb__${id}__${sessionStorage
+              .getItem("userDetails")
+              .toLowerCase()}__${e.name}`, }
           );
 
           (async () =>

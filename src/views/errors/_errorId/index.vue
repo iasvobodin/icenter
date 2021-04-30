@@ -56,8 +56,8 @@
       :key="index"
       class="photo__holder"
     >
-      <a :href="value">
-        <img class="error__photos" :src="value" alt="" />
+      <a :href="value.link">
+        <img class="error__photos" :src="value.thumb" alt="" />
       </a>
     </div>
   </div>
@@ -243,8 +243,8 @@ export default {
   row-gap: 1vh;
 }
 .photo__holder {
-  width: max(30vw, 250px);
-  height: max(30vw, 250px);
+  width: 100px;
+  height: 100px;
   place-self: center;
   margin: auto;
   margin-top: 1vh;
