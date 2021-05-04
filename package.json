@@ -4,9 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "vite",
-    "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "build": "vite build",
+    "serve": "vite preview",
+    "lint:fix": "eslint src --fix"
   },
   "dependencies": {
     "notiflix": "^2.7.0",
@@ -19,11 +19,10 @@
   "devDependencies": {
     "@vitejs/plugin-vue": "^1.2.2",
     "@vue/compiler-sfc": "^3.0.11",
-    "@vue/eslint-config-prettier": "^6.0.0",
-    "eslint": "^7.23.0",
-    "eslint-plugin-prettier": "^3.3.1",
-    "eslint-plugin-vue": "^7.8.0",
+    "eslint": "^7.25.0",
+    "eslint-plugin-prettier": "^3.4.0",
     "prettier": "^2.2.1",
-    "vite": "^2.2.4"
+    "vite": "^2.2.4",
+    "vite-plugin-eslint": "^1.1.0"
   }
 }

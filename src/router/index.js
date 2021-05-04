@@ -1,14 +1,12 @@
-import {
-  createRouter,
-  createWebHistory
-} from "vue-router";
+import { createRouter, createWebHistory } from "vue-router";
 import Home from "@/views/Home.vue";
 import cabtime from "@/views/admin/addCabTime.vue";
 // import UserHome from "@/views/admin/UserHome.vue";
 import UserProfile from "@/views/admin/UserProfile.vue";
 import addProject from "@/views/admin/addProject.vue";
 import reports from "@/views/admin/reports.vue";
-const routes = [{
+const routes = [
+  {
     path: "/",
     name: "Home",
     component: Home,
@@ -16,7 +14,7 @@ const routes = [{
   {
     path: "/User",
     name: "User",
-    component: () => import("@/views/User.vue")
+    component: () => import("@/views/User.vue"),
   },
   {
     path: "/admin",
@@ -24,22 +22,22 @@ const routes = [{
       // { path: "", component: UserHome },
       {
         path: "profile",
-        component: UserProfile
+        component: UserProfile,
       },
       {
         path: "addproject",
-        component: addProject
+        component: addProject,
       },
       {
         path: "reports",
-        component: reports
+        component: reports,
       },
       {
         path: "addcabtime",
-        component: cabtime
+        component: cabtime,
       },
     ],
-    component: () => import("@/views/admin/index.vue")
+    component: () => import("@/views/admin/index.vue"),
   },
   // {
   //   path: "/projects/:projectnumber",
@@ -60,73 +58,52 @@ const routes = [{
   {
     path: "/errors",
 
-    component: () => import("@/views/errors/index.vue")
+    component: () => import("@/views/errors/index.vue"),
   },
   {
     path: "/errors/:errorId",
-    component: () => import(
-      "@/views/errors/_errorId/index.vue"
-    )
-
+    component: () => import("@/views/errors/_errorId/index.vue"),
   },
   {
     path: "/errors/addNew",
-    component: () => import(
-      "@/views/errors/addNew.vue"
-    )
-
+    component: () => import("@/views/errors/addNew.vue"),
   },
   {
     path: "/tasks",
-    component: () => import("@/views/tasks/index.vue")
-
+    component: () => import("@/views/tasks/index.vue"),
   },
   {
     path: "/tasks/:taskId",
-    component: () => import(
-      "@/views/tasks/_taskId/index.vue"
-    )
-
+    component: () => import("@/views/tasks/_taskId/index.vue"),
   },
   {
     path: "/cabinets",
-    component: () => import(
-      "@/views/cabinets/index.vue"
-    )
+    component: () => import("@/views/cabinets/index.vue"),
   },
   {
     path: "/cabinets/:cabinetId",
-    component: () => import(
-      "@/views/cabinets/_cabinetId/index.vue"
-    )
-
+    component: () => import("@/views/cabinets/_cabinetId/index.vue"),
   },
   {
     path: "/cabtimes",
-    component: () => import(
-      "@/views/cabtimes/index.vue"
-    )
-
+    component: () => import("@/views/cabtimes/index.vue"),
   },
   {
     path: "/cabtimes/:cabtimeId",
-    component: () => import(
-      "@/views/cabtimes/_cabtimeId/index.vue"
-    )
-
+    component: () => import("@/views/cabtimes/_cabtimeId/index.vue"),
   },
   {
     path: "/projects",
-    component: () => import("@/views/projects/index.vue")
+    component: () => import("@/views/projects/index.vue"),
   },
   {
     path: "/projects/:projectId",
-    component: () => import("@/views/projects/_projectId/index.vue")
+    component: () => import("@/views/projects/_projectId/index.vue"),
   },
   {
     path: "/admin",
     name: "admin",
-    component: () => import("@/views/admin/index.vue")
+    component: () => import("@/views/admin/index.vue"),
   },
   {
     path: "/login",
@@ -134,7 +111,7 @@ const routes = [{
     beforeEnter() {
       window.open("http://www.google.com", "_blank");
     },
-    component: () => import("@/views/login.vue")
+    component: () => import("@/views/login.vue"),
   },
 ];
 
