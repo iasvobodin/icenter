@@ -2,11 +2,11 @@
   <div v-if="$store.state.template">
     <form id="postError" @submit.prevent="postError">
       <div
-        class="error__item"
         v-if="$store.state.user.info.userRoles.includes('admin')"
+        class="error__item"
       >
         <h4 class="error__item__title">Выберете роль</h4>
-        <select class="change__status error__item__desc" v-model="role">
+        <select v-model="role" class="change__status error__item__desc">
           <option selected value="f_error">Сборщик</option>
           <option value="t_error">Тестировщик</option>
         </select>
@@ -17,16 +17,16 @@
       >
         <section v-if="returnRender(key)">
           <h3>Статус ошибки: {{ key }}</h3>
-          <conditional-render v-model="errorBody[key]" :dataRender="value" />
+          <conditional-render v-model="errorBody[key]" :data-render="value" />
         </section>
       </div>
       <br />
       <input
-        @input="checkFile"
+        id="imageFile"
         multiple
         type="file"
-        id="imageFile"
         accept="image/*"
+        @input="checkFile"
       />
       <div v-if="files">
         <p v-for="f in files" :key="f.lastModified">{{ f.name }}</p>
@@ -49,10 +49,15 @@
   </div>
 </template>
 
-<script>
-import Notiflix from "notiflix";
-import conditionalRender from "@/components/conditionalRender.vue";
-export default {
+<script lang="ts">
+import { defineComponent } from 'vue'
+import Notiflix from 'notiflix'
+import conditionalRender from '@/components/conditionalRender.vue'
+
+export default defineComponent({
+  components: {
+    conditionalRender,
+  },
   data() {
     return {
       fileInput: null,
@@ -61,117 +66,119 @@ export default {
       errorBody: { Открыто: {}, Принято: {}, Устранено: {} },
       error: {},
       photo: null,
-      role: "f_error",
+      role: 'f_error',
       statusConfirmed: false,
       statusClosed: false,
-    };
+    }
+  },
+  created() {
+    // !this.$store.state.template && this.$store.dispatch("GET_template");
   },
   methods: {
     checkFile() {
-      this.fileInput = document.getElementById("imageFile");
+      this.fileInput = document.getElementById('imageFile')
 
       // files is a FileList object (similar to NodeList)
-      this.files = Object.values(this.fileInput.files);
+      this.files = Object.values(this.fileInput.files)
       // console.log(files);
     },
     returnRender(key) {
-      if (key === "Открыто") {
-        return true;
+      if (key === 'Открыто') {
+        return true
       }
-      if (key === "Принято" && this.statusConfirmed) {
-        return true;
+      if (key === 'Принято' && this.statusConfirmed) {
+        return true
       }
-      if (key === "Устранено" && this.statusClosed && this.statusConfirmed) {
-        return true;
+      if (key === 'Устранено' && this.statusClosed && this.statusConfirmed) {
+        return true
       }
     },
     async postError(e) {
-      const id = "error__" + Date.now();
-      const link = "https://icaenter.blob.core.windows.net/errors-photo/";
+      const id = 'error__' + Date.now()
+      const link = 'https://icaenter.blob.core.windows.net/errors-photo/'
       const error = {
         id,
         info: {
-          Проект: this.$store.state.projectInfo["project number"],
-          Шкаф: this.$store.state.projectInfo["cab name"],
+          Проект: this.$store.state.projectInfo['project number'],
+          Шкаф: this.$store.state.projectInfo['cab name'],
           wo: this.$store.state.projectInfo.wo.toString(),
-          Добавил: sessionStorage.getItem("userDetails").toLowerCase(),
-          Мастер: this.$store.state.projectInfo["senior fitter"].toLowerCase(),
+          Добавил: sessionStorage.getItem('userDetails').toLowerCase(),
+          Мастер: this.$store.state.projectInfo['senior fitter'].toLowerCase(),
         },
         photos: [],
         type: this.role,
         status: Object.values(this.errorBody.Устранено)[0]
-          ? "closed"
+          ? 'closed'
           : Object.values(this.errorBody.Принято)[0]
-          ? "confirmed"
-          : "open",
+          ? 'confirmed'
+          : 'open',
         ttl: 6000,
         body: [
           {
             ...this.errorBody,
-            _changed: sessionStorage.getItem("userDetails").toLowerCase(),
+            _changed: sessionStorage.getItem('userDetails').toLowerCase(),
             _time: `${Date.now()}`,
           },
         ],
-      };
+      }
 
       const openError = {
         id,
         info: {
           ...error.info,
-          Описание: this.errorBody.Открыто["Описание"],
+          Описание: this.errorBody.Открыто['Описание'],
         },
         type: error.type,
         status: error.status,
         ttl: 6000,
-      };
+      }
       // const fileField = document.querySelector('input[type="file"]');
 
       // formData.append("photo", this.files.files[0]);
       // console.log(Array.isArray(error.photos) , error.photos);
       this.files &&
         this.files.forEach((e, i) => {
-          const formData = new FormData();
-          formData.append(`photo${i}`, e);
+          const formData = new FormData()
+          formData.append(`photo${i}`, e)
           error.photos.push({
             link: `${link}${id}__${sessionStorage
-              .getItem("userDetails")
+              .getItem('userDetails')
               .toLowerCase()}__${e.name}`,
             thumb: `${link}thumb__${id}__${sessionStorage
-              .getItem("userDetails")
+              .getItem('userDetails')
               .toLowerCase()}__${e.name}`,
-          });
-
-          (async () => {
+          })
+          ;(async () => {
             const blobResponse = await fetch(
               `/api/blob?fileName=${id}__${sessionStorage
-                .getItem("userDetails")
+                .getItem('userDetails')
                 .toLowerCase()}__${e.name}`,
               {
-                method: "POST",
+                method: 'POST',
                 body: formData,
-              }
-            );
+              },
+            )
             if (blobResponse.ok) {
-              Notiflix.Notify.Success(`Файл ${e.name} успешно загружен`);
+              Notiflix.Notify.Success(`Файл ${e.name} успешно загружен`)
             } else {
-              Notiflix.Notify.Failure(`Ошибка, файл  ${e.name} не загружен`);
+              Notiflix.Notify.Failure(`Ошибка, файл  ${e.name} не загружен`)
             }
-          })();
-        });
+          })()
+        })
 
       try {
-        await fetch("/api/POST_error", {
-          method: "POST", // или 'PUT'
+        await fetch('/api/POST_error', {
+          method: 'POST', // или 'PUT'
           body: JSON.stringify({ ...error }),
-        });
-        await fetch("/api/POST_openError", {
-          method: "POST", // или 'PUT'
+        })
+        await fetch('/api/POST_openError', {
+          method: 'POST', // или 'PUT'
           body: JSON.stringify({ ...openError }),
-        });
+        })
       } finally {
-        e.target.reset();
-        this.errorBody = { Открыто: {}, Принято: {}, Устранено: {} };
-        this.files = null;
+        e.target.reset()
+        this.errorBody = { Открыто: {}, Принято: {}, Устранено: {} }
+        this.files = null
       }
       // await fetch(
       //   `/api/blob?folder=${this.error.id}&fileName=${this.error.id}`,
@@ -181,12 +188,6 @@ export default {
       //   }
       // );
     },
-  },
-  created() {
-    // !this.$store.state.template && this.$store.dispatch("GET_template");
-  },
-  components: {
-    conditionalRender,
   },
 
   // async mounted() {
@@ -200,8 +201,9 @@ export default {
   //     console.log(error);
   //   }
   // },
-};
+})
 </script>
+
 
 <style lang="css" scoped>
 .cabinet__info__item {

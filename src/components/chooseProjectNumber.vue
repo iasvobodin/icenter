@@ -11,18 +11,18 @@
     </datalist> -->
     <div class="input__holder">
       <input
-        @blur="bl"
-        @focus="getProjectList"
+        v-model="selectedProject"
         :class="{ loading: spinnerClass }"
         class="project_input"
-        v-model="selectedProject"
         placeholder="Введите номер проекта"
+        @blur="bl"
+        @focus="getProjectList"
       />
       <img
         v-if="selectedProject"
-        @click="clearState"
         src="/img/cancel.svg"
         alt=""
+        @click="clearState"
       />
     </div>
 
@@ -31,8 +31,8 @@
         <li
           v-for="(project, index) in filterProject"
           :key="index"
-          @click="chooseProject(index)"
           class="project_item"
+          @click="chooseProject(index)"
         >
           <p v-if="typeof project === 'object'">
             <span style="text-align: start">

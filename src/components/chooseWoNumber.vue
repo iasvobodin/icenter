@@ -1,17 +1,17 @@
 <template>
-  <div class="multiple" v-if="multiplePermission">
+  <div v-if="multiplePermission" class="multiple">
     <fieldset>
       <legend>Выбрать WO</legend>
 
-      <input type="radio" id="one" :value="true" v-model="multipleCheck" />
+      <input id="one" v-model="multipleCheck" type="radio" :value="true" />
       <label for="one">Один</label>
-      <input type="radio" id="two" :value="false" v-model="multipleCheck" />
+      <input id="two" v-model="multipleCheck" type="radio" :value="false" />
       <label for="two">Hесколько</label>
     </fieldset>
   </div>
   <input
-    class="wo__filter"
     v-model="wo"
+    class="wo__filter"
     placeholder="Введите номер WO или название шкафа"
   />
   <table style="width: 100%">
@@ -24,7 +24,7 @@
       <th>Наименование</th>
 
       <th v-if="!multipleCheck">
-        Выбрать всё<input @click="checkAll" type="checkbox" />
+        Выбрать всё<input type="checkbox" @click="checkAll" />
       </th>
       <th v-else>Выбрать WO</th>
     </tr>
@@ -35,16 +35,16 @@
         <input
           v-if="!multipleCheck"
           :ref="setItemRef"
+          v-model="checkedCabinetsNames"
           type="checkbox"
           :value="value"
-          v-model="checkedCabinetsNames"
         />
         <input
           v-else
-          type="radio"
           :id="index"
-          :value="value"
           v-model="checkedCabinetsNames"
+          type="radio"
+          :value="value"
         />
         <!-- <button>Выбрать</button> -->
       </td>
@@ -54,6 +54,16 @@
 
 <script>
 export default {
+  props: {
+    multiplePermission: {
+      type: Boolean,
+      default: () => false,
+    },
+    cabinetList: {
+      type: Array,
+      default: () => [],
+    },
+  },
   emits: ["checkedWo"],
   data() {
     return {
@@ -65,25 +75,6 @@ export default {
       checkBoxAll: null,
       picked: "",
     };
-  },
-  props: {
-    multiplePermission: {
-      type: Boolean,
-      default: () => false,
-    },
-    cabinetList: {
-      type: Array,
-      default: () => [],
-    },
-  },
-  watch: {
-    checkedCabinetsNames() {
-      this.$emit("checkedWo", this.checkedCabinetsNames);
-    },
-    multipleCheck() {
-      this.checkedCabinetsNames = [];
-      this.checkBoxAll = false;
-    },
   },
   computed: {
     filterWO() {
@@ -97,6 +88,15 @@ export default {
       } else {
         return this.cabinetList;
       }
+    },
+  },
+  watch: {
+    checkedCabinetsNames() {
+      this.$emit("checkedWo", this.checkedCabinetsNames);
+    },
+    multipleCheck() {
+      this.checkedCabinetsNames = [];
+      this.checkBoxAll = false;
     },
   },
   methods: {

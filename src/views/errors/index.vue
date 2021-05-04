@@ -4,7 +4,7 @@
   <br />
   <div class="selectStatus">
     <h3>Выберете статус ошибки</h3>
-    <select class="change__status" v-model="selectedStatus">
+    <select v-model="selectedStatus" class="change__status">
       <option value="open">Открыто</option>
       <option value="confirmed">Принято</option>
     </select>
@@ -49,6 +49,9 @@ export default {
       this.getErrors();
     },
   },
+  created() {
+    this.getErrors();
+  },
   methods: {
     chosseError(e) {
       this.$router.push(`/errors/${e}`);
@@ -68,9 +71,6 @@ export default {
         this.fetchStatus = false;
       }
     },
-  },
-  created() {
-    this.getErrors();
   },
 };
 </script>

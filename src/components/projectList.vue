@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="project__holder" v-if="!projectList">Загрузка данных</div>
+    <div v-if="!projectList" class="project__holder">Загрузка данных</div>
     <table v-else>
       <thead>
         <tr>

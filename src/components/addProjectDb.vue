@@ -6,10 +6,10 @@
       </p>
       <!-- <button @click="runDataFactory" >update</button> -->
       <choose-project-number
+        :fetch-url="projectData"
+        :zero-end="true"
         @input-project-event="fetchProjectList"
         @choose-project-number="choose"
-        :fetchUrl="projectData"
-        :zeroEnd="true"
       />
       <div v-if="woList">
         <h3>Информация по проекту</h3>
@@ -22,16 +22,16 @@
           <span>{{ value }}</span>
         </div>
         <h3>Заполните поля</h3>
-        <form @submit.prevent="postProject" class="project__info">
+        <form class="project__info" @submit.prevent="postProject">
           <div v-if="!fetchTemplate" class="fetchHolder">Load</div>
           <div
-            v-else
             v-for="(value, key, index) in fetchTemplate.template.base"
+            v-else
             :key="index"
             class="project__info__row"
           >
             <span>{{ key }}</span>
-            <select required v-model="selected[key]">
+            <select v-model="selected[key]" required>
               <option v-for="(fitter, index) in value" :key="index">
                 {{ fitter }}
               </option>
@@ -39,8 +39,8 @@
           </div>
           <div v-if="!fetchTemplate" class="fetchHolder">Load</div>
           <div
-            v-else
             v-for="(value, key, index) in fetchTemplate.template.extend"
+            v-else
             :key="index"
             class="project__info__row"
           >
@@ -50,10 +50,10 @@
           <div class="cabinet__info">
             <h3>Выберете шкафные линии</h3>
             <choose-wo-number
-              :multiple-permission="true"
-              :cabinetList="mappingWO"
-              @checked-wo="mapWO"
               v-if="woList"
+              :multiple-permission="true"
+              :cabinet-list="mappingWO"
+              @checked-wo="mapWO"
             />
           </div>
           <input class="add__button" type="submit" :value="fetchStatus" />
@@ -73,19 +73,6 @@ export default {
     chooseProjectNumber,
     chooseWoNumber,
   },
-  computed: {
-    mappingWO() {
-      return (
-        this.woList &&
-        this.woList.map((el) => {
-          return {
-            wo: el.cabinet.wo,
-            ["cab name"]: el.cabinet["cabinet name"],
-          };
-        })
-      );
-    },
-  },
   data() {
     return {
       projectData: null,
@@ -103,6 +90,19 @@ export default {
       checkBoxAll: false,
       lastUpdate: null,
     };
+  },
+  computed: {
+    mappingWO() {
+      return (
+        this.woList &&
+        this.woList.map((el) => {
+          return {
+            wo: el.cabinet.wo,
+            ["cab name"]: el.cabinet["cabinet name"],
+          };
+        })
+      );
+    },
   },
   async mounted() {
     try {

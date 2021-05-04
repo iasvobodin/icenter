@@ -1,9 +1,9 @@
 <template>
   <div
-    :class="{ error__item__desc: key === 'Описание' }"
-    class="error__item"
     v-for="(value, key, index) in dataRender"
     :key="index"
+    :class="{ error__item__desc: key === 'Описание' }"
+    class="error__item"
   >
     <h4
       :class="{ error__item__vertical__title: key === 'Описание' }"
@@ -12,57 +12,57 @@
       {{ key }}
     </h4>
     <select
+      v-if="Object.values(value)[0] === 'select'"
+      :value="modelValue[key]"
+      required
+      class="error__item__desc"
       @input="
         $emit('update:modelValue', {
           ...modelValue,
           [key]: $event.target.value,
         })
       "
-      :value="modelValue[key]"
-      required
-      class="error__item__desc"
-      v-if="Object.values(value)[0] === 'select'"
     >
       <option v-for="(v, i) in Object.values(value)[1]" :key="i">
         {{ v }}
       </option>
     </select>
     <input
+      v-if="Object.values(value)[0] === 'checkbox'"
+      :value="modelValue[key]"
+      required
+      type="checkbox"
       @input="
         $emit('update:modelValue', {
           ...modelValue,
           [key]: $event.target.value,
         })
       "
-      :value="modelValue[key]"
-      required
-      v-if="Object.values(value)[0] === 'checkbox'"
-      type="checkbox"
     />
     <input
+      v-if="Object.values(value)[0] === 'number'"
+      :value="modelValue[key]"
+      required
+      type="number"
       @input="
         $emit('update:modelValue', {
           ...modelValue,
           [key]: $event.target.value,
         })
       "
-      :value="modelValue[key]"
-      required
-      v-if="Object.values(value)[0] === 'number'"
-      type="number"
     />
     <textarea
+      v-if="Object.values(value)[0] === 'textarea'"
+      :value="modelValue[key]"
+      required
+      cols="30"
+      rows="5"
       @input="
         $emit('update:modelValue', {
           ...modelValue,
           [key]: $event.target.value,
         })
       "
-      :value="modelValue[key]"
-      required
-      v-if="Object.values(value)[0] === 'textarea'"
-      cols="30"
-      rows="5"
     ></textarea>
   </div>
   <div v-if="modelValue && modelValue['Ответственный']">
@@ -71,15 +71,15 @@
         {{ modelValue["Ответственный"] }}
       </h4>
       <select
+        :value="modelValue['Ошибку допустил']"
+        required
+        class="error__item__desc"
         @input="
           $emit('update:modelValue', {
             ...modelValue,
             ['Ошибку допустил']: $event.target.value,
           })
         "
-        :value="modelValue['Ошибку допустил']"
-        required
-        class="error__item__desc"
       >
         <option
           v-for="(value, key, index) in $store.state.template[

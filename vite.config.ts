@@ -5,23 +5,23 @@ import * as path from 'path';
 
 // https://vitejs.dev/config/
 export default defineConfig({
-    resolve: {
-        alias: [
-            {
-                find: '@',
-                replacement: path.resolve(__dirname, 'src')
-            }
-        ]
-    },
-  plugins: [vue(), eslintPlugin()],
+  resolve: {
+    alias: [
+      {
+        find: '@',
+        replacement: path.resolve(__dirname, 'src')
+      }
+    ]
+  },
+  plugins: [vue(), eslintPlugin({ fix: true })],
   server: {
     port: 8080,
     proxy: {
-        "^/api": {
-          target: "http://localhost:7071",
-          changeOrigin: true,
-        },
+      "^/api": {
+        target: "http://localhost:7071",
+        changeOrigin: true,
       },
+    },
     // proxy: {
     //     // string shorthand
     //     '/foo': 'http://localhost:4567/foo',
@@ -38,5 +38,5 @@ export default defineConfig({
     //       rewrite: (path) => path.replace(/^\/fallback/, '')
     //     }
     //   }
-}
+  }
 })
