@@ -65,8 +65,8 @@
 </template>
 
 <script>
-import chooseProjectNumber from "@/components/chooseProjectNumber";
-import chooseWoNumber from "@/components/chooseWoNumber";
+import chooseProjectNumber from "@/components/chooseProjectNumber.vue";
+import chooseWoNumber from "@/components/chooseWoNumber.vue";
 // import projectInfo from './projectInfo.vue';
 export default {
   components: {

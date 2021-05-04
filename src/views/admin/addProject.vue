@@ -12,8 +12,8 @@
 
 <script>
 // import chooseCabinet from "../../components/chooseCabinet";
-import addProjectDb from "@/components/addProjectDb";
-import chooseProjectNumber from "@/components/chooseProjectNumber";
+import addProjectDb from "@/components/addProjectDb.vue";
+import chooseProjectNumber from "@/components/chooseProjectNumber.vue";
 export default {
   data() {
     return {

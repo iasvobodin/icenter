@@ -8,7 +8,7 @@
 
 <script>
 import { useRoute } from "vue-router";
-import Navigation from "@/components/adminNavigation";
+import Navigation from "@/components/adminNavigation.vue";
 export default {
   components: {
     Navigation,

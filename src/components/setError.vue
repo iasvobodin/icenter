@@ -51,7 +51,7 @@
 
 <script>
 import Notiflix from "notiflix";
-import conditionalRender from "@/components/conditionalRender";
+import conditionalRender from "@/components/conditionalRender.vue";
 export default {
   data() {
     return {

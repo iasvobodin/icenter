@@ -44,11 +44,11 @@
 </template>
 
 <script>
-import chooseProjectNumber from "@/components/chooseProjectNumber";
-import chooseWoNumber from "@/components/chooseWoNumber";
-import cabinetTemplate from "@/components/cabinetTemplate";
-import chooseWo from "@/components/chooseWO";
-import projectList from "@/components/projectList";
+import chooseProjectNumber from "@/components/chooseProjectNumber.vue";
+import chooseWoNumber from "@/components/chooseWoNumber.vue";
+import cabinetTemplate from "@/components/cabinetTemplate.vue";
+import chooseWo from "@/components/chooseWO.vue";
+import projectList from "@/components/projectList.vue";
 export default {
   data() {
     return {

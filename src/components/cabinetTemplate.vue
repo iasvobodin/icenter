@@ -41,7 +41,7 @@
 </template>
 
 <script>
-import setError from "@/components/setError";
+import setError from "@/components/setError.vue";
 export default {
   data() {
     return {
