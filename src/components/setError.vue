@@ -27,9 +27,10 @@
         type="file"
         id="imageFile"
         accept="image/*"
-      />    <div v-if="files">
-      <p v-for="f in files" :key="f.lastModified">{{ f.name }}</p>
-    </div>
+      />
+      <div v-if="files">
+        <p v-for="f in files" :key="f.lastModified">{{ f.name }}</p>
+      </div>
       <br /><br />
       <input class="add__button" type="submit" value="Добавить" />
     </form>
@@ -168,9 +169,9 @@ export default {
           body: JSON.stringify({ ...openError }),
         });
       } finally {
-        e.target.reset()
+        e.target.reset();
         this.errorBody = { Открыто: {}, Принято: {}, Устранено: {} };
-        this.files = null
+        this.files = null;
       }
       // await fetch(
       //   `/api/blob?folder=${this.error.id}&fileName=${this.error.id}`,

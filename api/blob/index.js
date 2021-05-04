@@ -61,6 +61,7 @@ module.exports = async function (context, req) {
       {
         resolveWithObject: true,
       },
+      // eslint-disable-next-line no-unused-vars
       async (err, data, info) => {
         await uploadDataBlockBlobClient.uploadData(data.buffer, {
           blobHTTPHeaders: {
@@ -83,6 +84,7 @@ module.exports = async function (context, req) {
       {
         resolveWithObject: true,
       },
+      // eslint-disable-next-line no-unused-vars
       async (err, data, info) => {
         await blockBlobClient.uploadData(data.buffer, {
           blobHTTPHeaders: {
