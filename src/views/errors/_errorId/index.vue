@@ -36,7 +36,7 @@
             ]"
             :key="index"
           >
-            <section v-if="returnRender(key)">
+            <section v-if="returnRender(key, value)">
               <h3>Статус ошибки: {{ key }}</h3>
               <conditional-render
                 v-model="error.body[key]"
@@ -46,24 +46,21 @@
           </div>
         </form>
       </section>
+      <section class="photos">
+        <div
+          v-for="(value, index) in error.photos"
+          :key="index"
+          class="photo__holder"
+        >
+          <a :href="value.link">
+            <img class="error__photos" :src="value.thumb" alt="" />
+          </a>
+        </div>
+      </section>
     </div>
     <div v-else class="loading" />
     <p v-if="errorIsNotDef">{{ errorIsNotDef }}</p>
   </div>
-  <div v-if="error && error.photos && showPhotos" class="photos">
-    <div
-      v-for="(value, index) in error.photos"
-      :key="index"
-      class="photo__holder"
-    >
-      <a :href="value.link">
-        <img class="error__photos" :src="value.thumb" alt="" />
-      </a>
-    </div>
-  </div>
-  <br />
-  <button v-if="!showPhotos&&error && error.photos" @click="showPhotos = !showPhotos">Показать фотографии</button>
-  <button v-else @click="showPhotos = !showPhotos">Скрыть фотографии</button>
   <br />
   <br />
   <div class="button__block">
@@ -77,7 +74,10 @@
     >
       Редактировать
     </button>
-    <button @click="statusConfirmed = !statusConfirmed">
+    <button
+      v-if="changeInfo && !error.body.Принято['Статус решения']"
+      @click="statusConfirmed = !statusConfirmed"
+    >
       Подтвердить ошибку
     </button>
     <button v-if="statusConfirmed" @click="statusClosed = !statusClosed">
@@ -112,7 +112,8 @@ export default {
     conditionalRender,
   },
   methods: {
-    returnRender(key) {
+    // eslint-disable-next-line no-unused-vars
+    returnRender(key, val) {
       if (key === "Открыто") {
         return true;
       }
@@ -129,14 +130,12 @@ export default {
     async updateErorData() {
       const err = await this.getCurrentError();
       const updateErorBody = {
-        id: this.error.id,
-        info: this.error.info,
+        ...err,
         status: Object.values(this.error.body.Устранено)[0]
           ? "closed"
           : Object.values(this.error.body.Принято)[0]
           ? "confirmed"
           : "open",
-        type: this.error.type,
         body: [
           ...err.body,
           {
@@ -238,12 +237,12 @@ export default {
 <style lang="css" scoped>
 .photos {
   display: grid;
-  /* grid-template-columns: repeat(auto-fit, minmax(max(25vw, 150px), 1fr)); */
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
   column-gap: 1vh;
   row-gap: 1vh;
 }
 .photo__holder {
-  width: 100px;
+  /* width: 100px; */
   height: 100px;
   place-self: center;
   margin: auto;

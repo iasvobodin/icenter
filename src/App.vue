@@ -19,7 +19,27 @@
 
 <style>
 @import url("https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400&display=swap");
-
+button, input[type=submit], ::-webkit-file-upload-button {
+  width: min(200px, 20vw);
+  height: 35px;
+  background-color: #ffffff;
+  /* border: none; */
+  /* color: white; */
+  /* padding: 15px 32px; */
+  border: 1px solid rgb(0, 140, 255);
+  border-radius: 3px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  box-sizing: border-box;
+  font-size: 16px;
+}
+input[type=submit]:hover {
+  background-color: #00a2ff5b;
+}
+button:hover {
+  background-color: #00a2ff5b;
+}
 h4 {
   margin: 0;
 }

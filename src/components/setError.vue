@@ -21,21 +21,22 @@
         </section>
       </div>
       <br />
+      <input
+        @input="checkFile"
+        multiple
+        type="file"
+        id="imageFile"
+        accept="image/*"
+      />    <div v-if="files">
+      <p v-for="f in files" :key="f.lastModified">{{ f.name }}</p>
+    </div>
+      <br /><br />
       <input class="add__button" type="submit" value="Добавить" />
     </form>
     <br />
-    <input
-      @input="checkFile"
-      multiple
-      type="file"
-      id="imageFile"
-      capture="user"
-      accept="image/*"
-    />
+
     <br />
-    <div v-if="files">
-      <p v-for="f in files" :key="f.lastModified">{{ f.name }}</p>
-    </div>
+
     <br />
     <br />
     <button @click="statusConfirmed = !statusConfirmed">
@@ -48,10 +49,12 @@
 </template>
 
 <script>
+import Notiflix from "notiflix";
 import conditionalRender from "@/components/conditionalRender";
 export default {
   data() {
     return {
+      fileInput: null,
       files: null,
       errorTemplate: null,
       errorBody: { Открыто: {}, Принято: {}, Устранено: {} },
@@ -64,10 +67,10 @@ export default {
   },
   methods: {
     checkFile() {
-      var fileInput = document.getElementById("imageFile");
+      this.fileInput = document.getElementById("imageFile");
 
       // files is a FileList object (similar to NodeList)
-      this.files = Object.values(fileInput.files);
+      this.files = Object.values(this.fileInput.files);
       // console.log(files);
     },
     returnRender(key) {
@@ -81,7 +84,7 @@ export default {
         return true;
       }
     },
-    async postError() {
+    async postError(e) {
       const id = "error__" + Date.now();
       const link = "https://icaenter.blob.core.windows.net/errors-photo/";
       const error = {
@@ -128,17 +131,17 @@ export default {
         this.files.forEach((e, i) => {
           const formData = new FormData();
           formData.append(`photo${i}`, e);
-          error.photos.push({ link :
-            `${link}${id}__${sessionStorage
+          error.photos.push({
+            link: `${link}${id}__${sessionStorage
               .getItem("userDetails")
               .toLowerCase()}__${e.name}`,
-              thumb: `${link}thumb__${id}__${sessionStorage
+            thumb: `${link}thumb__${id}__${sessionStorage
               .getItem("userDetails")
-              .toLowerCase()}__${e.name}`, }
-          );
+              .toLowerCase()}__${e.name}`,
+          });
 
-          (async () =>
-            await fetch(
+          (async () => {
+            const blobResponse = await fetch(
               `/api/blob?fileName=${id}__${sessionStorage
                 .getItem("userDetails")
                 .toLowerCase()}__${e.name}`,
@@ -146,7 +149,13 @@ export default {
                 method: "POST",
                 body: formData,
               }
-            ))();
+            );
+            if (blobResponse.ok) {
+              Notiflix.Notify.Success(`Файл ${e.name} успешно загружен`);
+            } else {
+              Notiflix.Notify.Failure(`Ошибка, файл  ${e.name} не загружен`);
+            }
+          })();
         });
 
       try {
@@ -159,7 +168,9 @@ export default {
           body: JSON.stringify({ ...openError }),
         });
       } finally {
+        e.target.reset()
         this.errorBody = { Открыто: {}, Принято: {}, Устранено: {} };
+        this.files = null
       }
       // await fetch(
       //   `/api/blob?folder=${this.error.id}&fileName=${this.error.id}`,
