@@ -18,13 +18,13 @@
       @click="chosseError(value.id)"
     >
       <div
-        v-for="(val, key, index) in value.info"
-        :key="index"
+        v-for="(v, k, i) in value.info"
+        :key="i"
         class="error__item"
       >
-        <h3 class="error__item__title">{{ key }}:</h3>
+        <h3 class="error__item__title">{{ k }}:</h3>
         <p class="error__item__desc">
-          {{ val }}
+          {{ v }}
         </p>
       </div>
     </div>

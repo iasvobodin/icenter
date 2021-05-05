@@ -23,6 +23,7 @@
       <br />
       <input
         id="imageFile"
+        ref="fileInput"
         multiple
         type="file"
         accept="image/*"
@@ -51,17 +52,19 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import Notiflix from 'notiflix'
+// import Notiflix from 'notiflix'
 import conditionalRender from '@/components/conditionalRender.vue'
-
+interface IForm extends HTMLElement{
+  files: []
+}
 export default defineComponent({
   components: {
     conditionalRender,
   },
   data() {
     return {
-      fileInput: null,
-      files: null,
+      fileInput: {} as IForm,
+      files: [],
       errorTemplate: null,
       errorBody: { Открыто: {}, Принято: {}, Устранено: {} },
       error: {},
@@ -76,13 +79,10 @@ export default defineComponent({
   },
   methods: {
     checkFile() {
-      this.fileInput = document.getElementById('imageFile')
-
-      // files is a FileList object (similar to NodeList)
+      this.fileInput = document.getElementById('imageFile') as IForm
       this.files = Object.values(this.fileInput.files)
-      // console.log(files);
     },
-    returnRender(key) {
+    returnRender(key: string) {
       if (key === 'Открыто') {
         return true
       }
@@ -93,7 +93,9 @@ export default defineComponent({
         return true
       }
     },
-    async postError(e) {
+    async postError(e : HTMLFormElement) {
+      // console.log(typeof e, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+      
       const id = 'error__' + Date.now()
       const link = 'https://icaenter.blob.core.windows.net/errors-photo/'
       const error = {
@@ -102,7 +104,7 @@ export default defineComponent({
           Проект: this.$store.state.projectInfo['project number'],
           Шкаф: this.$store.state.projectInfo['cab name'],
           wo: this.$store.state.projectInfo.wo.toString(),
-          Добавил: sessionStorage.getItem('userDetails').toLowerCase(),
+          Добавил: sessionStorage.getItem('userDetails')!.toLowerCase(),
           Мастер: this.$store.state.projectInfo['senior fitter'].toLowerCase(),
         },
         photos: [],
@@ -116,7 +118,7 @@ export default defineComponent({
         body: [
           {
             ...this.errorBody,
-            _changed: sessionStorage.getItem('userDetails').toLowerCase(),
+            _changed: sessionStorage.getItem('userDetails')!.toLowerCase(),
             _time: `${Date.now()}`,
           },
         ],
@@ -137,21 +139,21 @@ export default defineComponent({
       // formData.append("photo", this.files.files[0]);
       // console.log(Array.isArray(error.photos) , error.photos);
       this.files &&
-        this.files.forEach((e, i) => {
+        this.files.forEach((e, i : number) => {
           const formData = new FormData()
           formData.append(`photo${i}`, e)
           error.photos.push({
             link: `${link}${id}__${sessionStorage
-              .getItem('userDetails')
+              .getItem('userDetails')!
               .toLowerCase()}__${e.name}`,
             thumb: `${link}thumb__${id}__${sessionStorage
-              .getItem('userDetails')
+              .getItem('userDetails')!
               .toLowerCase()}__${e.name}`,
           })
           ;(async () => {
             const blobResponse = await fetch(
               `/api/blob?fileName=${id}__${sessionStorage
-                .getItem('userDetails')
+                .getItem('userDetails')!
                 .toLowerCase()}__${e.name}`,
               {
                 method: 'POST',
@@ -159,9 +161,9 @@ export default defineComponent({
               },
             )
             if (blobResponse.ok) {
-              Notiflix.Notify.Success(`Файл ${e.name} успешно загружен`)
+              // Notiflix.Notify.Success(`Файл ${e.name} успешно загружен`)
             } else {
-              Notiflix.Notify.Failure(`Ошибка, файл  ${e.name} не загружен`)
+              // Notiflix.Notify.Failure(`Ошибка, файл  ${e.name} не загружен`)
             }
           })()
         })

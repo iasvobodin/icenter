@@ -1,19 +1,19 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import eslintPlugin from 'vite-plugin-eslint';
-import * as path from 'path';
+import { resolve } from "path";
+import tsconfigPaths from 'vite-tsconfig-paths'
 
 // https://vitejs.dev/config/
 export default defineConfig({
   resolve: {
-    alias: [
-      {
-        find: '@',
-        replacement: path.resolve(__dirname, 'src')
-      }
-    ]
+    alias: {
+      "@": resolve(__dirname, "src"),
+    },
   },
-  plugins: [vue(), eslintPlugin({ fix: true })],
+  plugins: [vue(), tsconfigPaths()
+    // , eslintPlugin({ fix: true })
+  ],
   server: {
     port: 8080,
     proxy: {
@@ -22,21 +22,5 @@ export default defineConfig({
         changeOrigin: true,
       },
     },
-    // proxy: {
-    //     // string shorthand
-    //     '/foo': 'http://localhost:4567/foo',
-    //     // with options
-    //     '/api': {
-    //       target: 'http://jsonplaceholder.typicode.com',
-    //       changeOrigin: true,
-    //       rewrite: (path) => path.replace(/^\/api/, '')
-    //     },
-    //     // with RegEx
-    //     '^/fallback/.*': {
-    //       target: 'http://jsonplaceholder.typicode.com',
-    //       changeOrigin: true,
-    //       rewrite: (path) => path.replace(/^\/fallback/, '')
-    //     }
-    //   }
   }
 })

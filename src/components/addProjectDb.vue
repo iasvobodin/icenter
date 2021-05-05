@@ -32,7 +32,7 @@
           >
             <span>{{ key }}</span>
             <select v-model="selected[key]" required>
-              <option v-for="(fitter, index) in value" :key="index">
+              <option v-for="(fitter, i) in value" :key="i">
                 {{ fitter }}
               </option>
             </select>

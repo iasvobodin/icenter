@@ -20,7 +20,7 @@
         <tr v-for="(value, key, index) in projectList" :key="index">
           <td>{{ value.id }}</td>
           <!-- <td v-for="(val, key, index) in value.info" :key="index">{{val}}</td> -->
-          <td v-for="(val, key, index) in value.extends" :key="index">
+          <td v-for="(val, k, i) in value.extends" :key="i">
             {{ val }}
           </td>
           <td style="padding: 0px">
@@ -33,10 +33,10 @@
               </thead>
               <tbody>
                 <tr
-                  v-for="(cabinet, key, index) in value.cabinets"
-                  :key="index"
+                  v-for="(cabinet, k3, i3) in value.cabinets"
+                  :key="i3"
                 >
-                  <td v-for="(val, key, index) in cabinet" :key="index">
+                  <td v-for="(val, k, i2) in cabinet" :key="i2">
                     {{ val }}
                   </td>
                 </tr>
