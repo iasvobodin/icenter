@@ -1,15 +1,13 @@
 import { createStore } from "vuex";
-interface ITemplate {
-  [key:string]: string
-}
+
 export default createStore({
   state: {
-    template: {} as any,
+    template: null,
     projectList: null,
     testState: "testState",
     selectedProjectNumber: "",
-    projectInfo: {} as any,
-    user: {info:{}, userInfo:{}},
+    projectInfo: {},
+    user: {},
     currentError: null,
   },
   mutations: {
@@ -73,14 +71,14 @@ export default createStore({
     },
     async GET_auth({ commit, state }) {
       let clientPrincipal = null;
-      let responseUser : Response;
+      let responseUser;
 
       try {
         if (!state.user.info) {
           responseUser = await fetch("/.auth/me");
         }
         try {
-          const payload = await responseUser!.json();
+          const payload = await responseUser.json();
           clientPrincipal = payload.clientPrincipal;
           // console.log(payload, "payload");
         } catch (error) {
