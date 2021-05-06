@@ -6,7 +6,7 @@
       </p>
       <!-- <button @click="runDataFactory" >update</button> -->
       <choose-project-number
-        :fetch-url="projectData"
+        :fetch-url="projectData&&projectData.map(e => e['project number'])"
         :zero-end="true"
         @input-project-event="fetchProjectList"
         @choose-project-number="choose"
@@ -23,9 +23,9 @@
         </div>
         <h3>Заполните поля</h3>
         <form class="project__info" @submit.prevent="postProject">
-          <div v-if="!fetchTemplate" class="fetchHolder">Load</div>
+          <div v-if="!$store.state.template" class="fetchHolder">Load</div>
           <div
-            v-for="(value, key, index) in fetchTemplate.template.base"
+            v-for="(value, key, index) in $store.state.template.template.base"
             v-else
             :key="index"
             class="project__info__row"
@@ -37,9 +37,9 @@
               </option>
             </select>
           </div>
-          <div v-if="!fetchTemplate" class="fetchHolder">Load</div>
+          <div v-if="!$store.state.template" class="fetchHolder">Load</div>
           <div
-            v-for="(value, key, index) in fetchTemplate.template.extend"
+            v-for="(value, key, index) in $store.state.template.template.extend"
             v-else
             :key="index"
             class="project__info__row"
@@ -120,13 +120,13 @@ export default {
     }
   },
   methods: {
-    async runDataFactory() {
-      const uri =
-        "https://management.azure.com/subscriptions/33ffdf9c-5499-414c-b962-a4ce5553d7e1/resourceGroups/Masstrikov_ICenter/providers/Microsoft.DataFactory/factories/icenter/pipelines/icenter/createRun?api-version=2017-03-01-preview";
-      await fetch(uri, {
-        method: "POST",
-      });
-    },
+    // async runDataFactory() {
+    //   const uri =
+    //     "https://management.azure.com/subscriptions/33ffdf9c-5499-414c-b962-a4ce5553d7e1/resourceGroups/Masstrikov_ICenter/providers/Microsoft.DataFactory/factories/icenter/pipelines/icenter/createRun?api-version=2017-03-01-preview";
+    //   await fetch(uri, {
+    //     method: "POST",
+    //   });
+    // },
     formatDate(date) {
       return (
         date.getDate() +
@@ -164,7 +164,7 @@ export default {
     },
     async fetchProjectList() {
       if (!this.projectData) {
-        const projectDataRes = await fetch("/api/projectstatus/Open");
+        const projectDataRes = await fetch("/api/projectstatus?excludestatus=Отгружено");
         const projectData = await projectDataRes.json();
         this.projectData = projectData.data;
 

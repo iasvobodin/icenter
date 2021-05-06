@@ -13,6 +13,7 @@ const routes = [
   },
   {
     path: "/admin",
+    component: import("@/views/admin/index.vue"),
     children: [
       {
         path: "profile",
@@ -31,7 +32,6 @@ const routes = [
         component: import("@/views/admin/addCabTime.vue"),
       },
     ],
-    component: import("@/views/admin/index.vue"),
   },
   {
     path: "/errors",
