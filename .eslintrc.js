@@ -12,7 +12,7 @@
 //     "no-debugger": process.env.NODE_ENV === "production" ? "warn" : "off",
 //   },
 // };
-
+// "no-unused-vars":
 
 module.exports = {
   root: true,
@@ -27,4 +27,9 @@ module.exports = {
     '@vue/typescript',
   ],
   plugins: ['vue'],
+    rules: {
+    "no-console": process.env.NODE_ENV === "production" ? "warn" : "off",
+    "no-debugger": process.env.NODE_ENV === "production" ? "warn" : "off",
+    "no-unused-vars": process.env.NODE_ENV === "production" ? "warn" : "off"
+  },
 }

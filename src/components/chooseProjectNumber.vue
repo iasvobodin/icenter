@@ -1,32 +1,14 @@
 <template>
-  <div
-    :class="{ border__project: listIsActive }"
-    class="choose__project__holder"
-  >
-    <!-- <input  @focus="getProjectList"
-        :class="{ loading: spinnerClass }"  class="project_input" list="test">
-  <datalist id="test">
-    <option  v-for="(project, index) in filterProject"
-          :key="index" :value="project"></option>
-    </datalist> -->
+  <div :class="{ border__project: listIsActive }" class="choose__project__holder">
     <div class="input__holder">
-      <input
-        v-model="selectedProject"
-        :class="{ loading: spinnerClass }"
-        class="project_input"
-        placeholder="Введите номер проекта"
-        @blur="bl"
-        @focus="getProjectList"
-      />
-      <img
-        v-if="selectedProject"
-        src="/img/cancel.svg"
-        alt=""
-        @click="clearState"
-      />
+      <input v-model.lazy="selectedProject"  type="search" list="projetList" placeholder="Введите номер проекта"
+        @focus.once="getProjectList"  />
+      <datalist  id="projetList">
+        <option  v-for="pr in dataToRender" :key="pr"> <h1>{{pr}}</h1> </option>
+      </datalist>
     </div>
 
-    <div v-show="listIsActive" class="project_list_holder">
+    <!-- <div v-show="listActive" class="project_list_holder">
       <ul class="project_list">
         <li
           v-for="(project, index) in filterProject"
@@ -34,110 +16,101 @@
           class="project_item"
           @click="chooseProject(index)"
         >
-          <p v-if="typeof project === 'object'">
-            <span style="text-align: start">
-              {{ project.wo }}
-            </span>
-            -
-            <span style="text-align: end">
-              {{ project["cab name"] }}
-            </span>
-          </p>
-          <p v-else>
-            <span>
-              {{ project }}
-            </span>
-          </p>
+          <p>{{ project }}</p>
         </li>
       </ul>
-    </div>
+    </div> -->
   </div>
 </template>
 
 <script>
+import {toRefs, watch, ref } from 'vue'
+import { useStore } from "vuex"
 export default {
   props: {
-    zeroEnd: {
-      type: Boolean,
-      default: () => false,
-    },
-    fetchUrl: {
-      type: Object,
+    dataToRender: {
+      type: Array,
       default: null,
     },
   },
-  emits: ["inputProjectEvent", "chooseProjectNumber"],
-  data() {
-    return {
-      selectedProject: null,
-      projectNumberQuery: null,
-      filterProjectList: null,
-      listIsActive: false,
-      spinnerClass: false,
+  // emits: ["inputProjectEvent", "chooseProjectNumber"],
+  setup(props, { emit }) {
+    const store = useStore()
+    // const { dataToRender } = toRefs(props)
+    const selectedProject = ref('')
+    watch(selectedProject, () => {
+      emit("chooseProjectNumber", selectedProject.value);
+      store.commit("SETprojectNumber", selectedProject.value);
+    })
+    const getProjectList = () => {
+      emit("inputProjectEvent")
     };
+    return {
+      selectedProject,
+      getProjectList,
+      // eslint-disable-next-line vue/no-dupe-keys
+      // dataToRender
+    } 
   },
-  computed: {
-    filterProject() {
-      if (this.selectedProject) {
-        if (typeof Object.values(this.fetchUrl)[0] === "object") {
-          return Object.values(this.fetchUrl).filter(
-            (el) =>
-              (el.wo && el.wo.includes(this.selectedProject)) ||
-              (el["cab name"] &&
-                el["cab name"]
-                  .toLowerCase()
-                  .includes(this.selectedProject.toLowerCase()))
-          );
-        } else {
-          return Object.values(this.fetchUrl).filter((el) =>
-            el.includes(this.selectedProject)
-          );
-        }
-      } else {
-        return this.fetchUrl;
-      }
-    },
-  },
-  watch: {
-    // selectedProject() {
-    //   if (this.fetchUrl) {
-    //     this.filterProjectList = Object.values(this.fetchUrl).filter(el =>
-    //       el.includes(this.selectedProject)
-    //     );
-    //   }
-    // },
-    fetchUrl() {
-      this.listIsActive = true;
-      this.spinnerClass = false;
-    },
-  },
-  methods: {
-    bl() {
-      setTimeout(() => (this.listIsActive = false), 200);
-    },
-    clearState() {
-      this.selectedProject = null;
-      this.$emit("chooseProjectNumber", this.selectedProject);
-      this.$store.commit("SETprojectNumber", null);
-    },
-    getProjectList() {
-      this.$emit("inputProjectEvent");
-      this.spinnerClass = true;
-      if (this.fetchUrl) {
-        this.spinnerClass = false;
-        this.listIsActive = true;
-        this.filterProjectList = this.fetchUrl;
-      }
-    },
-    chooseProject(index) {
-      this.$store.commit("SETprojectNumber", this.filterProject[index]);
-      this.selectedProject = this.filterProject[index];
-      this.projectNumberQuery = this.selectedProject;
-      this.$emit("chooseProjectNumber", this.projectNumberQuery);
+  // data() {
+  //   return {
+  //     selectedProject: null,
+  //     projectNumberQuery: null,
+  //     filterProjectList: null,
+  //     listIsActive: false,
+  //     spinnerClass: false,
+  //   };
+  // },
+  // computed: {
+  //   filterProject() {
+  //     if (this.selectedProject) {
+  //         return Object.values(this.dataToRender).filter((el) =>
+  //           el.includes(this.selectedProject)
+  //         );
+  //     } else {
+  //       return this.dataToRender;
+  //     }
+  //   },
+  // },
+  // mounted () {
+  //   this.getProjectList();
+  // },
+  // watch: {
+  //   dataToRender() {
+  //     this.listIsActive = true;
+  //     this.spinnerClass = false;
+  //   },
+  //   selectedProject(){
+  //     console.log("change!!!!!!!!!")
+  //   }
+  // },
+  // methods: {
+  //   bl() {
+  //     setTimeout(() => (this.listIsActive = false), 200);
+  //   },
+  //   clearState() {
+  //     this.selectedProject = null;
+  //     this.$emit("chooseProjectNumber", this.selectedProject);
+  //     this.$store.commit("SETprojectNumber", null);
+  //   },
+  //   getProjectList() {
+  //     this.$emit("inputProjectEvent");
+  //     this.spinnerClass = true;
+  //     if (this.dataToRender) {
+  //       this.spinnerClass = false;
+  //       this.listIsActive = true;
+  //       this.filterProjectList = this.dataToRender;
+  //     }
+  //   },
+  //   chooseProject(index) {
+  //     this.$store.commit("SETprojectNumber", this.filterProject[index]);
+  //     this.selectedProject = this.filterProject[index];
+  //     this.projectNumberQuery = this.selectedProject;
+  //     this.$emit("chooseProjectNumber", this.projectNumberQuery);
 
-      this.bl();
-    },
-  },
+  //     this.bl();
+  //   },
+  // },
 };
 </script>
 
@@ -215,7 +188,7 @@ span {
   padding: 0;
   height: inherit;
 }
-li {
+option {
   border-bottom: 1px solid black;
 }
 ul {

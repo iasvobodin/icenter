@@ -5,7 +5,7 @@ declare module '@vue/runtime-core' {
   // declare your own store states
   interface State {
     count: number
-    projectInfo: {} as IPrInfo
+    // projectInfo: {} as IPrInfo
   }
 
   // provide typings for `this.$store`

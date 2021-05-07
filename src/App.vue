@@ -1,4 +1,5 @@
 <template>
+<loader/>
   <div id="nav">
     <!-- <router-link to="/">Home</router-link> |
     <router-link to="/User">User</router-link> |
@@ -19,9 +20,13 @@
 
 
 <script>
+import loader from '@/components/loader.vue'
 // import { onBeforeRouteLeave, onBeforeRouteUpdate } from "vue-router";
 // import { ref } from "vue";
 export default {
+  components: {
+    loader,
+  },
   // setup() {
   //   // same as beforeRouteLeave option with no access to `this`
   //   onBeforeRouteLeave((to, from) => {

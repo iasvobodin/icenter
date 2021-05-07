@@ -4,10 +4,9 @@
       <p v-if="lastUpdate">
         Время последенего обновления LegendStats : {{ lastUpdate }}
       </p>
-      <!-- <button @click="runDataFactory" >update</button> -->
+      <br>      <!-- <button @click="runDataFactory" >update</button> -->
       <choose-project-number
-        :fetch-url="projectData&&projectData.map(e => e['project number'])"
-        :zero-end="true"
+        :data-to-render="projectData&&projectData.map(e => e['project number'])"
         @input-project-event="fetchProjectList"
         @choose-project-number="choose"
       />
@@ -67,6 +66,7 @@
 <script>
 import chooseProjectNumber from "@/components/chooseProjectNumber.vue";
 import chooseWoNumber from "@/components/chooseWoNumber.vue";
+import {useFetch} from "@/hooks/fetch"
 // import projectInfo from './projectInfo.vue';
 export default {
   components: {
@@ -157,20 +157,24 @@ export default {
         this.woList = null;
         return;
       }
+      this.$store.commit("changeLoader", true)
       this.woList = await (await fetch(`/api/cabinetList/${$event}`)).json();
-
+this.$store.commit("changeLoader", false)
       this.checkedCabinetsNames = [];
       this.selectedProject = $event;
     },
     async fetchProjectList() {
       if (!this.projectData) {
-        const projectDataRes = await fetch("/api/projectstatus?excludestatus=Отгружено");
-        const projectData = await projectDataRes.json();
-        this.projectData = projectData.data;
-
+        this.$store.commit("changeLoader", true)
+        const {request, response: projectList} = useFetch('/api/projectstatus?excludestatus=Отгружено')
+        // const projectDataRes = await fetch("/api/projectstatus?excludestatus=Отгружено");
+        await request();
+        console.log(projectList,"projectList");
+        this.projectData = projectList.value.data;
+ this.$store.commit("changeLoader", false)
         // console.log(typeof projectData.lastUpdate,  this.formatDate(new Date(projectData.lastUpdate*1000)));
         this.lastUpdate = this.formatDate(
-          new Date(projectData.lastUpdate * 1000)
+          new Date(projectList.value.lastUpdate * 1000)
         );
         // this.projectData = await (
         //   await fetch("/api/projectstatus/Open")
