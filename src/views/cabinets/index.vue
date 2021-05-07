@@ -5,7 +5,6 @@
 </template>
 
 <script>
-import qrcode from "html5-qrcode"
 import QrScanner from 'qr-scanner';
 export default {
   data() {

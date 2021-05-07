@@ -4,13 +4,12 @@
   "private": true,
   "scripts": {
     "dev": "vite",
-    "build": "vue-tsc --noEmit && vite build",
+    "build": "vite build",
     "serve": "vite preview",
     "lint:fix": "eslint src --fix"
   },
   "dependencies": {
     "axios": "^0.21.1",
-    "html5-qrcode": "^2.0.3",
     "notiflix": "^2.7.0",
     "parse-multipart": "^1.0.4",
     "qr-scanner": "^1.2.0",
