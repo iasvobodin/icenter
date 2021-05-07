@@ -4,83 +4,83 @@ const routes = [
   {
     path: "/",
     name: "Home",
-    component: import("@/views/Home.vue"),
+    component: () => import("@/views/Home.vue"),
   },
   {
     path: "/User",
     name: "User",
-    component: import("@/views/User.vue"),
+    component:()=>  import("@/views/User.vue"),
   },
   {
     path: "/admin",
-    component: import("@/views/admin/index.vue"),
+    component: ()=> import("@/views/admin/index.vue"),
     children: [
       {
         path: "profile",
-        component: import("@/views/admin/UserProfile.vue"),
+        component: ()=>  import("@/views/admin/UserProfile.vue"),
       },
       {
         path: "addproject",
-        component: import("@/views/admin/addProject.vue"),
+        component: ()=>  import("@/views/admin/addProject.vue"),
       },
       {
         path: "reports",
-        component: import("@/views/admin/reports.vue"),
+        component: ()=>  import("@/views/admin/reports.vue"),
       },
       {
         path: "addcabtime",
-        component: import("@/views/admin/addCabTime.vue"),
+        component: ()=>  import("@/views/admin/addCabTime.vue"),
       },
     ],
   },
   {
     path: "/errors",
-    component: import("@/views/errors/index.vue"),
+    component: ()=>  import("@/views/errors/index.vue"),
   },
   {
     path: "/errors/:errorId",
-    component: import("@/views/errors/_errorId/index.vue"),
+    component: ()=>  import("@/views/errors/_errorId/index.vue"),
   },
   {
     path: "/errors/addNew",
-    component: import("@/views/errors/addNew.vue"),
+    component: ()=>  import("@/views/errors/addNew.vue"),
   },
   {
     path: "/tasks",
-    component: import("@/views/tasks/index.vue"),
+    component: ()=>  import("@/views/tasks/index.vue"),
   },
   {
     path: "/tasks/:taskId",
-    component: import("@/views/tasks/_taskId/index.vue"),
+    component: ()=>  import("@/views/tasks/_taskId/index.vue"),
   },
   {
     path: "/cabinets",
-    component: import("@/views/cabinets/index.vue"),
+    component: ()=>  import("@/views/cabinets/index.vue"),
   },
   {
     path: "/cabinets/:cabinetId",
-    component: import("@/views/cabinets/_cabinetId/index.vue"),
+    component: ()=>  import("@/views/cabinets/_cabinetId/index.vue"),
   },
   {
     path: "/cabtimes",
-    component: import("@/views/cabtimes/index.vue"),
+    component: ()=>  import("@/views/cabtimes/index.vue"),
   },
   {
     path: "/cabtimes/:cabtimeId",
-    component: import("@/views/cabtimes/_cabtimeId/index.vue"),
+    component: ()=>  import("@/views/cabtimes/_cabtimeId/index.vue"),
   },
   {
     path: "/projects",
-    component: import("@/views/projects/index.vue"),
+    component: ()=>  import("@/views/projects/index.vue"),
   },
   {
     path: "/projects/:projectId",
-    component: import("@/views/projects/_projectId/index.vue"),
+    component: ()=>  import("@/views/projects/_projectId/index.vue"),
   },
   {
     path: "/admin",
     name: "admin",
-    component: import("@/views/admin/index.vue"),
+    component: ()=>  import("@/views/admin/index.vue"),
   },
   {
     path: "/login",
@@ -88,7 +88,7 @@ const routes = [
     beforeEnter() {
       window.open("http://www.google.com", "_blank");
     },
-    component: import("@/views/login.vue"),
+    component: ()=>  import("@/views/login.vue"),
   },
 ];
 
