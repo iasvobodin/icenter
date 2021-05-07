@@ -12,9 +12,15 @@
 
 <script>
 // import chooseCabinet from "../../components/chooseCabinet";
-import addProjectDb from "@/components/addProjectDb";
-import chooseProjectNumber from "@/components/chooseProjectNumber";
+import addProjectDb from "@/components/addProjectDb.vue";
+import chooseProjectNumber from "@/components/chooseProjectNumber.vue";
 export default {
+  components: {
+    // eslint-disable-next-line vue/no-unused-components
+    addProjectDb,
+    // eslint-disable-next-line vue/no-unused-components
+    chooseProjectNumber,
+  },
   data() {
     return {
       projectData: null,
@@ -30,12 +36,6 @@ export default {
         this.projectData = data.filter((el) => el.length > 6).sort();
       }
     },
-  },
-  components: {
-    // eslint-disable-next-line vue/no-unused-components
-    addProjectDb,
-    // eslint-disable-next-line vue/no-unused-components
-    chooseProjectNumber,
   },
 };
 </script>

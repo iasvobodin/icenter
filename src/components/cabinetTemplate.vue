@@ -41,13 +41,8 @@
 </template>
 
 <script>
-import setError from "@/components/setError";
+import setError from "@/components/setError.vue";
 export default {
-  data() {
-    return {
-      error: false,
-    };
-  },
   components: {
     setError,
   },
@@ -68,6 +63,11 @@ export default {
       type: String,
       default: "t",
     },
+  },
+  data() {
+    return {
+      error: false,
+    };
   },
 };
 </script>

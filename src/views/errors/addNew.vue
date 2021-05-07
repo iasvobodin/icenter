@@ -2,14 +2,14 @@
   <div>
     <h2>Добавление новой ошибки.</h2>
     <choose-project-number
+      :fetch-url="projectData"
       @input-project-event="fetchProjectList"
       @choose-project-number="choose"
-      :fetchUrl="projectData"
     />
     <div v-if="projectInformation">
       <choose-wo
+        :fetch-url="projectInformation.cabinets"
         @choose-project-number="chooseCabinet"
-        :fetchUrl="projectInformation.cabinets"
       />
       <div v-if="cabinet">
         <cabinet-template
@@ -24,22 +24,12 @@
 </template>
 
 <script>
-import chooseProjectNumber from "@/components/chooseProjectNumber";
-import chooseWoNumber from "@/components/chooseWoNumber";
-import cabinetTemplate from "@/components/cabinetTemplate";
-import chooseWo from "@/components/chooseWO";
-import projectList from "@/components/projectList";
+import chooseProjectNumber from "@/components/chooseProjectNumber.vue";
+import chooseWoNumber from "@/components/chooseWoNumber.vue";
+import cabinetTemplate from "@/components/cabinetTemplate.vue";
+import chooseWo from "@/components/chooseWO.vue";
+import projectList from "@/components/projectList.vue";
 export default {
-  data() {
-    return {
-      projectData: null,
-      fetchProject: null,
-      projectInformation: null,
-      projectStatus: "open",
-      woState: false,
-      cabinet: "",
-    };
-  },
   components: {
     cabinetTemplate,
     // eslint-disable-next-line vue/no-unused-components
@@ -49,6 +39,19 @@ export default {
     chooseProjectNumber,
     // eslint-disable-next-line vue/no-unused-components
     chooseWoNumber,
+  },
+  setup() {
+    return {};
+  },
+  data() {
+    return {
+      projectData: null,
+      fetchProject: null,
+      projectInformation: null,
+      projectStatus: "open",
+      woState: false,
+      cabinet: "",
+    };
   },
   watch: {
     projectStatus(oldv, newv) {
@@ -85,9 +88,6 @@ export default {
         // this.projectData = this.fetchProject.map(el => el.id);
       }
     },
-  },
-  setup() {
-    return {};
   },
 };
 </script>

@@ -4,12 +4,11 @@
       <p v-if="lastUpdate">
         Время последенего обновления LegendStats : {{ lastUpdate }}
       </p>
-      <!-- <button @click="runDataFactory" >update</button> -->
+      <br>      <!-- <button @click="runDataFactory" >update</button> -->
       <choose-project-number
+        :data-to-render="projectData&&projectData.map(e => e['project number'])"
         @input-project-event="fetchProjectList"
         @choose-project-number="choose"
-        :fetchUrl="projectData"
-        :zeroEnd="true"
       />
       <div v-if="woList">
         <h3>Информация по проекту</h3>
@@ -22,25 +21,25 @@
           <span>{{ value }}</span>
         </div>
         <h3>Заполните поля</h3>
-        <form @submit.prevent="postProject" class="project__info">
-          <div v-if="!fetchTemplate" class="fetchHolder">Load</div>
+        <form class="project__info" @submit.prevent="postProject">
+          <div v-if="!$store.state.template" class="fetchHolder">Load</div>
           <div
+            v-for="(value, key, index) in $store.state.template.template.base"
             v-else
-            v-for="(value, key, index) in fetchTemplate.template.base"
             :key="index"
             class="project__info__row"
           >
             <span>{{ key }}</span>
-            <select required v-model="selected[key]">
-              <option v-for="(fitter, index) in value" :key="index">
+            <select v-model="selected[key]" required>
+              <option v-for="(fitter, i) in value" :key="i">
                 {{ fitter }}
               </option>
             </select>
           </div>
-          <div v-if="!fetchTemplate" class="fetchHolder">Load</div>
+          <div v-if="!$store.state.template" class="fetchHolder">Load</div>
           <div
+            v-for="(value, key, index) in $store.state.template.template.extend"
             v-else
-            v-for="(value, key, index) in fetchTemplate.template.extend"
             :key="index"
             class="project__info__row"
           >
@@ -50,10 +49,10 @@
           <div class="cabinet__info">
             <h3>Выберете шкафные линии</h3>
             <choose-wo-number
-              :multiple-permission="true"
-              :cabinetList="mappingWO"
-              @checked-wo="mapWO"
               v-if="woList"
+              :multiple-permission="true"
+              :cabinet-list="mappingWO"
+              @checked-wo="mapWO"
             />
           </div>
           <input class="add__button" type="submit" :value="fetchStatus" />
@@ -65,26 +64,14 @@
 </template>
 
 <script>
-import chooseProjectNumber from "@/components/chooseProjectNumber";
-import chooseWoNumber from "@/components/chooseWoNumber";
+import chooseProjectNumber from "@/components/chooseProjectNumber.vue";
+import chooseWoNumber from "@/components/chooseWoNumber.vue";
+import {useFetch} from "@/hooks/fetch"
 // import projectInfo from './projectInfo.vue';
 export default {
   components: {
     chooseProjectNumber,
     chooseWoNumber,
-  },
-  computed: {
-    mappingWO() {
-      return (
-        this.woList &&
-        this.woList.map((el) => {
-          return {
-            wo: el.cabinet.wo,
-            ["cab name"]: el.cabinet["cabinet name"],
-          };
-        })
-      );
-    },
   },
   data() {
     return {
@@ -104,6 +91,19 @@ export default {
       lastUpdate: null,
     };
   },
+  computed: {
+    mappingWO() {
+      return (
+        this.woList &&
+        this.woList.map((el) => {
+          return {
+            wo: el.cabinet.wo,
+            ["cab name"]: el.cabinet["cabinet name"],
+          };
+        })
+      );
+    },
+  },
   async mounted() {
     try {
       if (!this.fetchTemplate) {
@@ -120,13 +120,13 @@ export default {
     }
   },
   methods: {
-    async runDataFactory() {
-      const uri =
-        "https://management.azure.com/subscriptions/33ffdf9c-5499-414c-b962-a4ce5553d7e1/resourceGroups/Masstrikov_ICenter/providers/Microsoft.DataFactory/factories/icenter/pipelines/icenter/createRun?api-version=2017-03-01-preview";
-      await fetch(uri, {
-        method: "POST",
-      });
-    },
+    // async runDataFactory() {
+    //   const uri =
+    //     "https://management.azure.com/subscriptions/33ffdf9c-5499-414c-b962-a4ce5553d7e1/resourceGroups/Masstrikov_ICenter/providers/Microsoft.DataFactory/factories/icenter/pipelines/icenter/createRun?api-version=2017-03-01-preview";
+    //   await fetch(uri, {
+    //     method: "POST",
+    //   });
+    // },
     formatDate(date) {
       return (
         date.getDate() +
@@ -157,20 +157,24 @@ export default {
         this.woList = null;
         return;
       }
+      this.$store.commit("changeLoader", true)
       this.woList = await (await fetch(`/api/cabinetList/${$event}`)).json();
-
+this.$store.commit("changeLoader", false)
       this.checkedCabinetsNames = [];
       this.selectedProject = $event;
     },
     async fetchProjectList() {
       if (!this.projectData) {
-        const projectDataRes = await fetch("/api/projectstatus/Open");
-        const projectData = await projectDataRes.json();
-        this.projectData = projectData.data;
-
+        this.$store.commit("changeLoader", true)
+        const {request, response: projectList} = useFetch('/api/projectstatus?excludestatus=Отгружено')
+        // const projectDataRes = await fetch("/api/projectstatus?excludestatus=Отгружено");
+        await request();
+        console.log(projectList,"projectList");
+        this.projectData = projectList.value.data;
+ this.$store.commit("changeLoader", false)
         // console.log(typeof projectData.lastUpdate,  this.formatDate(new Date(projectData.lastUpdate*1000)));
         this.lastUpdate = this.formatDate(
-          new Date(projectData.lastUpdate * 1000)
+          new Date(projectList.value.lastUpdate * 1000)
         );
         // this.projectData = await (
         //   await fetch("/api/projectstatus/Open")

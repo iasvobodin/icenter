@@ -2,6 +2,7 @@ import { createStore } from "vuex";
 
 export default createStore({
   state: {
+    loader: false,
     template: null,
     projectList: null,
     testState: "testState",
@@ -11,6 +12,9 @@ export default createStore({
     currentError: null,
   },
   mutations: {
+    changeLoader(state, payload){
+      state.loader = payload
+    },
     SETERROR(state, pay) {
       state.currentError = pay;
     },

@@ -17,19 +17,19 @@
       </section>
       <section v-if="!changeInfo" class="eror__body">
         <div
-          v-show="Object.values(val)[1] && !key.startsWith('_')"
           v-for="(val, key, index) in error.body"
+          v-show="Object.values(val)[1] && !key.startsWith('_')"
           :key="index"
         >
           <h2>{{ key }}</h2>
-          <div class="cabinet__info__item" v-for="(v, k, i) in val" :key="i">
+          <div v-for="(v, k, i) in val" :key="i" class="cabinet__info__item">
             <h3>{{ k }}:</h3>
             <p>{{ v }}</p>
           </div>
         </div>
       </section>
       <section v-else class="mod__error__body">
-        <form @submit.prevent="updateErorData" id="errorData">
+        <form id="errorData" @submit.prevent="updateErorData">
           <div
             v-for="(value, key, index) in $store.state.template.error[
               error.type
@@ -40,7 +40,7 @@
               <h3>Статус ошибки: {{ key }}</h3>
               <conditional-render
                 v-model="error.body[key]"
-                :dataRender="value"
+                :data-render="value"
               />
             </section>
           </div>
@@ -92,8 +92,11 @@
 </template>
 
 <script>
-import conditionalRender from "@/components/conditionalRender";
+import conditionalRender from "@/components/conditionalRender.vue";
 export default {
+  components: {
+    conditionalRender,
+  },
   data() {
     return {
       showPhotos: false,
@@ -108,8 +111,11 @@ export default {
       test: null,
     };
   },
-  components: {
-    conditionalRender,
+
+  async created() {
+    this.error = await this.getCurrentError();
+    this.error.body = this.error.body[this.error.body.length - 1];
+    console.log("here");
   },
   methods: {
     // eslint-disable-next-line no-unused-vars
@@ -224,12 +230,6 @@ export default {
     //     console.error("Ошибка:", error);
     //   }
     // },
-  },
-
-  async created() {
-    this.error = await this.getCurrentError();
-    this.error.body = this.error.body[this.error.body.length - 1];
-    console.log("here");
   },
 };
 </script>

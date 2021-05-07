@@ -1,142 +1,86 @@
 import { createRouter, createWebHistory } from "vue-router";
-import Home from "@/views/Home.vue";
-import cabtime from "@/views/admin/addCabTime.vue";
-// import UserHome from "@/views/admin/UserHome.vue";
-import UserProfile from "@/views/admin/UserProfile.vue";
-import addProject from "@/views/admin/addProject.vue";
-import reports from "@/views/admin/reports.vue";
+
 const routes = [
   {
     path: "/",
     name: "Home",
-    component: Home,
+    component: import("@/views/Home.vue"),
   },
   {
     path: "/User",
     name: "User",
-    component: function () {
-      return import(/* webpackChunkName: "about" */ "@/views/User.vue");
-    },
+    component: import("@/views/User.vue"),
   },
   {
     path: "/admin",
+    component: import("@/views/admin/index.vue"),
     children: [
-      // { path: "", component: UserHome },
-      { path: "profile", component: UserProfile },
-      { path: "addproject", component: addProject },
-      { path: "reports", component: reports },
-      { path: "addcabtime", component: cabtime },
+      {
+        path: "profile",
+        component: import("@/views/admin/UserProfile.vue"),
+      },
+      {
+        path: "addproject",
+        component: import("@/views/admin/addProject.vue"),
+      },
+      {
+        path: "reports",
+        component: import("@/views/admin/reports.vue"),
+      },
+      {
+        path: "addcabtime",
+        component: import("@/views/admin/addCabTime.vue"),
+      },
     ],
-    component: function () {
-      return import(/* webpackChunkName: "about" */ "@/views/admin/index.vue");
-    },
   },
-  // {
-  //   path: "/projects/:projectnumber",
-  //   component: function () {
-  //     return import(
-  //       /* webpackChunkName: "about" */ "@/views/projects/_projectnumber/index.vue"
-  //     );
-  //   },
-  // },
-  // {
-  //   path: "/projects/:projectnumber/:wonumber",
-  //   component: function () {
-  //     return import(
-  //       /* webpackChunkName: "about" */ "@/views/projects/_projectnumber/_wonumber/index.vue"
-  //     );
-  //   },
-  // },
   {
     path: "/errors",
-    component: function () {
-      return import(/* webpackChunkName: "about" */ "@/views/errors/index.vue");
-    },
+    component: import("@/views/errors/index.vue"),
   },
   {
     path: "/errors/:errorId",
-    component: function () {
-      return import(
-        /* webpackChunkName: "about" */ "@/views/errors/_errorId/index.vue"
-      );
-    },
+    component: import("@/views/errors/_errorId/index.vue"),
   },
   {
     path: "/errors/addNew",
-    component: function () {
-      return import(
-        /* webpackChunkName: "about" */ "@/views/errors/addNew.vue"
-      );
-    },
+    component: import("@/views/errors/addNew.vue"),
   },
   {
     path: "/tasks",
-    component: function () {
-      return import(/* webpackChunkName: "about" */ "@/views/tasks/index.vue");
-    },
+    component: import("@/views/tasks/index.vue"),
   },
   {
     path: "/tasks/:taskId",
-    component: function () {
-      return import(
-        /* webpackChunkName: "about" */ "@/views/tasks/_taskId/index.vue"
-      );
-    },
+    component: import("@/views/tasks/_taskId/index.vue"),
   },
   {
     path: "/cabinets",
-    component: function () {
-      return import(
-        /* webpackChunkName: "about" */ "@/views/cabinets/index.vue"
-      );
-    },
+    component: import("@/views/cabinets/index.vue"),
   },
   {
     path: "/cabinets/:cabinetId",
-    component: function () {
-      return import(
-        /* webpackChunkName: "about" */ "@/views/cabinets/_cabinetId/index.vue"
-      );
-    },
+    component: import("@/views/cabinets/_cabinetId/index.vue"),
   },
   {
     path: "/cabtimes",
-    component: function () {
-      return import(
-        /* webpackChunkName: "about" */ "@/views/cabtimes/index.vue"
-      );
-    },
+    component: import("@/views/cabtimes/index.vue"),
   },
   {
     path: "/cabtimes/:cabtimeId",
-    component: function () {
-      return import(
-        /* webpackChunkName: "about" */ "@/views/cabtimes/_cabtimeId/index.vue"
-      );
-    },
+    component: import("@/views/cabtimes/_cabtimeId/index.vue"),
   },
   {
     path: "/projects",
-    component: function () {
-      return import(
-        /* webpackChunkName: "about" */ "@/views/projects/index.vue"
-      );
-    },
+    component: import("@/views/projects/index.vue"),
   },
   {
     path: "/projects/:projectId",
-    component: function () {
-      return import(
-        /* webpackChunkName: "about" */ "@/views/projects/_projectId/index.vue"
-      );
-    },
+    component: import("@/views/projects/_projectId/index.vue"),
   },
   {
     path: "/admin",
     name: "admin",
-    component: function () {
-      return import(/* webpackChunkName: "about" */ "@/views/admin/index.vue");
-    },
+    component: import("@/views/admin/index.vue"),
   },
   {
     path: "/login",
@@ -144,14 +88,12 @@ const routes = [
     beforeEnter() {
       window.open("http://www.google.com", "_blank");
     },
-    component: function () {
-      return import(/* webpackChunkName: "about" */ "@/views/login.vue");
-    },
+    component: import("@/views/login.vue"),
   },
 ];
 
 const router = createRouter({
-  history: createWebHistory(process.env.BASE_URL),
+  history: createWebHistory(import.meta.env.BASE_URL),
   routes,
 });
 

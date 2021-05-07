@@ -4,7 +4,7 @@
   <br />
   <div class="selectStatus">
     <h3>Выберете статус ошибки</h3>
-    <select class="change__status" v-model="selectedStatus">
+    <select v-model="selectedStatus" class="change__status">
       <option value="open">Открыто</option>
       <option value="confirmed">Принято</option>
     </select>
@@ -18,13 +18,13 @@
       @click="chosseError(value.id)"
     >
       <div
-        v-for="(val, key, index) in value.info"
-        :key="index"
+        v-for="(v, k, i) in value.info"
+        :key="i"
         class="error__item"
       >
-        <h3 class="error__item__title">{{ key }}:</h3>
+        <h3 class="error__item__title">{{ k }}:</h3>
         <p class="error__item__desc">
-          {{ val }}
+          {{ v }}
         </p>
       </div>
     </div>
@@ -49,6 +49,9 @@ export default {
       this.getErrors();
     },
   },
+  created() {
+    this.getErrors();
+  },
   methods: {
     chosseError(e) {
       this.$router.push(`/errors/${e}`);
@@ -68,9 +71,6 @@ export default {
         this.fetchStatus = false;
       }
     },
-  },
-  created() {
-    this.getErrors();
   },
 };
 </script>

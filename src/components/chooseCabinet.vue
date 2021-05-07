@@ -4,19 +4,19 @@
   <div class="project">
     <!-- <button @click="getProject">Выбрать проект</button> -->
     <input
+      v-model="selectedProjectNumber"
+      class="project_input"
+      placeholder="Введите номер проекта"
       @focus="getProject"
       @input="listIsActive = true"
-      class="project_input"
-      v-model="selectedProjectNumber"
-      placeholder="Введите номер проекта"
     />
     <div v-if="listIsActive" class="project_list_holder">
       <ul class="project_list">
         <li
           v-for="(project, index) in filterList"
           :key="index"
-          @click="chooseProject(index)"
           class="project_item"
+          @click="chooseProject(index)"
         >
           {{ project }}
         </li>
@@ -38,11 +38,11 @@
         <th>Шкаф</th>
         <th>Выбрать</th>
       </tr>
-      <tr style="cursor: pointer" v-for="(wo, index) in woList" :key="index">
+      <tr v-for="(wo, index) in woList" :key="index" style="cursor: pointer">
         <td>{{ wo.id }}</td>
         <td class="tg-0lax">{{ wo.cabinetInfo.cabName }}</td>
         <td class="tg-0lax">
-          <input type="checkbox" :value="wo" v-model="checkedNames" />
+          <input v-model="checkedNames" type="checkbox" :value="wo" />
         </td>
       </tr>
     </table>
@@ -68,56 +68,7 @@
 // eslint-disable-next-line no-unused-vars
 import { computed, reactive, ref, watch } from "vue";
 export default {
-  mounted() {
-    console.log(this.$store.state.testState, "qqqqqqqqqqqqqqqqqqqq");
-  },
-  data() {
-    return {
-      checkedNames: [],
-      selectedProject: null,
-      projectsList: null,
-      woListTest: null,
-      selectedProjectCorrection: null,
-      selectedCabinet: null,
-      showPreloader: false,
-    };
-  },
-  methods: {
-    async getProjectTest() {
-      this.showPreloader = true;
-      !this.projectsList &&
-        (this.projectsList = await (
-          await fetch(`/api/projectstatus/Open`)
-        ).json());
-      this.showPreloader = false;
-    },
-    async chooseProjectTest() {
-      this.showPreloader = true;
-      if (!this.selectedProject.includes(".")) {
-        this.selectedProject = this.selectedProject + ".0";
-      }
-      let list = await (
-        await fetch(`/api/cabinetList/${this.selectedProject}`)
-      ).json();
-      this.woListTest = list.map((el) => {
-        return {
-          id: el.id,
-          szNumber: el.cabinetInfo.szNumber,
-          projectName: el.cabinetInfo.projectName,
-          cabName: el.cabinetInfo.cabName,
-          dimensions: el.cabinetInfo.dimensions,
-          weight: el.cabinetInfo.weight,
-          pm: el.cabinetInfo.pm,
-          buyer: el.cabinetInfo.buyer,
-          contractAdministrator: el.cabinetInfo.contractAdministrator,
-          buyoutAdministrator: el.cabinetInfo.buyoutAdministrator,
-          leadEngineer: el.cabinetInfo.leadEngineer,
-          hardwareEngineer: el.cabinetInfo.hardwareEngineer,
-        };
-      });
-      this.showPreloader = false;
-    },
-  },
+  components: {},
   setup() {
     const selctedWO = reactive({ wo: null, cabName: null });
     const selectedProjectNumber = ref(null);
@@ -192,7 +143,56 @@ export default {
       selctedWO,
     };
   },
-  components: {},
+  data() {
+    return {
+      checkedNames: [],
+      selectedProject: null,
+      projectsList: null,
+      woListTest: null,
+      selectedProjectCorrection: null,
+      selectedCabinet: null,
+      showPreloader: false,
+    };
+  },
+  mounted() {
+    console.log(this.$store.state.testState, "qqqqqqqqqqqqqqqqqqqq");
+  },
+  methods: {
+    async getProjectTest() {
+      this.showPreloader = true;
+      !this.projectsList &&
+        (this.projectsList = await (
+          await fetch(`/api/projectstatus/Open`)
+        ).json());
+      this.showPreloader = false;
+    },
+    async chooseProjectTest() {
+      this.showPreloader = true;
+      if (!this.selectedProject.includes(".")) {
+        this.selectedProject = this.selectedProject + ".0";
+      }
+      let list = await (
+        await fetch(`/api/cabinetList/${this.selectedProject}`)
+      ).json();
+      this.woListTest = list.map((el) => {
+        return {
+          id: el.id,
+          szNumber: el.cabinetInfo.szNumber,
+          projectName: el.cabinetInfo.projectName,
+          cabName: el.cabinetInfo.cabName,
+          dimensions: el.cabinetInfo.dimensions,
+          weight: el.cabinetInfo.weight,
+          pm: el.cabinetInfo.pm,
+          buyer: el.cabinetInfo.buyer,
+          contractAdministrator: el.cabinetInfo.contractAdministrator,
+          buyoutAdministrator: el.cabinetInfo.buyoutAdministrator,
+          leadEngineer: el.cabinetInfo.leadEngineer,
+          hardwareEngineer: el.cabinetInfo.hardwareEngineer,
+        };
+      });
+      this.showPreloader = false;
+    },
+  },
 };
 </script>
 
