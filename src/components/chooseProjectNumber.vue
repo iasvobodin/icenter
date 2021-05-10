@@ -17,7 +17,16 @@
         </option>
       </datalist>
     </div>
-
+    <div class="input__holder">
+      <input type="text" list="projetList2" />
+      <!-- @focus.once="getProjectList" -->
+      <datalist id="projetList2">
+        <option>1</option>
+        <option>2</option>
+        <option>3</option>
+        <option>4</option>
+      </datalist>
+    </div>
     <!-- <div v-show="listActive" class="project_list_holder">
       <ul class="project_list">
         <li
