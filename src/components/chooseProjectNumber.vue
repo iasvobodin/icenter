@@ -1,10 +1,20 @@
 <template>
-  <div :class="{ border__project: listIsActive }" class="choose__project__holder">
+  <div
+    :class="{ border__project: listIsActive }"
+    class="choose__project__holder"
+  >
     <div class="input__holder">
-      <input v-model.lazy="selectedProject"  type="search" list="projetList" placeholder="Введите номер проекта"
-        @focus.once="getProjectList"  />
-      <datalist  id="projetList">
-        <option  v-for="pr in dataToRender" :key="pr"> <h1>{{pr}}</h1> </option>
+      <input
+        v-model.lazy="selectedProject"
+        type="search"
+        list="projetList"
+        placeholder="Введите номер проекта"
+      />
+      <!-- @focus.once="getProjectList" -->
+      <datalist id="projetList">
+        <option :value="pr" v-for="pr in dataToRender" :key="pr">
+          {{ pr }}
+        </option>
       </datalist>
     </div>
 
@@ -24,8 +34,8 @@
 </template>
 
 <script>
-import {toRefs, watch, ref } from 'vue'
-import { useStore } from "vuex"
+import { toRefs, watch, ref } from 'vue'
+import { useStore } from 'vuex'
 export default {
   props: {
     dataToRender: {
@@ -39,18 +49,19 @@ export default {
     // const { dataToRender } = toRefs(props)
     const selectedProject = ref('')
     watch(selectedProject, () => {
-      emit("chooseProjectNumber", selectedProject.value);
-      store.commit("SETprojectNumber", selectedProject.value);
+      emit('chooseProjectNumber', selectedProject.value)
+      store.commit('SETprojectNumber', selectedProject.value)
     })
     const getProjectList = () => {
-      emit("inputProjectEvent")
-    };
+      emit('inputProjectEvent')
+    }
+    getProjectList()
     return {
       selectedProject,
-      getProjectList,
+      // getProjectList,
       // eslint-disable-next-line vue/no-dupe-keys
       // dataToRender
-    } 
+    }
   },
   // data() {
   //   return {
@@ -111,7 +122,7 @@ export default {
   //     this.bl();
   //   },
   // },
-};
+}
 </script>
 
 <style lang="css" scoped>
