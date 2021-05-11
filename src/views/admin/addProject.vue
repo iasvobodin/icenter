@@ -6,7 +6,9 @@
  @choose-project-number="choose"
  :fetchUrl="projectData"
  /> -->
+    <Suspense>
     <add-project-db />
+      </Suspense>
   </div>
 </template>
 

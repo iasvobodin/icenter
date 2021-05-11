@@ -9,7 +9,7 @@ interface Projects {
 
 export type UsableProject = Promise<{projetList: Ref<Projects[] | undefined>}>
 
-export async function useUsers(): UsableProject {
+export async function useProjects(): UsableProject {
   const loading = ref(false)
   const {request, response: projetList} = useFetch<Projects[]>("/api/projectstatus?excludestatus=Отгружено")
 
@@ -17,6 +17,7 @@ export async function useUsers(): UsableProject {
     await request()
     loading.value = true
   }
+console.log(projetList,'projetListfromfetch');
 
   return {projetList}
 }

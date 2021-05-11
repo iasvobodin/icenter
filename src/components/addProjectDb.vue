@@ -1,16 +1,20 @@
 <template>
   <div class="project__holder">
     <div class="project">
-      <p v-if="lastUpdate">
+      <!-- <p v-if="lastUpdate">
         Время последенего обновления LegendStats : {{ lastUpdate }}
-      </p>
+      </p> -->
       <br>      <!-- <button @click="runDataFactory" >update</button> -->
-      <choose-project-number
-        :data-to-render="projectData&&projectData.map(e => e['project number'])"
-        @input-project-event="fetchProjectList"
+   <!-- <Suspense> -->
+     <!-- <div v-for="(el, index) in projectList" :key="index" >{{el}}</div>    -->
+      <!-- </Suspense> -->
+      <choose-project-number v-if="projectList"
+        :data-to-render="projectList.map(e => e['project number'])"
         @choose-project-number="choose"
       />
-      <div v-if="woList">
+      <input type="text" v-model="search">
+      <div>{{result}}</div>
+      <!-- <div v-if="woList">
         <h3>Информация по проекту</h3>
         <div
           v-for="(value, key, index) in woList[0]['info']"
@@ -57,7 +61,7 @@
           </div>
           <input class="add__button" type="submit" :value="fetchStatus" />
         </form>
-      </div>
+      </div> -->
     </div>
     <!-- <project-info v-if="validateData" :cabinets="checkedCabinetsNames" :projectNumber="woList[0].project" :project="{...woList[0]['project info'], ...selected} " /> -->
   </div>
@@ -67,160 +71,204 @@
 import chooseProjectNumber from "@/components/chooseProjectNumber.vue";
 import chooseWoNumber from "@/components/chooseWoNumber.vue";
 import {useFetch} from "@/hooks/fetch"
+import { useStore } from 'vuex'
+import {useProjects} from '@/hooks/projectlsit'
+import searchByObject from '@/hooks/searchByObject'
+import { computed, ref } from '@vue/runtime-core';
 // import projectInfo from './projectInfo.vue';
 export default {
   components: {
     chooseProjectNumber,
     chooseWoNumber,
   },
-  data() {
-    return {
-      projectData: null,
-      fetchStatus: "Отправить в базу данных",
-      validateData: false,
-      fetchTemplate: null,
-      selected: {},
-      checkbox: [],
-      checkedCabinetsNames: [],
-      spinnerClass: false,
-      selectedProject: null,
-      filterProjectList: null,
-      woList: null,
-      listIsActive: null,
-      checkBoxAll: false,
-      lastUpdate: null,
+ setup(){
+   const store = useStore()
+   const projectList = ref(null)
+   const search = ref(null)
+  //  const result = ref(null)
+    async function test() {
+        store.commit("changeLoader", true)
+        const {request, response: projectData} = useFetch('/api/projectstatus?excludestatus=Отгружено')
+        await request();
+        projectList.value = projectData.value.data;
+        store.commit("changeLoader", false)
+ 
     };
-  },
-  computed: {
-    mappingWO() {
-      return (
-        this.woList &&
-        this.woList.map((el) => {
-          return {
-            wo: el.cabinet.wo,
-            ["cab name"]: el.cabinet["cabinet name"],
-          };
-        })
-      );
-    },
-  },
-  async mounted() {
-    try {
-      if (!this.fetchTemplate) {
-        this.fetchTemplate = await (
-          await fetch("/api/templates/templateProject/ver1")
-        ).json();
-        this.selected = {
-          ...this.fetchTemplate.template.base,
-          ...this.fetchTemplate.template.extend,
-        };
-      }
-    } catch (error) {
-      console.log(error);
+    test()
+    const result = computed(()=>{
+       return projectList.value&&(result.value = projectList.value.filter(e=>{
+    ['status','project number'].forEach(el => {
+       if (e[el].includes(search.value)) {
+         return true
+       } return false
+    }); 
+    // searchByObject(projectList.value,['status','project number'],search.value))
+    //       return Object.values(obj).filter(e=>{
+    //     // debugger
+    // key.forEach(el => {
+    //     e[el].includes(query)
+    })
+    //   return projectList.value&&(result.value = searchByObject(projectList.value,['status','project number'],search.value))
+    )})
+    return {
+     projectList, search, result
     }
   },
-  methods: {
-    // async runDataFactory() {
-    //   const uri =
-    //     "https://management.azure.com/subscriptions/33ffdf9c-5499-414c-b962-a4ce5553d7e1/resourceGroups/Masstrikov_ICenter/providers/Microsoft.DataFactory/factories/icenter/pipelines/icenter/createRun?api-version=2017-03-01-preview";
-    //   await fetch(uri, {
-    //     method: "POST",
-    //   });
-    // },
-    formatDate(date) {
-      return (
-        date.getDate() +
-        "/" +
-        "0" +
-        (date.getMonth() + 1) +
-        "/" +
-        date.getFullYear() +
-        " " +
-        date.getHours() +
-        ":" +
-        date.getMinutes()
-      );
-    },
-    mapWO(e) {
-      console.log(e);
-      this.checkedCabinetsNames = Object.values(e)
-        .filter((el) => el.wo)
-        .map((el) => {
-          return {
-            wo: el.wo,
-            ["cab name"]: el["cab name"],
-          };
-        });
-    },
-    async choose($event) {
-      if (!$event) {
-        this.woList = null;
-        return;
-      }
-      this.$store.commit("changeLoader", true)
-      this.woList = await (await fetch(`/api/cabinetList/${$event}`)).json();
-this.$store.commit("changeLoader", false)
-      this.checkedCabinetsNames = [];
-      this.selectedProject = $event;
-    },
-    async fetchProjectList() {
-      if (!this.projectData) {
-        this.$store.commit("changeLoader", true)
-        const {request, response: projectList} = useFetch('/api/projectstatus?excludestatus=Отгружено')
-        // const projectDataRes = await fetch("/api/projectstatus?excludestatus=Отгружено");
-        await request();
-        console.log(projectList,"projectList");
-        this.projectData = projectList.value.data;
- this.$store.commit("changeLoader", false)
-        // console.log(typeof projectData.lastUpdate,  this.formatDate(new Date(projectData.lastUpdate*1000)));
-        this.lastUpdate = this.formatDate(
-          new Date(projectList.value.lastUpdate * 1000)
-        );
-        // this.projectData = await (
-        //   await fetch("/api/projectstatus/Open")
-        // ).json();
-        //  console.log(this.formatDate(this.projectData.lastUpdate));
-        // // debugger
-        // this.projectData = data//.filter(el => el.length > 6).sort();
-        // console.log(this.projectData);
-      }
-    },
-    checkAll() {
-      this.checkBoxAll = !this.checkBoxAll;
-      if (this.checkBoxAll) {
-        this.checkbox.forEach((e) => (e.checked = true));
-        this.checkedCabinetsNames = this.woList;
-      } else {
-        this.checkbox.forEach((e) => (e.checked = false));
-        this.checkedCabinetsNames = [];
-      }
-    },
-    setItemRef(el) {
-      !this.checkbox && this.checkbox.push(el);
-    },
-    async postProject() {
-      let modifyEl;
-      if (this.selectedProject.endsWith(".0")) {
-        modifyEl = this.selectedProject.slice(0, -2);
-      } else {
-        modifyEl = this.selectedProject;
-      }
-      await fetch("/api/POST_project", {
-        method: "POST", // или 'PUT'
-        body: JSON.stringify({
-          id: modifyEl,
-          status: "open",
-          // ttl: 1,
-          info: {
-            base: this.woList[0]["info"],
-            extends: this.selected,
-          },
-          cabinets: this.checkedCabinetsNames,
-        }),
-      });
-      this.fetchStatus = "Проект успешно добавлен";
-    },
-  },
+//   data() {
+//     return {
+//       projectData: null,
+//       fetchStatus: "Отправить в базу данных",
+//       validateData: false,
+//       fetchTemplate: null,
+//       selected: {},
+//       checkbox: [],
+//       checkedCabinetsNames: [],
+//       spinnerClass: false,
+//       selectedProject: null,
+//       filterProjectList: null,
+//       woList: null,
+//       listIsActive: null,
+//       checkBoxAll: false,
+//       lastUpdate: null,
+//     };
+//   },
+//   computed: {
+//     mappingWO() {
+//       return (
+//         this.woList &&
+//         this.woList.map((el) => {
+//           return {
+//             wo: el.cabinet.wo,
+//             ["cab name"]: el.cabinet["cabinet name"],
+//           };
+//         })
+//       );
+//     },
+//   },
+//   async mounted() {
+//     // this.fetchProjectList()
+//     try {
+//       if (!this.fetchTemplate) {
+//         this.fetchTemplate = await (
+//           await fetch("/api/templates/templateProject/ver1")
+//         ).json();
+//         this.selected = {
+//           ...this.fetchTemplate.template.base,
+//           ...this.fetchTemplate.template.extend,
+//         };
+//       }
+//     } catch (error) {
+//       console.log(error);
+//     }
+//   },
+//   methods: {
+//     // async runDataFactory() {
+//     //   const uri =
+//     //     "https://management.azure.com/subscriptions/33ffdf9c-5499-414c-b962-a4ce5553d7e1/resourceGroups/Masstrikov_ICenter/providers/Microsoft.DataFactory/factories/icenter/pipelines/icenter/createRun?api-version=2017-03-01-preview";
+//     //   await fetch(uri, {
+//     //     method: "POST",
+//     //   });
+//     // },
+//     formatDate(date) {
+//       return (
+//         date.getDate() +
+//         "/" +
+//         "0" +
+//         (date.getMonth() + 1) +
+//         "/" +
+//         date.getFullYear() +
+//         " " +
+//         date.getHours() +
+//         ":" +
+//         date.getMinutes()
+//       );
+//     },
+//     mapWO(e) {
+//       console.log(e);
+//       this.checkedCabinetsNames = Object.values(e)
+//         .filter((el) => el.wo)
+//         .map((el) => {
+//           return {
+//             wo: el.wo,
+//             ["cab name"]: el["cab name"],
+//           };
+//         });
+//     },
+//     async choose($event) {
+//       if (!$event) {
+//         this.woList = null;
+//         return;
+//       }
+//       this.$store.commit("changeLoader", true)
+//       this.woList = await (await fetch(`/api/cabinetList/${$event}`)).json();
+// this.$store.commit("changeLoader", false)
+//       this.checkedCabinetsNames = [];
+//       this.selectedProject = $event;
+//     },
+//     async fetchProjectList() {
+//       if (!this.projectData) {
+//         // this.$store.commit("changeLoader", true)
+//         // const {request, response: projectList} = useFetch('/api/projectstatus?excludestatus=Отгружено')
+//         // // const projectDataRes = await fetch("/api/projectstatus?excludestatus=Отгружено");
+//         // await request();
+//         // console.log(projectList,"projectList");
+//         // this.projectData = projectList.value.data;
+//         // this.$store.commit("changeLoader", false)
+//         // console.log(typeof projectData.lastUpdate,  this.formatDate(new Date(projectData.lastUpdate*1000)));
+     
+//         const projectL = await useProjects()
+//          this.projectData = projectL.value.data;
+//             this.lastUpdate = this.formatDate(
+//           new Date(projectL.value.lastUpdate * 1000)
+//         );
+// //        const mapPl = projectL.value.map(e => e['project number'])
+// // console.log(mapPl,'mapPl');
+// //         return {projectL}
+//         // this.projectData = await (
+//         //   await fetch("/api/projectstatus/Open")
+//         // ).json();
+//         //  console.log(this.formatDate(this.projectData.lastUpdate));
+//         // // debugger
+//         // this.projectData = data//.filter(el => el.length > 6).sort();
+//         // console.log(this.projectData);
+//       }
+//     },
+//     checkAll() {
+//       this.checkBoxAll = !this.checkBoxAll;
+//       if (this.checkBoxAll) {
+//         this.checkbox.forEach((e) => (e.checked = true));
+//         this.checkedCabinetsNames = this.woList;
+//       } else {
+//         this.checkbox.forEach((e) => (e.checked = false));
+//         this.checkedCabinetsNames = [];
+//       }
+//     },
+//     setItemRef(el) {
+//       !this.checkbox && this.checkbox.push(el);
+//     },
+//     async postProject() {
+//       let modifyEl;
+//       if (this.selectedProject.endsWith(".0")) {
+//         modifyEl = this.selectedProject.slice(0, -2);
+//       } else {
+//         modifyEl = this.selectedProject;
+//       }
+//       await fetch("/api/POST_project", {
+//         method: "POST", // или 'PUT'
+//         body: JSON.stringify({
+//           id: modifyEl,
+//           status: "open",
+//           // ttl: 1,
+//           info: {
+//             base: this.woList[0]["info"],
+//             extends: this.selected,
+//           },
+//           cabinets: this.checkedCabinetsNames,
+//         }),
+//       });
+//       this.fetchStatus = "Проект успешно добавлен";
+//     },
+//   },
 };
 </script>
 
