@@ -2,7 +2,6 @@
   <div v-if="multiplePermission" class="multiple">
     <fieldset>
       <legend>Выбрать WO</legend>
-
       <input id="one" v-model="multipleCheck" type="radio" :value="true" />
       <label for="one">Один</label>
       <input id="two" v-model="multipleCheck" type="radio" :value="false" />
@@ -15,14 +14,9 @@
     placeholder="Введите номер WO или название шкафа"
   />
   <table style="width: 100%">
-    <!-- <colgroup>
-      <col style="width: 20%" />
-      <col style="width: 80%" />
-    </colgroup> -->
     <tr style="border: solid 2px orange">
       <th>WO</th>
       <th>Наименование</th>
-
       <th v-if="!multipleCheck">
         Выбрать всё<input type="checkbox" @click="checkAll" />
       </th>
@@ -30,7 +24,7 @@
     </tr>
     <tr v-for="(value, key, index) in filterWO" :key="index">
       <td>{{ value.wo }}</td>
-      <td class="tg-0lax">{{ value["cab name"] }}</td>
+      <td class="tg-0lax">{{ value['cabinet name'] }}</td>
       <td class="tg-0lax">
         <input
           v-if="!multipleCheck"
@@ -46,7 +40,6 @@
           type="radio"
           :value="value"
         />
-        <!-- <button>Выбрать</button> -->
       </td>
     </tr>
   </table>
@@ -64,17 +57,17 @@ export default {
       default: () => [],
     },
   },
-  emits: ["checkedWo"],
+  emits: ['checkedWo'],
   data() {
     return {
       data: null,
-      wo: "",
+      wo: '',
       multipleCheck: false,
       checkbox: [],
       checkedCabinetsNames: [],
       checkBoxAll: null,
-      picked: "",
-    };
+      picked: '',
+    }
   },
   computed: {
     filterWO() {
@@ -82,44 +75,44 @@ export default {
         return Object.values(this.cabinetList).filter(
           (el) =>
             (el.wo && el.wo.includes(this.wo)) ||
-            (el["cab name"] &&
-              el["cab name"].toLowerCase().includes(this.wo.toLowerCase()))
-        );
+            (el['cab name'] &&
+              el['cab name'].toLowerCase().includes(this.wo.toLowerCase())),
+        )
       } else {
-        return this.cabinetList;
+        return this.cabinetList
       }
     },
   },
   watch: {
     checkedCabinetsNames() {
-      this.$emit("checkedWo", this.checkedCabinetsNames);
+      this.$emit('checkedWo', this.checkedCabinetsNames)
     },
     multipleCheck() {
-      this.checkedCabinetsNames = [];
-      this.checkBoxAll = false;
+      this.checkedCabinetsNames = []
+      this.checkBoxAll = false
     },
   },
   methods: {
     multipleChange() {
-      this.multipleCheck = !this.multipleCheck;
-      this.checkedCabinetsNames = [];
-      this.checkBoxAll = false;
+      this.multipleCheck = !this.multipleCheck
+      this.checkedCabinetsNames = []
+      this.checkBoxAll = false
     },
     checkAll() {
-      this.checkBoxAll = !this.checkBoxAll;
+      this.checkBoxAll = !this.checkBoxAll
       if (this.checkBoxAll) {
-        this.checkbox.forEach((e) => (e.checked = true));
-        this.checkedCabinetsNames = this.cabinetList;
+        this.checkbox.forEach((e) => (e.checked = true))
+        this.checkedCabinetsNames = this.cabinetList
       } else {
-        this.checkbox.forEach((e) => (e.checked = false));
-        this.checkedCabinetsNames = [];
+        this.checkbox.forEach((e) => (e.checked = false))
+        this.checkedCabinetsNames = []
       }
     },
     setItemRef(el) {
-      !this.checkbox && this.checkbox.push(el);
+      !this.checkbox && this.checkbox.push(el)
     },
   },
-};
+}
 </script>
 
 <style lang="css" scoped>
