@@ -1,33 +1,34 @@
 <template>
   <div class="project__holder">
     <div class="project">
-      <!-- <p v-if="lastUpdate">
-        Время последенего обновления LegendStats : {{ lastUpdate }}
-      </p> -->
-      <br>      <!-- <button @click="runDataFactory" >update</button> -->
-   <!-- <Suspense> -->
-     <!-- <div v-for="(el, index) in projectList" :key="index" >{{el}}</div>    -->
-      <!-- </Suspense> -->
+      <p v-if="projectList&&projectList.lastUpdate">
+        SCO OrderList latest update : {{ formatDate( new Date(projectList.lastUpdate*1000)) }}
+      </p>
+      <br>
       <choose-project-number v-if="projectList"
-        :data-to-render="projectList.map(e => e['project number'])"
-        @choose-project-number="choose"
-      />
-      <input type="text" v-model="search">
-      <div>{{result}}</div>
-      <!-- <div v-if="woList">
-        <h3>Информация по проекту</h3>
-        <div
-          v-for="(value, key, index) in woList[0]['info']"
-          :key="index"
-          class="project__info__row"
-        >
-          <span>{{ key }}</span>
-          <span>{{ value }}</span>
+        :data-to-render="projectList.data.sort(e => e.status).map(e => `${e['project number']}`)"
+        @choose-project-number="choose" />
+      <!-- <div v-if="pl">{{pl}}</div> -->
+      <!-- <input type="text" v-model="search">
+      <div>{{result}}</div> -->
+      <div v-if="woList">
+        <div v-if="woList.length != 0">
+          <h3>Информация по проекту</h3>
+          <div v-for="(value, key, index) in woList[0]['info']" :key="index" class="project__info__row">
+            <span>{{ key }}</span>
+            <span>{{ value }}</span>
+          </div>
         </div>
+        <div v-else> Данного проекта нет в базе LegendStats.</div>
+
         <h3>Заполните поля</h3>
         <form class="project__info" @submit.prevent="postProject">
           <div v-if="!$store.state.template" class="fetchHolder">Load</div>
-          <div
+          <div v-for="(val, key, index) in selectedProject[0]" :key="index" class="cabinet__info__item">
+            <h3>{{ key }}:</h3>
+            <p>{{ val }}</p>
+          </div>
+          <!-- <div
             v-for="(value, key, index) in $store.state.template.template.base"
             v-else
             :key="index"
@@ -39,29 +40,26 @@
                 {{ fitter }}
               </option>
             </select>
-          </div>
+          </div> -->
           <div v-if="!$store.state.template" class="fetchHolder">Load</div>
-          <div
+          <!-- ///// -->
+          <conditional-render v-model="selected.extend" :data-render="$store.state.template.template.extend" />
+          <!-- <div
             v-for="(value, key, index) in $store.state.template.template.extend"
-            v-else
             :key="index"
             class="project__info__row"
           >
             <span>{{ key }}</span>
             <textarea v-model="selected[key]" cols="30" rows="3"></textarea>
-          </div>
+          </div> -->
+
           <div class="cabinet__info">
             <h3>Выберете шкафные линии</h3>
-            <choose-wo-number
-              v-if="woList"
-              :multiple-permission="true"
-              :cabinet-list="mappingWO"
-              @checked-wo="mapWO"
-            />
+            <choose-wo-number v-if="woList" :multiple-permission="true" :cabinet-list="mappingWO" @checked-wo="mapWO" />
           </div>
-          <input class="add__button" type="submit" :value="fetchStatus" />
+          <input class="add__button" type="submit" value="submit" />
         </form>
-      </div> -->
+      </div>
     </div>
     <!-- <project-info v-if="validateData" :cabinets="checkedCabinetsNames" :projectNumber="woList[0].project" :project="{...woList[0]['project info'], ...selected} " /> -->
   </div>
@@ -70,50 +68,75 @@
 <script>
 import chooseProjectNumber from "@/components/chooseProjectNumber.vue";
 import chooseWoNumber from "@/components/chooseWoNumber.vue";
+import conditionalRender from "@/components/conditionalRender.vue";
 import {useFetch} from "@/hooks/fetch"
 import { useStore } from 'vuex'
 import {useProjects} from '@/hooks/projectlsit'
 import searchByObject from '@/hooks/searchByObject'
-import { computed, ref } from '@vue/runtime-core';
+import { computed, ref, reactive } from '@vue/runtime-core';
 // import projectInfo from './projectInfo.vue';
 export default {
   components: {
     chooseProjectNumber,
     chooseWoNumber,
+    conditionalRender
   },
- setup(){
+ setup() {
    const store = useStore()
    const projectList = ref(null)
-   const search = ref(null)
-  //  const result = ref(null)
-    async function test() {
-        store.commit("changeLoader", true)
-        const {request, response: projectData} = useFetch('/api/projectstatus?excludestatus=Отгружено')
-        await request();
-        projectList.value = projectData.value.data;
-        store.commit("changeLoader", false)
- 
+   const selectedProject = ref(null)
+   const fetchProjectList = async () => {
+     projectList.value = (await useProjects()).projetList.value
+   };
+   fetchProjectList()
+
+const selected = reactive({extend:{}})
+
+ function formatDate(date) {
+      return (
+        date.getDate() +
+        "/" +
+        "0" +
+        (date.getMonth() + 1) +
+        "/" +
+        date.getFullYear() //+
+        //" " +
+      //  date.getHours() +
+      //  ":" +
+     //   date.getMinutes()
+      );
     };
-    test()
-    const result = computed(()=>{
-       return projectList.value&&(result.value = projectList.value.filter(e=>{
-    ['status','project number'].forEach(el => {
-       if (e[el].includes(search.value)) {
-         return true
-       } return false
-    }); 
-    // searchByObject(projectList.value,['status','project number'],search.value))
-    //       return Object.values(obj).filter(e=>{
-    //     // debugger
-    // key.forEach(el => {
-    //     e[el].includes(query)
-    })
-    //   return projectList.value&&(result.value = searchByObject(projectList.value,['status','project number'],search.value))
-    )})
-    return {
-     projectList, search, result
-    }
-  },
+
+   const woList = ref(null)
+
+   async function choose(e) {
+     if (!e) {
+       woList.value = null;
+       return;
+     }
+     const {
+       request,
+       response: wo
+     } = useFetch(`/api/cabinetList/${e}`)
+     await request();
+     selectedProject.value = projectList.value.data.filter(p => p['project number'] === e)
+     woList.value = wo.value;
+     // this.checkedCabinetsNames = [];
+     // this.selectedProject = $event;
+   }
+  //  const result = computed(() => {
+  //    return projectList.value && (projectList.value.filter(e => ['status', 'project number'].some(el => e[el].includes(search.value)))) // e['project number'].includes(search.value))
+  //  })
+
+   return {
+     projectList,
+     choose,
+     woList,
+     formatDate,
+     selected,
+     selectedProject
+   }
+ },
 //   data() {
 //     return {
 //       projectData: null,
@@ -351,5 +374,22 @@ tbody tr:hover {
 }
 .project_item:hover {
   background-color: rgba(55, 158, 255, 0.658);
+}
+.cabinet__info__item {
+  border-bottom: 1px solid black;
+  padding: 5px;
+  /* width: 100%; */
+  display: grid;
+  grid-template-columns: 1fr 4fr;
+}
+.cabinet__info__item > h3 {
+  justify-self: start;
+  align-self: center;
+  text-align: start;
+}
+.cabinet__info__item > p {
+  justify-self: end;
+  text-align: end;
+  align-self: center;
 }
 </style>

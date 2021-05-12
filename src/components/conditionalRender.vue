@@ -16,11 +16,7 @@
       :value="modelValue[key]"
       required
       class="error__item__desc"
-      @input="
-        $emit('update:modelValue', {
-          ...modelValue,
-          [key]: $event.target.value,
-        })
+      @input="addVmodel($event,key)
       "
     >
       <option v-for="(v, i) in Object.values(value)[1]" :key="i">
@@ -33,10 +29,7 @@
       required
       type="checkbox"
       @input="
-        $emit('update:modelValue', {
-          ...modelValue,
-          [key]: $event.target.value,
-        })
+       addVmodel($event,key)
       "
     />
     <input
@@ -45,10 +38,7 @@
       required
       type="number"
       @input="
-        $emit('update:modelValue', {
-          ...modelValue,
-          [key]: $event.target.value,
-        })
+       addVmodel($event,key)
       "
     />
     <textarea
@@ -58,10 +48,7 @@
       cols="30"
       rows="5"
       @input="
-        $emit('update:modelValue', {
-          ...modelValue,
-          [key]: $event.target.value,
-        })
+       addVmodel($event,key)
       "
     ></textarea>
   </div>
@@ -75,10 +62,7 @@
         required
         class="error__item__desc"
         @input="
-          $emit('update:modelValue', {
-            ...modelValue,
-            ['Ошибку допустил']: $event.target.value,
-          })
+         addVmodel($event,'Ошибку допустил')
         "
       >
         <option
@@ -107,16 +91,14 @@ export default {
     },
   },
   emits: ["update:modelValue"],
-  //   computed: {
-  //     value: {
-  //       get() {
-  //         return this.modelValue;
-  //       },
-  //       set(value) {
-  //         this.$emit("update:modelValue", value);
-  //       },
-  //     },
-  //   },
+  methods: {
+    addVmodel($event,key) {
+              this.$emit('update:modelValue', {
+          ...this.modelValue,
+          [key]: $event.target.value,
+        })
+    }
+  },
 };
 </script>
 

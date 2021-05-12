@@ -5,121 +5,86 @@
   >
     <div class="input__holder">
       <input
-        v-model.lazy="selectedProject"
-        type="search"
+        v-model="selectedProject"
+        type="text"
         list="projetList"
+        @focus="listIsActive = true"
+        @blur="listIsActive = false"
         placeholder="Введите номер проекта"
       />
+      <img
+        v-if="selectedProject"
+        @mousedown="clearState"
+        src="/img/cancel.svg"
+        alt=""
+      />
+      <!-- <button @click="clearState" class="clear__state" >Clear state</button> -->
       <!-- @focus.once="getProjectList" -->
-      <datalist id="projetList">
-        <option  v-for="pr in dataToRender" :key="pr" :value="pr"/>
-      </datalist>
+      <!-- <datalist id="projetList">
+        <option :value="pr" v-for="pr in dataToRender" :key="pr">
+      </datalist> -->
     </div>
-
-    <!-- <div v-show="listActive" class="project_list_holder">
+    <div v-if="dataToRender" v-show="listIsActive"  class="project_list_holder">
       <ul class="project_list">
         <li
           v-for="(project, index) in filterProject"
           :key="index"
           class="project_item"
-          @click="chooseProject(index)"
+          @mousedown="chooseProject(index)"
         >
           <p>{{ project }}</p>
         </li>
       </ul>
-    </div> -->
+    </div>
   </div>
 </template>
 
 <script>
-import { toRefs, watch, ref } from 'vue'
+import {
+  toRefs,
+  ref,
+  computed,
+  nextTick
+} from 'vue'
 import { useStore } from 'vuex'
 export default {
   props: {
     dataToRender: {
       type: Array,
-      default: null,
+      default: ()=> [1, 2],
     },
   },
-  // emits: ["inputProjectEvent", "chooseProjectNumber"],
+//   emits: ["inputProjectEvent", "chooseProjectNumber"],
   setup(props, { emit }) {
     const store = useStore()
-    // const { dataToRender } = toRefs(props)
+    const {
+      dataToRender
+    } = toRefs(props)
     const selectedProject = ref('')
-    watch(selectedProject, () => {
-      emit('chooseProjectNumber', selectedProject.value)
-      store.commit('SETprojectNumber', selectedProject.value)
-    })
-    const getProjectList = () => {
-      emit('inputProjectEvent')
+    const listIsActive = ref(false)
+    const clearState = () =>{
+      selectedProject.value = ''
+      emit('chooseProjectNumber', '')
     }
-    getProjectList()
+    function chooseProject(index) {
+      selectedProject.value = filterProject.value[index]
+      store.commit('SETprojectNumber', selectedProject.value)
+      emit('chooseProjectNumber', selectedProject.value)
+      listIsActive.value = false
+    }
+    const filterProject = computed(() => {
+        return dataToRender.value.filter((el) =>
+          el.includes(selectedProject.value)
+        );
+    })
     return {
+      listIsActive,
       selectedProject,
-      // getProjectList,
-      // eslint-disable-next-line vue/no-dupe-keys
-      // dataToRender
+      filterProject,
+      chooseProject,
+      clearState
     }
   },
-  // data() {
-  //   return {
-  //     selectedProject: null,
-  //     projectNumberQuery: null,
-  //     filterProjectList: null,
-  //     listIsActive: false,
-  //     spinnerClass: false,
-  //   };
-  // },
-  // computed: {
-  //   filterProject() {
-  //     if (this.selectedProject) {
-  //         return Object.values(this.dataToRender).filter((el) =>
-  //           el.includes(this.selectedProject)
-  //         );
-  //     } else {
-  //       return this.dataToRender;
-  //     }
-  //   },
-  // },
-  // mounted () {
-  //   this.getProjectList();
-  // },
-  // watch: {
-  //   dataToRender() {
-  //     this.listIsActive = true;
-  //     this.spinnerClass = false;
-  //   },
-  //   selectedProject(){
-  //     console.log("change!!!!!!!!!")
-  //   }
-  // },
-  // methods: {
-  //   bl() {
-  //     setTimeout(() => (this.listIsActive = false), 200);
-  //   },
-  //   clearState() {
-  //     this.selectedProject = null;
-  //     this.$emit("chooseProjectNumber", this.selectedProject);
-  //     this.$store.commit("SETprojectNumber", null);
-  //   },
-  //   getProjectList() {
-  //     this.$emit("inputProjectEvent");
-  //     this.spinnerClass = true;
-  //     if (this.dataToRender) {
-  //       this.spinnerClass = false;
-  //       this.listIsActive = true;
-  //       this.filterProjectList = this.dataToRender;
-  //     }
-  //   },
-  //   chooseProject(index) {
-  //     this.$store.commit("SETprojectNumber", this.filterProject[index]);
-  //     this.selectedProject = this.filterProject[index];
-  //     this.projectNumberQuery = this.selectedProject;
-  //     this.$emit("chooseProjectNumber", this.projectNumberQuery);
-
-  //     this.bl();
-  //   },
-  // },
 }
 </script>
 
@@ -130,6 +95,7 @@ datalist {
 }
 .input__holder {
   position: relative;
+  display: flex;
 }
 .input__holder > img {
   cursor: pointer;
@@ -208,6 +174,8 @@ ul {
 .project_item {
   height: 30px;
   font-size: 16px;
+  line-height: 30px;
+  border-bottom: 1px solid black;
   /* border-radius: 2px;
   padding: 2px;
   margin: 2px; */
@@ -217,5 +185,9 @@ ul {
 }
 .project_item:hover {
   background-color: rgba(55, 158, 255, 0.342);
+}
+.clear__state{
+  height: 30px; 
+  margin-left: 10px;
 }
 </style>

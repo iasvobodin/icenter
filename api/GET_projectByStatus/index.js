@@ -6,9 +6,8 @@ module.exports = async function (context, req, data) {
       data: data.map(el => {
         return {
           // ...el,
-          'project number': el.id.split(' ')[0],
-          'status': el.status,
-          'senior fitter': el['senior fitter']
+          'project number': el.id.split(' ')[0].replace('-','.'),
+          ...el
         }
       }),
       // el.project.toString()).filter(el => el.length > 6).sort(),
