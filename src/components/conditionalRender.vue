@@ -14,7 +14,7 @@
     <select
       v-if="Object.values(value)[0] === 'select'"
       :value="modelValue[key]"
-      required
+      :required="required"
       class="error__item__desc"
       @input="addVmodel($event,key)
       "
@@ -26,7 +26,7 @@
     <input
       v-if="Object.values(value)[0] === 'checkbox'"
       :value="modelValue[key]"
-      required
+      :required="required"
       type="checkbox"
       @input="
        addVmodel($event,key)
@@ -35,7 +35,7 @@
     <input
       v-if="Object.values(value)[0] === 'number'"
       :value="modelValue[key]"
-      required
+      :required="required"
       type="number"
       @input="
        addVmodel($event,key)
@@ -44,7 +44,7 @@
     <textarea
       v-if="Object.values(value)[0] === 'textarea'"
       :value="modelValue[key]"
-      required
+      :required="required"
       cols="30"
       rows="5"
       @input="
@@ -59,7 +59,7 @@
       </h4>
       <select
         :value="modelValue['Ошибку допустил']"
-        required
+        :required="required"
         class="error__item__desc"
         @input="
          addVmodel($event,'Ошибку допустил')
@@ -89,6 +89,10 @@ export default {
       type: Object,
       required: true,
     },
+    required:{
+      type: Boolean,
+      default:()=> true
+    }
   },
   emits: ["update:modelValue"],
   methods: {

@@ -10,11 +10,19 @@ export function useFetch<T>(url: RequestInfo, options?: RequestInit): FetchApi<T
   const response = ref<T>()
 
   const request: ApiRequest = async () => {
-  store.commit("changeLoader", true)
-    const res = await fetch(url, options)
-    response.value = await res.json()
-  store.commit("changeLoader", false)
-
+    store.commit("changeLoader", true)
+    try {
+      const res = await fetch(url, options)
+      console.log(res);
+      
+      if (res.ok) {
+        response.value = await res.json()
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      store.commit("changeLoader", false)
+    }
   }
 
   return {response, request}

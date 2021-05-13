@@ -9,7 +9,7 @@
         "get",
         "post"
       ],
-      "route": "projectstatus"
+      "route": "projectsSharepoint"
     },
     {
       "type": "http",
@@ -23,7 +23,7 @@
       "ConnectionStringSetting": "legendstats_DOCUMENTDB",
       "databaseName": "icenter",
       "collectionName": "sharepoint",
-      "sqlQuery": "SELECT * from c where NOT CONTAINS(c.status, {excludestatus}) AND NOT CONTAINS(c.status, '11')"
+      "sqlQuery": "SELECT * from c"
     }
   ]
 }

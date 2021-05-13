@@ -9,9 +9,7 @@
       <choose-project-number
         v-if="projectList"
         :data-to-render="
-          projectList.data
-            .sort((e) => e.status)
-            .map((e) => `${e['project number']}`)
+          projectList.data.map((e) => `${e['project number']}`)
         "
         @choose-project-number="choose"
       />
@@ -21,7 +19,7 @@
         <h3>Информация по проекту</h3>
         <form class="project__info" @submit.prevent="postProject">
           <div v-if="!$store.state.template" class="fetchHolder">Load</div>
-          <div v-for="(val, key, index) in selectedProject[0]" :key="index">
+          <div v-for="(val, key, index) in selectedProject" :key="index">
             <div class="project__info__row">
               <span>{{ key }}:</span>
               <span>{{ val }}</span>
@@ -31,6 +29,7 @@
           <conditional-render
             v-model="selected.extend"
             :data-render="$store.state.template.template.extend"
+            :required="false"
           />
           <div class="cabinet__info">
             <h3>Выберете шкафные линии</h3>
@@ -82,17 +81,34 @@ export default {
     const woList = ref(null)
 
     async function choose(e) {
-      if (!e) {
-        woList.value = null
-        return
-      }
-      const { request, response: wo } = useFetch(`/api/cabinetList/${e}`)
-      await request()
       selectedProject.value = projectList.value.data.filter(
-        (p) => p['project number'] === e,
-      )
-      woList.value = wo.value
+        (p) => p['project number'] === e
+        )[0]
+        // if (!e) {
+        //   woList.value = null
+        //   return
+        // }
+        const {
+          request: checkProjectInIcenter,
+          response: projectIcenter
+        } = useFetch(`/api/project/${e}`)
+        const {
+          request: checkProjectInLegendStats,
+          response: wo
+        } = useFetch(`/api/cabinetList/${e}`)
+
+        await checkProjectInIcenter()
+
+        if (!projectIcenter.value) {
+          console.log('project is missing');
+          await checkProjectInLegendStats()
+          woList.value = wo.value
+        } else{
+          console.log('project is allredy exist');
+        } 
+ 
     }
+
     //  const result = computed(() => {
     //    return projectList.value && (projectList.value.filter(e => ['status', 'project number'].some(el => e[el].includes(search.value))))
     //  })
