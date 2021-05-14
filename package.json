@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "axios": "^0.21.1",
+    "html5-qrcode": "^2.0.3",
     "notiflix": "^2.7.0",
     "parse-multipart": "^1.0.4",
     "qr-scanner": "^1.2.0",
