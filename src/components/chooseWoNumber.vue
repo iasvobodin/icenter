@@ -24,7 +24,7 @@
     </tr>
     <tr v-for="(value, key, index) in filterWO" :key="index">
       <td>{{ value.wo }}</td>
-      <td class="tg-0lax">{{ value['cabinet name'] }}</td>
+      <td class="tg-0lax">{{ value['cab name'] }}</td>
       <td class="tg-0lax">
         <input
           v-if="!multipleCheck"

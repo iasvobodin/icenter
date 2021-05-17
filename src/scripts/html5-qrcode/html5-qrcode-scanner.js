@@ -21,9 +21,9 @@ export class Html5QrcodeScanner {
   static STATUS_WARNING = "STATUS_WARNING";
   static STATUS_DEFAULT = "STATUS_DEFAULT";
 
-  static ASSET_CAMERA_SCAN = import("@/assets/images/ic_camera_scan.gif");
-  static ASSET_SWITCH_CAMERA = import('@/assets/images/ic_switch_camera.png');
-  static ASSET_STOP_SCAN = import('@/assets/images/ic_stop.png');
+  static ASSET_CAMERA_SCAN = ()=> import("@/assets/images/ic_camera_scan.gif");
+  static ASSET_SWITCH_CAMERA = ()=> import('@/assets/images/ic_switch_camera.png');
+  static ASSET_STOP_SCAN = ()=> import('@/assets/images/ic_stop.png');
 
   /**
    * Creates instance of this class.

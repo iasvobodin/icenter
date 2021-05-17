@@ -5,7 +5,7 @@
       "authLevel": "anonymous",
       "direction": "in",
       "name": "req",
-      "route": "cabinetList/{projectNumber}",
+      "route": "cabinetList",
       "methods": [
         "get",
         "post"
@@ -23,7 +23,7 @@
       "ConnectionStringSetting": "legendstats_DOCUMENTDB",
       "databaseName": "icenter",
       "collectionName": "legendStats",
-      "sqlQuery": "SELECT * from c where c.project = StringToNumber({projectNumber})"
+      "sqlQuery": "SELECT * from c"
     }
   ]
 }

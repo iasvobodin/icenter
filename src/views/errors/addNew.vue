@@ -2,7 +2,7 @@
   <div>
     <h2>Добавление новой ошибки.</h2>
     <choose-project-number
-      :fetch-url="projectData"
+      :data-to-render="projectData"
       @input-project-event="fetchProjectList"
       @choose-project-number="choose"
     />
@@ -61,6 +61,9 @@ export default {
       this.projectData = null;
       // this.choose();
     },
+  },
+  mounted () {
+     this.fetchProjectList();
   },
   methods: {
     chooseCabinet(e) {
