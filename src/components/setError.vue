@@ -50,20 +50,20 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue'
+<script>
+// import { defineComponent } from 'vue'
 // import Notiflix from 'notiflix'
 import conditionalRender from '@/components/conditionalRender.vue'
-interface IForm extends HTMLElement{
-  files: []
-}
-export default defineComponent({
+// interface IForm extends HTMLElement{
+//   files: []
+// }
+export default {
   components: {
     conditionalRender,
   },
   data() {
     return {
-      fileInput: {} as IForm,
+      fileInput: {},
       files: [],
       errorTemplate: null,
       errorBody: { Открыто: {}, Принято: {}, Устранено: {} },
@@ -79,10 +79,10 @@ export default defineComponent({
   },
   methods: {
     checkFile() {
-      this.fileInput = document.getElementById('imageFile') as IForm
+      this.fileInput = document.getElementById('imageFile') 
       this.files = Object.values(this.fileInput.files)
     },
-    returnRender(key: string) {
+    returnRender(key) {
       if (key === 'Открыто') {
         return true
       }
@@ -93,9 +93,14 @@ export default defineComponent({
         return true
       }
     },
-    async postError(e : HTMLFormElement) {
+    async postError(e) {
       // console.log(typeof e, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-      
+                 const beforeUnloadListener = (event) => {
+  event.preventDefault();
+  return event.returnValue = "Are you sure you want to exit?";
+};
+
+  addEventListener("beforeunload", beforeUnloadListener, {capture: true});
       const id = 'error__' + Date.now()
       const link = 'https://icaenter.blob.core.windows.net/errors-photo/'
       const error = {
@@ -104,7 +109,7 @@ export default defineComponent({
           Проект: this.$store.state.projectInfo['project number'],
           Шкаф: this.$store.state.projectInfo['cab name'],
           wo: this.$store.state.projectInfo.wo.toString(),
-          Добавил: sessionStorage.getItem('userDetails')!.toLowerCase(),
+          Добавил: sessionStorage.getItem('userDetails').toLowerCase(),
           Мастер: this.$store.state.projectInfo['senior fitter'].toLowerCase(),
         },
         photos: [],
@@ -118,7 +123,7 @@ export default defineComponent({
         body: [
           {
             ...this.errorBody,
-            _changed: sessionStorage.getItem('userDetails')!.toLowerCase(),
+            _changed: sessionStorage.getItem('userDetails').toLowerCase(),
             _time: `${Date.now()}`,
           },
         ],
@@ -139,25 +144,26 @@ export default defineComponent({
       // formData.append("photo", this.files.files[0]);
       // console.log(Array.isArray(error.photos) , error.photos);
       this.files &&
-        this.files.forEach((e, i : number) => {
+        this.files.forEach((e, i ) => {
           const formData = new FormData()
           formData.append(`photo${i}`, e)
           error.photos.push({
             link: `${link}${id}__${sessionStorage
-              .getItem('userDetails')!
+              .getItem('userDetails')
               .toLowerCase()}__${e.name}`,
             thumb: `${link}thumb__${id}__${sessionStorage
-              .getItem('userDetails')!
+              .getItem('userDetails')
               .toLowerCase()}__${e.name}`,
           })
           ;(async () => {
             const blobResponse = await fetch(
               `/api/blob?fileName=${id}__${sessionStorage
-                .getItem('userDetails')!
+                .getItem('userDetails')
                 .toLowerCase()}__${e.name}`,
               {
                 method: 'POST',
                 body: formData,
+                keepalive: true,
               },
             )
             if (blobResponse.ok) {
@@ -166,6 +172,8 @@ export default defineComponent({
               // Notiflix.Notify.Failure(`Ошибка, файл  ${e.name} не загружен`)
             }
           })()
+
+      removeEventListener("beforeunload", beforeUnloadListener, {capture: true});
         })
 
       try {
@@ -203,7 +211,7 @@ export default defineComponent({
   //     console.log(error);
   //   }
   // },
-})
+}
 </script>
 
 

@@ -64,6 +64,21 @@ export default {
   },
   mounted () {
      this.fetchProjectList();
+
+//      const beforeUnloadListener = (event) => {
+//   event.preventDefault();
+//   return event.returnValue = "Are you sure you want to exit?";
+// };
+
+//   addEventListener("beforeunload", beforeUnloadListener, {capture: true});
+//   //     removeEventListener("beforeunload", beforeUnloadListener, {capture: true});
+// const nameInput = document.querySelector("#name");
+
+// nameInput.addEventListener("input", (event) => {
+//   if (event.target.value !== "") {
+//   } else {
+//   }
+// });
   },
   methods: {
     chooseCabinet(e) {
