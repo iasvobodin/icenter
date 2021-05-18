@@ -3,7 +3,7 @@
   <br />
   <br />
   <div class="selectStatus">
-    <h3>Выберете статус ошибки</h3>
+    <h3>Выберете статус ошибки   </h3>
     <select v-model="selectedStatus" class="change__status">
       <option value="open">Открыто</option>
       <option value="confirmed">Принято</option>
@@ -20,11 +20,12 @@
       <div
         v-for="(v, k, i) in value.info"
         :key="i"
+        :class="{error__item__desc : k ==='Описание'}"
         class="error__item"
       >
-        <h3 class="error__item__title">{{ k }}:</h3>
-        <p class="error__item__desc">
-          {{ v }}
+        <h3 :class="{ error__item__vertical__title: k === 'Описание' }" class="error__item__title">{{ k }}:</h3>
+        <p :class="{ error__item__vertical__title: k === 'Описание' }" class="error__item__desc">
+          {{ v.includes('@')? v.split('@')[0].replace('.', ' ') : v }}
         </p>
       </div>
     </div>
@@ -116,15 +117,33 @@ export default {
   margin: 0;
 }
 .error__item__desc {
+  height: inherit;
+  display: block;
   justify-self: end;
   text-align: end;
   align-self: center;
   margin: 0;
+  border-bottom: none;
 }
 .loading {
   margin: auto;
   width: 30px;
   height: 30px;
   background: url(/img/loading.gif) no-repeat center bottom;
+}
+.error__desc {
+  border-bottom: none;
+  padding: 2px;
+  display: grid;
+  grid-template-rows: 1fr 1fr;
+  grid-template-columns: 1fr;
+  border-bottom: none;
+}
+.error__item__vertical__title {
+  width: inherit;
+  text-align: center;
+  margin: 5px;
+  white-space: pre-wrap;
+  word-wrap: break-word;
 }
 </style>

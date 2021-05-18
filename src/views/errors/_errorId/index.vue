@@ -6,14 +6,15 @@
     </div>
     <div v-if="error" class="cabinet__info">
       <section class="information">
-        <div
+        <info-render :info-data="error.info"/>
+        <!-- <div
           v-for="(val, key, index) in error.info"
           :key="index"
           class="cabinet__info__item"
         >
           <h3>{{ key }}:</h3>
           <p>{{ val }}</p>
-        </div>
+        </div> -->
       </section>
       <section v-if="!changeInfo" class="eror__body">
         <div
@@ -22,10 +23,11 @@
           :key="index"
         >
           <h2>{{ key }}</h2>
-          <div v-for="(v, k, i) in val" :key="i" class="cabinet__info__item">
+          <info-render :info-data="val"/>
+          <!-- <div v-for="(v, k, i) in val" :key="i" class="cabinet__info__item">
             <h3>{{ k }}:</h3>
             <p>{{ v }}</p>
-          </div>
+          </div> -->
         </div>
       </section>
       <section v-else class="mod__error__body">
@@ -68,7 +70,8 @@
       v-if="
         error &&
         !changeInfo &&
-        error.info.Добавил === $store.state.user.info.userDetails
+        error.info.Добавил === $store.state.user.info.userDetails || 
+        $store.state.user.info.userRoles.includes('admin')
       "
       @click="changeData"
     >
@@ -84,7 +87,7 @@
       Закрыть ошибку
     </button>
     <button v-if="changeInfo" type="submit" form="errorData">
-      Сохранить изменения
+      Сохранить
     </button>
   </div>
 
@@ -93,9 +96,10 @@
 
 <script>
 import conditionalRender from "@/components/conditionalRender.vue";
+import infoRender from "@/components/infoRender.vue";
 export default {
   components: {
-    conditionalRender,
+    conditionalRender, infoRender
   },
   data() {
     return {
@@ -304,10 +308,9 @@ h2 {
   margin-top: 1vh;
   margin-bottom: 1vh;
 }
-.cabinet__info__item {
+/* .cabinet__info__item {
   border-bottom: 1px solid black;
   padding: 5px;
-  /* width: 100%; */
   display: grid;
   grid-template-columns: 1fr 4fr;
 }
@@ -320,7 +323,7 @@ h2 {
   justify-self: end;
   text-align: end;
   align-self: center;
-}
+} */
 .cabinet__info__item > select {
   justify-self: end;
   text-align: end;

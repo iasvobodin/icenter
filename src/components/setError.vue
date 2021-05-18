@@ -25,12 +25,13 @@
         id="imageFile"
         ref="fileInput"
         multiple
+        name="imagefile[]"
         type="file"
         accept="image/*"
         @input="checkFile"
       />
       <div v-if="files">
-        <p v-for="f in files" :key="f.lastModified">{{ f.name }}</p>
+        <p v-for="(f, i) in files" :key="f.lastModified">{{i+1}}   {{ f.name }} {{f.status}}</p>
       </div>
       <br /><br />
       <input class="add__button" type="submit" value="Добавить" />
@@ -63,10 +64,14 @@ export default {
   },
   data() {
     return {
-      fileInput: {},
+      // fileInput: null,
       files: [],
       errorTemplate: null,
-      errorBody: { Открыто: {}, Принято: {}, Устранено: {} },
+      errorBody: {
+        Открыто: {},
+        Принято: {},
+        Устранено: {}
+      },
       error: {},
       photo: null,
       role: 'f_error',
@@ -77,10 +82,18 @@ export default {
   created() {
     // !this.$store.state.template && this.$store.dispatch("GET_template");
   },
+  mounted() {},
   methods: {
     checkFile() {
-      this.fileInput = document.getElementById('imageFile') 
-      this.files = Object.values(this.fileInput.files)
+      // this.fileInput = document.getElementById('imageFile') 
+      this.files = Object.values(this.$refs.fileInput.files)
+      addEventListener("beforeunload", this.beforeUnloadListener, {
+        capture: true
+      });
+    },
+    beforeUnloadListener(event) {
+      event.preventDefault();
+      return event.returnValue = "Are you sure you want to exit?";
     },
     returnRender(key) {
       if (key === 'Открыто') {
@@ -94,13 +107,7 @@ export default {
       }
     },
     async postError(e) {
-      // console.log(typeof e, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-                 const beforeUnloadListener = (event) => {
-  event.preventDefault();
-  return event.returnValue = "Are you sure you want to exit?";
-};
 
-  addEventListener("beforeunload", beforeUnloadListener, {capture: true});
       const id = 'error__' + Date.now()
       const link = 'https://icaenter.blob.core.windows.net/errors-photo/'
       const error = {
@@ -114,19 +121,17 @@ export default {
         },
         photos: [],
         type: this.role,
-        status: Object.values(this.errorBody.Устранено)[0]
-          ? 'closed'
-          : Object.values(this.errorBody.Принято)[0]
-          ? 'confirmed'
-          : 'open',
+        status: Object.values(this.errorBody.Устранено)[0] ?
+          'closed' :
+          Object.values(this.errorBody.Принято)[0] ?
+          'confirmed' :
+          'open',
         ttl: 6000,
-        body: [
-          {
-            ...this.errorBody,
-            _changed: sessionStorage.getItem('userDetails').toLowerCase(),
-            _time: `${Date.now()}`,
-          },
-        ],
+        body: [{
+          ...this.errorBody,
+          _changed: sessionStorage.getItem('userDetails').toLowerCase(),
+          _time: `${Date.now()}`,
+        }, ],
       }
 
       const openError = {
@@ -139,55 +144,63 @@ export default {
         status: error.status,
         ttl: 6000,
       }
-      // const fileField = document.querySelector('input[type="file"]');
-
-      // formData.append("photo", this.files.files[0]);
-      // console.log(Array.isArray(error.photos) , error.photos);
-      this.files &&
-        this.files.forEach((e, i ) => {
-          const formData = new FormData()
-          formData.append(`photo${i}`, e)
-          error.photos.push({
-            link: `${link}${id}__${sessionStorage
-              .getItem('userDetails')
-              .toLowerCase()}__${e.name}`,
-            thumb: `${link}thumb__${id}__${sessionStorage
-              .getItem('userDetails')
-              .toLowerCase()}__${e.name}`,
-          })
-          ;(async () => {
-            const blobResponse = await fetch(
-              `/api/blob?fileName=${id}__${sessionStorage
-                .getItem('userDetails')
-                .toLowerCase()}__${e.name}`,
-              {
-                method: 'POST',
-                body: formData,
-                keepalive: true,
-              },
-            )
-            if (blobResponse.ok) {
-              // Notiflix.Notify.Success(`Файл ${e.name} успешно загружен`)
-            } else {
-              // Notiflix.Notify.Failure(`Ошибка, файл  ${e.name} не загружен`)
-            }
-          })()
-
-      removeEventListener("beforeunload", beforeUnloadListener, {capture: true});
-        })
 
       try {
-        await fetch('/api/POST_error', {
+
+        await Promise.all(this.files &&
+          this.files.map(async (e, i) => {
+            const formData = new FormData()
+            formData.append(`photo${i}`, e)
+      const imageName = `${id}__${sessionStorage.getItem('userDetails').toLowerCase()}__${e.name}`
+            const postImage = async () => {
+              const blobResponse = await fetch(
+                `/api/blob?fileName=${imageName}`, {
+                  method: 'POST',
+                  body: formData,
+                  keepalive: true,
+                },
+              )
+              if (blobResponse.ok) {
+                e = {
+                  ...e,
+                  status: 'ok',
+                }
+                // Notiflix.Notify.Success(`Файл ${e.name} успешно загружен`)
+              } else {
+                // Notiflix.Notify.Failure(`Ошибка, файл  ${e.name} не загружен`)
+              }
+            }
+            await postImage()
+            // debugger
+            error.photos.push({
+              link: `${link}${imageName}`,
+              thumb: `${link}thumb__${imageName}`,
+            })
+
+         
+          }))
+                  await fetch('/api/POST_error', {
           method: 'POST', // или 'PUT'
-          body: JSON.stringify({ ...error }),
+          body: JSON.stringify({
+            ...error
+          }),
         })
         await fetch('/api/POST_openError', {
           method: 'POST', // или 'PUT'
-          body: JSON.stringify({ ...openError }),
+          body: JSON.stringify({
+            ...openError
+          }),
         })
       } finally {
         e.target.reset()
-        this.errorBody = { Открыто: {}, Принято: {}, Устранено: {} }
+           removeEventListener("beforeunload", this.beforeUnloadListener, {
+              capture: true
+            });
+        this.errorBody = {
+          Открыто: {},
+          Принято: {},
+          Устранено: {}
+        }
         this.files = null
       }
       // await fetch(
