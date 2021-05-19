@@ -35,11 +35,11 @@ const routes = [
   },
   {
     path: "/errors",
-    component: ()=>  import("@/views/errors/index.vue"),
+    component: ()=>  import("@/views/errors/errors.vue"),
   },
   {
     path: "/errors/:errorId",
-    component: ()=>  import("@/views/errors/_errorId/index.vue"),
+    component: ()=>  import("@/views/errors/_errorId.vue"),
   },
   {
     path: "/errors/addNew",

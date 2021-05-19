@@ -83,7 +83,6 @@ export default {
 button,
 input[type='submit'],
 ::-webkit-file-upload-button {
-  width: min(200px, 20vw);
   height: 35px;
   background-color: #ffffff;
   /* border: none; */

@@ -1,4 +1,5 @@
 <template>
+ <img class="back__image"  @click="$router.go(-1)" src="/img/back.svg" alt="" />
   <div class="cabinet">
     <div>
       <h1>{{ $route.params.errorId }}</h1>
@@ -6,7 +7,7 @@
     </div>
     <div v-if="error" class="cabinet__info">
       <section class="information">
-        <info-render :info-data="error.info"/>
+        <info-render :info-data="error.info" />
         <!-- <div
           v-for="(val, key, index) in error.info"
           :key="index"
@@ -16,14 +17,12 @@
           <p>{{ val }}</p>
         </div> -->
       </section>
+      <!-- v-show="Object.values(val)[1] && !key.startsWith('_')" -->
       <section v-if="!changeInfo" class="eror__body">
-        <div
-          v-for="(val, key, index) in error.body"
-          v-show="Object.values(val)[1] && !key.startsWith('_')"
-          :key="index"
-        >
-          <h2>{{ key }}</h2>
-          <info-render :info-data="val"/>
+        <div v-for="(val, key, index) in error.body" 
+          :key="index">
+          <h2 v-if="Object.values(val)[1] && !key.startsWith('_')">{{ key }}</h2>
+          <info-render v-if="Object.values(val)[1] && !key.startsWith('_')" :info-data="val" />
           <!-- <div v-for="(v, k, i) in val" :key="i" class="cabinet__info__item">
             <h3>{{ k }}:</h3>
             <p>{{ v }}</p>
@@ -32,31 +31,36 @@
       </section>
       <section v-else class="mod__error__body">
         <form id="errorData" @submit.prevent="updateErorData">
-          <div
-            v-for="(value, key, index) in $store.state.template.error[
+          <div v-for="(value, key, index) in $store.state.template.error[
               error.type
-            ]"
-            :key="index"
-          >
+            ]" :key="index">
             <section v-if="returnRender(key, value)">
               <h3>Статус ошибки: {{ key }}</h3>
-              <conditional-render
-                v-model="error.body[key]"
-                :data-render="value"
-              />
+              <conditional-render v-model="error.body[key]" :data-render="value" />
             </section>
           </div>
         </form>
       </section>
+      <h3 v-if="error.photos[0]" >Фотографии</h3>
+            <input
+             v-if="changeInfo"
+        id="imageFile"
+        ref="fileInput"
+        multiple
+        name="imagefile[]"
+        type="file"
+        accept="image/*"
+        @input="checkFile"
+      />
+      <div v-if="files">
+        <p v-for="(f, i) in files" :key="f.lastModified">{{i+1}}   {{ f.name }} {{f.status}}</p>
+      </div>
       <section class="photos">
-        <div
-          v-for="(value, index) in error.photos"
-          :key="index"
-          class="photo__holder"
-        >
-          <a :href="value.link">
-            <img class="error__photos" :src="value.thumb" alt="" />
+        <div v-for="(value, index) in error.photos" :key="index" class="photo__holder" v-show="value">
+          <a :href="`${linkPhoto}${value}`">
+            <img class="error__photos" :src="`${linkPhoto}thumb__${value}`" alt="" />
           </a>
+          <img class="delete__image" v-if="changeInfo" @click="deleteBlob(value, index)" src="/img/cancel.svg" alt="" />
         </div>
       </section>
     </div>
@@ -66,21 +70,16 @@
   <br />
   <br />
   <div class="button__block">
-    <button
-      v-if="
+    <button v-if="
         error &&
         !changeInfo &&
         error.info.Добавил === $store.state.user.info.userDetails || 
         $store.state.user.info.userRoles.includes('admin')
-      "
-      @click="changeData"
-    >
+      " @click="changeData">
       Редактировать
     </button>
-    <button
-      v-if="changeInfo && !error.body.Принято['Статус решения']"
-      @click="statusConfirmed = !statusConfirmed"
-    >
+    <button v-if="changeInfo">Удалить</button>
+    <button v-if="changeInfo && !error.body.Принято['Статус решения']" @click="statusConfirmed = !statusConfirmed">
       Подтвердить ошибку
     </button>
     <button v-if="statusConfirmed" @click="statusClosed = !statusClosed">
@@ -103,6 +102,8 @@ export default {
   },
   data() {
     return {
+      files: [],
+      linkPhoto: 'https://icaenter.blob.core.windows.net/errors-photo/',
       showPhotos: false,
       statusConfirmed: false,
       statusClosed: false,
@@ -113,15 +114,26 @@ export default {
       errorIsNotDef: null,
       errorTemplate: null,
       test: null,
+      deletMethods: []
     };
   },
 
   async created() {
     this.error = await this.getCurrentError();
     this.error.body = this.error.body[this.error.body.length - 1];
-    console.log("here");
   },
   methods: {
+        checkFile() {
+      // this.fileInput = document.getElementById('imageFile') 
+      this.files = Object.values(this.$refs.fileInput.files)
+      addEventListener("beforeunload", this.beforeUnloadListener, {
+        capture: true
+      });
+    },
+  deleteBlob(el,i){
+  this.error.photos.splice(i, 1)
+   this.deletMethods.push(`/api/blob?fileName=${el}&delblob=true`,`/api/blob?fileName=thumb__${el}&delblob=true`)
+    },
     // eslint-disable-next-line no-unused-vars
     returnRender(key, val) {
       if (key === "Открыто") {
@@ -154,6 +166,7 @@ export default {
             _time: `${Date.now()}`,
           },
         ],
+        photos: this.error.photos
       };
       const openError = {
         id: this.error.id,
@@ -178,6 +191,22 @@ export default {
       }
       // console.log(updateErorBody);
       try {
+       this.files && await Promise.all(
+          this.files.map(async (e, i) => {
+            const formData = new FormData()
+            formData.append(`photo${i}`, e)
+            const imageName = `${err.id}__${sessionStorage.getItem('userDetails').toLowerCase()}__${e.name}`
+            const imageRes =  await fetch(
+                `/api/blob?fileName=${imageName}`, {
+                  method: 'POST',
+                  body: formData,
+                  keepalive: true,
+                },
+              )
+              if (imageRes.ok) {
+                this.error.photos.push(`${imageName}`)
+              }
+          }))
         await fetch("/api/POST_error", {
           method: "POST", // или 'PUT'
           body: JSON.stringify({ ...updateErorBody }),
@@ -189,6 +218,10 @@ export default {
           method: "POST", // или 'PUT'
           body: JSON.stringify({ ...openError }),
         });
+      this.deletMethods && await Promise.all(this.deletMethods.map( async e => {
+          await fetch(e)
+        }))
+
       } finally {
         this.changeInfo = !this.changeInfo;
       }
@@ -199,7 +232,6 @@ export default {
           `/api/errors/${this.$route.params.errorId}`
         );
         const error = await responsError.json();
-        // this.$store.commit("SETERROR", error);
         if (!responsError.ok) {
           this.errorIsNotDef = "Данной ошибки не существует";
           console.log("Данной ошибки не существует");
@@ -239,6 +271,21 @@ export default {
 </script>
 
 <style lang="css" scoped>
+.back__image{
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  width: 40px;
+  border: 1px solid black;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.delete__image{
+  top: -30px;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
 .photos {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
@@ -247,13 +294,14 @@ export default {
 }
 .photo__holder {
   /* width: 100px; */
-  height: 100px;
+  position: relative;
+  /* height: 100px; */
   place-self: center;
   margin: auto;
   margin-top: 1vh;
   margin-bottom: 1vh;
   box-sizing: border-box;
-  overflow: hidden;
+  /* overflow: hidden; */
   border-radius: 4px;
 }
 .error__photos {

@@ -60,8 +60,6 @@ export default {
   },
   data() {
     return {
-      dis: false,
-      // fileInput: null,
       files: [],
       errorTemplate: null,
       errorBody: {
@@ -104,7 +102,6 @@ export default {
       }
     },
     async postError(e) {
-this.dis = true
 this.$store.commit("changeLoader", true)
       const id = 'error__' + Date.now()
       const link = 'https://icaenter.blob.core.windows.net/errors-photo/'
@@ -164,10 +161,7 @@ this.$store.commit("changeLoader", true)
               }
             }
             await postImage()
-            error.photos.push({
-              link: `${link}${imageName}`,
-              thumb: `${link}thumb__${imageName}`,
-            })
+            error.photos.push(`${imageName}`)
           }))
         await fetch('/api/POST_error', {
           method: 'POST', // или 'PUT'
@@ -192,7 +186,6 @@ this.$store.commit("changeLoader", true)
           Устранено: {}
         }
         this.files = null
-        this.dis = false
         this.$store.commit("changeLoader", false)
       }
       // await fetch(
