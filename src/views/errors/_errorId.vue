@@ -76,7 +76,7 @@
         error.info.Добавил === $store.state.user.info.userDetails || 
         $store.state.user.info.userRoles.includes('admin')
       " @click="changeData">
-      Редактировать
+      {{!changeInfo? 'Редактировать':'Отмена'}}
     </button>
     <button v-if="changeInfo">Удалить</button>
     <button v-if="changeInfo && !error.body.Принято['Статус решения']" @click="statusConfirmed = !statusConfirmed">
@@ -274,7 +274,7 @@ export default {
 .back__image{
   position: fixed;
   top: 10px;
-  right: 10px;
+  right: 80px;
   width: 40px;
   border: 1px solid black;
   border-radius: 4px;
@@ -383,12 +383,12 @@ h2 {
   align-self: center;
   margin: 0;
 }
-.error__item__vertical__title {
+/* .error__item__vertical__title {
   text-align: center;
   margin: 5px;
 }
 .error__item__vertical__desc {
   padding: 5px;
   text-align: start;
-}
+} */
 </style>
