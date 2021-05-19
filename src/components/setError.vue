@@ -33,15 +33,11 @@
       <div v-if="files">
         <p v-for="(f, i) in files" :key="f.lastModified">{{i+1}}   {{ f.name }} {{f.status}}</p>
       </div>
-      <br /><br />
-      <input class="add__button" type="submit" value="Добавить" />
+      <br />
+      <br>
+      <input :disabled="$store.state.loader" class="add__button" type="submit" value="Добавить" />
     </form>
-    <br />
-
-    <br />
-
-    <br />
-    <br />
+  <br>
     <button @click="statusConfirmed = !statusConfirmed">
       Подтвердить ошибку
     </button>
@@ -64,6 +60,7 @@ export default {
   },
   data() {
     return {
+      dis: false,
       // fileInput: null,
       files: [],
       errorTemplate: null,
@@ -107,7 +104,8 @@ export default {
       }
     },
     async postError(e) {
-
+this.dis = true
+this.$store.commit("changeLoader", true)
       const id = 'error__' + Date.now()
       const link = 'https://icaenter.blob.core.windows.net/errors-photo/'
       const error = {
@@ -122,10 +120,8 @@ export default {
         photos: [],
         type: this.role,
         status: Object.values(this.errorBody.Устранено)[0] ?
-          'closed' :
-          Object.values(this.errorBody.Принято)[0] ?
-          'confirmed' :
-          'open',
+          'closed' : Object.values(this.errorBody.Принято)[0] ?
+          'confirmed' : 'open',
         ttl: 6000,
         body: [{
           ...this.errorBody,
@@ -133,7 +129,6 @@ export default {
           _time: `${Date.now()}`,
         }, ],
       }
-
       const openError = {
         id,
         info: {
@@ -144,14 +139,12 @@ export default {
         status: error.status,
         ttl: 6000,
       }
-
       try {
-
         await Promise.all(this.files &&
           this.files.map(async (e, i) => {
             const formData = new FormData()
             formData.append(`photo${i}`, e)
-      const imageName = `${id}__${sessionStorage.getItem('userDetails').toLowerCase()}__${e.name}`
+            const imageName = `${id}__${sessionStorage.getItem('userDetails').toLowerCase()}__${e.name}`
             const postImage = async () => {
               const blobResponse = await fetch(
                 `/api/blob?fileName=${imageName}`, {
@@ -171,15 +164,12 @@ export default {
               }
             }
             await postImage()
-            // debugger
             error.photos.push({
               link: `${link}${imageName}`,
               thumb: `${link}thumb__${imageName}`,
             })
-
-         
           }))
-                  await fetch('/api/POST_error', {
+        await fetch('/api/POST_error', {
           method: 'POST', // или 'PUT'
           body: JSON.stringify({
             ...error
@@ -193,15 +183,17 @@ export default {
         })
       } finally {
         e.target.reset()
-           removeEventListener("beforeunload", this.beforeUnloadListener, {
-              capture: true
-            });
+        removeEventListener("beforeunload", this.beforeUnloadListener, {
+          capture: true
+        });
         this.errorBody = {
           Открыто: {},
           Принято: {},
           Устранено: {}
         }
         this.files = null
+        this.dis = false
+        this.$store.commit("changeLoader", false)
       }
       // await fetch(
       //   `/api/blob?folder=${this.error.id}&fileName=${this.error.id}`,
