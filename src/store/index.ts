@@ -25,6 +25,8 @@ export default createStore({
     },
     setUserInfo(state, payload) {
       state.user.userInfo = payload.userInfo;
+      console.log(payload,'payload');
+      
       // console.log(state.user, "state.user");
     },
 
@@ -98,7 +100,8 @@ export default createStore({
       }
       // console.log(clientPrincipal,"clientPrincipal");
       clientPrincipal.userDetails = clientPrincipal.userDetails.toLowerCase();
-      !state.user.info && commit("setUserAuth", clientPrincipal);
+      const name =  clientPrincipal.userDetails.split('@')[0].split('.')
+      !state.user.info && commit("setUserAuth", {...clientPrincipal, name : name[0][0].toUpperCase() + '.' + name[1][0].toUpperCase()+ '.'});
 
       try {
         const userRes = await fetch(`/api/user/${clientPrincipal.userId}`, {
@@ -111,7 +114,8 @@ export default createStore({
           }),
         });
         const user = await userRes.json();
-        !state.user.body && commit("setUserInfo", user);
+        const name = user.userDetails.split('@')[0].split('.')
+        !state.user.body && commit("setUserInfo", {...user, name : name[0][0].toUpperCase() + '.' + name[1][0].toUpperCase()+ '.'});
         // console.log(state.user,user, "state.user.info");
       } catch (error) {
         console.log("user is not def", error);

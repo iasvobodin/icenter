@@ -59,11 +59,10 @@ data() {
 
 <style lang="css" scoped>
 .menu_button{
-  position: fixed;
+  position: absolute;
   top: 10px;
   right: 10px;
   z-index: 4;
-  
 }
 .navigation {
   /* background-color: rgb(0, 162, 255); */

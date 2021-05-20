@@ -69,9 +69,14 @@ export default {
 
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400&display=swap');
+*,
+*:before,
+*:after {
+  box-sizing: border-box;
+}
+
 button,
-input[type='submit'],
-::-webkit-file-upload-button {
+input[type='submit'] {
   height: 35px;
   background-color: #ffffff;
   /* border: none; */
@@ -85,6 +90,10 @@ input[type='submit'],
   box-sizing: border-box;
   font-size: 16px;
 }
+/* ::-webkit-file-upload-button{
+  background-image: url('/img/add__image.svg');
+  background-repeat: no-repeat;
+} */
 input[type='submit']:hover {
   background-color: #00a2ff5b;
 }

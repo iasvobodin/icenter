@@ -1,5 +1,5 @@
 <template>
- <img class="back__image"  @click="$router.back()" src="/img/back.svg" alt="" />
+ <img class="back__image"  src="/img/back.svg" alt="" @click="$router.back()" />
   <div class="cabinet">
     <div>
       <h1>{{ $route.params.errorId }}</h1>
@@ -42,10 +42,16 @@
         </form>
       </section>
       <h3 v-if="error.photos[0]" >Фотографии</h3>
+      <!-- <label class="file">
+  <input          ref="fileInput"
+        multiple      accept="image/*"
+        @input="checkFile" type="file" id="file" aria-label="File browser example">
+  <span class="file-custom"></span>
+</label> -->
             <input
              v-if="changeInfo"
-        id="imageFile"
         ref="fileInput"
+        class="custom-file-input"
         multiple
         name="imagefile[]"
         type="file"
@@ -56,11 +62,11 @@
         <p v-for="(f, i) in files" :key="f.lastModified">{{i+1}}   {{ f.name }} {{f.status}}</p>
       </div>
       <section class="photos">
-        <div v-for="(value, index) in error.photos" :key="index" class="photo__holder" v-show="value">
+        <div v-for="(value, index) in error.photos" v-show="value" :key="index" class="photo__holder">
           <a :href="`${linkPhoto}${value}`">
             <img class="error__photos" :src="`${linkPhoto}thumb__${value}`" alt="" />
           </a>
-          <img class="delete__image" v-if="changeInfo" @click="deleteBlob(value, index)" src="/img/cancel.svg" alt="" />
+          <img v-if="changeInfo" class="delete__image" src="/img/cancel.svg" alt="" @click="deleteBlob(value, index)" />
         </div>
       </section>
     </div>
@@ -98,7 +104,7 @@ import conditionalRender from "@/components/conditionalRender.vue";
 import infoRender from "@/components/infoRender.vue";
 export default {
   components: {
-    conditionalRender, infoRender
+    conditionalRender, infoRender, 
   },
   data() {
     return {
@@ -271,6 +277,35 @@ export default {
 </script>
 
 <style lang="css" scoped>
+ .custom-file-input::-webkit-file-upload-button {
+  visibility: hidden;
+  /* display: flex; */
+}
+.custom-file-input::before {
+  content: '';
+  width: 40px;
+  height: 40px;
+  display: inline-block;
+  background-image: url('/img/add__image.svg');
+  background-repeat: no-repeat;
+  /* background: -webkit-linear-gradient(top, #f9f9f9, #e3e3e3); */
+  border: 1px solid #999;
+  border-radius: 3px;
+  padding: 5px 8px;
+  outline: none;
+  white-space: nowrap;
+  cursor: pointer;
+  text-shadow: 1px 1px #fff;
+  font-weight: 700;
+  font-size: 10pt;
+}
+.custom-file-input:hover::before {
+  border-color: black;
+}
+.custom-file-input:active::before {
+  background: -webkit-linear-gradient(top, #e3e3e3, #f9f9f9);
+  background-image: url('/img/add__image.svg');
+}
 .back__image{
   position: fixed;
   top: 10px;

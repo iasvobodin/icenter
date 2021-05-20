@@ -1,17 +1,12 @@
 <template>
     <div class="app__header">
-<navigation-panel/>
-  <div>
-    <a
-      v-if="!$store.state.user.info"
-      href="/.auth/login/aad?post_login_redirect_uri=/user"
-      >Login    |</a>
-    <router-link v-else to="/user"
-      >{{ $store.state.user.info.userDetails }} |
-    </router-link><br>
-    <a href="/.auth/logout?post_logout_redirect_uri=/">Log out | </a>
-    <router-link to="/admin">Admin</router-link>
-  </div>
+        <navigation-panel />
+        <div>
+            <a v-if="!$store.state.user.info" href="/.auth/login/aad?post_login_redirect_uri=/user">Login |</a>
+            <div v-else @click="$router.push('/user')" class="user"> <span>{{ $store.state.user.info.name}}
+                </span>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -36,5 +31,20 @@ text-decoration-color: rgb(255, 255, 255);}
      z-index: 3;
     /* position: absolute;
     top: 0; */
+}
+.user{
+    position: relative;
+    top: 5px;
+    left: 5px;
+    width: 40px;
+    height: 40px;
+    border: 1px solid white;
+    border-radius: 50%;
+    display: grid;
+    cursor: pointer;
+}
+.user>span{
+    place-self: center;
+    color: white;
 }
 </style>
