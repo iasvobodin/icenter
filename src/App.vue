@@ -77,7 +77,7 @@ export default {
 
 button,
 input[type='submit'] {
-  height: 35px;
+  height: 40px;
   background-color: #ffffff;
   /* border: none; */
   /* color: white; */

@@ -21,9 +21,5 @@ export default {
   position: relative;
   height: auto;
 }
-.admin_navigation {
-  /* position: absolute; */
-  /* top: 0;
-  left: 0; */
-}
+
 </style>

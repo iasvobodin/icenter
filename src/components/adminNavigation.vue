@@ -60,7 +60,7 @@ data() {
 <style lang="css" scoped>
 .menu_button{
   position: absolute;
-  top: 10px;
+  top: 5px;
   right: 10px;
   z-index: 4;
 }

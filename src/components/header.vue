@@ -1,6 +1,7 @@
 <template>
     <div class="app__header">
         <navigation-panel />
+        <img class="back__image"  src="/img/back.svg" alt="" @click="$router.back()" />
         <div>
             <a v-if="!$store.state.user.info" href="/.auth/login/aad?post_login_redirect_uri=/user">Login |</a>
             <div v-else @click="$router.push('/user')" class="user"> <span>{{ $store.state.user.info.name}}
@@ -46,5 +47,14 @@ text-decoration-color: rgb(255, 255, 255);}
 .user>span{
     place-self: center;
     color: white;
+}
+.back__image{
+  position: absolute;
+  top: 5px;
+  right: 80px;
+  width: 40px;
+  border: 1px solid black;
+  border-radius: 4px;
+  cursor: pointer;
 }
 </style>
