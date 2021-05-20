@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router";
-
+import store from '@/store/index'
 const routes = [
   {
     path: "/",
@@ -82,19 +82,24 @@ const routes = [
     name: "admin",
     component: ()=>  import("@/views/admin/index.vue"),
   },
-  {
-    path: "/login",
-    name: "login",
-    beforeEnter() {
-      window.open("http://www.google.com", "_blank");
-    },
-    component: ()=>  import("@/views/login.vue"),
-  },
+  // {
+  //   path: "/login",
+  //   name: "login",
+  //   beforeEnter() {
+  //     window.open("http://www.google.com", "_blank");
+  //   },
+  //   component: ()=>  import("@/views/login.vue"),
+  // },
 ];
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes,
 });
+router.beforeEach(async (to, from) => {
+  // canUserAccess() returns `true` or `false`
+  await store.dispatch('GET_auth')
+  if (!store.state.user.info) return '/login'
+})
 
 export default router;

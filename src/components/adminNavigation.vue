@@ -1,6 +1,5 @@
 <template>
-<div @mouseleave="showMenu = !showMenu" v-if="showMenu" class="navigation">
-
+<div v-if="showMenu" class="navigation">
   <nav >
     <ul>
       <li>
@@ -34,11 +33,22 @@
   </nav>
 </div>
 <button class="menu_button" @click="showMenu = !showMenu">{{!showMenu?'Menu':'Close'}}</button>
-
 </template>
 
 <script>
 export default {
+  created() {
+    // watch the params of the route to fetch the data again
+    this.$watch(
+      () => this.$route.params,
+      () => {
+        this.showMenu = false
+      },
+      // fetch the data when the view is created and the data is
+      // already being observed
+      { immediate: true }
+    )
+  },
 data() {
   return {
     showMenu: false
@@ -55,7 +65,7 @@ data() {
   z-index: 2px;
 }
 .navigation {
-  background-color: rgb(221, 221, 221);
+  background-color: rgb(248, 248, 248);
   width: 250px;
   display: block;
   position: fixed;
@@ -71,5 +81,22 @@ ul{
 li {
   display: block;
   height: 30px;
+  border: 1px solid black;
+  border-radius: 4px;
+  width: 90%;
+  margin: auto;
+  margin-top: 10px;
+}
+li:hover{
+  background-color: #fff;
+}
+a{
+text-decoration-line: none;
+color: #2c3e50;
+text-decoration-color: black;
+line-height: 30px;
+}
+a.router-link-exact-active {
+  color: #42b983;
 }
 </style>

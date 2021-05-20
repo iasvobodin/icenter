@@ -1,5 +1,4 @@
 <template>
-<Navigation />
 <loader/>
   <div id="nav">
     <!-- <router-link to="/">Home</router-link> |
@@ -17,17 +16,19 @@
     <router-link to="/admin">Admin</router-link>
   </div>
   <router-view />
+  <app-header/>
+
 </template>
 
 
 <script>
 import loader from '@/components/loader.vue'
-import Navigation from "@/components/adminNavigation.vue";
+import appHeader from "@/components/header.vue";
 // import { onBeforeRouteLeave, onBeforeRouteUpdate } from "vue-router";
 // import { ref } from "vue";
 export default {
   components: {
-    loader,Navigation
+    loader,appHeader
   },
   // setup() {
   //   // same as beforeRouteLeave option with no access to `this`
@@ -74,7 +75,7 @@ export default {
     console.log(formatDate(dd))
   },
   created() {
-    !this.$store.state.user.info && this.$store.dispatch('GET_auth')
+    // !this.$store.state.user.info && this.$store.dispatch('GET_auth')
     !this.$store.state.template && this.$store.dispatch('GET_template')
   },
 }
@@ -131,14 +132,6 @@ textarea {
   padding: 30px;
 }
 
-#nav a {
-  font-weight: bold;
-  color: #2c3e50;
-}
-
-#nav a.router-link-exact-active {
-  color: #42b983;
-}
 h1,
 h2,
 h3,
@@ -147,5 +140,8 @@ h5,
 h6 {
   font-family: 'Roboto Slab', serif;
   font-weight: normal;
+}
+body{
+  margin: 0;
 }
 </style>

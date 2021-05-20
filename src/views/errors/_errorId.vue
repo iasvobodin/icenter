@@ -1,5 +1,5 @@
 <template>
- <img class="back__image"  @click="$router.go(-1)" src="/img/back.svg" alt="" />
+ <img class="back__image"  @click="$router.back()" src="/img/back.svg" alt="" />
   <div class="cabinet">
     <div>
       <h1>{{ $route.params.errorId }}</h1>
