@@ -1,18 +1,14 @@
 <template>
     <div class="app__header">
 <navigation-panel/>
-  <div id="nav">
-    <!-- <router-link to="/">Home</router-link> |
-    <router-link to="/User">User</router-link> |
-    <router-link to="/admin">Admin</router-link> | -->
+  <div>
     <a
       v-if="!$store.state.user.info"
       href="/.auth/login/aad?post_login_redirect_uri=/user"
-      >Login |</a
-    >
-    <router-link v-else to="/User"
+      >Login    |</a>
+    <router-link v-else to="/user"
       >{{ $store.state.user.info.userDetails }} |
-    </router-link>
+    </router-link><br>
     <a href="/.auth/logout?post_logout_redirect_uri=/">Log out | </a>
     <router-link to="/admin">Admin</router-link>
   </div>
@@ -29,11 +25,16 @@ import navigationPanel from "@/components/adminNavigation.vue";
 </script>
 
 <style lang="css" scoped>
+a{text-decoration-line: none;
+color: #ffffff;
+text-decoration-color: rgb(255, 255, 255);}
 .app__header{
     height: 50px;
     width: 100%;
-    background-color: rgb(0, 183, 255);
-    position: fixed;
-    top: 0;
+     background-color: #3b3f4d;
+      box-shadow: inset 0px 2px 3px 0px rgb(0 0 0 / 40%), 0px 1px 2px 0px rgb(255 255 255 / 20%);
+     z-index: 3;
+    /* position: absolute;
+    top: 0; */
 }
 </style>

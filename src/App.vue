@@ -1,9 +1,9 @@
 <template>
-<loader/>
-
-  <router-view />
-  <app-header/>
-
+  <app-header />
+<div id="view">
+  <router-view  />
+</div>
+  <loader />
 </template>
 
 
@@ -129,5 +129,8 @@ h6 {
 }
 body{
   margin: 0;
+}
+#app{
+  position: relative;
 }
 </style>

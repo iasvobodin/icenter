@@ -62,39 +62,45 @@ data() {
   position: fixed;
   top: 10px;
   right: 10px;
-  z-index: 2px;
+  z-index: 4;
+  
 }
 .navigation {
-  background-color: rgb(248, 248, 248);
+  /* background-color: rgb(0, 162, 255); */
   width: 250px;
   display: block;
   position: fixed;
   right: 0px;
   top: 0px;
   height: 100vh;
+  z-index: 2;
 }
 ul{
   margin: 0;
   padding: 0;
-  margin-top: 10vh;
+  margin-top: 50px;
+      padding: 0px 3px;
+      border: 1px solid #14161C;
+    background-color: #3b3f4d;
+    border-radius: 4px;
+      box-shadow: inset 0px 2px 3px 0px rgb(0 0 0 / 40%), 0px 1px 2px 0px rgb(255 255 255 / 20%);
 }
 li {
   display: block;
-  height: 30px;
-  border: 1px solid black;
-  border-radius: 4px;
-  width: 90%;
+  /* height: 40px; */
+      border-bottom: 1px solid #292D38;
+  /* border-radius: 4px; */
   margin: auto;
-  margin-top: 10px;
+  /* margin-top: 10px; */
 }
 li:hover{
-  background-color: #fff;
+    background-color: #3b414d;
 }
 a{
 text-decoration-line: none;
-color: #2c3e50;
-text-decoration-color: black;
-line-height: 30px;
+color: #ffffff;
+text-decoration-color: rgb(255, 255, 255);
+line-height: 40px;
 }
 a.router-link-exact-active {
   color: #42b983;
