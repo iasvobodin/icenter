@@ -96,7 +96,7 @@ const router = createRouter({
 router.beforeEach(async (to, from, next) => {
   // canUserAccess() returns `true` or `false`
   await store.dispatch('GET_auth')
-  if (!store.state.user.info) next({ name: 'Login' })
+  if (!store.state.user.info) next({ name: 'login' })
   else next()
 })
 
