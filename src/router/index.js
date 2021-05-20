@@ -12,6 +12,11 @@ const routes = [
     component:()=>  import("@/views/User.vue"),
   },
   {
+    path: '/login',
+    name: 'login',
+    component:()=>  import("@/views/login.vue"),
+  },
+  {
     path: "/admin",
     component: ()=> import("@/views/admin/index.vue"),
     children: [
@@ -82,24 +87,17 @@ const routes = [
     name: "admin",
     component: ()=>  import("@/views/admin/index.vue"),
   },
-  // {
-  //   path: "/login",
-  //   name: "login",
-  //   beforeEnter() {
-  //     window.open("http://www.google.com", "_blank");
-  //   },
-  //   component: ()=>  import("@/views/login.vue"),
-  // },
 ];
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes,
 });
-router.beforeEach(async (to, from) => {
+router.beforeEach(async (to, from, next) => {
   // canUserAccess() returns `true` or `false`
   await store.dispatch('GET_auth')
-  if (!store.state.user.info) return '/login'
+  if (!store.state.user.info) next({ name: 'Login' })
+  else next()
 })
 
 export default router;
