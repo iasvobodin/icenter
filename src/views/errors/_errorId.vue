@@ -1,5 +1,4 @@
 <template>
- 
   <div class="cabinet">
     <div>
       <h1>{{ $route.params.errorId }}</h1>
@@ -8,58 +7,38 @@
     <div v-if="error" class="cabinet__info">
       <section class="information">
         <info-render :info-data="error.info" />
-        <!-- <div
-          v-for="(val, key, index) in error.info"
-          :key="index"
-          class="cabinet__info__item"
-        >
-          <h3>{{ key }}:</h3>
-          <p>{{ val }}</p>
-        </div> -->
       </section>
-      <!-- v-show="Object.values(val)[1] && !key.startsWith('_')" -->
-      <section v-if="!changeInfo" class="eror__body">
-        <div v-for="(val, key, index) in error.body" 
-          :key="index">
-          <h2 v-if="Object.values(val)[1] && !key.startsWith('_')">{{ key }}</h2>
-          <info-render v-if="Object.values(val)[1] && !key.startsWith('_')" :info-data="val" />
-          <!-- <div v-for="(v, k, i) in val" :key="i" class="cabinet__info__item">
-            <h3>{{ k }}:</h3>
-            <p>{{ v }}</p>
-          </div> -->
+      <section v-for="(val, key, index) in error.body" :key="index" class="eror__body">
+        <div v-if="!key.startsWith('_')&&Object.values(val)[1]">
+          <div v-if="!returnRender(key, val)">
+            <h2 >{{ key }}</h2>
+          <info-render :info-data="val" />
+          </div>
         </div>
       </section>
-      <section v-else class="mod__error__body">
+      <section class="mod__error__body">
         <form id="errorData" @submit.prevent="updateErorData">
           <div v-for="(value, key, index) in $store.state.template.error[
               error.type
             ]" :key="index">
-            <section v-if="returnRender(key, value)">
+            <div v-if="returnRender(key, value)">
               <h3>Статус ошибки: {{ key }}</h3>
-              <conditional-render v-model="error.body[key]" :data-render="value" />
-            </section>
+              <conditional-render v-model="error.body[key]" :data-render="value" :required="!$store.state.user.info.userRoles.includes('admin')" />
+            </div>
           </div>
         </form>
       </section>
-      <h3 v-if="error.photos[0]" >Фотографии</h3>
-      <!-- <label class="file">
-  <input          ref="fileInput"
-        multiple      accept="image/*"
-        @input="checkFile" type="file" id="file" aria-label="File browser example">
-  <span class="file-custom"></span>
-</label> -->
-            <input
-             v-if="changeInfo"
-        ref="fileInput"
-        class="custom-file-input"
-        multiple
-        name="imagefile[]"
+      <h3 v-if="error.photos[0]">Фотографии</h3>
+      <input 
+        v-if="changeInfo" 
+        ref="fileInput" 
+        class="custom-file-input" 
+        multiple 
         type="file"
-        accept="image/*"
-        @input="checkFile"
-      />
+        accept="image/*" 
+        @input="checkFile" />
       <div v-if="files">
-        <p v-for="(f, i) in files" :key="f.lastModified">{{i+1}}   {{ f.name }} {{f.status}}</p>
+        <p v-for="(f, i) in files" :key="f.lastModified">{{i+1}} {{ f.name }} {{f.status}}</p>
       </div>
       <section class="photos">
         <div v-for="(value, index) in error.photos" v-show="value" :key="index" class="photo__holder">
@@ -85,12 +64,6 @@
       {{!changeInfo? 'Редактировать':'Отмена'}}
     </button>
     <button v-if="changeInfo">Удалить</button>
-    <button v-if="changeInfo && !error.body.Принято['Статус решения']" @click="statusConfirmed = !statusConfirmed">
-      Подтвердить ошибку
-    </button>
-    <button v-if="statusConfirmed" @click="statusClosed = !statusClosed">
-      Закрыть ошибку
-    </button>
     <button v-if="changeInfo" type="submit" form="errorData">
       Сохранить
     </button>
@@ -104,7 +77,8 @@ import conditionalRender from "@/components/conditionalRender.vue";
 import infoRender from "@/components/infoRender.vue";
 export default {
   components: {
-    conditionalRender, infoRender, 
+    conditionalRender,
+    infoRender,
   },
   data() {
     return {
@@ -129,27 +103,43 @@ export default {
     this.error.body = this.error.body[this.error.body.length - 1];
   },
   methods: {
-        checkFile() {
+    checkFile() {
       // this.fileInput = document.getElementById('imageFile') 
       this.files = Object.values(this.$refs.fileInput.files)
       addEventListener("beforeunload", this.beforeUnloadListener, {
         capture: true
       });
     },
-  deleteBlob(el,i){
-  this.error.photos.splice(i, 1)
-   this.deletMethods.push(`/api/blob?fileName=${el}&delblob=true`,`/api/blob?fileName=thumb__${el}&delblob=true`)
+    deleteBlob(el, i) {
+      this.error.photos.splice(i, 1)
+      this.deletMethods.push(`/api/blob?fileName=${el}&delblob=true`, `/api/blob?fileName=thumb__${el}&delblob=true`)
     },
     // eslint-disable-next-line no-unused-vars
-    returnRender(key, val) {
-      if (key === "Открыто") {
-        return true;
+    returnRender(key) {
+      if (this.changeInfo&&this.$store.state.user.info.userRoles.includes('admin')) {
+        return true
       }
-      if (key === "Принято" && this.statusConfirmed) {
-        return true;
+      if (this.changeInfo&&this.error.status === 'confirmed') {
+        if (key === "Открыто") {
+          return false;
+        }
+        if (key === "Принято") {
+          return false;
+        }
+        if (key === "Устранено") {
+          return true;
+        }
       }
-      if (key === "Устранено" && this.statusClosed && this.statusConfirmed) {
-        return true;
+      if (this.changeInfo&&sessionStorage.getItem('userDetails').toLowerCase() === this.error.info.Добавил) {
+        if (key === "Открыто") {
+          return true;
+        }
+        if (key === "Принято") {
+          return false;
+        }
+        if (key === "Устранено") {
+          return false;
+        }
       }
     },
     changeData() {
@@ -159,11 +149,9 @@ export default {
       const err = await this.getCurrentError();
       const updateErorBody = {
         ...err,
-        status: Object.values(this.error.body.Устранено)[0]
-          ? "closed"
-          : Object.values(this.error.body.Принято)[0]
-          ? "confirmed"
-          : "open",
+        status: Object.values(this.error.body.Устранено)[0] ?
+          "closed" : Object.values(this.error.body.Принято)[0] ?
+          "confirmed" : "open",
         body: [
           ...err.body,
           {
@@ -192,39 +180,47 @@ export default {
         console.log("comparestatus");
         await fetch("/api/POST_openError", {
           method: "POST", // или 'PUT'
-          body: JSON.stringify({ id: err.id, status: err.status, ttl: 1 }),
+          body: JSON.stringify({
+            id: err.id,
+            status: err.status,
+            ttl: 1
+          }),
         });
       }
       // console.log(updateErorBody);
       try {
-       this.files && await Promise.all(
+        this.files && await Promise.all(
           this.files.map(async (e, i) => {
             const formData = new FormData()
             formData.append(`photo${i}`, e)
             const imageName = `${err.id}__${sessionStorage.getItem('userDetails').toLowerCase()}__${e.name}`
-            const imageRes =  await fetch(
-                `/api/blob?fileName=${imageName}`, {
-                  method: 'POST',
-                  body: formData,
-                  keepalive: true,
-                },
-              )
-              if (imageRes.ok) {
-                this.error.photos.push(`${imageName}`)
-              }
+            const imageRes = await fetch(
+              `/api/blob?fileName=${imageName}`, {
+                method: 'POST',
+                body: formData,
+                keepalive: true,
+              },
+            )
+            if (imageRes.ok) {
+              this.error.photos.push(`${imageName}`)
+            }
           }))
         await fetch("/api/POST_error", {
           method: "POST", // или 'PUT'
-          body: JSON.stringify({ ...updateErorBody }),
+          body: JSON.stringify({
+            ...updateErorBody
+          }),
         });
         if (updateErorBody.status === "closed") {
           return;
         }
         await fetch("/api/POST_openError", {
           method: "POST", // или 'PUT'
-          body: JSON.stringify({ ...openError }),
+          body: JSON.stringify({
+            ...openError
+          }),
         });
-      this.deletMethods && await Promise.all(this.deletMethods.map( async e => {
+        this.deletMethods && await Promise.all(this.deletMethods.map(async e => {
           await fetch(e)
         }))
 
