@@ -52,7 +52,8 @@ export default createStore({
     SETcabinetInfo(state, payload) {
       state.projectInfo = {
         ...state.projectInfo,
-        ...payload,
+        wo: payload.split('   ')[0],
+        'cab name': payload.split('   ')[1]
       };
       console.log(state.projectInfo, "state.projectInfo");
     },

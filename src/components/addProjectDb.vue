@@ -83,36 +83,29 @@ export default {
       selectedProject.value = projectList.value.data.find(
         (p) => p['id'] === e
         )
-        // if (!e) {
-        //   woList.value = null
-        //   return
-        // }
-        // const {
-        //   request: checkProjectInIcenter,
-        //   response: projectIcenter
-        // } = useFetch(`/api/project/${e}`)
-        // const {
-        //   request: checkProjectInLegendStats,
-        //   response: wo
-        // } = useFetch(`/api/cabinetList/${e}`)
-
-        // await checkProjectInIcenter()
-
-        // if (!projectIcenter.value) {
-        //   console.log('project is missing');
-        //   await checkProjectInLegendStats()
-        //   woList.value = wo.value
-        // } else{
-        //   console.log('project is allredy exist');
-        // } 
- 
     }
-
+ const postProject = async () => {
+        await fetch("/api/POST_project", {
+          method: "POST", // или 'PUT'
+          body: JSON.stringify({
+            id: selectedProject.value.id,
+            status: "open",
+            // ttl: 1,
+            info: {
+              base: selectedProject.value.info,
+              extends: selected.extend,
+            },
+            cabinets: selected.cabinets,
+          }),
+        });
+        // this.fetchStatus = "Проект успешно добавлен";
+      }
     //  const result = computed(() => {
     //    return projectList.value && (projectList.value.filter(e => ['status', 'project number'].some(el => e[el].includes(search.value))))
     //  })
 
     return {
+      postProject,
       projectList,
       choose,
       woList,

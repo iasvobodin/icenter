@@ -119,7 +119,6 @@ this.$store.commit("changeLoader", true)
         status: Object.values(this.errorBody.Устранено)[0] ?
           'closed' : Object.values(this.errorBody.Принято)[0] ?
           'confirmed' : 'open',
-        ttl: 6000,
         body: [{
           ...this.errorBody,
           _changed: sessionStorage.getItem('userDetails').toLowerCase(),
@@ -134,7 +133,6 @@ this.$store.commit("changeLoader", true)
         },
         type: error.type,
         status: error.status,
-        ttl: 6000,
       }
       try {
         await Promise.all(this.files &&

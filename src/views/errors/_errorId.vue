@@ -30,17 +30,19 @@
       </section>
       <h3 v-if="error.photos[0]">Фотографии</h3>
       <input 
-        v-if="changeInfo" 
+         v-show="false"
         ref="fileInput" 
         class="custom-file-input" 
         multiple 
         type="file"
         accept="image/*" 
         @input="checkFile" />
+       
       <div v-if="files">
         <p v-for="(f, i) in files" :key="f.lastModified">{{i+1}} {{ f.name }} {{f.status}}</p>
       </div>
       <section class="photos">
+          <img class="add__photo" @click="firedFileInput" v-if="changeInfo" src="/img/add__image.svg" alt="">
         <div v-for="(value, index) in error.photos" v-show="value" :key="index" class="photo__holder">
           <a :href="`${linkPhoto}${value}`">
             <img class="error__photos" :src="`${linkPhoto}thumb__${value}`" alt="" />
@@ -103,6 +105,9 @@ export default {
     this.error.body = this.error.body[this.error.body.length - 1];
   },
   methods: {
+    firedFileInput(){
+      this.$refs.fileInput.click()
+    },
     checkFile() {
       // this.fileInput = document.getElementById('imageFile') 
       this.files = Object.values(this.$refs.fileInput.files)
@@ -245,56 +250,17 @@ export default {
         console.log("errors is not def", error);
       }
     },
-    // stageSort(o) {
-    //   return Object.keys(o)
-    //     .sort((a, b) => b[0] - a[0])
-    //     .reduce((r, k) => ((r[k] = o[k]), r), {});
-    // },
-    // async sendFile() {
-    //   const formData = new FormData();
-    //   const fileField = document.querySelector('input[type="file"]');
-
-    //   // formData.append('username', 'abc123');
-    //   formData.append("photo", fileField.files[0]);
-
-    //   try {
-    //     const response = await fetch("/api/blob", {
-    //       method: "POST",
-    //       body: formData,
-    //     });
-    //     const result = await response.json();
-    //     console.log("Успех:", JSON.stringify(result));
-    //   } catch (error) {
-    //     console.error("Ошибка:", error);
-    //   }
-    // },
   },
 };
 </script>
 
 <style lang="css" scoped>
- .custom-file-input::-webkit-file-upload-button {
-  visibility: hidden;
-  /* display: flex; */
+.add__photo{
+width: 100px;
+ place-self: center;
+ cursor: pointer;
 }
-.custom-file-input::before {
-  content: '';
-  width: 40px;
-  height: 40px;
-  display: inline-block;
-  background-image: url('/img/add__image.svg');
-  background-repeat: no-repeat;
-  /* background: -webkit-linear-gradient(top, #f9f9f9, #e3e3e3); */
-  border: 1px solid #999;
-  border-radius: 3px;
-  padding: 5px 8px;
-  outline: none;
-  white-space: nowrap;
-  cursor: pointer;
-  text-shadow: 1px 1px #fff;
-  font-weight: 700;
-  font-size: 10pt;
-}
+
 .custom-file-input:hover::before {
   border-color: black;
 }

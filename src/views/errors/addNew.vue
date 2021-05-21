@@ -7,10 +7,15 @@
       @choose-project-number="choose"
     />
     <div v-if="projectInformation">
-      <choose-wo
+      <br>
+          <choose-project-number
+      :data-to-render="projectInformation.cabinets.map(e =>e.wo + '   ' +e['cab name'])"
+      @choose-project-number="chooseCabinet"
+    />
+      <!-- <choose-wo
         :fetch-url="projectInformation.cabinets"
         @choose-project-number="chooseCabinet"
-      />
+      /> -->
       <div v-if="cabinet">
         <cabinet-template
           :project-number="projectInformation.id"
@@ -82,7 +87,7 @@ export default {
   },
   methods: {
     chooseCabinet(e) {
-      this.cabinet = e;
+      this.cabinet = e.split('   ')[0];
       this.$store.commit("SETcabinetInfo", e);
       this.woState = true;
     },
