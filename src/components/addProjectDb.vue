@@ -51,10 +51,16 @@
 import chooseProjectNumber from '@/components/chooseProjectNumber.vue'
 import chooseWoNumber from '@/components/chooseWoNumber.vue'
 import conditionalRender from '@/components/conditionalRender.vue'
-import { useFetch } from '@/hooks/fetch'
-import { useStore } from 'vuex'
-import { useProjects } from '@/hooks/projectlsit'
-import { computed, ref, reactive } from '@vue/runtime-core'
+import {
+  useFetch
+} from '@/hooks/fetch'
+import {
+  useProjects
+} from '@/hooks/projectlsit'
+import {
+  ref,
+  reactive
+} from '@vue/runtime-core'
 // import projectInfo from './projectInfo.vue';
 export default {
   components: {
@@ -63,7 +69,6 @@ export default {
     conditionalRender,
   },
   setup() {
-    const store = useStore()
     const projectList = ref(null)
     const selectedProject = ref(null)
     const fetchProjectList = async () => {
@@ -71,7 +76,10 @@ export default {
     }
     fetchProjectList()
 
-    const selected = reactive({ extend: {}, cabinets: null })
+    const selected = reactive({
+      extend: {},
+      cabinets: null
+    })
 
     function formatDate(date) {
       return `${date.getDate()}/0${date.getMonth() + 1}/${date.getFullYear()}`
@@ -82,27 +90,28 @@ export default {
     async function choose(e) {
       selectedProject.value = projectList.value.data.find(
         (p) => p['id'] === e
-        )
+      )
     }
- const postProject = async () => {
-        await fetch("/api/POST_project", {
-          method: "POST", // или 'PUT'
-          body: JSON.stringify({
-            id: selectedProject.value.id,
-            status: "open",
-            // ttl: 1,
-            info: {
-              base: selectedProject.value.info,
-              extends: selected.extend,
-            },
-            cabinets: selected.cabinets,
-          }),
-        });
-        // this.fetchStatus = "Проект успешно добавлен";
-      }
-    //  const result = computed(() => {
-    //    return projectList.value && (projectList.value.filter(e => ['status', 'project number'].some(el => e[el].includes(search.value))))
-    //  })
+    const postProject = async () => {
+      const {
+        request,
+        response
+      } = useFetch("/api/POST_project", {
+        method: "POST", // или 'PUT'
+        body: JSON.stringify({
+          id: selectedProject.value.id,
+          status: "open",
+          info: {
+            base: selectedProject.value.info,
+            extends: selected.extend,
+          },
+          cabinets: selected.cabinets,
+        }),
+      })
+      await request()
+      selected.extend = {}
+      selected.cabinets = null
+    }
 
     return {
       postProject,
