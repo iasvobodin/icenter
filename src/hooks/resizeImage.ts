@@ -38,17 +38,18 @@ interface IResizeImageOptions {
       canvas.height = height;
       canvas.getContext('2d')!.drawImage(image, 0, 0, width, height);
       let dataUrl = canvas.toDataURL('image/jpeg');
-      return dataURItoBlob(dataUrl);
+    //   let dataBlob = canvas.toBlob((blob) =>{}, 'image/jpeg', 0.95); // JPEG at 95% quality
+      return {data: dataURItoBlob(dataUrl), canvas};
     };
   
-    return new Promise((ok, no) => {
+    return new Promise((res, rej) => {
         if (!file.type.match(/image.*/)) {
-          no(new Error("Not an image"));
+          rej(new Error("Not an image"));
           return;
         }
   
         reader.onload = (readerEvent: any) => {
-          image.onload = () => ok(resize());
+          image.onload = () => res(resize());
           image.src = readerEvent.target.result;
         };
         reader.readAsDataURL(file);

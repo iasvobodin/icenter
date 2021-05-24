@@ -105,7 +105,7 @@ export default {
     async fetchProjectList() {
       if (!this.projectData) {
         this.fetchProject = await (
-          await fetch(`/api/project/${this.projectStatus}`)
+          await fetch(`/api/projects?status=${this.projectStatus}`)
         ).json();
         this.projectData = this.fetchProject.map((el) => el.id);
         // this.projectData = this.fetchProject.map(el => el.id);

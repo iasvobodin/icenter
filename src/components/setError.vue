@@ -31,7 +31,8 @@
         @input="checkFile"
       />
       <div v-if="files">
-        <p v-for="(f, i) in files" :key="f.lastModified">{{i+1}}   {{ f.name }} {{f.status}}</p>
+        <img style="width:100px" v-for="(fs, is) in filesSRC" :key="is" :src="fs" alt="">
+        <p v-for="(f, i) in files" :key="f.lastModified">{{i+1}}  {{ f.name }} {{f.status}}</p>
       </div>
       <br />
       <br>
@@ -48,19 +49,16 @@
 </template>
 
 <script>
-// import { defineComponent } from 'vue'
-// import Notiflix from 'notiflix'
 import conditionalRender from '@/components/conditionalRender.vue'
-// interface IForm extends HTMLElement{
-//   files: []
-// }
+import {resizeImage} from "@/hooks/resizeImage";
 export default {
   components: {
     conditionalRender,
   },
   data() {
     return {
-      files: [],
+      filesSRC:[],
+      files: new Set(),
       errorTemplate: null,
       errorBody: {
         Открыто: {},
@@ -77,83 +75,128 @@ export default {
   created() {
     // !this.$store.state.template && this.$store.dispatch("GET_template");
   },
-  mounted() {},
+  mounted() {
+    console.log(resizeImage);
+  },
   methods: {
-    resizeImageBeforeUpload(){
-     const dataURLToBlob = (dataURL) => {
-    const BASE64_MARKER = ';base64,';
-    if (dataURL.indexOf(BASE64_MARKER) == -1) {
-        const parts = dataURL.split(',');
-        const contentType = parts[0].split(':')[1];
-        const raw = parts[1];
+   async resizeImageBeforeUpload(){
 
-        return new Blob([raw], {type: contentType});
-    }
+// const config = {
+//     file: this.files[0],
+//     maxSize: 500
+// };
+// const resizedImage = await resizeImage(config)
+// console.log("upload resized image")
 
-    const parts = dataURL.split(BASE64_MARKER);
-    const contentType = parts[0].split(':')[1];
-    const raw = window.atob(parts[1]);
-    const rawLength = raw.length;
 
-    const uInt8Array = new Uint8Array(rawLength);
 
-    for (const i = 0; i < rawLength; ++i) {
-        uInt8Array[i] = raw.charCodeAt(i);
-    }
 
-    return new Blob([uInt8Array], {type: contentType});
-}
-    // Read in file
-    var file = event.target.files[0];
 
-    // Ensure it's an image
-    if(file.type.match(/image.*/)) {
-        console.log('An image has been loaded');
 
-        // Load the image
-       const reader = new FileReader();
-        reader.onload = function (readerEvent) {
-           const image = new Image();
-            image.onload = function (imageEvent) {
+//      const dataURLToBlob = (dataURL) => {
+//     const BASE64_MARKER = ';base64,';
+//     if (dataURL.indexOf(BASE64_MARKER) == -1) {
+//         const parts = dataURL.split(',');
+//         const contentType = parts[0].split(':')[1];
+//         const raw = parts[1];
 
-                // Resize the image
-               const canvas = document.createElement('canvas');
-                   let max_size = 544,// TODO : pull max size from a site config
-                    width = image.width,
-                    height = image.height;
-                if (width > height) {
-                    if (width > max_size) {
-                        height *= max_size / width;
-                        width = max_size;
-                    }
-                } else {
-                    if (height > max_size) {
-                        width *= max_size / height;
-                        height = max_size;
-                    }
-                }
-                canvas.width = width;
-                canvas.height = height;
-                canvas.getContext('2d').drawImage(image, 0, 0, width, height);
-               const dataUrl = canvas.toDataURL('image/jpeg');
-               const resizedImage = dataURLToBlob(dataUrl);
-                // $.event.trigger({
-                //     type: "imageResized",
-                //     blob: resizedImage,
-                //     url: dataUrl
-                // });
-            }
-            image.src = readerEvent.target.result;
-        }
-        reader.readAsDataURL(file);
-    }
+//         return new Blob([raw], {type: contentType});
+//     }
+
+//     const parts = dataURL.split(BASE64_MARKER);
+//     const contentType = parts[0].split(':')[1];
+//     const raw = window.atob(parts[1]);
+//     const rawLength = raw.length;
+
+//     const uInt8Array = new Uint8Array(rawLength);
+
+//     for (const i = 0; i < rawLength; ++i) {
+//         uInt8Array[i] = raw.charCodeAt(i);
+//     }
+
+//     return new Blob([uInt8Array], {type: contentType});
+// }
+//     // Read in file
+//     var file = event.target.files[0];
+
+//     // Ensure it's an image
+//     if(file.type.match(/image.*/)) {
+//         console.log('An image has been loaded');
+
+//         // Load the image
+//        const reader = new FileReader();
+//         reader.onload = function (readerEvent) {
+//            const image = new Image();
+//             image.onload = function (imageEvent) {
+
+//                 // Resize the image
+//                const canvas = document.createElement('canvas');
+//                    let max_size = 544,// TODO : pull max size from a site config
+//                     width = image.width,
+//                     height = image.height;
+//                 if (width > height) {
+//                     if (width > max_size) {
+//                         height *= max_size / width;
+//                         width = max_size;
+//                     }
+//                 } else {
+//                     if (height > max_size) {
+//                         width *= max_size / height;
+//                         height = max_size;
+//                     }
+//                 }
+//                 canvas.width = width;
+//                 canvas.height = height;
+//                 canvas.getContext('2d').drawImage(image, 0, 0, width, height);
+//                const dataUrl = canvas.toDataURL('image/jpeg');
+//                const resizedImage = dataURLToBlob(dataUrl);
+//                 // $.event.trigger({
+//                 //     type: "imageResized",
+//                 //     blob: resizedImage,
+//                 //     url: dataUrl
+//                 // });
+//             }
+//             image.src = readerEvent.target.result;
+//         }
+//         reader.readAsDataURL(file);
+//     }
     },
-    checkFile() {
-      // this.fileInput = document.getElementById('imageFile') 
-      this.files = Object.values(this.$refs.fileInput.files)
+   async checkFile() {
+     Object.values(this.$refs.fileInput.files).forEach(f=>{
+       if (this.files.length>0) {
+         this.files.forEach(file =>{
+           if (f.name === file.name ) {
+             return
+           } this.add.push(f)
+         })
+       } this.add.push(f)
+        // this.files.add(f)
+     })
+    //  this.files = new Set([...this.files,...Object.values(this.$refs.fileInput.files)])
+     // this.fileInput = document.getElementById('imageFile') 
+      // this.files.add(...Object.values(this.$refs.fileInput.files))
       addEventListener("beforeunload", this.beforeUnloadListener, {
         capture: true
       });
+
+  console.log(this.files);
+this.files.forEach(file=>{
+  // this.filesSRC =[]
+const reader = new FileReader();
+    reader.onload = e => this.filesSRC = new Set([...this.filesSRC,e.target.result]) ;
+    reader.readAsDataURL(file);
+})
+
+    
+
+
+// const config = {
+//     file: this.files[0],
+//     maxSize: 500
+// };
+// const resizedImage = await resizeImage(config)
+// console.log("upload resized image", resizedImage, this.files[0])
+
     },
     beforeUnloadListener(event) {
       event.preventDefault();
