@@ -5,7 +5,7 @@
       "authLevel": "anonymous",
       "direction": "in",
       "name": "req",
-      "route": "project/{status}",
+      "route": "projects",
       "methods": [
         "get",
         "post"

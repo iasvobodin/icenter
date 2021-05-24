@@ -76,7 +76,7 @@ const routes = [
   },
   {
     path: "/projects",
-    component: ()=>  import("@/views/projects/index.vue"),
+    component: ()=>  import("@/views/projects/projects.vue"),
   },
   {
     path: "/projects/:projectId",

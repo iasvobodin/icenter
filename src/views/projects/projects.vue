@@ -1,51 +1,42 @@
 <template>
-  <router-link to="/errors/addnew">Добавить новую ошибку</router-link>
-  <br />
-  <br />
-  <div class="selectStatus">
-    <h3>Выберете статус ошибки   </h3>
-    <select v-model="selectedStatus" class="change__status">
-      <option value="open">Открыто</option>
-      <option value="confirmed">Принято</option>
-    </select>
-  </div>
-  <br />
   <div v-if="errors" class="errors__holder">
     <div
-      v-for="(value, key, index) in errors"
+      v-for="(value, key, index) in ordered"
       :key="index"
       class="errors__card"
-      @click="$router.push(`/errors/${value.id}`)"
     >
-      <div
-        v-for="(v, k, i) in value.info"
+    <!-- <h2>{{value.id}}</h2> -->
+         <info-render :info-data="value" />
+      <!-- <div
+        v-for="(v, k, i) in {...value.info.base,...value.info.extends}"
         :key="i"
         :class="{error__item__desc : k ==='Описание'}"
         class="error__item"
       >
-        <h3 :class="{ error__item__vertical__title: k === 'Описание' }" class="error__item__title">{{ k }}:</h3>
-        <p :class="{ error__item__vertical__title: k === 'Описание' }" class="error__item__desc">
-          {{ v.includes('@')? v.split('@')[0].replace('.', ' ') : v }}
+        <h3  class="error__item__title">{{ k }}:</h3>
+        <p  class="error__item__desc">
+          {{ v}}
         </p>
-      </div>
+      </div> -->
     </div>
   </div>
-  <div v-if="errorMessage">{{ errorMessage }}</div>
-  <div v-if="fetchStatus" class="loading" />
 </template>
 
 <script>
+import infoRender from "@/components/infoRender.vue";
   import {
     reactive,
     toRefs,
-    watch,
+    computed,
     ref
   } from 'vue'
   import {
     useFetch
   } from '@/hooks/fetch'
   export default {
-
+  components: {
+    infoRender,
+  },
     setup() {
       const state = reactive({
         errors: null,
@@ -53,20 +44,35 @@
         fetchStatus: null,
         errorMessage: "",
       })
-      const selectedStatus = ref("open")
+      const ordered = computed(() => {
+        if (state.errors.info) {
+          const ord = Object.keys(state.errors.info.extends).sort().reduce(
+            (obj, key) => {
+              obj[key] = state.errors.info.extends[key];
+              return obj;
+            }, {}
+          )
+          return ord
+        }
+        return 'sort'
+      })
       const getErrors = async () => {
         const {
           request,
           response
-        } = useFetch(`/api/errors?status=${selectedStatus.value}`)
-        state.errors = response
-        await request()
+        } = useFetch(`/api/projects?status=open`)
+          await request()
+        const ord = Object.keys(response.info.extends).sort().reduce(
+            (obj, key) => {
+              obj[key] = response.info.extends[key];
+              return obj;
+            }, {}
+          )
+        state.errors = ord
       }
       getErrors()
-      watch(selectedStatus, () => getErrors())
 
-      return {
-        selectedStatus,
+      return {ordered,
         ...toRefs(state),
       }
     },
