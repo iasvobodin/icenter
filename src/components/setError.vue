@@ -30,9 +30,13 @@
         accept="image/*"
         @input="checkFile"
       />
-      <div v-if="files">
-        <img style="width:100px" v-for="(fs, is) in filesSRC" :key="is" :src="fs" alt="">
-        <p v-for="(f, i) in files" :key="f.lastModified">{{i+1}}  {{ f.name }} {{f.status}}</p>
+      <div class="photo__gallery" v-if="files">
+        <div class="photo__holder" v-for="(fs, i) in filesSRC" :key="i">
+          <img class="photo__image" :src="fs" alt="">
+          <img @click="deletePhoto(i)" class="delete__icon" src="/img/delete.svg" alt="">
+        </div>
+         <img class="add__photo" @click="firedFileInput" src="/img/add__image.svg" alt="">
+        <!-- <p v-for="(f, i) in files" :key="f.lastModified">{{i+1}} {{ f.name }} {{f.status}}</p> -->
       </div>
       <br />
       <br>
@@ -51,14 +55,15 @@
 <script>
 import conditionalRender from '@/components/conditionalRender.vue'
 import {resizeImage} from "@/hooks/resizeImage";
+const files = []
 export default {
   components: {
     conditionalRender,
   },
   data() {
     return {
-      filesSRC:[],
-      files: new Set(),
+      filesSRC: [],
+      files: [],
       errorTemplate: null,
       errorBody: {
         Открыто: {},
@@ -79,6 +84,14 @@ export default {
     console.log(resizeImage);
   },
   methods: {
+    deletePhoto(i){
+      this.files.splice(i, 1)
+      this.filesSRC.splice(i, 1)
+      console.log(this.filesSRC,this.files);
+    },
+    firedFileInput(){
+      this.$refs.fileInput.click()
+    },
    async resizeImageBeforeUpload(){
 
 // const config = {
@@ -162,33 +175,22 @@ export default {
 //     }
     },
    async checkFile() {
-     Object.values(this.$refs.fileInput.files).forEach(f=>{
-       if (this.files.length>0) {
-         this.files.forEach(file =>{
-           if (f.name === file.name ) {
-             return
-           } this.add.push(f)
-         })
-       } this.add.push(f)
-        // this.files.add(f)
+
+     Object.values(this.$refs.fileInput.files).forEach(f => {
+         !this.files.some(file => f.name === file.name) && this.files.push(f)
      })
-    //  this.files = new Set([...this.files,...Object.values(this.$refs.fileInput.files)])
-     // this.fileInput = document.getElementById('imageFile') 
-      // this.files.add(...Object.values(this.$refs.fileInput.files))
-      addEventListener("beforeunload", this.beforeUnloadListener, {
-        capture: true
-      });
 
   console.log(this.files);
 this.files.forEach(file=>{
-  // this.filesSRC =[]
 const reader = new FileReader();
-    reader.onload = e => this.filesSRC = new Set([...this.filesSRC,e.target.result]) ;
+    reader.onload = e =>   !this.filesSRC.some(file => e.target.result === file) && this.filesSRC.push(e.target.result)
     reader.readAsDataURL(file);
 })
 
     
-
+      addEventListener("beforeunload", this.beforeUnloadListener, {
+        capture: true
+      });
 
 // const config = {
 //     file: this.files[0],
@@ -324,6 +326,39 @@ this.$store.commit("changeLoader", true)
 
 
 <style lang="css" scoped>
+.add__photo{
+  width: 100px;
+  height: 100px;
+  place-self: center;
+  cursor: pointer;
+}
+.photo__image{
+    width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+.photo__gallery{
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  row-gap: 1vh;
+  column-gap: 1vh;
+}
+.photo__holder{
+  position: relative;
+  width: 150px;
+  height: 150px;
+  overflow: hidden;
+  border-radius: 4px;
+  place-self: center;
+}
+.delete__icon{
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 35px;
+  cursor: pointer;
+}
 .cabinet__info__item {
   border-bottom: 1px solid black;
   padding: 5px;
