@@ -1,4 +1,4 @@
-<template>
+<template >
   <div v-for="(v, k, i) in infoData" :key="i" class="cabinet__info__item"
     :class="{error__item__desc : k.includes('Описание') || k.includes('Specific') }">
     <h3 :class="{ error__item__vertical__title: k.includes('Описание')|| k.includes('Specific')}" class="info__item__title">{{ k }}:</h3>
