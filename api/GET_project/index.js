@@ -5,6 +5,13 @@ module.exports = async function(context, req, projects) {
     };
     return
   }
+  if (projects.length > 0 && req.query.project) {
+    const currentProject = projects.find(e => e.id === req.query.project )
+    context.res = {
+      body: currentProject
+    };
+    return
+  }
     context.res = {
       body: projects
     };

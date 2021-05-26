@@ -1,9 +1,9 @@
 <template>
   <div v-for="(v, k, i) in infoData" :key="i" class="cabinet__info__item"
-    :class="{error__item__desc : k ==='Описание'}">
-    <h3 :class="{ error__item__vertical__title: k === 'Описание' }" class="info__item__title">{{ k }}:</h3>
-    <p :class="{ error__item__vertical__title: k === 'Описание' }" class="error__item__desc">
-      {{ v.includes('@')? v.split('@')[0].replace('.', ' ') : v }}
+    :class="{error__item__desc : k.includes('Описание') || k.includes('Specific') }">
+    <h3 :class="{ error__item__vertical__title: k.includes('Описание')|| k.includes('Specific')}" class="info__item__title">{{ k }}:</h3>
+    <p :class="{ error__item__vertical__title: k.includes('Описание') || k.includes('Specific') }" class="error__item__desc">
+      {{ typeof v === 'string'&&v.includes('@')? v.split('@')[0].replace('.', ' ') : v }}
     </p>
   </div>
 </template>

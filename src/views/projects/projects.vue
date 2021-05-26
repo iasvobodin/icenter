@@ -1,12 +1,14 @@
 <template>
   <div v-if="errors" class="errors__holder">
     <div
-      v-for="(value, key, index) in ordered"
+    v-for="(value, key, index) in errors"
       :key="index"
       class="errors__card"
+      @click="$router.push(`/projects/${value.id}`)"
     >
-    <!-- <h2>{{value.id}}</h2> -->
-         <info-render :info-data="value" />
+    <h2>{{value.id}}</h2>
+    <!-- <p>{{value.info.base['Project Name']}}</p> -->
+         <info-render :info-data="value.info.extends" />
       <!-- <div
         v-for="(v, k, i) in {...value.info.base,...value.info.extends}"
         :key="i"
@@ -44,35 +46,29 @@ import infoRender from "@/components/infoRender.vue";
         fetchStatus: null,
         errorMessage: "",
       })
-      const ordered = computed(() => {
-        if (state.errors.info) {
-          const ord = Object.keys(state.errors.info.extends).sort().reduce(
-            (obj, key) => {
-              obj[key] = state.errors.info.extends[key];
-              return obj;
-            }, {}
-          )
-          return ord
-        }
-        return 'sort'
-      })
+      // const ordered = computed(() => {
+      //   if (state.errors) {
+      //     const ord = Object.keys(state.errors.info.extends).sort().reduce(
+      //       (obj, key) => {
+      //         obj[key] = state.errors.info.extends[key];
+      //         return obj;
+      //       }, {}
+      //     )
+      //     return ord
+      //   }
+      //   return 'sort'
+      // })
       const getErrors = async () => {
         const {
           request,
           response
         } = useFetch(`/api/projects?status=open`)
-          await request()
-        const ord = Object.keys(response.info.extends).sort().reduce(
-            (obj, key) => {
-              obj[key] = response.info.extends[key];
-              return obj;
-            }, {}
-          )
-        state.errors = ord
+        await request()
+        state.errors = response
       }
       getErrors()
 
-      return {ordered,
+      return {//ordered,
         ...toRefs(state),
       }
     },

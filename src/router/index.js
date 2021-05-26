@@ -80,7 +80,7 @@ const routes = [
   },
   {
     path: "/projects/:projectId",
-    component: ()=>  import("@/views/projects/_projectId/index.vue"),
+    component: ()=>  import("@/views/projects/_projectId.vue"),
   },
   {
     path: "/admin",
