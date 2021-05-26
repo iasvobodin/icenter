@@ -1,79 +1,60 @@
 <template>
   <div v-if="errors" class="errors__holder">
     <div
-    v-for="(value, key, index) in errors"
+      v-for="(value, key, index) in errors"
       :key="index"
       class="errors__card"
       @click="$router.push(`/projects/${value.id}`)"
     >
-    <h2>{{value.id}}</h2>
-    <!-- <p>{{value.info.base['Project Name']}}</p> -->
-    <info-render :info-data="value.info.base" />
-         <info-render :info-data="value.info.extends" />
-      <!-- <div
-        v-for="(v, k, i) in {...value.info.base,...value.info.extends}"
-        :key="i"
-        :class="{error__item__desc : k ==='Описание'}"
-        class="error__item"
-      >
-        <h3  class="error__item__title">{{ k }}:</h3>
-        <p  class="error__item__desc">
-          {{ v}}
-        </p>
-      </div> -->
+      <h2>{{ value.id }}</h2>
+      <p>{{ value.info.base['Project Name'] }}</p>
+      <p>Количество шкафов {{ value.cabinets.length }}</p>
+      <!-- <info-render :info-data="value.info.base" />
+    <info-render :info-data="value.info.extends" /> -->
     </div>
   </div>
 </template>
 
 <script>
-import infoRender from "@/components/infoRender.vue";
-  import {
-    reactive,
-    toRefs,
-    computed,
-    ref
-  } from 'vue'
-  import {
-    useFetch
-  } from '@/hooks/fetch'
-  export default {
+import infoRender from '@/components/infoRender.vue'
+import { reactive, toRefs, computed, ref } from 'vue'
+import { useFetch } from '@/hooks/fetch'
+export default {
   components: {
     infoRender,
   },
-    setup() {
-      const state = reactive({
-        errors: null,
-        resErrors: null,
-        fetchStatus: null,
-        errorMessage: "",
-      })
-      // const ordered = computed(() => {
-      //   if (state.errors) {
-      //     const ord = Object.keys(state.errors.info.extends).sort().reduce(
-      //       (obj, key) => {
-      //         obj[key] = state.errors.info.extends[key];
-      //         return obj;
-      //       }, {}
-      //     )
-      //     return ord
-      //   }
-      //   return 'sort'
-      // })
-      const getErrors = async () => {
-        const {
-          request,
-          response
-        } = useFetch(`/api/projects?status=open`)
-        await request()
-        state.errors = response
-      }
-      getErrors()
+  setup() {
+    const state = reactive({
+      errors: null,
+      resErrors: null,
+      fetchStatus: null,
+      errorMessage: '',
+    })
+    // const ordered = computed(() => {
+    //   if (state.errors) {
+    //     const ord = Object.keys(state.errors.info.extends).sort().reduce(
+    //       (obj, key) => {
+    //         obj[key] = state.errors.info.extends[key];
+    //         return obj;
+    //       }, {}
+    //     )
+    //     return ord
+    //   }
+    //   return 'sort'
+    // })
+    const getErrors = async () => {
+      const { request, response } = useFetch(`/api/projects?status=open`)
+      await request()
+      state.errors = response
+    }
+    getErrors()
 
-      return {//ordered,
-        ...toRefs(state),
-      }
-    },
-  };
+    return {
+      //ordered,
+      ...toRefs(state),
+    }
+  },
+}
 </script>
 
 <style lang="css" scoped>

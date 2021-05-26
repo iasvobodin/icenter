@@ -8,9 +8,7 @@
       <br />
       <choose-project-number
         v-if="projectList"
-        :data-to-render="
-          projectList.data.map((e) => `${e['id']}`)
-        "
+        :data-to-render="projectList.data.map((e) => `${e['id']}`)"
         @choose-project-number="choose"
       />
       <div v-if="selectedProject">
@@ -35,7 +33,7 @@
             <h3>Выберете шкафные линии</h3>
             <choose-wo-number
               :multiple-permission="true"
-              :cabinet-list="selectedProject.Cabinets"
+              :cabinet-list="selectedProject.cabinets"
               @checked-wo="($event) => (selected.cabinets = $event)"
             />
           </div>
@@ -51,16 +49,9 @@
 import chooseProjectNumber from '@/components/chooseProjectNumber.vue'
 import chooseWoNumber from '@/components/chooseWoNumber.vue'
 import conditionalRender from '@/components/conditionalRender.vue'
-import {
-  useFetch
-} from '@/hooks/fetch'
-import {
-  useProjects
-} from '@/hooks/projectlsit'
-import {
-  ref,
-  reactive
-} from '@vue/runtime-core'
+import { useFetch } from '@/hooks/fetch'
+import { useProjects } from '@/hooks/projectlsit'
+import { ref, reactive } from '@vue/runtime-core'
 // import projectInfo from './projectInfo.vue';
 export default {
   components: {
@@ -78,7 +69,7 @@ export default {
 
     const selected = reactive({
       extend: {},
-      cabinets: null
+      cabinets: [],
     })
 
     function formatDate(date) {
@@ -88,19 +79,14 @@ export default {
     const woList = ref(null)
 
     async function choose(e) {
-      selectedProject.value = projectList.value.data.find(
-        (p) => p['id'] === e
-      )
+      selectedProject.value = projectList.value.data.find((p) => p['id'] === e)
     }
     const postProject = async () => {
-      const {
-        request,
-        response
-      } = useFetch("/api/POST_project", {
-        method: "POST", // или 'PUT'
+      const { request, response } = useFetch('/api/POST_project', {
+        method: 'POST', // или 'PUT'
         body: JSON.stringify({
           id: selectedProject.value.id,
-          status: "open",
+          status: 'open',
           info: {
             base: selectedProject.value.info,
             extends: selected.extend,
@@ -110,7 +96,7 @@ export default {
       })
       await request()
       selected.extend = {}
-      selected.cabinets = null
+      selected.cabinets = []
     }
 
     return {

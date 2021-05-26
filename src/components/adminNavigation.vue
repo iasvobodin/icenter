@@ -37,6 +37,11 @@
 
 <script>
 export default {
+data() {
+  return {
+    showMenu: false
+  }
+},
   created() {
     // watch the params of the route to fetch the data again
     this.$watch(
@@ -49,11 +54,6 @@ export default {
       { immediate: true }
     )
   },
-data() {
-  return {
-    showMenu: false
-  }
-},
 };
 </script>
 

@@ -19,11 +19,20 @@
     {
       "type": "cosmosDB",
       "direction": "in",
-      "name": "data",
+      "name": "legendStat",
       "ConnectionStringSetting": "legendstats_DOCUMENTDB",
       "databaseName": "icenter",
       "collectionName": "legendStats",
       "sqlQuery": "SELECT * from c"
+    },
+    {
+      "type": "cosmosDB",
+      "direction": "in",
+      "name": "projects",
+      "ConnectionStringSetting": "legendstats_DOCUMENTDB",
+      "databaseName": "icenter",
+      "collectionName": "projects",
+      "sqlQuery": "SELECT * from c where c.status = 'open'"
     }
   ]
 }

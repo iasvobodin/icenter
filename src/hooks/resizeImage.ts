@@ -15,7 +15,7 @@ interface IResizeImageOptions {
       const mime = dataURI.split(',')[0].split(':')[1].split(';')[0];
       const max = bytes.length;
       const ia = new Uint8Array(max);
-      for (var i = 0; i < max; i++) ia[i] = bytes.charCodeAt(i);
+      for (let i = 0; i < max; i++) ia[i] = bytes.charCodeAt(i);
       return new Blob([ia], {type:mime});
     };
     const resize = () => {
@@ -37,7 +37,7 @@ interface IResizeImageOptions {
       canvas.width = width;
       canvas.height = height;
       canvas.getContext('2d')!.drawImage(image, 0, 0, width, height);
-      let dataUrl = canvas.toDataURL('image/jpeg');
+      const dataUrl = canvas.toDataURL('image/jpeg');
     //   let dataBlob = canvas.toBlob((blob) =>{}, 'image/jpeg', 0.95); // JPEG at 95% quality
       return {data: dataURItoBlob(dataUrl), canvas};
     };
