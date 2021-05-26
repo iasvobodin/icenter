@@ -8,6 +8,7 @@
     >
     <h2>{{value.id}}</h2>
     <!-- <p>{{value.info.base['Project Name']}}</p> -->
+    <info-render :info-data="value.info.base" />
          <info-render :info-data="value.info.extends" />
       <!-- <div
         v-for="(v, k, i) in {...value.info.base,...value.info.extends}"

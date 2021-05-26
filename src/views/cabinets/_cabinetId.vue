@@ -1,6 +1,6 @@
 <template>
     <div>
-<h1>Страница в разработке</h1>
+<h1>Страница в разработке, WO {{$route.params.cabinetId}}</h1>
     </div>
 </template>
 

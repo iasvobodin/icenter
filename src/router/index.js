@@ -60,11 +60,11 @@ const routes = [
   },
   {
     path: "/cabinets",
-    component: ()=>  import("@/views/cabinets/index.vue"),
+    component: ()=>  import("@/views/cabinets/cabinets.vue"),
   },
   {
     path: "/cabinets/:cabinetId",
-    component: ()=>  import("@/views/cabinets/_cabinetId/index.vue"),
+    component: ()=>  import("@/views/cabinets/_cabinetId.vue"),
   },
   {
     path: "/cabtimes",
