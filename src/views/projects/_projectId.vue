@@ -6,8 +6,8 @@
         <h3>Дополнительные сведения</h3>
         <info-render :info-data="project.info.extends" />
         <h3>Шкафы</h3>
-        <div v-for="(cab,i) in project.cabinets" :key="i">
-        <info-render :info-data="cab" /> <br></div>
+        <div @click="$router.push(`/cabinets/${cab.wo}`)" class="holder" v-for="(cab,i) in project.cabinets" :key="i">
+        <info-render  :info-data="cab" /> <br></div>
         <!-- <section v-for="(val, key, index) in project.info" :key="index" class="eror__body">
         <div v-if="!key.startsWith('_')&&Object.values(val)[1]">
           <div >
@@ -62,5 +62,10 @@ getProject()
 </script>
 
 <style lang="css" scoped>
-
+.holder{
+  border: 1px solid orange;
+  margin: 1vh;
+  border-radius: 4px;
+  cursor: pointer;
+}
 </style>
