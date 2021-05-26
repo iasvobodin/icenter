@@ -297,7 +297,7 @@ this.$store.commit("changeLoader", true)
           Принято: {},
           Устранено: {}
         }
-        this.files = null
+        this.files = []
         this.$store.commit("changeLoader", false)
       }
       // await fetch(
