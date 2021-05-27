@@ -81,9 +81,11 @@ export default createStore({
       let responseUserAuth;
 //check auth AAD
 try {
-   responseUserAuth = await fetch("/.auth/me");    
-       const userAuth = await responseUserAuth.json();
-        clientPrincipal = userAuth.clientPrincipal;
+   responseUserAuth = await fetch("/.auth/me");   
+   if (responseUserAuth.ok) {
+    const userAuth = await responseUserAuth.json();
+    clientPrincipal = userAuth.clientPrincipal;
+   } 
 } catch (error) {
   if (import.meta.env.MODE ==='development') {
     clientPrincipal = {
@@ -151,7 +153,9 @@ try {
       // console.log(clientPrincipal,"clientPrincipal");
       clientPrincipal.userDetails = clientPrincipal.userDetails.toLowerCase();
       const name =  clientPrincipal.userDetails.split('@')[0].split('.')
-      !state.user.info && commit("setUserAuth", {...clientPrincipal, name : name[0][0].toUpperCase() + '.' + name[1][0].toUpperCase()+ '.'});
+      const user = {...clientPrincipal, name : name[0][0].toUpperCase() + '.' + name[1][0].toUpperCase()+ '.'}
+      window.sessionStorage.setItem("user",  JSON.stringify(user));
+      !state.user.info && commit("setUserAuth", JSON.stringify(user));
 
       try {
         const userRes = await fetch(`/api/user/${clientPrincipal.userId}`, {
