@@ -18,10 +18,10 @@ export default createStore({
     SETERROR(state, pay) {
       state.currentError = pay;
     },
-    setUserAuth(state, payload) {
-      window.sessionStorage.setItem("userDetails", payload.userDetails);
-      state.user.info = payload;
-      console.info(state.user, "kjhhljvpoweif-20iwpogjsvjsldvnn");
+    setUserAuth(state, payload:string) {
+      // window.sessionStorage.setItem("user", payload);
+      state.user.info = JSON.parse(payload);
+      // console.info(state.user, "kjhhljvpoweif-20iwpogjsvjsldvnn");
     },
     setUserInfo(state, payload) {
       state.user.userInfo = payload.userInfo;
@@ -78,27 +78,76 @@ export default createStore({
     },
     async GET_auth({ commit, state }) {
       let clientPrincipal = null;
-      let responseUser;
+      let responseUserAuth;
+//check auth AAD
+try {
+   responseUserAuth = await fetch("/.auth/me");    
+       const userAuth = await responseUserAuth.json();
+        clientPrincipal = userAuth.clientPrincipal;
+} catch (error) {
+  if (import.meta.env.MODE ==='development') {
+    clientPrincipal = {
+      userId: "cfdf07822f6a49ee960a7b76bceb6f79",
+      userDetails: "Ivan.Svobodin@Emerson.com",
+      userRoles: ["admin", "anonymous", "authenticated"],
+    };
+  } else {
+    console.log('try auth');
+    // window.location.href = '/user'
+    window.location.href = '/.auth/login/aad?post_login_redirect_uri=/user'
+  }
 
-      try {
-        if (!state.user.info) {
-          responseUser = await fetch("/.auth/me");
-        }
-        try {
-          const payload = await responseUser.json();
-          clientPrincipal = payload.clientPrincipal;
-          // console.log(payload, "payload");
-        } catch (error) {
-          console.log("Use local user", error.message);
-          clientPrincipal = {
-            userId: "cfdf07822f6a49ee960a7b76bceb6f79",
-            userDetails: "Ivan.Svobodin@Emerson.com",
-            userRoles: ["admin", "anonymous", "authenticated"],
-          };
-        }
-      } catch (error) {
-        console.log("fetch error", error);
-      }
+  // window.open('')
+}
+     
+    //   console.log(responseUserAuth,'responseUserAuth');
+      
+    //  if (responseUserAuth.ok) {
+
+    //  } else{
+      
+    //  }
+     //check Register user
+
+
+// console.log(import.meta.env, 'ENV');
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      // try {
+      //   if (!state.user.info) {
+      //     responseUser = await fetch("/.auth/me");
+      //   }
+      //   try {
+      //     const payload = await responseUser.json();
+      //     clientPrincipal = payload.clientPrincipal;
+      //     // console.log(payload, "payload");
+      //   } catch (error) {
+      //     console.log("Use local user", error.message);
+      //     clientPrincipal = {
+      //       userId: "cfdf07822f6a49ee960a7b76bceb6f79",
+      //       userDetails: "Ivan.Svobodin@Emerson.com",
+      //       userRoles: ["admin", "anonymous", "authenticated"],
+      //     };
+      //   }
+      // } catch (error) {
+      //   console.log("fetch error", error);
+      // }
       // console.log(clientPrincipal,"clientPrincipal");
       clientPrincipal.userDetails = clientPrincipal.userDetails.toLowerCase();
       const name =  clientPrincipal.userDetails.split('@')[0].split('.')

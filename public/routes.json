@@ -1,33 +1,31 @@
 {
-    "routes": [
-      {
-        "route": "/user",
-        "serve": "/index.html",
-        "allowedRoles": ["authenticated"]
+  "routes": [{
+      "route": "/user",
+      "serve": "/index.html",
+      "allowedRoles": ["authenticated"]
     },
-        {
-            "route": "/admin/*",
-            "serve": "/index.html",
-            "allowedRoles": ["admin"]
-        },
-        {
-          "route": "/api/*"
-        },
-        {
-          "route": "/*",
-          "serve": "/index.html",
-          "allowedRoles": ["anonymous"]
-        }
-    ],
-    "platformErrorOverrides": [
-        {
-          "errorType": "NotFound",
-          "serve": "/custom-404.html"
-        },
-        {
-          "errorType": "Unauthenticated",
-          "statusCode": "302",
-          "serve": "/.auth/login/aad?post_login_redirect_uri=/user"
-        }
-      ]
+    {
+      "route": "/admin/*",
+      "serve": "/index.html",
+      "allowedRoles": ["admin"]
+    },
+    {
+      "route": "/api/*"
+    },
+    {
+      "route": "/*",
+      "serve": "/index.html",
+      "allowedRoles": ["anonymous"]
+    }
+  ],
+  "platformErrorOverrides": [{
+      "errorType": "NotFound",
+      "serve": "/custom-404.html"
+    },
+    {
+      "errorType": "Unauthenticated",
+      "statusCode": "302",
+      "serve": "/.auth/login/aad?post_login_redirect_uri=/user"
+    }
+  ]
 }

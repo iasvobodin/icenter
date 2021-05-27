@@ -16,6 +16,15 @@ export default {
   components: {
     loader,appHeader
   },
+  //   beforeRouteEnter (to, from, next) {
+  //     // return false
+  //     console.log('here');
+  //     next({name: 'login'})
+  // // next(vm => {
+  // //   console.log(vm, 'vm');
+  // //   // access to component public instance via `vm`
+  // // })
+  // },
   // setup() {
   //   // same as beforeRouteLeave option with no access to `this`
   //   onBeforeRouteLeave((to, from) => {
@@ -62,6 +71,14 @@ export default {
     console.log(formatDate(dd))
   },
   created() {
+      const user = window.sessionStorage.getItem("user")
+      console.log(user, 'user');
+  if (user) {
+      this.$store.commit('setUserAuth', user)
+    } else{
+      console.log('not user');
+      this.$store.dispatch('GET_auth')
+    }
     // !this.$store.state.user.info && this.$store.dispatch('GET_auth')
     !this.$store.state.template && this.$store.dispatch('GET_template')
   },
