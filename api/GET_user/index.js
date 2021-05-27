@@ -1,4 +1,11 @@
 module.exports = async function (context, req, user) {
+  if (req.query.getRegisterUser) {
+    context.res = {
+      status: 200,
+      body: user[0],
+    };
+    return
+  }
   if (context.bindings.userErors[0]) {
     context.res = {
       status: 200,

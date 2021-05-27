@@ -1,6 +1,6 @@
 <template>
   <app-header />
-<div id="view">
+<div :style="{backgroundColor:$store.state.user.info.body.bg}" id="view">
   <router-view  />
 </div>
   <loader />
@@ -52,7 +52,7 @@ export default {
   //   // because it has not been created yet when this guard is called!
   // },
   mounted() {
-    console.log(this.$store.state.user,'!!!!!!!!!!!');
+    console.log(this.$store.state.user.info.body.bg,'!!!!!!!!!!!');
     function formatDate(date) {
       return (
         date.getDate() +

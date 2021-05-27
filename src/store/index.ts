@@ -101,9 +101,15 @@ try {
 
   // window.open('')
 }
-     
+clientPrincipal.userDetails = clientPrincipal.userDetails.toLowerCase();
+const name =  clientPrincipal.userDetails.split('@')[0].split('.')
+let user  = {...clientPrincipal, name : name[0][0].toUpperCase() + '.' + name[1][0].toUpperCase()+ '.'}
+
+const registerUserRes = await fetch(`/api/user/${clientPrincipal.userId}?getRegisterUser=true`)
     //   console.log(responseUserAuth,'responseUserAuth');
-      
+     if (registerUserRes.ok) {
+      user = await registerUserRes.json()
+     } 
     //  if (responseUserAuth.ok) {
 
     //  } else{
@@ -151,29 +157,27 @@ try {
       //   console.log("fetch error", error);
       // }
       // console.log(clientPrincipal,"clientPrincipal");
-      clientPrincipal.userDetails = clientPrincipal.userDetails.toLowerCase();
-      const name =  clientPrincipal.userDetails.split('@')[0].split('.')
-      const user = {...clientPrincipal, name : name[0][0].toUpperCase() + '.' + name[1][0].toUpperCase()+ '.'}
+     
       window.sessionStorage.setItem("user",  JSON.stringify(user));
       !state.user.info && commit("setUserAuth", JSON.stringify(user));
 
-      try {
-        const userRes = await fetch(`/api/user/${clientPrincipal.userId}`, {
-          method: "POST", // или 'PUT'
-          body: JSON.stringify({
-            id: clientPrincipal.userId,
-            type: "info",
-            info: clientPrincipal,
-            body: {},
-          }),
-        });
-        const user = await userRes.json();
-        const name = user.userDetails.split('@')[0].split('.')
-        !state.user.body && commit("setUserInfo", {...user, name : name[0][0].toUpperCase() + '.' + name[1][0].toUpperCase()+ '.'});
-        // console.log(state.user,user, "state.user.info");
-      } catch (error) {
-        console.log("user is not def", error);
-      }
+      // try {
+      //   const userRes = await fetch(`/api/user/${clientPrincipal.userId}`, {
+      //     method: "POST", // или 'PUT'
+      //     body: JSON.stringify({
+      //       id: clientPrincipal.userId,
+      //       type: "info",
+      //       info: clientPrincipal,
+      //       body: {},
+      //     }),
+      //   });
+      //   const user = await userRes.json();
+      //   const name = user.userDetails.split('@')[0].split('.')
+      //   !state.user.body && commit("setUserInfo", {...user, name : name[0][0].toUpperCase() + '.' + name[1][0].toUpperCase()+ '.'});
+      //   // console.log(state.user,user, "state.user.info");
+      // } catch (error) {
+      //   console.log("user is not def", error);
+      // }
 
       console.log("GETAUTH");
     },
