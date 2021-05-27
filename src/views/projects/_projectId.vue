@@ -14,14 +14,6 @@
     >
       <info-render :info-data="cab" /> <br />
     </div>
-    <!-- <section v-for="(val, key, index) in project.info" :key="index" class="eror__body">
-        <div v-if="!key.startsWith('_')&&Object.values(val)[1]">
-          <div >
-            <h2 >{{ key }}</h2>
-          <info-render :info-data="val" />
-          </div>
-        </div>
-      </section> -->
     <button @click="updateWO">Обновить WO</button>
     <choose-wo-number
       v-if="newWO"

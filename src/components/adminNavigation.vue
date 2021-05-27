@@ -1,5 +1,5 @@
 <template>
-<div v-if="showMenu" class="navigation">
+<div v-click-away="onClickAway" v-if="showMenu" class="navigation">
   <nav >
     <ul>
       <li>
@@ -37,13 +37,18 @@
 
 <script>
 export default {
+   methods: {
+    onClickAway(event) {
+      this.showMenu = false
+      console.log(event);
+    }
+  },
 data() {
   return {
     showMenu: false
   }
 },
   created() {
-    // watch the params of the route to fetch the data again
     this.$watch(
       () => this.$route.params,
       () => {

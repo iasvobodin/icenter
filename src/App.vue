@@ -43,6 +43,7 @@ export default {
   //   // because it has not been created yet when this guard is called!
   // },
   mounted() {
+    console.log(this.$store.state.user,'!!!!!!!!!!!');
     function formatDate(date) {
       return (
         date.getDate() +

@@ -91,7 +91,7 @@ export default createStore({
         } catch (error) {
           console.log("Use local user", error.message);
           clientPrincipal = {
-            userId: "5d2ba18226de49aa931985d4b6549977",
+            userId: "cfdf07822f6a49ee960a7b76bceb6f79",
             userDetails: "Ivan.Svobodin@Emerson.com",
             userRoles: ["admin", "anonymous", "authenticated"],
           };

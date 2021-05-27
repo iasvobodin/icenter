@@ -85,7 +85,7 @@ export default {
       const { request, response } = useFetch('/api/POST_project', {
         method: 'POST', // или 'PUT'
         body: JSON.stringify({
-          id: selectedProject.value.id,
+          id: selectedProject.value.id.includes('.')?selectedProject.value.id.replace('.',','):selectedProject.value.id,
           status: 'open',
           info: {
             base: selectedProject.value.info,

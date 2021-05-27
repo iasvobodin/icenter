@@ -1,4 +1,5 @@
 <template>
+<br>
   <div v-if="errors" class="errors__holder">
     <div
       v-for="(value, key, index) in errors"
@@ -8,6 +9,7 @@
     >
       <h2>{{ value.id }}</h2>
       <p>{{ value.info.base['Project Name'] }}</p>
+      <br>
       <p>Количество шкафов {{ value.cabinets.length }}</p>
       <!-- <info-render :info-data="value.info.base" />
     <info-render :info-data="value.info.extends" /> -->

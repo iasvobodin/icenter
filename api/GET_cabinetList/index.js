@@ -20,7 +20,7 @@ module.exports = async function (context, req, legendStat, projects) {
     }
   })
   if (req.query.mergeProjects) {
-   const existProjects = Object.values(projects).map(e => e.id)
+   const existProjects = Object.values(projects).map(e => e.id.includes(',')? e.id.replace(',','.'):e.id)
    const mergeProjects = transformData.filter(e=> !existProjects.includes(e.id))
  
     context.res = {
