@@ -81,12 +81,16 @@ export default createStore({
       let responseUserAuth;
 //check auth AAD
 try {
+  console.log(import.meta.env.MODE);
    responseUserAuth = await fetch("/.auth/me");   
    if (responseUserAuth.ok) {
     const userAuth = await responseUserAuth.json();
     clientPrincipal = userAuth.clientPrincipal;
+    console.log(clientPrincipal,"clientPrincipal after check auth");
+    
    } 
 } catch (error) {
+  console.log(import.meta.env.MODE);
   if (import.meta.env.MODE ==='development') {
     clientPrincipal = {
       identityProvider : "static",

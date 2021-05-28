@@ -73,7 +73,7 @@ export default {
   },
   created() {
       const user = window.sessionStorage.getItem("user")
-      console.log(user, 'user');
+      // console.log(user, 'user');
   if (user) {
       this.$store.commit('setUserAuth', user)
     } else{
