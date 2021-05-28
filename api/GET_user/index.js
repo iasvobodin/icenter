@@ -1,9 +1,16 @@
 module.exports = async function (context, req, user) {
   if (req.query.getRegisterUser) {
-    context.res = {
-      status: 200,
-      body: user[0],
-    };
+    if (user.length != 0) {
+      context.res = {
+        status: 200,
+        body: user[0],
+      };
+    } else {
+      context.res = {
+        status: 404,
+      };
+    }
+   
     return
   }
 

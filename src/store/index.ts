@@ -1,4 +1,6 @@
-import { createStore } from "vuex";
+import {
+  createStore
+} from "vuex";
 
 export default createStore({
   state: {
@@ -12,21 +14,21 @@ export default createStore({
     currentError: null,
   },
   mutations: {
-    changeLoader(state, payload){
+    changeLoader(state, payload) {
       state.loader = payload
     },
     SETERROR(state, pay) {
       state.currentError = pay;
     },
-    setUserAuth(state, payload:string) {
+    setUserAuth(state, payload: string) {
       // window.sessionStorage.setItem("user", payload);
       state.user = JSON.parse(payload);
       // console.info(state.user, "kjhhljvpoweif-20iwpogjsvjsldvnn");
     },
     setUserInfo(state, payload) {
       state.user.userInfo = payload.userInfo;
-      console.log(payload,'payload');
-      
+      console.log(payload, 'payload');
+
       // console.log(state.user, "state.user");
     },
 
@@ -62,7 +64,10 @@ export default createStore({
     },
   },
   actions: {
-    async GET_template({ commit, state }) {
+    async GET_template({
+      commit,
+      state
+    }) {
       try {
         if (!state.template) {
           const resposeTemplate = await fetch(
@@ -76,78 +81,74 @@ export default createStore({
       }
       // console.log(state.template, "state.template");
     },
-    async GET_auth({ commit, state }) {
+    async GET_auth({
+      commit,
+      state
+    }) {
       let clientPrincipal = null;
       let responseUserAuth;
-//check auth AAD
-if (import.meta.env.MODE ==='development') {
-  clientPrincipal = {
-    identityProvider : "static",
-    userId: "cfdf07822f6a49ee960a7b76bceb6f79",
-    userDetails: "Ivan.Svobodin@Emerson.com",
-    userRoles: ["admin", "anonymous", "authenticated"],
-  };
-} else {
-  console.log('try auth');
-  responseUserAuth = await fetch("/.auth/me");   
-  const userAuth = await responseUserAuth.json();
-  clientPrincipal = userAuth.clientPrincipal;
-  if (!clientPrincipal) {
-    window.location.href = '/.auth/login/aad?post_login_redirect_uri=/user'
-    return
-  }
-}
-// try {
-//   console.log(import.meta.env.MODE);
-//    responseUserAuth = await fetch("/.auth/me");   
-//     const userAuth = await responseUserAuth.json();
-//     clientPrincipal = userAuth.clientPrincipal;
-    
-//   } catch (error) {
-//     console.log(import.meta.env.MODE);
-    
-    
-//     // window.open('')
-//   }
-  console.log(clientPrincipal,"clientPrincipal after check auth");
-clientPrincipal.userDetails = clientPrincipal.userDetails.toLowerCase();
-const splitName =  clientPrincipal.userDetails.split('@')[0].split('.')
-const name = splitName[0][0].toUpperCase() + '.' + splitName[1][0].toUpperCase()+ '.'
-let user  = {...clientPrincipal, name}
+      //check auth AAD
+      if (
+        import.meta.env.MODE === 'development') {
+        clientPrincipal = {
+          identityProvider: "static",
+          userId: "cfdf07822f6a49ee960a7b76bceb6f79",
+          userDetails: "Ivan.Svobodin@Emerson.com",
+          userRoles: ["admin", "anonymous", "authenticated"],
+        };
+      } else {
+        console.log('try auth');
+        responseUserAuth = await fetch("/.auth/me");
+        const userAuth = await responseUserAuth.json();
+        clientPrincipal = userAuth.clientPrincipal;
+        if (!clientPrincipal) {
+          window.location.href = '/.auth/login/aad?post_login_redirect_uri=/user'
+          return
+        }
+      }
+      console.log(clientPrincipal, "clientPrincipal after check auth");
+      clientPrincipal.userDetails = clientPrincipal.userDetails.toLowerCase();
+      const splitName = clientPrincipal.userDetails.split('@')[0].split('.')
+      const name = splitName[0][0].toUpperCase() + '.' + splitName[1][0].toUpperCase() + '.'
+      let user = {
+        ...clientPrincipal,
+        name
+      }
 
-try {
-  const registerUserRes = await fetch(`/api/user/${clientPrincipal.userId}?getRegisterUser=true`)
-    //   console.log(responseUserAuth,'responseUserAuth');
-     if (registerUserRes.ok) {
-      user = await registerUserRes.json()
-      user.info.name = name
-      window.sessionStorage.setItem("user",  JSON.stringify(user));
-      commit("setUserAuth", JSON.stringify(user));
-     } 
-} catch (error) {
-  user = {
-    id: clientPrincipal.userId,
-    type: "info",
-    info: clientPrincipal,
-    body: {},
-  }
-  const options = {
-    method: "POST", // или 'PUT'
-    body: JSON.stringify(user)}
-  await fetch(`/api/user/${clientPrincipal.userId}?postRegisterUser=true`, options)
-  window.sessionStorage.setItem("user",  JSON.stringify(user));
-  commit("setUserAuth", JSON.stringify(user));
-}
+      try {
+        const registerUserRes = await fetch(`/api/user/${clientPrincipal.userId}?getRegisterUser=true`)
+        //   console.log(responseUserAuth,'responseUserAuth');
+        if (registerUserRes.ok) {
+          user = await registerUserRes.json()
+          user.info.name = name
+          window.sessionStorage.setItem("user", JSON.stringify(user));
+          commit("setUserAuth", JSON.stringify(user));
+        }
+      } catch (error) {
+        user = {
+          id: clientPrincipal.userId,
+          type: "info",
+          info: clientPrincipal,
+          body: {},
+        }
+        const options = {
+          method: "POST", // или 'PUT'
+          body: JSON.stringify(user)
+        }
+        await fetch(`/api/user/${clientPrincipal.userId}?postRegisterUser=true`, options)
+        window.sessionStorage.setItem("user", JSON.stringify(user));
+        commit("setUserAuth", JSON.stringify(user));
+      }
 
 
 
-     //check Register user
+      //check Register user
 
 
-// console.log(import.meta.env, 'ENV');
+      // console.log(import.meta.env, 'ENV');
 
 
- 
+
 
 
 
@@ -183,9 +184,9 @@ try {
       //   console.log("fetch error", error);
       // }
       // console.log(clientPrincipal,"clientPrincipal");
-     
-     
-// console.log(user,);
+
+
+      // console.log(user,);
 
       // try {
       //   const userRes = await fetch(`/api/user/${clientPrincipal.userId}`, {
@@ -207,7 +208,10 @@ try {
 
       console.log("GETAUTH");
     },
-    async GET_projectList({ commit, state }, payload) {
+    async GET_projectList({
+      commit,
+      state
+    }, payload) {
       let data;
       !state.projects.List &&
         (data = await (
