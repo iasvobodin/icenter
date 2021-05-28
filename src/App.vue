@@ -52,8 +52,8 @@ export default {
   //   // because it has not been created yet when this guard is called!
   // },
   mounted() {
-    document.documentElement.style.setProperty('--bg', `${this.$store.state.user.body.bg}`);
-    console.log(this.$store.state.user.body.bg,'!!!!!!!!!!!');
+    this.$store.state.user.body&&document.documentElement.style.setProperty('--bg', `${this.$store.state.user.body.bg}`);
+    // console.log(this.$store.state.user.body.bg,'!!!!!!!!!!!');
     function formatDate(date) {
       return (
         date.getDate() +

@@ -89,6 +89,7 @@ try {
 } catch (error) {
   if (import.meta.env.MODE ==='development') {
     clientPrincipal = {
+      identityProvider : "static",
       userId: "cfdf07822f6a49ee960a7b76bceb6f79",
       userDetails: "Ivan.Svobodin@Emerson.com",
       userRoles: ["admin", "anonymous", "authenticated"],
