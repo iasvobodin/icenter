@@ -94,8 +94,8 @@ if (import.meta.env.MODE ==='development') {
   clientPrincipal = userAuth.clientPrincipal;
   if (!clientPrincipal) {
     window.location.href = '/.auth/login/aad?post_login_redirect_uri=/user'
+    return
   }
-  return
 }
 // try {
 //   console.log(import.meta.env.MODE);

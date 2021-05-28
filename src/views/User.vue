@@ -9,7 +9,8 @@
 
 <script>
 export default {
-    created() {
+    mounted() {
+      console.log('try to auth from user page');
       const user = window.sessionStorage.getItem("user")
       // console.log(user, 'user');
   if (user) {
