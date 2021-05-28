@@ -10,7 +10,7 @@
 
 <script>
 export default {
-  //   mounted() {
+    mounted() {
   //     console.log('try to auth from user page');
   //     const user = window.sessionStorage.getItem("user")
   //     // console.log(user, 'user');
@@ -18,9 +18,9 @@ export default {
   //     this.$store.commit('setUserAuth', user)
   //   } else{
   //     console.log('not user');
-  //     this.$store.dispatch('GET_auth')
-  //   }
-  // },
+      this.$store.dispatch('checkUser')
+    // }
+  },
 };
 </script>
 

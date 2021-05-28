@@ -4,7 +4,7 @@
         <img class="back__image"  src="/img/back.svg" alt="" @click="$router.back()" />
         <div>
             <a v-if="!$store.state.user.info" href="/.auth/login/aad?post_login_redirect_uri=/user">Login |</a>
-            <div v-else class="user" @click="$router.push('/user')"> <span>{{ $store.state.user.info.name}}
+            <div v-else class="user" @click="$router.push('/user')"> <span>{{ $store.state.user.body.name}}
                 </span>
             </div>
         </div>

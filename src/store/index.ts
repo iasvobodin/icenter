@@ -1,7 +1,11 @@
 import {
   createStore
 } from "vuex";
-
+const createName = (clientPrincipal) =>{
+  const splitName = clientPrincipal.userDetails.split('@')[0].split('.')
+  const name = splitName[0][0].toUpperCase() + '.' + splitName[1][0].toUpperCase() + '.'
+  return name
+}
 export default createStore({
   state: {
     loader: false,
@@ -81,6 +85,27 @@ export default createStore({
       }
       // console.log(state.template, "state.template");
     },
+    async checkUser({
+      commit,
+      state
+    }) {
+      const registerUserRes = await fetch(`/api/user/${state.user.id}?getRegisterUser=true`)
+      let user;//   console.log(responseUserAuth,'responseUserAuth');
+      if (registerUserRes.ok) {
+        user = await registerUserRes.json()
+        const name = createName(state.user.info)
+        user.body.name = name
+      const LSuser = window.sessionStorage.getItem("user");
+
+      if (JSON.stringify(user) !== LSuser) {
+        console.log('check user version');
+        commit("setUserAuth", JSON.stringify(user));
+        window.sessionStorage.setItem("user", JSON.stringify(user))
+      }
+      state.user.body&&document.documentElement.style.setProperty('--bg', `${state.user.body.bg}`);
+
+    }
+    },
     async GET_auth({
       commit,
       state
@@ -108,11 +133,14 @@ export default createStore({
       }
       console.log(clientPrincipal, "clientPrincipal after check auth");
       clientPrincipal.userDetails = clientPrincipal.userDetails.toLowerCase();
-      const splitName = clientPrincipal.userDetails.split('@')[0].split('.')
-      const name = splitName[0][0].toUpperCase() + '.' + splitName[1][0].toUpperCase() + '.'
+      // const splitName = clientPrincipal.userDetails.split('@')[0].split('.')
+      // const name = splitName[0][0].toUpperCase() + '.' + splitName[1][0].toUpperCase() + '.'
+      
+      const name = createName(clientPrincipal)
+      
       let user = {
         ...clientPrincipal,
-        name
+        // name
       }
 
       try {
@@ -120,7 +148,7 @@ export default createStore({
         //   console.log(responseUserAuth,'responseUserAuth');
         if (registerUserRes.ok) {
           user = await registerUserRes.json()
-          user.info.name = name
+          user.body.name = name
           window.sessionStorage.setItem("user", JSON.stringify(user));
           commit("setUserAuth", JSON.stringify(user));
         }
@@ -129,7 +157,7 @@ export default createStore({
           id: clientPrincipal.userId,
           type: "info",
           info: clientPrincipal,
-          body: {},
+          body: {name},
         }
         const options = {
           method: "POST", // или 'PUT'
