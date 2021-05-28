@@ -6,6 +6,16 @@ module.exports = async function (context, req, user) {
     };
     return
   }
+
+  if (req.query.postRegisterUser) {
+    context.res = {
+      status: 200,
+      body: req.body,
+    };
+    return (context.bindings.userPost = req.body);
+    // return
+  }
+
   if (context.bindings.userErors[0]) {
     context.res = {
       status: 200,

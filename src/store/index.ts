@@ -20,7 +20,7 @@ export default createStore({
     },
     setUserAuth(state, payload:string) {
       // window.sessionStorage.setItem("user", payload);
-      state.user.info = JSON.parse(payload);
+      state.user = JSON.parse(payload);
       // console.info(state.user, "kjhhljvpoweif-20iwpogjsvjsldvnn");
     },
     setUserInfo(state, payload) {
@@ -95,33 +95,50 @@ try {
     };
   } else {
     console.log('try auth');
-    // window.location.href = '/user'
     window.location.href = '/.auth/login/aad?post_login_redirect_uri=/user'
+    return
   }
 
   // window.open('')
 }
 clientPrincipal.userDetails = clientPrincipal.userDetails.toLowerCase();
-const name =  clientPrincipal.userDetails.split('@')[0].split('.')
-let user  = {...clientPrincipal, name : name[0][0].toUpperCase() + '.' + name[1][0].toUpperCase()+ '.'}
+const splitName =  clientPrincipal.userDetails.split('@')[0].split('.')
+const name = splitName[0][0].toUpperCase() + '.' + splitName[1][0].toUpperCase()+ '.'
+let user  = {...clientPrincipal, name}
 
-const registerUserRes = await fetch(`/api/user/${clientPrincipal.userId}?getRegisterUser=true`)
+try {
+  const registerUserRes = await fetch(`/api/user/${clientPrincipal.userId}?getRegisterUser=true`)
     //   console.log(responseUserAuth,'responseUserAuth');
      if (registerUserRes.ok) {
       user = await registerUserRes.json()
+      user.info.name = name
+      window.sessionStorage.setItem("user",  JSON.stringify(user));
+      commit("setUserAuth", JSON.stringify(user));
      } 
-    //  if (responseUserAuth.ok) {
+} catch (error) {
+  user = {
+    id: clientPrincipal.userId,
+    type: "info",
+    info: clientPrincipal,
+    body: {},
+  }
+  const options = {
+    method: "POST", // или 'PUT'
+    body: JSON.stringify(user)}
+  await fetch(`/api/user/${clientPrincipal.userId}?postRegisterUser=true`, options)
+  window.sessionStorage.setItem("user",  JSON.stringify(user));
+  commit("setUserAuth", JSON.stringify(user));
+}
 
-    //  } else{
-      
-    //  }
+
+
      //check Register user
 
 
 // console.log(import.meta.env, 'ENV');
 
 
-
+ 
 
 
 
@@ -158,8 +175,8 @@ const registerUserRes = await fetch(`/api/user/${clientPrincipal.userId}?getRegi
       // }
       // console.log(clientPrincipal,"clientPrincipal");
      
-      window.sessionStorage.setItem("user",  JSON.stringify(user));
-      !state.user.info && commit("setUserAuth", JSON.stringify(user));
+     
+// console.log(user,);
 
       // try {
       //   const userRes = await fetch(`/api/user/${clientPrincipal.userId}`, {

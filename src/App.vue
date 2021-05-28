@@ -1,6 +1,6 @@
 <template>
   <app-header />
-<div :style="{backgroundColor:$store.state.user.info.body.bg}" id="view">
+<div id="view">
   <router-view  />
 </div>
   <loader />
@@ -52,7 +52,8 @@ export default {
   //   // because it has not been created yet when this guard is called!
   // },
   mounted() {
-    console.log(this.$store.state.user.info.body.bg,'!!!!!!!!!!!');
+    document.documentElement.style.setProperty('--bg', `${this.$store.state.user.body.bg}`);
+    console.log(this.$store.state.user.body.bg,'!!!!!!!!!!!');
     function formatDate(date) {
       return (
         date.getDate() +
@@ -92,7 +93,9 @@ export default {
 *:after {
   box-sizing: border-box;
 }
-
+body{
+  background: var(--bg);
+}
 button,
 input[type='submit'] {
   height: 40px;
