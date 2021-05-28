@@ -8,7 +8,18 @@
 </template>
 
 <script>
-export default {};
+export default {
+    created() {
+      const user = window.sessionStorage.getItem("user")
+      // console.log(user, 'user');
+  if (user) {
+      this.$store.commit('setUserAuth', user)
+    } else{
+      console.log('not user');
+      this.$store.dispatch('GET_auth')
+    }
+  },
+};
 </script>
 
 <style lang="scss" scoped></style>
