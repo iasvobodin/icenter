@@ -80,32 +80,36 @@ export default createStore({
       let clientPrincipal = null;
       let responseUserAuth;
 //check auth AAD
-try {
-  console.log(import.meta.env.MODE);
-   responseUserAuth = await fetch("/.auth/me");   
-   if (responseUserAuth.ok) {
-    const userAuth = await responseUserAuth.json();
-    clientPrincipal = userAuth.clientPrincipal;
-    console.log(clientPrincipal,"clientPrincipal after check auth");
-    
-   } 
-} catch (error) {
-  console.log(import.meta.env.MODE);
-  if (import.meta.env.MODE ==='development') {
-    clientPrincipal = {
-      identityProvider : "static",
-      userId: "cfdf07822f6a49ee960a7b76bceb6f79",
-      userDetails: "Ivan.Svobodin@Emerson.com",
-      userRoles: ["admin", "anonymous", "authenticated"],
-    };
-  } else {
-    console.log('try auth');
+if (import.meta.env.MODE ==='development') {
+  clientPrincipal = {
+    identityProvider : "static",
+    userId: "cfdf07822f6a49ee960a7b76bceb6f79",
+    userDetails: "Ivan.Svobodin@Emerson.com",
+    userRoles: ["admin", "anonymous", "authenticated"],
+  };
+} else {
+  console.log('try auth');
+  responseUserAuth = await fetch("/.auth/me");   
+  const userAuth = await responseUserAuth.json();
+  clientPrincipal = userAuth.clientPrincipal;
+  if (!clientPrincipal) {
     window.location.href = '/.auth/login/aad?post_login_redirect_uri=/user'
-    return
   }
-
-  // window.open('')
+  return
 }
+// try {
+//   console.log(import.meta.env.MODE);
+//    responseUserAuth = await fetch("/.auth/me");   
+//     const userAuth = await responseUserAuth.json();
+//     clientPrincipal = userAuth.clientPrincipal;
+    
+//   } catch (error) {
+//     console.log(import.meta.env.MODE);
+    
+    
+//     // window.open('')
+//   }
+  console.log(clientPrincipal,"clientPrincipal after check auth");
 clientPrincipal.userDetails = clientPrincipal.userDetails.toLowerCase();
 const splitName =  clientPrincipal.userDetails.split('@')[0].split('.')
 const name = splitName[0][0].toUpperCase() + '.' + splitName[1][0].toUpperCase()+ '.'
