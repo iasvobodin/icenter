@@ -1,6 +1,5 @@
 <template>
     <div>
-        <button @click="saveBook">click</button>
         <h1>WO {{$route.params.cabinetId}}</h1>
         <div v-for="(item, key)  in cabinetItems" :key="item.id" class="error__holder">
             <h2>Ошибка {{ key+1 }}</h2>
@@ -16,6 +15,8 @@
 
             <br>
         </div>
+        <button @click="saveBook">Экспорт excel</button>
+        <br>
     </div>
 </template>
 
