@@ -24,71 +24,92 @@
 
 <script>
 import XLSX from 'xlsx'
-import { useFetch } from '@/hooks/fetch'
-import { reactive, toRefs } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
+import {
+    useFetch
+} from '@/hooks/fetch'
+import {
+    reactive,
+    toRefs
+} from 'vue'
+import {
+    useRouter,
+    useRoute
+} from 'vue-router'
 import infoRender from '@/components/infoRender.vue'
 export default {
-  components: {
-    // conditionalRender,
-    infoRender,
-    // chooseWoNumber,
-  },
-          setup() {
-    const route = useRoute()
-    const state = reactive({
-      cabinetItems: null,
-      tabs: ['Открыто', 'Принято', 'Устранено',"Фото"],
-      currentTab: {}
-    })
-    const getCabinetItems = async () => {
-      const { request, response } = useFetch(
-        `/api/cabinetItems?wo=${route.params.cabinetId}`,
-      )
-      await request()
-      state.cabinetItems = response
-      state.cabinetItems.forEach((e,i) => {
-          state.currentTab[i] = "Открыто"
-      });
-    }
-    // const updateWO = async () => {
-    //   const { request, response } = useFetch(
-    //     `/api/cabinetList?updateWO=true&project=${route.params.projectId}`,
-    //   )
-    //   await request()
-    //   state.newWO = response
-    // }
-    getCabinetItems()
+    components: {
+        // conditionalRender,
+        infoRender,
+        // chooseWoNumber,
+    },
+    setup() {
+        const route = useRoute()
+        const state = reactive({
+            cabinetItems: null,
+            tabs: ['Открыто', 'Принято', 'Устранено', "Фото"],
+            currentTab: {}
+        })
+        const getCabinetItems = async () => {
+            const {
+                request,
+                response
+            } = useFetch(
+                `/api/cabinetItems?wo=${route.params.cabinetId}`,
+            )
+            await request()
+            state.cabinetItems = response
+            state.cabinetItems.forEach((e, i) => {
+                state.currentTab[i] = "Открыто"
+            });
+        }
+        // const updateWO = async () => {
+        //   const { request, response } = useFetch(
+        //     `/api/cabinetList?updateWO=true&project=${route.params.projectId}`,
+        //   )
+        //   await request()
+        //   state.newWO = response
+        // }
+        getCabinetItems()
 
-// function ExportData()
-//     {
-//             filename='reports.xlsx';
-//        data=[{Market: "IN", ['New Arrivals']: "6", ['Upcoming Appointments']: "2", '[Pending - 1st Attempt]': "4"},
-//             {Market: "KS/MO", ['New Arrivals']: "4", ['Upcoming Appointments']: "4", '[Pending - 1st Attempt]': "2"},
-//             {Market: "KS/MO", ['New Arrivals']: "4", ['Upcoming Appointments']: "4", '[Pending - 1st Attempt]': "2"},
-//             {Market: "KS/MO", ['New Arrivals']: "4", ['Upcoming Appointments']: "4", '[Pending - 1st Attempt]': "2"}]
-//         var ws = XLSX.utils.json_to_sheet(data);
-//         var wb = XLSX.utils.book_new();
-//         XLSX.utils.book_append_sheet(wb, ws, "People");
-//         XLSX.writeFile(wb,filename);
-//      }
+        const saveBook = () => {
+            function formatDate(date) {
+                return `${date.getDate()}.0${date.getMonth() + 1}.${date.getFullYear()}`
+            }
 
-const saveBook = ()=>{
-    const arrArr =[]
-state.cabinetItems.map((e,i) =>{
-arrArr.push([i+1, e.body.Открыто.Описание, e.info.Добавил.split('@')[0], "Дата", e.body.Принято.Описание,e.info.Мастер.split('@')[0] ,"Дата", e.body.Устранено['Статус коррекции'] , e.body.Устранено['Время на устранение']])
-})
-    var worksheet = XLSX.utils.aoa_to_sheet([['№п.п', "Описание замечания", "ФИО","Дата","Описание решения","ФИО","Дата","Статус", "Время на устранение","ФИО","Дата"],...arrArr]);
-var new_workbook = XLSX.utils.book_new();
-XLSX.utils.book_append_sheet(new_workbook, worksheet, route.params.cabinetId);
-    XLSX.writeFile(new_workbook, '2out.xlsx');
+            const arrArr = []
+            state.cabinetItems.map((e, i) => {
+                arrArr.push([
+                    i + 1, e.body.Открыто.Описание,
+                    e.info.Добавил.split('@')[0].replace('.', ' '),
+                    formatDate(new Date(+e._ts)),
+                    e.body.Принято.Описание, e.info.Мастер.split('@')[0].replace('.', ' '),
+                    e.body.Устранено['Статус коррекции'],
+                    e.body.Устранено['Время на устранение'],
+                    e.body._changed.split('@')[0].replace('.', ' '),
+                    formatDate(new Date(+e.body._time)),
+                { Target:   e.photos.map(p => `https://icaenter.blob.core.windows.net/errors-photo/${p}`)[0] }
+                ])
+            })
+            const worksheet = XLSX.utils.aoa_to_sheet([
+                ['№', "Описание замечания", "ФИО", "Дата", "Описание решения", "ФИО", "Статус", "Время на устранение", "ФИО", "Дата"], ...arrArr
+            ]);
+//             for (let i = 0; i < state.cabinetItems.length; i++) {
+//     worksheet[XLSX.utils.encode_cell({
+//       c: 13,
+//       r: i
+//     })].l = { Target: ws_links[i] };
+// }
+            const new_workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(new_workbook, worksheet, route.params.cabinetId);
+            XLSX.writeFile(new_workbook, `${Date.now()}.xlsx`);
+        }
+        return {
+            saveBook,
+            //   updateWO,
+            ...toRefs(state),
+        }
+    },
 }
-    return {saveBook,
-    //   updateWO,
-      ...toRefs(state),
-    }
-  },
-    }
 </script>
 
 <style lang="css" scoped>
