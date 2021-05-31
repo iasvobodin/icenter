@@ -1,10 +1,13 @@
 <template >
-  <div v-for="(v, k, i) in infoData" :key="i" class="cabinet__info__item"
-    :class="{error__item__desc : k.includes('Описание') || k.includes('Specific') }">
-    <h3 :class="{ error__item__vertical__title: k.includes('Описание')|| k.includes('Specific')}" class="info__item__title">{{ k }}:</h3>
+  <div v-for="(v, k, i) in infoData" :key="i"
+    >
+    <div class="cabinet__info__item" :class="{error__item__desc : k.includes('Описание') || k.includes('Specific') }">
+      <h3 :class="{ error__item__vertical__title: k.includes('Описание')|| k.includes('Specific')}" class="info__item__title">{{ k }}:</h3>
     <p :class="{ error__item__vertical__title: k.includes('Описание') || k.includes('Specific') }" class="error__item__desc">
       {{ typeof v === 'string'&&v.includes('@')? v.split('@')[0].replace('.', ' ') : v }}
     </p>
+    </div>
+  <div class="card__border"></div>
   </div>
 </template>
 
@@ -20,9 +23,14 @@
 </script>
 
 <style lang="css" scoped>
-
+.card__border{
+  /* width: 100%; */
+      height: 0;
+    margin: 0 10px;
+    border-top: 1px solid #d3d3d3;
+}
 .cabinet__info__item {
-  border-bottom: 1px solid black;
+  /* border-bottom: 1px solid rgb(102, 102, 102); */
   padding: 5px;
   /* width: 100%; */
   display: grid;
