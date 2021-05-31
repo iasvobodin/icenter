@@ -124,6 +124,9 @@ button:hover {
 h4 {
   margin: 0;
 }
+h2{
+  margin: 0.5vh;
+}
 p {
   margin: 0;
 }

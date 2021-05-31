@@ -9,6 +9,7 @@
     "lint:script": "eslint --ext .ts,vue --ignore-path .gitignore ."
   },
   "dependencies": {
+    "@papb/json-excel": "^2.0.2",
     "axios": "^0.21.1",
     "html5-qrcode": "^2.0.3",
     "jsqr": "^1.4.0",
@@ -19,7 +20,8 @@
     "vue": "^3.0.5",
     "vue-router": "^4.0.0-0",
     "vue3-click-away": "^1.2.1",
-    "vuex": "^4.0.0-0"
+    "vuex": "^4.0.0-0",
+    "xlsx": "^0.17.0"
   },
   "devDependencies": {
     "@types/node": "^15.0.2",
