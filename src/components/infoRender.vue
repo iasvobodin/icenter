@@ -28,7 +28,9 @@
   display: grid;
   grid-template-columns: 2fr 3fr;
 }
-
+/* .cabinet__info__item:last-child{
+  border-bottom: 0px;
+} */
 .error__item__desc {
   height: inherit;
   display: block;

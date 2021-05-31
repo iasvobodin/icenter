@@ -74,4 +74,7 @@ export default {
   border-radius: 4px;
   cursor: pointer;
 }
+.holder:last-child {
+  border: 0px;
+}
 </style>

@@ -2,7 +2,7 @@
   <div v-if="$store.state.user.info">
     <h1>Личная старница {{ $store.state.user.info.userDetails.split('@')[0].replace('.',' ') }}</h1>
     <p>в разработке</p>
-    <p>{{$store.state.user}}</p>
+    <p class="info">{{$store.state.user}}</p>
     <br>
     <a href="/.auth/logout?post_logout_redirect_uri=/">Log out</a>
   </div>
@@ -24,4 +24,9 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="css" scoped>
+.info{
+    white-space: pre-wrap;
+  word-wrap: break-word;
+}
+</style>
