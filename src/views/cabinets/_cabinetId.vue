@@ -9,7 +9,9 @@
                 <p v-for="tab in tabs" :key="tab" @click="currentTab[key] = tab">{{tab}}</p>
             </div>            
                  <info-render v-if="currentTab[key] !== 'Фото'" :info-data="{...item.body[currentTab[key]]}" />
+            
             <div v-for="ph in item.photos" v-else :key="ph">
+                <br>
                 <img :src="`https://icaenter.blob.core.windows.net/errors-photo/thumb__${ph}`" alt="">
             </div>
 
