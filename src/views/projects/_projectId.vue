@@ -72,7 +72,8 @@ export default {
     }
     const updateWO = async () => {
       const { request, response } = useFetch(
-        `/api/cabinetList?updateWO=true&project=${route.params.projectId}`,
+        
+        `/api/cabinetList?updateWO=true&project=${route.params.projectId.includes(',')?route.params.projectId.replace(',','.'): route.params.projectId}`,
       )
       if (!state.newWO) {
         await request() 
@@ -87,6 +88,7 @@ const updateProject = async () => {
         method: 'POST', // или 'PUT'
         body: JSON.stringify({
           ...state.project, 
+          id: state.project.id.includes('.')?state.project.id.replace('.',','): state.project.id
         }),
       }
         const { request, response } = useFetch(
