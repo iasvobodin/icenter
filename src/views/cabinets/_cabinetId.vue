@@ -3,22 +3,31 @@
         <h1>WO {{$route.params.cabinetId}}</h1>
         <div v-for="(item, key)  in cabinetItems" :key="item.id" class="error__holder">
             <h2>Ошибка {{ key+1 }}</h2>
-            
-            <div class="err__view">
-                
-                <p v-for="tab in tabs" :key="tab" @click="currentTab[key] = tab">{{tab}}</p>
-            </div>            
-                 <info-render v-if="currentTab[key] !== 'Фото'" :info-data="{...item.body[currentTab[key]]}" />
-            
-            <div v-for="ph in item.photos" v-else :key="ph">
-                <br>
-                <img :src="`https://icaenter.blob.core.windows.net/errors-photo/thumb__${ph}`" alt="">
+            <div class="err__tabs">
+                <div class="err__tab" v-for="(tab, i) in tabs" :key="tab">
+                    <!-- <p >{{tab}}</p> -->
+                    <input v-model="currentTab[key]" :id="`tab${i+1}${key}`" type="radio" :name="`tab-control${key}`"
+                        :value="tab">
+                    <label :for="`tab${i+1}${key}`" role="button">
+                        {{tab}}
+                    </label>
+                </div>
             </div>
-
-            <br>
+            <div class="card__holder">
+                <div v-if="currentTab[key] !== 'Фото'">
+                <info-render  :info-data="{...item.body[currentTab[key]]}" />
+                </div>
+                <div class="photo__holder" v-for="ph in item.photos" v-else :key="ph">
+                    <a :href="`https://icaenter.blob.core.windows.net/errors-photo/${ph}`">
+                    <img :src="`https://icaenter.blob.core.windows.net/errors-photo/thumb__${ph}`" alt="photo error">
+                    </a>
+                </div>
+            </div>
         </div>
+         <br>
         <button @click="saveBook">Экспорт excel</button>
         <br>
+         <br>
     </div>
 </template>
 
@@ -62,13 +71,6 @@ export default {
                 state.currentTab[i] = "Открыто"
             });
         }
-        // const updateWO = async () => {
-        //   const { request, response } = useFetch(
-        //     `/api/cabinetList?updateWO=true&project=${route.params.projectId}`,
-        //   )
-        //   await request()
-        //   state.newWO = response
-        // }
         getCabinetItems()
 
         const saveBook = () => {
@@ -87,18 +89,12 @@ export default {
                     e.body.Устранено['Время на устранение'],
                     e.body._changed.split('@')[0].replace('.', ' '),
                     formatDate(new Date(+e.body._time)),
-                { Target:   e.photos.map(p => `https://icaenter.blob.core.windows.net/errors-photo/${p}`)[0] }
+                    ...e.photos.map(p => `https://icaenter.blob.core.windows.net/errors-photo/${p}`)
                 ])
             })
             const worksheet = XLSX.utils.aoa_to_sheet([
-                ['№', "Описание замечания", "ФИО", "Дата", "Описание решения", "ФИО", "Статус", "Время на устранение", "ФИО", "Дата"], ...arrArr
+                ['№', "Описание замечания", "ФИО", "Дата", "Описание решения", "ФИО", "Статус", "Время на устранение", "ФИО", "Дата", "Фото"], ...arrArr
             ]);
-//             for (let i = 0; i < state.cabinetItems.length; i++) {
-//     worksheet[XLSX.utils.encode_cell({
-//       c: 13,
-//       r: i
-//     })].l = { Target: ws_links[i] };
-// }
             const new_workbook = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(new_workbook, worksheet, route.params.cabinetId);
             XLSX.writeFile(new_workbook, `${Date.now()}.xlsx`);
@@ -113,25 +109,58 @@ export default {
 </script>
 
 <style lang="css" scoped>
-.err__view{
-    display: flex;
-    width: 95%;
+[type="radio"] {
+    display: none;
+}
+
+label {
+    border: 1px solid orange;
+    border-bottom: 0px solid orange;
+    padding: 5px;
+    cursor: pointer;
+    border-radius: 4px;
+    display: block;
+    width: 100%;
+}
+
+[type="radio"]:checked~label {
+    background: white;
+    z-index: 2;
+    background-color: coral;
+    color: aliceblue;
+}
+
+.card__holder {
+    margin-top: 0px;
+    padding: 15px;
+    border-radius: 4px;
+    border: 1px solid orange;
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 1fr;
+
+
+}
+
+.err__tab {
+    place-self: stretch;
+}
+
+.err__tabs {
+    display: grid;
+    grid-auto-flow: column;
+    column-gap: 10px;
+    /* width: 100%; */
     margin: auto;
+
 }
-.err__view>p{
-    width: 30%;
-    text-align: center;
-    /* margin: 10px; */
-    font-weight: 700;
-    font-size: 14px;
-    border: 1px solid black;
-    padding: 2px;
-    /* border-radius: 4px; */
-}
-.error__holder{
-    border: 1px solid red;
-    margin: 1vh;
-    border-radius:4px;
+
+.error__holder {
+    border-bottom: 1px solid black;
+    /* border-radius:4px; */
+    width: min(1200px, 95vw);
+    margin: auto;
+    margin-top: 1vh;
 
 }
 </style>

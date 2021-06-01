@@ -125,7 +125,7 @@ h4 {
   margin: 0;
 }
 h2{
-  margin: 0.5vh;
+  margin: 1vh;
 }
 p {
   margin: 0;
