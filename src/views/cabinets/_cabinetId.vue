@@ -115,10 +115,13 @@ export default {
 
 label {
     border: 1px solid orange;
-    border-bottom: 0px solid orange;
+    position: relative;
+    /* border-bottom: 0px solid orange; */
     padding: 5px;
     cursor: pointer;
-    border-radius: 4px;
+    /* border-radius: 4px; */
+    border-radius: 5px 5px 0 0;
+    background-color: rgba(255, 183, 157, 0.301);
     display: block;
     width: 100%;
 }
@@ -126,20 +129,20 @@ label {
 [type="radio"]:checked~label {
     background: white;
     z-index: 2;
-    background-color: coral;
-    color: aliceblue;
+    background-color: rgb(255, 255, 255);
+    /* color: aliceblue; */
+    border-bottom: 1px solid white;
+    z-index: 2;
 }
 
 .card__holder {
     margin-top: 0px;
     padding: 15px;
-    border-radius: 4px;
+    border-radius: 0 0 5px 5px;
     border: 1px solid orange;
     display: grid;
     grid-auto-flow: column;
     grid-auto-columns: 1fr;
-
-
 }
 
 .err__tab {
@@ -152,6 +155,7 @@ label {
     column-gap: 10px;
     /* width: 100%; */
     margin: auto;
+    margin-bottom: -1px;
 
 }
 
