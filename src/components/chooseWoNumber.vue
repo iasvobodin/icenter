@@ -87,6 +87,10 @@ export default {
     checkedCabinetsNames() {
       this.$emit('checkedWo', this.checkedCabinetsNames)
     },
+    wo(){
+        this.checkedCabinetsNames = []
+        // this.checkBoxAll = false
+    },
     multipleCheck() {
       this.checkedCabinetsNames = []
       this.checkBoxAll = false
@@ -102,7 +106,7 @@ export default {
       this.checkBoxAll = !this.checkBoxAll
       if (this.checkBoxAll) {
         this.checkbox.forEach((e) => (e.checked = true))
-        this.checkedCabinetsNames = this.cabinetList
+        this.checkedCabinetsNames = this.filterWO
       } else {
         this.checkbox.forEach((e) => (e.checked = false))
         this.checkedCabinetsNames = []

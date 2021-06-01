@@ -24,6 +24,14 @@
       "databaseName": "icenter",
       "collectionName": "projects",
       "sqlQuery": "SELECT * from c where c.status = {status}"
+    },
+    {
+      "type": "cosmosDB",
+      "direction": "out",
+      "name": "updateProject",
+      "ConnectionStringSetting": "legendstats_DOCUMENTDB",
+      "databaseName": "icenter",
+      "collectionName": "projects"
     }
   ]
 }

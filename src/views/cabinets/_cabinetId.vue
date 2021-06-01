@@ -3,12 +3,11 @@
         <h1>WO {{$route.params.cabinetId}}</h1>
         <div v-for="(item, key)  in cabinetItems" :key="item.id" class="error__holder">
             <h2>{{item.id }}</h2>
-            <small>Статус: {{item.status}}</small>
+            <small :style="{borderColor: statusColor[item.status]}" >Статус: {{item.status}}</small>
             <br>
             <br>
             <div class="err__tabs">
                 <div class="err__tab" v-for="(tab, i) in tabs" :key="tab">
-                    <!-- <p >{{tab}}</p> -->
                     <input v-model="currentTab[key]" :id="`tab${i+1}${key}`" type="radio" :name="`tab-control${key}`"
                         :value="tab">
                     <label :for="`tab${i+1}${key}`" role="button">
@@ -59,7 +58,12 @@ export default {
         const state = reactive({
             cabinetItems: null,
             tabs: ['Открыто', 'Принято', 'Устранено', "Фото"],
-            currentTab: {}
+            currentTab: {},
+            statusColor:{
+                closed: "green",
+                open:"red",
+                confirmed:"yellow"
+            }
         })
         const getCabinetItems = async () => {
             const {
@@ -116,6 +120,13 @@ export default {
     display: none;
 }
 
+small{
+    border-style: solid;
+    border-width: 3px;
+    border-radius: 5px;
+    padding: 1px;
+}
+
 label {
     border: 1px solid orange;
     position: relative;
@@ -124,7 +135,7 @@ label {
     cursor: pointer;
     /* border-radius: 4px; */
     border-radius: 5px 5px 0 0;
-    background-color: rgba(255, 183, 157, 0.301);
+    background-color: rgba(255, 183, 157, 0.13);
     display: block;
     width: 100%;
 }

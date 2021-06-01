@@ -1,4 +1,9 @@
-module.exports = async function(context, req, projects) {
+module.exports = async function(context, req, projects, updateProject) {
+  
+  if (req.query.updateProject) {
+    context.bindings.updateProject = req.rawBody
+    return
+  }
   if (projects.length === 0) {
     context.res = {
     status: 404

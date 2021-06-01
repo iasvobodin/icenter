@@ -4,23 +4,34 @@
     <h3>Основная информация</h3>
     <info-render :info-data="project.info.base" />
     <h3>Дополнительные сведения</h3>
-    <info-render :info-data="project.info.extends" />
+    <info-render v-if="!changeData" :info-data="project.info.extends" />
+     <conditional-render v-else
+     v-model="project.info.extends" 
+     :data-render="$store.state.template.template.extend" 
+     :required="!$store.state.user.info.userRoles.includes('admin')" />
     <h3>Шкафы</h3>
     <div
-      v-for="(cab, i) in project.cabinets"
+    v-for="(cab, i) in project.cabinets"
+      v-if="!updateWOFlag"
       :key="i"
       class="holder"
       @click="$router.push(`/cabinets/${cab.wo}`)"
     >
       <info-render :info-data="cab" /> <br />
     </div>
-    <button @click="updateWO">Обновить WO</button>
+    
     <choose-wo-number
-      v-if="newWO"
+    v-else
       :multiple-permission="true"
       :cabinet-list="newWO"
-      @checked-wo="($event) => (selected.cabinets = $event)"
+      @checked-wo="($event) => (project.cabinets = $event)"
     />
+    <br>
+    <button v-if="!changeData" @click="changeData = !changeData">Редактировать</button>
+    <button v-else @click="updateProject">Сохранить</button>
+    <button v-if="changeData" @click="updateWO">Обновить WO</button>
+    <br>
+    <br>
   </div>
 </template>
 
@@ -33,7 +44,7 @@ import conditionalRender from '@/components/conditionalRender.vue'
 import infoRender from '@/components/infoRender.vue'
 export default {
   components: {
-    // conditionalRender,
+    conditionalRender,
     infoRender,
     chooseWoNumber,
   },
@@ -42,25 +53,51 @@ export default {
     const state = reactive({
       project: null,
       newWO: null,
+      changeData: false,
+      updateWOFlag:false,
+      resCabinets:{}
     })
     const getProject = async () => {
       const { request, response } = useFetch(
         `/api/projects?status=open&project=${route.params.projectId}`,
       )
+      if (!state.project) {
+        
       await request()
       state.project = response
+      state.resCabinets = response.value.cabinets
+      }
+
+      // state.selected = state.project
     }
     const updateWO = async () => {
       const { request, response } = useFetch(
         `/api/cabinetList?updateWO=true&project=${route.params.projectId}`,
       )
-      await request()
-      state.newWO = response
+      if (!state.newWO) {
+        await request() 
+        state.newWO = response
+      }
+      state.updateWOFlag = !state.updateWOFlag
     }
     getProject()
 
+const updateProject = async () => {
+  const updateOptions = {
+        method: 'POST', // или 'PUT'
+        body: JSON.stringify({
+          ...state.project, 
+        }),
+      }
+        const { request, response } = useFetch(
+        `/api/projects?updateProject=true`, updateOptions
+      )
+      await request()
+      state.changeData = !state.changeData
+      state.updateWOFlag = false
+}
     return {
-      updateWO,
+      updateWO,updateProject,
       ...toRefs(state),
     }
   },
