@@ -2,7 +2,10 @@
     <div>
         <h1>WO {{$route.params.cabinetId}}</h1>
         <div v-for="(item, key)  in cabinetItems" :key="item.id" class="error__holder">
-            <h2>Ошибка {{ key+1 }}</h2>
+            <h2>{{item.id }}</h2>
+            <small>Статус: {{item.status}}</small>
+            <br>
+            <br>
             <div class="err__tabs">
                 <div class="err__tab" v-for="(tab, i) in tabs" :key="tab">
                     <!-- <p >{{tab}}</p> -->
@@ -128,11 +131,10 @@ label {
 
 [type="radio"]:checked~label {
     background: white;
-    z-index: 2;
     background-color: rgb(255, 255, 255);
     /* color: aliceblue; */
     border-bottom: 1px solid white;
-    z-index: 2;
+    /* z-index: 2; */
 }
 
 .card__holder {
