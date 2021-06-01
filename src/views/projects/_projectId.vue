@@ -72,7 +72,6 @@ export default {
     }
     const updateWO = async () => {
       const { request, response } = useFetch(
-        
         `/api/cabinetList?updateWO=true&project=${route.params.projectId.includes(',')?route.params.projectId.replace(',','.'): route.params.projectId}`,
       )
       if (!state.newWO) {
