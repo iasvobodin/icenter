@@ -161,6 +161,7 @@ label {
     width: min(1200px, 95vw);
     margin: auto;
     margin-top: 1vh;
+    padding-bottom: 1vh;
 
 }
 </style>
