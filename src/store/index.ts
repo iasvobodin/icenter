@@ -2,9 +2,12 @@ import {
   createStore
 } from "vuex";
 const createName = (clientPrincipal) =>{
-  const splitName = clientPrincipal.userDetails.split('@')[0].split('.')
-  const name = splitName[0][0].toUpperCase() + '.' + splitName[1][0].toUpperCase() + '.'
-  return name
+  if (clientPrincipal.identityProvider === 'aad') {
+    const splitName = clientPrincipal.userDetails.split('@')[0].split('.')
+    const name = splitName[0][0].toUpperCase() + '.' + splitName[1][0].toUpperCase() + '.'
+    return name
+  } return clientPrincipal.userDetails.split('@')[0]
+
 }
 export default createStore({
   state: {
