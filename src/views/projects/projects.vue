@@ -11,6 +11,8 @@
       <p>{{ value.info.base['Project Name'] }}</p>
       <br>
       <p>Количество шкафов {{ value.cabinets.length }}</p>
+      <br>
+       <p>Статус{{ value.info.extends['status project'] }}</p>
       <!-- <info-render :info-data="value.info.base" />
     <info-render :info-data="value.info.extends" /> -->
     </div>
@@ -18,9 +20,11 @@
 </template>
 
 <script>
+
 import infoRender from '@/components/infoRender.vue'
 import { reactive, toRefs, computed, ref } from 'vue'
 import { useFetch } from '@/hooks/fetch'
+
 export default {
   components: {
     infoRender,
@@ -32,6 +36,7 @@ export default {
       fetchStatus: null,
       errorMessage: '',
     })
+    
     // const ordered = computed(() => {
     //   if (state.errors) {
     //     const ord = Object.keys(state.errors.info.extends).sort().reduce(
@@ -45,9 +50,26 @@ export default {
     //   return 'sort'
     // })
     const getErrors = async () => {
-      const { request, response } = useFetch(`/api/projects?status=open`)
+      const {
+        request,
+        response
+      } = useFetch(`/api/projects?status=open`)
       await request()
       state.errors = response
+
+      state.errors.sort(function (a, b) {
+        const nameA = a.info.extends['status project'].toLowerCase();
+        const nameB = b.info.extends['status project'].toLowerCase();
+        if (nameA < nameB) {
+          return -1;
+        }
+        if (nameA > nameB) {
+          return 1;
+        }
+
+        // names must be equal
+        return 0;
+      });
     }
     getErrors()
 
@@ -73,7 +95,7 @@ export default {
   display: grid;
   width: 98%;
   margin: auto;
-  grid-template-columns: repeat(auto-fit, minmax(max(25vw, 250px), 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(max(25vw, 250px), 1fr));
   column-gap: 2vh;
   row-gap: 2vh;
 }

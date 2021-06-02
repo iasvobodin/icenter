@@ -93,7 +93,12 @@ export default {
 *:after {
   box-sizing: border-box;
 }
+html{
+  height: 100%;
+}
 body{
+  width: 100%; 
+  min-height: 100%;
   background: var(--bg);
 }
 button,
@@ -145,6 +150,8 @@ textarea {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
+  min-height: 100vh;
+    /* position: relative; */
 }
 
 #nav {
@@ -163,7 +170,7 @@ h6 {
 body{
   margin: 0;
 }
-#app{
-  position: relative;
-}
+/* #app{
+
+} */
 </style>
