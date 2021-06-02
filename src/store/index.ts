@@ -28,7 +28,7 @@ export default createStore({
       state.currentError = pay;
     },
     setUserAuth(state, payload: string) {
-      // window.sessionStorage.setItem("user", payload);
+      // window.localStorage.setItem("user", payload);
       state.user = JSON.parse(payload);
       // console.info(state.user, "kjhhljvpoweif-20iwpogjsvjsldvnn");
     },
@@ -98,12 +98,12 @@ export default createStore({
         user = await registerUserRes.json()
         const name = createName(state.user.info)
         user.body.name = name
-      const LSuser = window.sessionStorage.getItem("user");
+      const LSuser = window.localStorage.getItem("user");
 
       if (JSON.stringify(user) !== LSuser) {
         console.log('check user version');
         commit("setUserAuth", JSON.stringify(user));
-        window.sessionStorage.setItem("user", JSON.stringify(user))
+        window.localStorage.setItem("user", JSON.stringify(user))
       }
       state.user.body&&document.documentElement.style.setProperty('--bg', `${state.user.body.bg}`);
 
@@ -152,7 +152,7 @@ export default createStore({
         if (registerUserRes.ok) {
           user = await registerUserRes.json()
           user.body.name = name
-          window.sessionStorage.setItem("user", JSON.stringify(user));
+          window.localStorage.setItem("user", JSON.stringify(user));
           commit("setUserAuth", JSON.stringify(user));
         }
       } catch (error) {
@@ -167,7 +167,7 @@ export default createStore({
           body: JSON.stringify(user)
         }
         await fetch(`/api/user/${clientPrincipal.userId}?postRegisterUser=true`, options)
-        window.sessionStorage.setItem("user", JSON.stringify(user));
+        window.localStorage.setItem("user", JSON.stringify(user));
         commit("setUserAuth", JSON.stringify(user));
       }
 

@@ -16,7 +16,7 @@ export default {
   },
     beforeRouteEnter (to, from, next) {
      
-      JSON.parse(window.sessionStorage.getItem("user")).info.userRoles.includes('admin')? next(): next({name: 'login'})
+      JSON.parse(window.localStorage.getItem("user")).info.userRoles.includes('admin')? next(): next({name: 'login'})
   // next(vm => {
   //   console.log(vm, 'vm');
   //   // access to component public instance via `vm`

@@ -75,14 +75,14 @@ export default {
     const errors = ref(null);
     const store = useStore();
     console.log(
-      window.sessionStorage.getItem("userDetails"),
-      "window.sessionStorage.getItem;"
+      window.localStorage.getItem("userDetails"),
+      "window.localStorage.getItem;"
     );
-    !window.sessionStorage.getItem("userDetails") &&
+    !window.localStorage.getItem("userDetails") &&
       (await store.dispatch("GET_auth"));
     try {
       const responsErrors = await fetch(
-        `/api/user/${window.sessionStorage.getItem("userDetails")}`
+        `/api/user/${window.localStorage.getItem("userDetails")}`
       );
       // try {
       errors.value = await responsErrors.json();

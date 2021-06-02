@@ -225,7 +225,7 @@ this.$store.commit("changeLoader", true)
           Проект: this.$store.state.projectInfo['project number'],
           Шкаф: this.$store.state.projectInfo['cab name'],
           wo: this.$store.state.projectInfo.wo.toString(),
-          Добавил: sessionStorage.getItem('userDetails').toLowerCase(),
+          Добавил: localStorage.getItem('userDetails').toLowerCase(),
           Мастер: this.$store.state.projectInfo['senior fitter'].toLowerCase(),
         },
         photos: [],
@@ -235,7 +235,7 @@ this.$store.commit("changeLoader", true)
           'confirmed' : 'open',
         body: [{
           ...this.errorBody,
-          _changed: sessionStorage.getItem('userDetails').toLowerCase(),
+          _changed: localStorage.getItem('userDetails').toLowerCase(),
           _time: `${Date.now()}`,
         }, ],
       }
@@ -253,7 +253,7 @@ this.$store.commit("changeLoader", true)
           this.files.map(async (e, i) => {
             const formData = new FormData()
             formData.append(`photo${i}`, e)
-            const imageName = `${id}__${sessionStorage.getItem('userDetails').toLowerCase()}__${e.name}`
+            const imageName = `${id}__${localStorage.getItem('userDetails').toLowerCase()}__${e.name}`
             const postImage = async () => {
               const blobResponse = await fetch(
                 `/api/blob?fileName=${imageName}`, {

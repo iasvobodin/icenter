@@ -98,7 +98,7 @@ const router = createRouter({
 //   // next({ name: 'login' })
 // })
 //   // canUserAccess() returns `true` or `false`
-//   const user = window.sessionStorage.getItem("user")
+//   const user = window.localStorage.getItem("user")
 //   if (!user) {
 //     return '/login'
 //     // next({ name: 'User' })

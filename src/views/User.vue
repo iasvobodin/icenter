@@ -4,16 +4,22 @@
     <p>в разработке</p>
     <p class="info">{{$store.state.user}}</p>
     <br>
-    <a href="/.auth/logout?post_logout_redirect_uri=/">Log out</a>
+    <button @click="clearUser">Log out</button>
   </div>
 </template>
 
 <script>
 export default {
+  methods: {
+    clearUser() {
+      window.localStorage.removeItem("user")
+      window.location.href = '/.auth/logout?post_logout_redirect_uri=/'
+    }
+  },
     mounted() {
       console.log(document.cookie);
   //     console.log('try to auth from user page');
-  //     const user = window.sessionStorage.getItem("user")
+  //     const user = window.localStorage.getItem("user")
   //     // console.log(user, 'user');
   // if (user) {
   //     this.$store.commit('setUserAuth', user)

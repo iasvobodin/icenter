@@ -72,7 +72,7 @@ export default {
     console.log(formatDate(dd))
   },
   created() {
-      const user = window.sessionStorage.getItem("user")
+      const user = window.localStorage.getItem("user")
       // console.log(user, 'user');
   if (user) {
       this.$store.commit('setUserAuth', user)
