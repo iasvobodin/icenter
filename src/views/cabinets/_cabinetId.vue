@@ -80,9 +80,10 @@ export default {
         }
         getCabinetItems()
 
-        const saveBook = () => {
-import('xlsx').then(XLSX => {
-               function formatDate(date) {
+        const saveBook = async () => {
+const XLSX = await import('xlsx')
+
+            function formatDate(date) {
                 return `${date.getDate()}.0${date.getMonth() + 1}.${date.getFullYear()}`
             }
 
@@ -106,9 +107,6 @@ import('xlsx').then(XLSX => {
             const new_workbook = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(new_workbook, worksheet, route.params.cabinetId);
             XLSX.writeFile(new_workbook, `${Date.now()}.xlsx`);
-})
-
- 
         }
         return {
             saveBook,

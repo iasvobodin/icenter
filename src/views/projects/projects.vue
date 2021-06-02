@@ -57,6 +57,16 @@ export default {
       await request()
       state.errors = response
 
+      const status = state.errors.reduce((acc, pr) => acc.add(pr.info.extends['status project']),new Set())
+         let arr = []
+       const groupByStatus = state.errors.reduce((acc, pr) => {
+         acc[pr.info.extends['status project']] = pr
+        //  [...status].forEach(st =>{
+        //   //  if(pr.info.extends['status project'] === st){}
+        // //  })
+        //  acc.add(pr.info.extends['status project'])
+         },{})
+console.log( groupByStatus);
       state.errors.sort(function (a, b) {
         const nameA = a.info.extends['status project'].toLowerCase();
         const nameB = b.info.extends['status project'].toLowerCase();
