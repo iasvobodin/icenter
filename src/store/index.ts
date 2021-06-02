@@ -127,7 +127,7 @@ export default createStore({
         const userAuth = await responseUserAuth.json();
         clientPrincipal = userAuth.clientPrincipal;
         if (!clientPrincipal) {
-          window.location.href = '/.auth/login/aad?post_login_redirect_uri=/user'
+          window.location.href = '/login'
           return
         }
       }
