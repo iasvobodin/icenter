@@ -11,9 +11,9 @@
   "dependencies": {
     "@papb/json-excel": "^2.0.2",
     "axios": "^0.21.1",
-    "html5-qrcode": "^2.0.3",
+    "html5-qrcode": "^2.0.6",
     "jsqr": "^1.4.0",
-    "notiflix": "^2.7.0",
+    "notiflix": "^3.0.1",
     "parse-multipart": "^1.0.4",
     "qr-scanner": "^1.2.0",
     "register-service-worker": "^1.7.2",
@@ -24,21 +24,21 @@
     "xlsx": "^0.17.0"
   },
   "devDependencies": {
-    "@types/node": "^15.0.2",
-    "@typescript-eslint/eslint-plugin": "^4.22.1",
-    "@typescript-eslint/parser": "^4.22.1",
-    "@vitejs/plugin-vue": "^1.2.2",
+    "@types/node": "^15.6.2",
+    "@typescript-eslint/eslint-plugin": "^4.26.0",
+    "@typescript-eslint/parser": "^4.26.0",
+    "@vitejs/plugin-vue": "^1.2.3",
     "@vue/compiler-sfc": "^3.0.11",
     "@vue/eslint-config-typescript": "^7.0.0",
-    "eslint": "^7.25.0",
+    "eslint": "^7.27.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^3.4.0",
-    "eslint-plugin-vue": "^7.9.0",
-    "prettier": "^2.2.1",
-    "typescript": "^4.2.4",
-    "vite": "2.2.4",
-    "vite-plugin-eslint": "^1.1.0",
-    "vite-tsconfig-paths": "^3.3.10",
-    "vue-tsc": "^0.1.0"
+    "eslint-plugin-vue": "^7.10.0",
+    "prettier": "^2.3.0",
+    "typescript": "^4.3.2",
+    "vite": "2.3.6",
+    "vite-plugin-eslint": "^1.1.1",
+    "vite-tsconfig-paths": "^3.3.13",
+    "vue-tsc": "^0.1.7"
   }
 }

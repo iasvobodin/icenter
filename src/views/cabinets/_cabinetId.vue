@@ -34,7 +34,7 @@
 </template>
 
 <script>
-import XLSX from 'xlsx'
+// import XLSX from 'xlsx'
 import {
     useFetch
 } from '@/hooks/fetch'
@@ -81,7 +81,8 @@ export default {
         getCabinetItems()
 
         const saveBook = () => {
-            function formatDate(date) {
+import('xlsx').then(XLSX => {
+               function formatDate(date) {
                 return `${date.getDate()}.0${date.getMonth() + 1}.${date.getFullYear()}`
             }
 
@@ -105,6 +106,9 @@ export default {
             const new_workbook = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(new_workbook, worksheet, route.params.cabinetId);
             XLSX.writeFile(new_workbook, `${Date.now()}.xlsx`);
+})
+
+ 
         }
         return {
             saveBook,
