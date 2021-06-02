@@ -4,27 +4,31 @@
     <p>в разработке</p>
     <p class="info">{{$store.state.user}}</p>
     <br>
-    <button @click="clearUser">Log out</button>
+    <button v-if="localUser" @click="clearUser">Log out</button>
   </div>
 </template>
 
 <script>
 export default {
+  data() {
+    return {
+      localUser: false
+    }
+  },
   methods: {
     clearUser() {
       window.localStorage.removeItem("user")
-      window.location.href = '/.auth/logout?post_logout_redirect_uri=/'
+      if (
+        import.meta.env.MODE === 'development') {
+          this.$router.push('/login')
+        } else{
+          window.location.href = '/.auth/logout?post_logout_redirect_uri=/login'
+        }
+      this.localUser = window.localStorage.getItem('user')
     }
   },
     mounted() {
-      console.log(document.cookie);
-  //     console.log('try to auth from user page');
-  //     const user = window.localStorage.getItem("user")
-  //     // console.log(user, 'user');
-  // if (user) {
-  //     this.$store.commit('setUserAuth', user)
-  //   } else{
-  //     console.log('not user');
+      this.localUser = window.localStorage.getItem('user')
       this.$store.dispatch('checkUser')
     // }
   },

@@ -1,5 +1,11 @@
 {
-  "routes": [{
+  "routes": [
+    {
+      "route": "/login",
+      "serve": "/index.html",
+      "allowedRoles": ["anonymous"]
+    },
+    {
       "route": "/user",
       "serve": "/index.html",
       "allowedRoles": ["authenticated"]
@@ -25,7 +31,7 @@
     {
       "errorType": "Unauthenticated",
       "statusCode": "302",
-      "serve": "/.auth/login/aad?post_login_redirect_uri=/user"
+      "serve": "/.auth/login/aad?post_login_redirect_uri=/login"
     }
   ]
 }
