@@ -126,7 +126,7 @@ export default createStore({
         responseUserAuth = await fetch("/.auth/me");
         const userAuth = await responseUserAuth.json();
         clientPrincipal = userAuth.clientPrincipal;
-        if (!clientPrincipal) {
+        if (!clientPrincipal&&!window.location.toString().includes('login')) {
           window.location.href = '/login'
           return
         }
