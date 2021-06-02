@@ -11,6 +11,7 @@
 <script>
 export default {
     mounted() {
+      console.log(document.cookie);
   //     console.log('try to auth from user page');
   //     const user = window.sessionStorage.getItem("user")
   //     // console.log(user, 'user');
