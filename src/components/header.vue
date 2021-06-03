@@ -36,6 +36,7 @@ a {
     box-shadow: inset 0px 2px 3px 0px rgb(0 0 0 / 40%), 0px 1px 2px 0px rgb(255 255 255 / 20%);
     z-index: 3;
     position: fixed;
+    top: 0px;
     /* position: absolute;
     top: 0; */
 }
