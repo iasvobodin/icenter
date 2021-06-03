@@ -1,26 +1,29 @@
 <template>
-<br>
-<input v-model="search" type="text" placeholder="мастер или номер проекта">
-  <div v-if="errors" class="errors__holder">
+  <br>
+  <input v-model="search" type="text" placeholder="мастер или номер проекта">
+  <br>
+  <br>
+  <div v-if="errors">
     <div v-for="status in actualStatus" :key="status" >
-      <br>
-      <h4>{{status}}</h4>
-      <div  v-for="(value, key, index) in filterProjects"
-      :key="index"
-      
-      @click="$router.push(`/projects/${value.id}`)">
-      <br v-if="value.info.extends['status project'] === status" class="errors__card">
-    <div v-if="value.info.extends['status project'] === status" class="errors__card"  >
-      <h2>{{ value.id }}</h2>
-      <p>{{ value.info.base['Project Name'] }}</p>
-      <br>
-      <p> <i>Количество шкафов</i>  : {{ value.cabinets.length }}</p>
-      <br>
-      <p> <i>Мастер</i> : {{ value.info.extends['senior fitter'] }}</p>
-    </div>
+      <h2>{{status}}</h2>
+      <div class="errors__holder">
+        <div v-for="(value, key, index) in filterProjects" v-show="value.info.extends['status project'] === status" :key="index"
+          class="error__card__holder" @click="$router.push(`/projects/${value.id}`)">
+          <br v-if="value.info.extends['status project'] === status" class="errors__card">
+          <div v-if="value.info.extends['status project'] === status" class="errors__card">
+            <h2>{{ value.id }}</h2>
+            <p class="project__name" >{{ value.info.base['Project Name'] }}</p>
+            <br>
+            <p> <i>Количество шкафов</i> : {{ value.cabinets.length }}</p>
+            <br>
+            <p> <i>Мастер</i> : {{ value.info.extends['senior fitter']&&value.info.extends['senior fitter'].split('@')[0].replace('.',' ') }}</p>
+          </div>
+        </div>
       </div>
-    </div>
+      <br>
+      <hr>
 
+    </div>
   </div>
 </template>
 
@@ -116,10 +119,11 @@ input {
   margin-top: 1vh;
 }
 .errors__holder {
-  /* display: grid; */
-  width: min(500px, 90vw);
+  display: grid;
+  align-items: stretch;
+  width: 95%;
   margin: auto;
-  grid-template-columns: repeat(auto-fill, minmax(max(25vw, 250px), 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(max(20vw, 250px), 1fr));
   column-gap: 2vh;
   row-gap: 2vh;
 }
@@ -128,6 +132,11 @@ input {
   border-radius: 4px;
   padding: 5px;
   cursor: pointer;
+  min-height: 150px;
+}
+.error__card__holder{
+  place-self: stretch;
+
 }
 .errors__card:hover {
   border: 1px solid black;
@@ -173,6 +182,10 @@ input {
   text-align: center;
   margin: 5px;
   white-space: pre-wrap;
+  word-wrap: break-word;
+}
+.project__name{
+      white-space: pre-wrap;
   word-wrap: break-word;
 }
 </style>
