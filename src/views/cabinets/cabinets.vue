@@ -7,7 +7,10 @@
 <br>
 
 <!-- <div id="loadingMessage" hidden="">⌛ Loading video...</div> -->
-<canvas id="canvas" height="480" width="640"></canvas>
+<!-- <video playsinline="true" style="width: 250px" autoplay="true" ref="streamVideo" ></video>
+<canvas ref="canva" ></canvas>
+<button @click="scan">SCAN</button> -->
+<canvas id="canvas" height="auto" width="100%"></canvas>
   <!-- <video id="qr-video" playsinline="" disablepictureinpicture="" style="transform: scaleX(-1);"></video>
   <button @click="scanner.start()">SCAN</button> -->
   <!-- <div id="reader" style="width: 500px"></div> -->
@@ -26,20 +29,23 @@ export default {
       scanner: null
     }
   },
+  methods: {
+    scan(canvas, video) {
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+    }
+  },
   watch: {
     qr() {
       window.location.href = this.qr
     }
   },
-  mounted () {
+  async mounted () {
     
-    var video = document.createElement("video");
-    var canvasElement = document.getElementById("canvas");
-    var canvas = canvasElement.getContext("2d");
-    // var loadingMessage = document.getElementById("loadingMessage");
-    var outputContainer = document.getElementById("output");
-    var outputMessage = document.getElementById("outputMessage");
-    var outputData = document.getElementById("outputData");
+    const video = document.createElement("video");
+    const canvasElement = document.getElementById("canvas");
+    const canvas = canvasElement.getContext("2d");
 
     function drawLine(begin, end, color) {
       canvas.beginPath();
@@ -51,12 +57,17 @@ export default {
     }
 
     // Use facingMode: environment to attemt to get the front camera on phones
-    navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } }).then(function(stream) {
+    // let stream = null
+
+  const stream = await navigator.mediaDevices.getUserMedia({
+    audio: false,
+    video: {
+      facingMode: "environment"
+    }
+  })
       video.srcObject = stream;
       video.setAttribute("playsinline", true); // required to tell iOS safari we don't want fullscreen
       video.play();
-      requestAnimationFrame(tick);
-    });
 
     const tick = () => {
       // loadingMessage.innerText = "⌛ Loading video..."
@@ -68,18 +79,16 @@ export default {
         canvasElement.height = video.videoHeight;
         canvasElement.width = video.videoWidth;
         canvas.drawImage(video, 0, 0, canvasElement.width, canvasElement.height);
-        var imageData = canvas.getImageData(0, 0, canvasElement.width, canvasElement.height);
-        var code = jsQR(imageData.data, imageData.width, imageData.height, {
+        const imageData = canvas.getImageData(0, 0, canvasElement.width, canvasElement.height);
+        const code = jsQR(imageData.data, imageData.width, imageData.height, {
           inversionAttempts: "dontInvert",
         });
         if (code) {
-          drawLine(code.location.topLeftCorner, code.location.topRightCorner, "#FF3B58");
-          drawLine(code.location.topRightCorner, code.location.bottomRightCorner, "#FF3B58");
-          drawLine(code.location.bottomRightCorner, code.location.bottomLeftCorner, "#FF3B58");
-          drawLine(code.location.bottomLeftCorner, code.location.topLeftCorner, "#FF3B58");
-          // outputMessage.hidden = true;
-          // outputData.parentElement.hidden = false;
-        this.qr = code.data
+          drawLine(code.location.topLeftCorner, code.location.topRightCorner, "#ff5100");
+          drawLine(code.location.topRightCorner, code.location.bottomRightCorner, "#ff5100");
+          drawLine(code.location.bottomRightCorner, code.location.bottomLeftCorner, "#ff5100");
+          drawLine(code.location.bottomLeftCorner, code.location.topLeftCorner, "#ff5100");
+          this.qr = code.data
         //  return
         //   console.log(code.data);
         } else {
@@ -89,8 +98,17 @@ export default {
       }
       requestAnimationFrame(tick);
     }
+      requestAnimationFrame(tick);
+
   },
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="css" scoped>
+#canvas{
+  display: block;
+  width: min(600px, 95vw);
+  margin: auto;
+  color: #ff5100;
+}
+</style>
