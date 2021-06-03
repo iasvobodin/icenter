@@ -1,10 +1,11 @@
 <template>
 <br>
+<input v-model="search" type="text" placeholder="мастер или номер проекта">
   <div v-if="errors" class="errors__holder">
     <div v-for="status in actualStatus" :key="status" >
       <br>
       <h4>{{status}}</h4>
-      <div  v-for="(value, key, index) in errors"
+      <div  v-for="(value, key, index) in filterProjects"
       :key="index"
       
       @click="$router.push(`/projects/${value.id}`)">
@@ -13,11 +14,9 @@
       <h2>{{ value.id }}</h2>
       <p>{{ value.info.base['Project Name'] }}</p>
       <br>
-      <p>Количество шкафов {{ value.cabinets.length }}</p>
-      <!-- <br>
-       <p>Статус{{ value.info.extends['status project'] }}</p> -->
-      <!-- <info-render :info-data="value.info.base" />
-    <info-render :info-data="value.info.extends" /> -->
+      <p> <i>Количество шкафов</i>  : {{ value.cabinets.length }}</p>
+      <br>
+      <p> <i>Мастер</i> : {{ value.info.extends['senior fitter'] }}</p>
     </div>
       </div>
     </div>
@@ -41,21 +40,17 @@ export default {
       resErrors: null,
       fetchStatus: null,
       errorMessage: '',
-      actualStatus: null
+      actualStatus: null,
+      search:""
     })
     
-    // const ordered = computed(() => {
-    //   if (state.errors) {
-    //     const ord = Object.keys(state.errors.info.extends).sort().reduce(
-    //       (obj, key) => {
-    //         obj[key] = state.errors.info.extends[key];
-    //         return obj;
-    //       }, {}
-    //     )
-    //     return ord
-    //   }
-    //   return 'sort'
-    // })
+    const filterProjects = computed(() => {
+      //  debugger
+      return state.search ? 
+ state.errors.filter(e=> e.id&&e.info.extends['senior fitter']&&[e.id, e.info.extends['senior fitter']].some(s => s.toLowerCase().includes(state.search.toLowerCase()))) 
+ : state.errors
+     
+    })
     const getErrors = async () => {
       const {
         request,
@@ -92,6 +87,7 @@ export default {
 
     return {
       //ordered,
+      filterProjects,
       ...toRefs(state),
     }
   },
@@ -99,6 +95,17 @@ export default {
 </script>
 
 <style lang="css" scoped>
+input {
+  height: 30px;
+  border: 1px solid orange;
+  border-radius: 5px;
+  line-height: 30px;
+  font-size: 18px;
+  text-align: center;
+  width: min(400px, 95vw);
+  margin: auto;
+  padding: 0px;
+}
 .selectStatus > h3 {
   display: inline;
 }
