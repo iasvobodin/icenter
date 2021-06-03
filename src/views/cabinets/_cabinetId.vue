@@ -3,7 +3,7 @@
         <h1>WO {{$route.params.cabinetId}}</h1>
         <div v-for="(item, key)  in cabinetItems" :key="item.id" class="error__holder">
             <h2>{{item.id }}</h2>
-            <small :style="{borderColor: statusColor[item.status]}" >Статус: {{item.status}}</small>
+            <small :style="{backgroundColor: statusColor[item.status]}" >Статус: {{item.status}}</small>
             <br>
             <br>
             <div class="err__tabs">
@@ -123,10 +123,11 @@ const XLSX = await import('xlsx')
 }
 
 small{
-    border-style: solid;
-    border-width: 3px;
+    /* border-style: solid;
+    border-width: 3px; */
     border-radius: 5px;
-    padding: 1px;
+    padding: 3px;
+    color: white;
 }
 
 label {

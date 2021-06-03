@@ -1,21 +1,27 @@
 <template>
 <br>
   <div v-if="errors" class="errors__holder">
-    <div
-      v-for="(value, key, index) in errors"
+    <div v-for="status in actualStatus" :key="status" >
+      <br>
+      <h4>{{status}}</h4>
+      <div  v-for="(value, key, index) in errors"
       :key="index"
-      class="errors__card"
-      @click="$router.push(`/projects/${value.id}`)"
-    >
+      
+      @click="$router.push(`/projects/${value.id}`)">
+      <br v-if="value.info.extends['status project'] === status" class="errors__card">
+    <div v-if="value.info.extends['status project'] === status" class="errors__card"  >
       <h2>{{ value.id }}</h2>
       <p>{{ value.info.base['Project Name'] }}</p>
       <br>
       <p>Количество шкафов {{ value.cabinets.length }}</p>
-      <br>
-       <p>Статус{{ value.info.extends['status project'] }}</p>
+      <!-- <br>
+       <p>Статус{{ value.info.extends['status project'] }}</p> -->
       <!-- <info-render :info-data="value.info.base" />
     <info-render :info-data="value.info.extends" /> -->
     </div>
+      </div>
+    </div>
+
   </div>
 </template>
 
@@ -35,6 +41,7 @@ export default {
       resErrors: null,
       fetchStatus: null,
       errorMessage: '',
+      actualStatus: null
     })
     
     // const ordered = computed(() => {
@@ -57,16 +64,16 @@ export default {
       await request()
       state.errors = response
 
-      const status = state.errors.reduce((acc, pr) => acc.add(pr.info.extends['status project']),new Set())
-         let arr = []
-       const groupByStatus = state.errors.reduce((acc, pr) => {
-         acc[pr.info.extends['status project']] = pr
-        //  [...status].forEach(st =>{
-        //   //  if(pr.info.extends['status project'] === st){}
-        // //  })
-        //  acc.add(pr.info.extends['status project'])
-         },{})
-console.log( groupByStatus);
+      state.actualStatus = [...state.errors.reduce((acc, pr) => acc.add(pr.info.extends['status project']),new Set())].sort()
+      //    let arr = []
+      //  const groupByStatus = state.errors.reduce((acc, pr) => {
+      //    acc[pr.info.extends['status project']] = pr
+      //   //  [...status].forEach(st =>{
+      //   //   //  if(pr.info.extends['status project'] === st){}
+      //   // //  })
+      //   //  acc.add(pr.info.extends['status project'])
+      //    },{})
+// console.log( groupByStatus);
       state.errors.sort(function (a, b) {
         const nameA = a.info.extends['status project'].toLowerCase();
         const nameB = b.info.extends['status project'].toLowerCase();
@@ -102,8 +109,8 @@ console.log( groupByStatus);
   margin-top: 1vh;
 }
 .errors__holder {
-  display: grid;
-  width: 98%;
+  /* display: grid; */
+  width: min(500px, 90vw);
   margin: auto;
   grid-template-columns: repeat(auto-fill, minmax(max(25vw, 250px), 1fr));
   column-gap: 2vh;
