@@ -13,19 +13,35 @@
     </section>
     <section class="project__cabinets">
       <h3>Шкафы</h3>
-      <div v-if="!updateWOFlag" class="project__cabinets__info">
+        <table v-if="!updateWOFlag" >
+    <tr style="border: solid 2px orange">
+      <th>WO</th>
+      <th>Наименование</th>
+    </tr>
+    <tbody>
+       <tr @click="$router.push(`/cabinets/${cab.wo}`)" v-for="(value, i) in project.cabinets" :key="i">
+      <td>{{ value.wo }}</td>
+      <td class="tg-0lax">{{ value['cab name'] }}</td>
+    </tr>
+    </tbody>
+  </table>
+      <!-- <div v-if="!updateWOFlag" class="project__cabinets__info">
         <div v-for="(cab, i) in project.cabinets" :key="i" class="holder" @click="$router.push(`/cabinets/${cab.wo}`)">
-          <info-render :info-data="cab" /> <br />
+          <p>{{cab['cab name']}} {{cab.wo}}</p>
+          
         </div>
-      </div>
-      <choose-wo-number v-if="updateWOFlag" :multiple-permission="true" :cabinet-list="newWO"
+      </div> -->
+      <choose-wo-number v-if="updateWOFlag" :multiple-permission="false" :cabinet-list="newWO"
         @checked-wo="($event) => (project.cabinets = $event)" />
     </section>
   </main>
     <section class="project__controls">
+      <br>
       <button v-if="!changeData" @click="changeData = !changeData">Редактировать</button>
       <button v-else @click="updateProject">Сохранить</button>
       <button v-if="changeData" @click="updateWO">Обновить WO</button>
+      <br>
+      <br>
     </section>
 </template>
 
@@ -100,12 +116,43 @@ const updateProject = async () => {
 </script>
 
 <style lang="css" scoped>
+section{
+  border-right: 1px solid black;
+  padding-right: 1vw;
+}
+table {
+  margin-top: 2vh;
+  border-collapse: collapse;
+  border-radius: 5px;
+  width: 100%;
+  margin: auto;
+}
+td,
+th {
+  border: 1px solid #999;
+  padding: 4px;
+  font-size: 12px;
+  cursor: pointer;
+}
+tbody tr:nth-child(odd) {
+  background: #eee;
+}
+tbody tr:hover {
+  background: rgba(255, 166, 0, 0.185);
+}
+
 .project{
   /* position: relative; */
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(max(30vw, 300px), 1fr));
-  column-gap: 3vw;
+  width: 95%;
+  margin: auto;
+  grid-template-columns: repeat(auto-fit, minmax(max(30%, 300px), 1fr));
+  column-gap: 1vw;
   justify-content: center;
+}
+.project:last-child{
+  border-right: 1px solid white;
+  background-color: lime;
 }
 .project__controls{
   /* position: absolute; */

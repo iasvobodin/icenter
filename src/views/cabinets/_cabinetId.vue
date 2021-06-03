@@ -3,7 +3,7 @@
         <h1>WO {{$route.params.cabinetId}}</h1>
         <div v-for="(item, key)  in cabinetItems" :key="item.id" class="error__holder">
             <h2>{{item.id }}</h2>
-            <small :style="{backgroundColor: statusColor[item.status]}" >Статус: {{item.status}}</small>
+            <small :style="{backgroundColor: statusColor[item.status]}">Статус: {{item.status}}</small>
             <br>
             <br>
             <div class="err__tabs">
@@ -17,19 +17,20 @@
             </div>
             <div class="card__holder">
                 <div v-if="currentTab[key] !== 'Фото'">
-                <info-render  :info-data="{...item.body[currentTab[key]]}" />
+                    <info-render :info-data="{...item.body[currentTab[key]]}" />
                 </div>
                 <div class="photo__holder" v-for="ph in item.photos" v-else :key="ph">
                     <a :href="`https://icaenter.blob.core.windows.net/errors-photo/${ph}`">
-                    <img :src="`https://icaenter.blob.core.windows.net/errors-photo/thumb__${ph}`" alt="photo error">
+                        <img :src="`https://icaenter.blob.core.windows.net/errors-photo/thumb__${ph}`"
+                            alt="photo error">
                     </a>
                 </div>
             </div>
         </div>
-         <br>
+        <br>
         <button @click="saveBook">Экспорт excel</button>
         <br>
-         <br>
+        <br>
     </div>
 </template>
 
@@ -59,10 +60,10 @@ export default {
             cabinetItems: null,
             tabs: ['Открыто', 'Принято', 'Устранено', "Фото"],
             currentTab: {},
-            statusColor:{
+            statusColor: {
                 closed: "green",
-                open:"red",
-                confirmed:"yellow"
+                open: "red",
+                confirmed: "yellow"
             }
         })
         const getCabinetItems = async () => {
@@ -81,7 +82,7 @@ export default {
         getCabinetItems()
 
         const saveBook = async () => {
-const XLSX = await import('xlsx')
+            const XLSX = await import('xlsx')
 
             function formatDate(date) {
                 return `${date.getDate()}.0${date.getMonth() + 1}.${date.getFullYear()}`
