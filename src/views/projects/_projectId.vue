@@ -40,13 +40,18 @@
       <button v-if="!changeData" @click="changeData = !changeData">Редактировать</button>
       <button v-else @click="updateProject">Сохранить</button>
       <button v-if="changeData" @click="updateWO">Обновить WO</button>
+      <button @click="generatedQR = true">Сгенерировать QR</button>
       <br>
       <br>
+    </section>
+    <section v-if="generatedQR">
+    <generate-qr-code v-for="(value, i) in project.cabinets" :key="i" :generate-data="value"/>
     </section>
 </template>
 
 <script>
 import chooseWoNumber from '@/components/chooseWoNumber.vue'
+import generateQrCode from '@/components/generateQrCode.vue'
 import { reactive, toRefs } from 'vue'
 import { useFetch } from '@/hooks/fetch'
 import { useRouter, useRoute } from 'vue-router'
@@ -57,6 +62,7 @@ export default {
     conditionalRender,
     infoRender,
     chooseWoNumber,
+    generateQrCode
   },
   setup() {
     const route = useRoute()
@@ -65,7 +71,8 @@ export default {
       newWO: null,
       changeData: false,
       updateWOFlag:false,
-      resCabinets:{}
+      resCabinets:{},
+      generatedQR: false
     })
     const getProject = async () => {
       const { request, response } = useFetch(

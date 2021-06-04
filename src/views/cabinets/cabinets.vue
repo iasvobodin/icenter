@@ -50,16 +50,7 @@
 <script>
 import jsQR from "jsqr";
 
-import QRCodeStyling, {
-  DrawType,
-  TypeNumber,
-  Mode,
-  ErrorCorrectionLevel,
-  DotType,
-  CornerSquareType,
-  CornerDotType,
-  Extension
-} from 'qr-code-styling';
+import QRCodeStyling from 'qr-code-styling';
 export default {
 components: {
     // VueQr3: defineAsyncComponent(() =>
@@ -87,22 +78,15 @@ components: {
     "margin": 20,
      image: "/img/logo.png",
     "qrOptions": {
-        "typeNumber": "0",
         "mode": "Byte",
         "errorCorrectionLevel": "H"
     },
     "imageOptions": {
-        "hideBackgroundDots": true,
         "imageSize": 0.7,
         "margin": 0
     },
     "dotsOptions": {
         "type": "classy-rounded",
-        "color": "#000000",
-        "gradient": null
-    },
-    "backgroundOptions": {
-        "color": "#ffffff"
     },
     "dotsOptionsHelper": {
         "colorType": {
@@ -111,32 +95,11 @@ components: {
         },
     },
     "cornersSquareOptions": {
-        "type": "extra-rounded",
-        "color": "#000000",
-        "gradient": null
-    },
-    "cornersSquareOptionsHelper": {
-        "colorType": {
-            "single": true,
-            "gradient": false
-        },
+        "type": "dot",
     },
     "cornersDotOptions": {
-        "type": "",
-        "color": "#000000"
+        "type": "dot",
     },
-    "cornersDotOptionsHelper": {
-        "colorType": {
-            "single": true,
-            "gradient": false
-        },
-    },
-    "backgroundOptionsHelper": {
-        "colorType": {
-            "single": true,
-            "gradient": false
-        },
-    }
 });
 
 console.log(qrCode);
