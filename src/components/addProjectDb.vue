@@ -51,6 +51,7 @@ import chooseWoNumber from '@/components/chooseWoNumber.vue'
 import conditionalRender from '@/components/conditionalRender.vue'
 import { useFetch } from '@/hooks/fetch'
 import { useProjects } from '@/hooks/projectlsit'
+import { useRouter } from 'vue-router'
 import { ref, reactive } from '@vue/runtime-core'
 // import projectInfo from './projectInfo.vue';
 export default {
@@ -60,6 +61,7 @@ export default {
     conditionalRender,
   },
   setup() {
+    const router = useRouter()
     const projectList = ref(null)
     const selectedProject = ref(null)
     const fetchProjectList = async () => {
@@ -97,6 +99,7 @@ export default {
       await request()
       selected.extend = {}
       selected.cabinets = []
+      router.push("/projects")
     }
 
     return {
@@ -109,161 +112,6 @@ export default {
       selectedProject,
     }
   },
-  //   data() {
-  //     return {
-  //       projectData: null,
-  //       fetchStatus: "Отправить в базу данных",
-  //       validateData: false,
-  //       fetchTemplate: null,
-  //       selected: {},
-  //       checkbox: [],
-  //       checkedCabinetsNames: [],
-  //       spinnerClass: false,
-  //       selectedProject: null,
-  //       filterProjectList: null,
-  //       woList: null,
-  //       listIsActive: null,
-  //       checkBoxAll: false,
-  //       lastUpdate: null,
-  //     };
-  //   },
-  //   computed: {
-  //     mappingWO() {
-  //       return (
-  //         this.woList &&
-  //         this.woList.map((el) => {
-  //           return {
-  //             wo: el.cabinet.wo,
-  //             ["cab name"]: el.cabinet["cabinet name"],
-  //           };
-  //         })
-  //       );
-  //     },
-  //   },
-  //   async mounted() {
-  //     // this.fetchProjectList()
-  //     try {
-  //       if (!this.fetchTemplate) {
-  //         this.fetchTemplate = await (
-  //           await fetch("/api/templates/templateProject/ver1")
-  //         ).json();
-  //         this.selected = {
-  //           ...this.fetchTemplate.template.base,
-  //           ...this.fetchTemplate.template.extend,
-  //         };
-  //       }
-  //     } catch (error) {
-  //       console.log(error);
-  //     }
-  //   },
-  //   methods: {
-  //     // async runDataFactory() {
-  //     //   const uri =
-  //     //     "https://management.azure.com/subscriptions/33ffdf9c-5499-414c-b962-a4ce5553d7e1/resourceGroups/Masstrikov_ICenter/providers/Microsoft.DataFactory/factories/icenter/pipelines/icenter/createRun?api-version=2017-03-01-preview";
-  //     //   await fetch(uri, {
-  //     //     method: "POST",
-  //     //   });
-  //     // },
-  //     formatDate(date) {
-  //       return (
-  //         date.getDate() +
-  //         "/" +
-  //         "0" +
-  //         (date.getMonth() + 1) +
-  //         "/" +
-  //         date.getFullYear() +
-  //         " " +
-  //         date.getHours() +
-  //         ":" +
-  //         date.getMinutes()
-  //       );
-  //     },
-  //     mapWO(e) {
-  //       console.log(e);
-  //       this.checkedCabinetsNames = Object.values(e)
-  //         .filter((el) => el.wo)
-  //         .map((el) => {
-  //           return {
-  //             wo: el.wo,
-  //             ["cab name"]: el["cab name"],
-  //           };
-  //         });
-  //     },
-  //     async choose($event) {
-  //       if (!$event) {
-  //         this.woList = null;
-  //         return;
-  //       }
-  //       this.$store.commit("changeLoader", true)
-  //       this.woList = await (await fetch(`/api/cabinetList/${$event}`)).json();
-  // this.$store.commit("changeLoader", false)
-  //       this.checkedCabinetsNames = [];
-  //       this.selectedProject = $event;
-  //     },
-  //     async fetchProjectList() {
-  //       if (!this.projectData) {
-  //         // this.$store.commit("changeLoader", true)
-  //         // const {request, response: projectList} = useFetch('/api/projectstatus?excludestatus=Отгружено')
-  //         // // const projectDataRes = await fetch("/api/projectstatus?excludestatus=Отгружено");
-  //         // await request();
-  //         // console.log(projectList,"projectList");
-  //         // this.projectData = projectList.value.data;
-  //         // this.$store.commit("changeLoader", false)
-  //         // console.log(typeof projectData.lastUpdate,  this.formatDate(new Date(projectData.lastUpdate*1000)));
-
-  //         const projectL = await useProjects()
-  //          this.projectData = projectL.value.data;
-  //             this.lastUpdate = this.formatDate(
-  //           new Date(projectL.value.lastUpdate * 1000)
-  //         );
-  // //        const mapPl = projectL.value.map(e => e['project number'])
-  // // console.log(mapPl,'mapPl');
-  // //         return {projectL}
-  //         // this.projectData = await (
-  //         //   await fetch("/api/projectstatus/Open")
-  //         // ).json();
-  //         //  console.log(this.formatDate(this.projectData.lastUpdate));
-  //         // // debugger
-  //         // this.projectData = data//.filter(el => el.length > 6).sort();
-  //         // console.log(this.projectData);
-  //       }
-  //     },
-  //     checkAll() {
-  //       this.checkBoxAll = !this.checkBoxAll;
-  //       if (this.checkBoxAll) {
-  //         this.checkbox.forEach((e) => (e.checked = true));
-  //         this.checkedCabinetsNames = this.woList;
-  //       } else {
-  //         this.checkbox.forEach((e) => (e.checked = false));
-  //         this.checkedCabinetsNames = [];
-  //       }
-  //     },
-  //     setItemRef(el) {
-  //       !this.checkbox && this.checkbox.push(el);
-  //     },
-  //     async postProject() {
-  //       let modifyEl;
-  //       if (this.selectedProject.endsWith(".0")) {
-  //         modifyEl = this.selectedProject.slice(0, -2);
-  //       } else {
-  //         modifyEl = this.selectedProject;
-  //       }
-  //       await fetch("/api/POST_project", {
-  //         method: "POST", // или 'PUT'
-  //         body: JSON.stringify({
-  //           id: modifyEl,
-  //           status: "open",
-  //           // ttl: 1,
-  //           info: {
-  //             base: this.woList[0]["info"],
-  //             extends: this.selected,
-  //           },
-  //           cabinets: this.checkedCabinetsNames,
-  //         }),
-  //       });
-  //       this.fetchStatus = "Проект успешно добавлен";
-  //     },
-  //   },
 }
 </script>
 

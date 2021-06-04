@@ -39,122 +39,83 @@
   <br>
   <button @click="$router.push(`/cabinets/${qr}`)" v-if="qr">Перейти к шкафу : WO{{qr}}</button>
   <canvas v-show="false" id="canvas" height="auto" width="100%"></canvas>
-  <br>
+  <!-- <br>
   <br>
   <br>
   <div  ref="generate"></div>
    <br>
   <br>
-  <br>
+  <br> -->
 </template>
 <script>
+import { useFetch } from '@/hooks/fetch'
 import jsQR from "jsqr";
-
-import QRCodeStyling from 'qr-code-styling';
+import {
+  reactive,
+  ref,
+  onMounted,
+  toRefs,
+  computed,
+  watch
+} from 'vue';
+import {
+  useRouter
+} from 'vue-router'
 export default {
-components: {
-    // VueQr3: defineAsyncComponent(() =>
-    //   Promise.resolve(import('vue3-qr-code-styling'))
-    // )
-  },
-  data() {
-    return {
-      qr: '',
-      scanner: null
+  setup() {
+    const router = useRouter()
+    const streamVideo = ref(null)
+    const qr = ref('')
+    const state = reactive({
+      cabinets: null,
+      // qr: ''
+    })
+    watch(qr, (newValue, oldValue) => {
+      router.push(`/cabinets/${newValue}`)
+    })
+    const getCabinets = async () => {
+      const {
+        request,
+        response
+      } = useFetch(`/api/projects?status=open`)
+      await request()
+      // response.value.filter(pr =>  pr.info.extends['status project'].includes('02'))
+      state.cabinets = response
+       
     }
-  },
+    getCabinets()
+    const ff = computed(()=> state.cabinets.filter(pr =>  pr.info.extends['status project'].includes('02')||pr.info.extends['status project'].includes('03')||pr.info.extends['status project'].includes('04')).map(c=> c.cabinets).flat())
+    onMounted(async () => {
+      const canvasElement = document.getElementById("canvas");
+      const canvas = canvasElement.getContext("2d");
 
-  watch: {
-    qr(newValue) {
-      this.$router.push(`/cabinets/${newValue}`)
-    }
-  },
-  async mounted () {
-    
-    const qrCode = new QRCodeStyling({
-    "width": 500,
-    "height": 500,
-    "data": "5269115",
-    "margin": 20,
-     image: "/img/logo.png",
-    "qrOptions": {
-        "mode": "Byte",
-        "errorCorrectionLevel": "H"
-    },
-    "imageOptions": {
-        "imageSize": 0.7,
-        "margin": 0
-    },
-    "dotsOptions": {
-        "type": "classy-rounded",
-    },
-    "dotsOptionsHelper": {
-        "colorType": {
-            "single": true,
-            "gradient": false
-        },
-    },
-    "cornersSquareOptions": {
-        "type": "dot",
-    },
-    "cornersDotOptions": {
-        "type": "dot",
-    },
-});
-
-console.log(qrCode);
-qrCode.append(this.$refs.generate);
-
-    // const video = document.createElement("video");
-    const canvasElement = document.getElementById("canvas");
-    const canvas = canvasElement.getContext("2d");
-
-    function drawLine(begin, end, color) {
-      canvas.beginPath();
-      canvas.moveTo(begin.x, begin.y);
-      canvas.lineTo(end.x, end.y);
-      canvas.lineWidth = 4;
-      canvas.strokeStyle = color;
-      canvas.stroke();
-    }
-
-    // Use facingMode: environment to attemt to get the front camera on phones
-    // let stream = null
-
-  const stream = await navigator.mediaDevices.getUserMedia({
-    audio: false,
-    video: {
-      facingMode: "environment"
-    }
-  })
-  const video2 = this.$refs.streamVideo
-  video2.srcObject = stream
-      // video.srcObject = stream;
-      // video.setAttribute("playsinline", true); // required to tell iOS safari we don't want fullscreen
-      // video.play();
-
-    const tick = setInterval( () => {
-      if (video2.readyState === video2.HAVE_ENOUGH_DATA) {
-        canvasElement.height = video2.videoHeight;
-        canvasElement.width = video2.videoWidth;
-        canvas.drawImage(video2, 0, 0, canvasElement.width, canvasElement.height);
-        const imageData = canvas.getImageData(0, 0, canvasElement.width, canvasElement.height);
-        const code = jsQR(imageData.data, imageData.width, imageData.height, {
-          inversionAttempts: "dontInvert",
-        });
-        if (code) {
-          // drawLine(code.location.topLeftCorner, code.location.topRightCorner, "#ff5100");
-          // drawLine(code.location.topRightCorner, code.location.bottomRightCorner, "#ff5100");
-          // drawLine(code.location.bottomRightCorner, code.location.bottomLeftCorner, "#ff5100");
-          // drawLine(code.location.bottomLeftCorner, code.location.topLeftCorner, "#ff5100");
-          this.qr = code.data
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: false,
+        video: {
+          facingMode: "environment"
         }
-      }
-    },500)
-  },
-  methods: {
-    goToCabinet() {
-     this.$router.push(`/cabinets/${this.qr}`)
+      })
+      const video = streamVideo.value
+      video.srcObject = stream
+      const tick = setInterval(() => {
+        if (video.readyState === video.HAVE_ENOUGH_DATA) {
+          canvasElement.height = video.videoHeight;
+          canvasElement.width = video.videoWidth;
+          canvas.drawImage(video, 0, 0, canvasElement.width, canvasElement.height);
+          const imageData = canvas.getImageData(0, 0, canvasElement.width, canvasElement.height);
+          const code = jsQR(imageData.data, imageData.width, imageData.height, {
+            inversionAttempts: "dontInvert",
+          });
+          code && (qr.value = code.data)
+        }
+      }, 500)
+    })
+
+    return {
+      streamVideo,
+      qr,
+      ff,
+      ...toRefs(state)
     }
   },
 };

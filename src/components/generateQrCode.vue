@@ -61,7 +61,7 @@ export default {
 <style lang="css" scoped>
 .qr__holder{
     height: 500px;
-    overflow: hidden;
+    /* overflow: hidden; */
 }
 /* svg{
     width: 70vh;
@@ -78,6 +78,7 @@ export default {
     margin-bottom: 5vh; */
 }
   .page{
+      margin: 8vh;
     /* page-break-after:always; */
     /* width:29.7cm ;
   height:21cm ; */

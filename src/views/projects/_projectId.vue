@@ -125,10 +125,10 @@ const updateProject = async () => {
 
 <style lang="css" scoped>
 
-section{
+/* section{
   border-right: 1px solid black;
   padding-right: 1vw;
-}
+} */
 table {
   margin-top: 2vh;
   border-collapse: collapse;
@@ -192,9 +192,9 @@ tbody tr:hover {
     size: A4 landscape;
 }
    .project,
-   .app__header,
    .project__header,
-   .project__controls{
+   .project__controls,
+   .app__header{
      display: none;
    }
    /* .qrs{
