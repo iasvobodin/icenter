@@ -39,12 +39,32 @@
   <br>
   <button @click="$router.push(`/cabinets/${qr}`)" v-if="qr">Перейти к шкафу : WO{{qr}}</button>
   <canvas v-show="false" id="canvas" height="auto" width="100%"></canvas>
+  <br>
+  <br>
+  <br>
+  <div  ref="generate"></div>
+   <br>
+  <br>
+  <br>
 </template>
 <script>
 import jsQR from "jsqr";
+
+import QRCodeStyling, {
+  DrawType,
+  TypeNumber,
+  Mode,
+  ErrorCorrectionLevel,
+  DotType,
+  CornerSquareType,
+  CornerDotType,
+  Extension
+} from 'qr-code-styling';
 export default {
-    components: {
-    // QRcodeScanner
+components: {
+    // VueQr3: defineAsyncComponent(() =>
+    //   Promise.resolve(import('vue3-qr-code-styling'))
+    // )
   },
   data() {
     return {
@@ -52,13 +72,76 @@ export default {
       scanner: null
     }
   },
+
   watch: {
-    // qr() {
-    //   window.location.href = this.qr
-    // }
+    qr(newValue) {
+      this.$router.push(`/cabinets/${newValue}`)
+    }
   },
   async mounted () {
     
+    const qrCode = new QRCodeStyling({
+    "width": 500,
+    "height": 500,
+    "data": "5269115",
+    "margin": 20,
+     image: "/img/logo.png",
+    "qrOptions": {
+        "typeNumber": "0",
+        "mode": "Byte",
+        "errorCorrectionLevel": "H"
+    },
+    "imageOptions": {
+        "hideBackgroundDots": true,
+        "imageSize": 0.7,
+        "margin": 0
+    },
+    "dotsOptions": {
+        "type": "classy-rounded",
+        "color": "#000000",
+        "gradient": null
+    },
+    "backgroundOptions": {
+        "color": "#ffffff"
+    },
+    "dotsOptionsHelper": {
+        "colorType": {
+            "single": true,
+            "gradient": false
+        },
+    },
+    "cornersSquareOptions": {
+        "type": "extra-rounded",
+        "color": "#000000",
+        "gradient": null
+    },
+    "cornersSquareOptionsHelper": {
+        "colorType": {
+            "single": true,
+            "gradient": false
+        },
+    },
+    "cornersDotOptions": {
+        "type": "",
+        "color": "#000000"
+    },
+    "cornersDotOptionsHelper": {
+        "colorType": {
+            "single": true,
+            "gradient": false
+        },
+    },
+    "backgroundOptionsHelper": {
+        "colorType": {
+            "single": true,
+            "gradient": false
+        },
+    }
+});
+
+console.log(qrCode);
+qrCode.append(this.$refs.generate);
+
     // const video = document.createElement("video");
     const canvasElement = document.getElementById("canvas");
     const canvas = canvasElement.getContext("2d");

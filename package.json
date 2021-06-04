@@ -15,11 +15,13 @@
     "jsqr": "^1.4.0",
     "notiflix": "^3.0.1",
     "parse-multipart": "^1.0.4",
+    "qr-code-styling": "^1.5.0",
     "qr-scanner": "^1.2.0",
     "register-service-worker": "^1.7.2",
     "vue": "^3.0.5",
     "vue-router": "^4.0.0-0",
     "vue3-click-away": "^1.2.1",
+    "vue3-qr-code-styling": "^1.4.5",
     "vuex": "^4.0.0-0",
     "xlsx": "^0.17.0"
   },
