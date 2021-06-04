@@ -19,7 +19,7 @@
       <th>Наименование</th>
     </tr>
     <tbody>
-       <tr @click="$router.push(`/cabinets/${cab.wo}`)" v-for="(value, i) in project.cabinets" :key="i">
+       <tr @click="$router.push(`/cabinets/${value.wo}`)" v-for="(value, i) in project.cabinets" :key="i">
       <td>{{ value.wo }}</td>
       <td class="tg-0lax">{{ value['cab name'] }}</td>
     </tr>
