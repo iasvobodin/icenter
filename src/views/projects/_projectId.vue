@@ -1,5 +1,5 @@
 <template>
-      <h1>Номер проекта {{ $route.params.projectId }}</h1>
+      <h1 class="project__header">Номер проекта {{ $route.params.projectId }}</h1>
   <main v-if="project" class="project">
     <section class="project__info">
       <h3>Основная информация</h3>
@@ -19,7 +19,7 @@
       <th>Наименование</th>
     </tr>
     <tbody>
-       <tr @click="$router.push(`/cabinets/${value.wo}`)" v-for="(value, i) in project.cabinets" :key="i">
+       <tr v-for="(value, i) in project.cabinets" :key="i" @click="$router.push(`/cabinets/${value.wo}`)">
       <td>{{ value.wo }}</td>
       <td class="tg-0lax">{{ value['cab name'] }}</td>
     </tr>
@@ -44,7 +44,8 @@
       <br>
       <br>
     </section>
-    <section v-if="generatedQR">
+    <section v-if="generatedQR" class="qrs">
+      
     <generate-qr-code v-for="(value, i) in project.cabinets" :key="i" :generate-data="value"/>
     </section>
 </template>
@@ -123,6 +124,7 @@ const updateProject = async () => {
 </script>
 
 <style lang="css" scoped>
+
 section{
   border-right: 1px solid black;
   padding-right: 1vw;
@@ -174,4 +176,29 @@ tbody tr:hover {
 /* .holder:last-child {
   border: 0px;
 } */
+
+@media print {
+  .page{
+    /* page-break-inside:always; */
+    width:29.7cm ;
+    margin: 0;
+    /* margin-top: 0.5cm;
+    margin-bottom: 0.5cm; */
+  height:21cm ;
+  padding: 1cm;
+  }
+  @page {
+    /* margin: 1cm; */
+    size: A4 landscape;
+}
+   .project,
+   .app__header,
+   .project__header,
+   .project__controls{
+     display: none;
+   }
+   /* .qrs{
+     height: 100vh;
+   } */
+}
 </style>
