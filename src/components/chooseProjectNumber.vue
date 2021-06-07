@@ -10,7 +10,7 @@
         list="projetList"
         @focus="listIsActive = true"
         @blur="listIsActive = false"
-        placeholder="Введите номер проекта"
+        :placeholder="placeHolder"
       />
       <img
         v-if="selectedProject"
@@ -53,6 +53,10 @@ export default {
       type: Array,
       default: ()=> [1, 2],
     },
+    placeHolder:{
+      type: String,
+      default: "Введите номер проекта"
+    }
   },
 //   emits: ["inputProjectEvent", "chooseProjectNumber"],
   setup(props, { emit }) {
@@ -74,7 +78,7 @@ export default {
     }
     const filterProject = computed(() => {
         return dataToRender.value.filter((el) =>
-          el.includes(selectedProject.value)
+          el.toLowerCase().includes(selectedProject.value.toLowerCase())
         );
     })
     return {
