@@ -44,13 +44,14 @@ export default {
       fetchStatus: null,
       errorMessage: '',
       actualStatus: null,
-      search:""
+      search:"",
+      testStatus : {}
     })
     
     const filterProjects = computed(() => {
       //  debugger
       return state.search ? 
- state.errors.filter(e=> e.id&&e.info.extends['senior fitter']&&[e.id, e.info.extends['senior fitter']].some(s => s.toLowerCase().includes(state.search.toLowerCase()))) 
+ state.errors.filter(e=> [e?.id, e.info.extends?.['senior fitter']].some(s => s&&s.toLowerCase().includes(state.search.toLowerCase()))) 
  : state.errors
      
     })
@@ -63,6 +64,9 @@ export default {
       state.errors = response
 
       state.actualStatus = [...state.errors.reduce((acc, pr) => acc.add(pr.info.extends['status project']),new Set())].sort()
+      state.testStatus = {}
+      state.errors.forEach(pr => state.testStatus[pr.info.extends['status project']] =[] ) 
+      //  state.errors.forEach(pr => state.testStatus[pr.info.extends['status project']].push(pr.state.testStatus[pr.info.extends['status project']]) ) // [...state.errors.reduce((acc, pr) => acc.add(pr.info.extends['status project']),new Set())].sort()
       //    let arr = []
       //  const groupByStatus = state.errors.reduce((acc, pr) => {
       //    acc[pr.info.extends['status project']] = pr
