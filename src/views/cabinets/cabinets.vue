@@ -75,7 +75,7 @@ export default {
           const code = jsQR(imageData.data, imageData.width, imageData.height, {
             inversionAttempts: "dontInvert",
           });
-          code && clearInterval(tick) && (qr.value = code.data)
+          code  && (qr.value = code.data)
         }
       }, 500)
     })
