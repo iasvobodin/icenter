@@ -56,10 +56,10 @@ module.exports = async function (context, req) {
 
 
   sharp(parts[0].data)
-    .resize({
-      width: 1920,
-      height: null,
-    })
+    // .resize({
+    //   width: 1920,
+    //   height: null,
+    // })
     .toBuffer({
         resolveWithObject: true,
       },

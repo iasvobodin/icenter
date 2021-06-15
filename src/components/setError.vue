@@ -1,12 +1,12 @@
 <template>
   <div v-if="$store.state.template">
-    <form id="postError" @submit.prevent="postError">
+    <form id="postError" ref="form" name="postError" @submit.prevent="postError">
       <div
         v-if="$store.state.user.info.userRoles.includes('admin')"
         class="error__item"
       >
         <h4 class="error__item__title">Выберете роль</h4>
-        <select v-model="role" class="change__status error__item__desc">
+        <select v-model="role" form="postError" class="change__status error__item__desc">
           <option selected value="f_error">Сборщик</option>
           <option value="t_error">Тестировщик</option>
         </select>
@@ -17,7 +17,7 @@
       >
         <section v-if="returnRender(key)">
           <h3>Статус ошибки: {{ key }}</h3>
-          <conditional-render v-model="errorBody[key]" :data-render="value" />
+          <conditional-render v-model="errorBody[key]" form-id="postError" :data-render="value" />
         </section>
       </div>
       <br />
@@ -30,12 +30,12 @@
         accept="image/*"
         @input="checkFile"
       />
-      <div class="photo__gallery" v-if="files">
-        <div class="photo__holder" v-for="(fs, i) in filesSRC" :key="i">
-          <img class="photo__image" :src="fs" alt="">
-          <img @click="deletePhoto(i)" class="delete__icon" src="/img/delete.svg" alt="">
+      <div v-if="files" class="photo__gallery">
+        <div v-for="(fs, i) in filesBlobSRC" :key="i" class="photo__holder">
+          <img :ref="setItemRef" class="photo__image" :src="fs" alt="" @load="revoke(fs)">
+          <img class="delete__icon" src="/img/delete.svg" alt="" @click="deletePhoto(i)">
         </div>
-         <img class="add__photo" @click="firedFileInput" src="/img/add__image.svg" alt="">
+         <img class="add__photo" src="/img/add__image.svg" alt="" @click="firedFileInput">
         <!-- <p v-for="(f, i) in files" :key="f.lastModified">{{i+1}} {{ f.name }} {{f.status}}</p> -->
       </div>
       <br />
@@ -62,7 +62,10 @@ export default {
   },
   data() {
     return {
+      filesBlobSRC:[],
+      imageToUpload:[],
       filesSRC: [],
+      resizeBlob:[],
       files: [],
       errorTemplate: null,
       errorBody: {
@@ -81,9 +84,151 @@ export default {
     // !this.$store.state.template && this.$store.dispatch("GET_template");
   },
   mounted() {
+
+
+
+if (!HTMLCanvasElement.prototype.toBlob) {
+    Object.defineProperty(HTMLCanvasElement.prototype, 'toBlob', {
+        value: function(callback, type, quality) {
+
+            var binStr = atob(this.toDataURL(type, quality).split(',')[1]),
+                len = binStr.length,
+                arr = new Uint8Array(len);
+
+            for (var i = 0; i < len; i++) {
+                arr[i] = binStr.charCodeAt(i);
+            }
+
+            callback(new Blob([arr], {type: type || 'image/png'}));
+        }
+    });
+}
+
+window.URL = window.URL || window.webkitURL;
+
+// Modified from https://stackoverflow.com/a/32490603, cc by-sa 3.0
+// -2 = not jpeg, -1 = no data, 1..8 = orientations
+function getExifOrientation(file, callback) {
+    // Suggestion from http://code.flickr.net/2012/06/01/parsing-exif-client-side-using-javascript-2/:
+    if (file.slice) {
+        file = file.slice(0, 131072);
+    } else if (file.webkitSlice) {
+        file = file.webkitSlice(0, 131072);
+    }
+
+    var reader = new FileReader();
+    reader.onload = function(e) {
+        var view = new DataView(e.target.result);
+        if (view.getUint16(0, false) != 0xFFD8) {
+            callback(-2);
+            return;
+        }
+        var length = view.byteLength, offset = 2;
+        while (offset < length) {
+            var marker = view.getUint16(offset, false);
+            offset += 2;
+            if (marker == 0xFFE1) {
+                if (view.getUint32(offset += 2, false) != 0x45786966) {
+                    callback(-1);
+                    return;
+                }
+                var little = view.getUint16(offset += 6, false) == 0x4949;
+                offset += view.getUint32(offset + 4, little);
+                var tags = view.getUint16(offset, little);
+                offset += 2;
+                for (var i = 0; i < tags; i++)
+                    if (view.getUint16(offset + (i * 12), little) == 0x0112) {
+                        callback(view.getUint16(offset + (i * 12) + 8, little));
+                        return;
+                    }
+            }
+            else if ((marker & 0xFF00) != 0xFF00) break;
+            else offset += view.getUint16(offset, false);
+        }
+        callback(-1);
+    };
+    reader.readAsArrayBuffer(file);
+}
+
+// Derived from https://stackoverflow.com/a/40867559, cc by-sa
+function imgToCanvasWithOrientation(img, rawWidth, rawHeight, orientation) {
+    var canvas = document.createElement('canvas');
+    if (orientation > 4) {
+        canvas.width = rawHeight;
+        canvas.height = rawWidth;
+    } else {
+        canvas.width = rawWidth;
+        canvas.height = rawHeight;
+    }
+
+    if (orientation > 1) {
+        console.log("EXIF orientation = " + orientation + ", rotating picture");
+    }
+
+    var ctx = canvas.getContext('2d');
+    switch (orientation) {
+        case 2: ctx.transform(-1, 0, 0, 1, rawWidth, 0); break;
+        case 3: ctx.transform(-1, 0, 0, -1, rawWidth, rawHeight); break;
+        case 4: ctx.transform(1, 0, 0, -1, 0, rawHeight); break;
+        case 5: ctx.transform(0, 1, 1, 0, 0, 0); break;
+        case 6: ctx.transform(0, 1, -1, 0, rawHeight, 0); break;
+        case 7: ctx.transform(0, -1, -1, 0, rawHeight, rawWidth); break;
+        case 8: ctx.transform(0, -1, 1, 0, 0, rawWidth); break;
+    }
+    ctx.drawImage(img, 0, 0, rawWidth, rawHeight);
+    return canvas;
+}
+
+function reduceFileSize(file, acceptFileSize, maxWidth, maxHeight, quality, callback) {
+    if (file.size <= acceptFileSize) {
+        callback(file);
+        return;
+    }
+    var img = new Image();
+    img.onerror = function() {
+        URL.revokeObjectURL(this.src);
+        callback(file);
+    };
+    img.onload = function() {
+        URL.revokeObjectURL(this.src);
+        getExifOrientation(file, function(orientation) {
+            var w = img.width, h = img.height;
+            var scale = (orientation > 4 ?
+                Math.min(maxHeight / w, maxWidth / h, 1) :
+                Math.min(maxWidth / w, maxHeight / h, 1));
+            h = Math.round(h * scale);
+            w = Math.round(w * scale);
+
+            var canvas = imgToCanvasWithOrientation(img, w, h, orientation);
+            canvas.toBlob(function(blob) {
+                console.log("Resized image to " + w + "x" + h + ", " + (blob.size >> 10) + "kB");
+                callback(blob);
+            }, 'image/jpeg', quality);
+        });
+    };
+    img.src = URL.createObjectURL(file);
+}
+
+
+
+
+
+
+
+
+
     console.log(resizeImage);
   },
   methods: {
+        setItemRef(el) {
+      // if (el) {
+       this.imageToUpload.length === 0 && this.imageToUpload.push(el)
+      // }
+    },
+    revoke(fs){
+      console.log('blob is revoked');
+      window.URL.revokeObjectURL(fs)
+    },
     deletePhoto(i){
       this.files.splice(i, 1)
       this.filesSRC.splice(i, 1)
@@ -177,29 +322,65 @@ export default {
    async checkFile() {
 
      Object.values(this.$refs.fileInput.files).forEach(f => {
-         !this.files.some(file => f.name === file.name) && this.files.push(f)
+       !this.files.some(file => f.name === file.name) && this.files.push(f)
+     })
+    //  this.imageToUpload = []
+     console.log(this.files);
+
+     this.files.forEach(file => {
+       const newBlobUrl = URL.createObjectURL(file);
+       const reader = new FileReader();
+       reader.onload = e => !this.filesSRC.some(file => e.target.result === file) && this.filesSRC.push(e.target.result) && this.filesBlobSRC.push(newBlobUrl)
+       reader.readAsDataURL(file);
+       // this.filesBlobSRC.push(newBlobUrl)
+       // console.log(newBlobUrl,'newBlobUrl');
+
+       const image = new Image();
+       image.src = newBlobUrl
+       image.onerror = () => {
+         URL.revokeObjectURL(newBlobUrl);
+       };
+       image.onload = () => {
+         URL.revokeObjectURL(newBlobUrl)
+
+         // Resize the image
+         const canvas = document.createElement('canvas');
+         let max_size = 2024, // TODO : pull max size from a site config
+           width = image.width,
+           height = image.height;
+         if (width > height) {
+           if (width > max_size) {
+             height *= max_size / width;
+             width = max_size;
+           }
+         } else {
+           if (height > max_size) {
+             width *= max_size / height;
+             height = max_size;
+           }
+         }
+         canvas.width = width;
+         canvas.height = height;
+         canvas.getContext('2d').drawImage(image, 0, 0, width, height);
+         canvas.toBlob(b => {
+           console.log(b, 'after resize')
+           this.resizeBlob.push(b)
+         }, 'image/jpeg', 90)
+       }
      })
 
-  console.log(this.files);
-this.files.forEach(file=>{
-const reader = new FileReader();
-    reader.onload = e =>   !this.filesSRC.some(file => e.target.result === file) && this.filesSRC.push(e.target.result)
-    reader.readAsDataURL(file);
-})
+     addEventListener("beforeunload", this.beforeUnloadListener, {
+       capture: true
+     });
 
-    
-      addEventListener("beforeunload", this.beforeUnloadListener, {
-        capture: true
-      });
+     // const config = {
+     //     file: this.files[0],
+     //     maxSize: 500
+     // };
+     // const resizedImage = await resizeImage(config)
+     // console.log("upload resized image", resizedImage, this.files[0])
 
-// const config = {
-//     file: this.files[0],
-//     maxSize: 500
-// };
-// const resizedImage = await resizeImage(config)
-// console.log("upload resized image", resizedImage, this.files[0])
-
-    },
+   },
     beforeUnloadListener(event) {
       event.preventDefault();
       return event.returnValue = "Are you sure you want to exit?";
@@ -216,16 +397,30 @@ const reader = new FileReader();
       }
     },
     async postError(e) {
+const f = document.getElementById('postError')
+console.log(f);
+const formData = new FormData(f)
+console.log(formData);
+return
+
+
+
+
+
+
+
 this.$store.commit("changeLoader", true)
+
       const id = 'error__' + Date.now()
       const link = 'https://icaenter.blob.core.windows.net/errors-photo/'
+      //create global object in db
       const error = {
         id,
         info: {
           Проект: this.$store.state.projectInfo['project number'],
           Шкаф: this.$store.state.projectInfo['cab name'],
           wo: this.$store.state.projectInfo.wo.toString(),
-          Добавил: localStorage.getItem('userDetails').toLowerCase(),
+          Добавил: this.$store.state.user.info.userDetails.toLowerCase(),
           Мастер: this.$store.state.projectInfo['senior fitter'].toLowerCase(),
         },
         photos: [],
@@ -235,7 +430,7 @@ this.$store.commit("changeLoader", true)
           'confirmed' : 'open',
         body: [{
           ...this.errorBody,
-          _changed: localStorage.getItem('userDetails').toLowerCase(),
+          _changed: this.$store.state.user.info.userDetails.toLowerCase(),
           _time: `${Date.now()}`,
         }, ],
       }
@@ -249,31 +444,33 @@ this.$store.commit("changeLoader", true)
         status: error.status,
       }
       try {
-        await Promise.all(this.files &&
-          this.files.map(async (e, i) => {
+        await Promise.all(this.resizeBlob &&
+          this.resizeBlob.map(async (e, i) => {
+            // debugger
             const formData = new FormData()
-            formData.append(`photo${i}`, e)
-            const imageName = `${id}__${localStorage.getItem('userDetails').toLowerCase()}__${e.name}`
-            const postImage = async () => {
-              const blobResponse = await fetch(
+            formData.append(`photo${i}`, e, `${i}.jpg`)
+            const imageName = `${id}__${this.$store.state.user.info.userDetails.toLowerCase()}__${i}`
+            // const postImage = async () => {
+              const blobResponse = 
+              await fetch(
                 `/api/blob?fileName=${imageName}`, {
                   method: 'POST',
                   body: formData,
                   keepalive: true,
                 },
               )
-              if (blobResponse.ok) {
-                e = {
-                  ...e,
-                  status: 'ok',
-                }
-                // Notiflix.Notify.Success(`Файл ${e.name} успешно загружен`)
-              } else {
-                // Notiflix.Notify.Failure(`Ошибка, файл  ${e.name} не загружен`)
-              }
-            }
-            await postImage()
-            error.photos.push(`${imageName}`)
+              console.log(blobResponse);
+              // if (blobResponse.ok) {
+              //   e = {
+              //     ...e,
+              //     status: 'ok',
+              //   }
+              //   // Notiflix.Notify.Success(`Файл ${e.name} успешно загружен`)
+              // } else {
+              //   // Notiflix.Notify.Failure(`Ошибка, файл  ${e.name} не загружен`)
+              // }
+            // }
+
           }))
         await fetch('/api/POST_error', {
           method: 'POST', // или 'PUT'

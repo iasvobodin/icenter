@@ -12,6 +12,8 @@
       {{ key }}
     </h4>
     <select
+    :form="formId"
+    :name="key"
       v-if="Object.values(value)[0] === 'select'"
       :value="modelValue[key]"
       :required="required"
@@ -24,6 +26,8 @@
       </option>
     </select>
     <input
+    :form="formId"
+    :name="key"
       v-if="Object.values(value)[0] === 'checkbox'"
       :value="modelValue[key]"
       :required="required"
@@ -33,6 +37,8 @@
       "
     />
     <input
+    :form="formId"
+    :name="key"
       v-if="Object.values(value)[0] === 'number'"
       :value="modelValue[key]"
       :required="required"
@@ -42,6 +48,8 @@
       "
     />
     <textarea
+    :form="formId"
+    :name="key"
       v-if="Object.values(value)[0] === 'textarea'"
       :value="modelValue[key]"
       :required="required"
@@ -58,6 +66,8 @@
         {{ modelValue["Ответственный"] }}
       </h4>
       <select
+      :form="formId"
+      :name="key"
         :value="modelValue['Ошибку допустил']"
         :required="required"
         class="error__item__desc"
@@ -81,6 +91,10 @@
 <script>
 export default {
   props: {
+    formId:{
+      type: String,
+      default:"form"
+    },
     modelValue: {
       type: Object,
       default: () => {},

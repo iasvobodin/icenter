@@ -135,7 +135,7 @@ export default {
           return true;
         }
       }
-      if (this.changeInfo&&localStorage.getItem('userDetails').toLowerCase() === this.error.info.Добавил) {
+      if (this.changeInfo&&this.$store.state.user.info.userDetails.toLowerCase() === this.error.info.Добавил) {
         if (key === "Открыто") {
           return true;
         }
@@ -161,7 +161,7 @@ export default {
           ...err.body,
           {
             ...this.error.body,
-            _changed: localStorage.getItem("userDetails").toLowerCase(),
+            _changed: JSON.parse(localStorage.getItem("user")).info.userDetails.toLowerCase(),
             _time: `${Date.now()}`,
           },
         ],
@@ -198,7 +198,7 @@ export default {
           this.files.map(async (e, i) => {
             const formData = new FormData()
             formData.append(`photo${i}`, e)
-            const imageName = `${err.id}__${localStorage.getItem('userDetails').toLowerCase()}__${e.name}`
+            const imageName = `${err.id}__${this.$store.state.user.info.userDetails.toLowerCase()}__${e.name}`
             const imageRes = await fetch(
               `/api/blob?fileName=${imageName}`, {
                 method: 'POST',
