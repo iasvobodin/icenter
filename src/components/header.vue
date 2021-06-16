@@ -30,6 +30,8 @@ a {
 }
 
 .app__header {
+    position: sticky;
+    top: 0px;
     height: 50px;
     width: 100%;
     background-color: #3b3f4d;
@@ -47,7 +49,7 @@ a {
     left: 5px;
     width: 40px;
     height: 40px;
-    border: 1px solid white;
+    border: 3px solid white;
     border-radius: 50%;
     display: grid;
     cursor: pointer;
@@ -61,9 +63,9 @@ a {
 .back__image {
     position: absolute;
     top: 5px;
-    right: 80px;
+    right: 60px;
     width: 40px;
-    border: 1px solid black;
+    /* border: 1px solid black; */
     border-radius: 4px;
     cursor: pointer;
 }

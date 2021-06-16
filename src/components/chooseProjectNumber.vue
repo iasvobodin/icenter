@@ -105,7 +105,7 @@ export default {
 .p__holder{
    white-space: pre-wrap;
   word-wrap: break-word;
-  font-size: calc(14px);
+  /* font-size: calc(14px); */
   /* min-height: inherit; */
   display: block;
   place-self: center;
@@ -177,7 +177,7 @@ span {
   margin-top: 10px;
   margin-bottom: 10px;
   /* cursor: pointer; */
-  max-height: 35vh;
+  max-height: 70vh;
   overflow-y: scroll;
 }
 .project_list {

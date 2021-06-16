@@ -32,7 +32,8 @@
     </ul>
   </nav>
 </div>
-<button class="menu_button" @click="showMenu = !showMenu">{{!showMenu?'Menu':'Close'}}</button>
+<img  @click="showMenu = !showMenu" class="menu_button" src="/img/menu.svg" alt="">
+<!-- <button class="menu_button" @click="showMenu = !showMenu">{{!showMenu?'Menu':'Close'}}</button> -->
 </template>
 
 <script>
@@ -40,7 +41,7 @@ export default {
    methods: {
     onClickAway(event) {
       this.showMenu = false
-      console.log(event);
+      // console.log(event);
     }
   },
 data() {
@@ -66,8 +67,10 @@ data() {
 .menu_button{
   position: absolute;
   top: 5px;
+  height: 40px;
   right: 10px;
   z-index: 4;
+  cursor: pointer;
 }
 .navigation {
   /* background-color: rgb(0, 162, 255); */
