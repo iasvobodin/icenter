@@ -263,7 +263,7 @@ export default {
       })
       //  this.imageToUpload = []
       console.log(this.files);
-
+const blobArr = []
       this.files.forEach(file => {
         const newBlobUrl = URL.createObjectURL(file);
         const reader = new FileReader();
@@ -300,7 +300,7 @@ export default {
           canvas.getContext('2d').drawImage(image, 0, 0, width, height);
 
           const blob = new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 90));
-          blob.then(res => this.resizeBlob.push(res))
+          blob.then(res => blobArr.push(res))
           // URL.revokeObjectURL(newBlobUrl)
 // debugger
           //  canvas.toBlob(b => {
@@ -309,7 +309,7 @@ export default {
           //  }, 'image/jpeg', 90)
         }
       })
-
+this.resizeBlob = blobArr
       addEventListener("beforeunload", this.beforeUnloadListener, {
         capture: true
       });
