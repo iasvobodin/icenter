@@ -5,7 +5,8 @@ import { resolve } from "path";
 import tsconfigPaths from 'vite-tsconfig-paths'
 
 // https://vitejs.dev/config/
-export default defineConfig({
+export default ({ command, mode }) => defineConfig({
+  base: 'http://localhost:8080/', //mode === 'development' ? 'http://localhost:8080':'https://thankful-pebble-012619610.azurestaticapps.net/',
   resolve: {
     alias: {
       "@": resolve(__dirname, "src"),

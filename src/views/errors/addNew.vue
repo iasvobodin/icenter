@@ -1,49 +1,26 @@
 <template>
   <div>
     <h2>Добавление новой ошибки.</h2>
-    <choose-project-number
-      :data-to-render="projectData"
-      @input-project-event="fetchProjectList"
-      @choose-project-number="choose"
-    />
+    <choose-project-number :data-to-render="projectData" @input-project-event="fetchProjectList"
+      @choose-project-number="choose" />
     <div v-if="projectInformation">
       <br>
-          <choose-project-number
-      :data-to-render="projectInformation.cabinets.map(e =>e.wo + '   ' +e['cab name'])"
-      @choose-project-number="chooseCabinet"
-    />
-      <!-- <choose-wo
-        :fetch-url="projectInformation.cabinets"
-        @choose-project-number="chooseCabinet"
-      /> -->
+      <choose-project-number :data-to-render="projectInformation.cabinets.map(e =>e.wo + '   ' +e['cab name'])"
+        @choose-project-number="chooseCabinet" />
       <div v-if="cabinet">
-        <cabinet-template
-          :project-number="projectInformation.id"
-          :project-name="projectInformation.info.base['project name']"
-          :cabinet-wo="cabinet.wo"
-          :cabinet-name="cabinet['cab name']"
-        />
+        <set-error />
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import setError from "@/components/setError.vue";
 import chooseProjectNumber from "@/components/chooseProjectNumber.vue";
-import chooseWoNumber from "@/components/chooseWoNumber.vue";
-import cabinetTemplate from "@/components/cabinetTemplate.vue";
-import chooseWo from "@/components/chooseWO.vue";
-import projectList from "@/components/projectList.vue";
 export default {
   components: {
-    cabinetTemplate,
-    // eslint-disable-next-line vue/no-unused-components
-    projectList,
-    // eslint-disable-next-line vue/no-unused-components
-    chooseWo,
+    setError,
     chooseProjectNumber,
-    // eslint-disable-next-line vue/no-unused-components
-    chooseWoNumber,
   },
   setup() {
     return {};

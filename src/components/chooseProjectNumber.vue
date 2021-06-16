@@ -5,6 +5,7 @@
   >
     <div class="input__holder">
       <input
+      :disabled="dis"
         v-model="selectedProject"
         type="text"
         list="projetList"
@@ -26,13 +27,17 @@
     </div>
     <div v-if="dataToRender" v-show="listIsActive"  class="project_list_holder">
       <ul class="project_list">
+        <li v-if="filterProject.length === 0" class="project_item">
+ <p class="p__holder">Попробуйте ввести другое условие поиска</p>
+        </li>
         <li
+        v-else
           v-for="(project, index) in filterProject"
           :key="index"
           class="project_item"
           @mousedown="chooseProject(index)"
         >
-          <p>{{ project }}</p>
+          <p class="p__holder">{{project}}</p>
         </li>
       </ul>
     </div>
@@ -49,6 +54,10 @@ import {
 import { useStore } from 'vuex'
 export default {
   props: {
+    dis:{
+      type: Boolean,
+      default: ()=> false
+    },
     dataToRender: {
       type: Array,
       default: ()=> [1, 2],
@@ -93,6 +102,15 @@ export default {
 </script>
 
 <style lang="css" scoped>
+.p__holder{
+   white-space: pre-wrap;
+  word-wrap: break-word;
+  font-size: calc(14px);
+  /* min-height: inherit; */
+  display: block;
+  place-self: center;
+  /* line-height: calc(18px); */
+}
 datalist {
   height: 30vh;
   max-height: 30vh;
@@ -124,7 +142,7 @@ ul {
 }
 .choose__project__holder {
   margin: auto;
-  width: min(95vw, 400px);
+  width: min(95vw - 50px, 400px);
 }
 input {
   height: 30px;
@@ -176,15 +194,16 @@ ul {
   border-bottom: 0px;
 }
 .project_item {
-  height: 30px;
+  min-height: 30px;
   font-size: 16px;
-  line-height: 30px;
+  /* line-height: 30px; */
   border-bottom: 1px solid black;
   /* border-radius: 2px;
   padding: 2px;
   margin: 2px; */
   list-style: none;
   cursor: pointer;
+  display: grid;
   /* border: 1px solid rgb(112, 112, 112); */
 }
 .project_item:hover {
