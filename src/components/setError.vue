@@ -31,9 +31,10 @@
         @input="checkFile"
         v-show="false"
       />
+      <!-- <div v-child="canvas" v-if="canvas"></div> -->
       <div v-if="files" class="photo__gallery">
-        <div v-for="(fs, i) in filesSRC" :key="i" class="photo__holder">
-          <img  class="photo__image" :src="fs" alt="err" >
+        <div  v-for="(fs, i) in files.c" :key="i" class="photo__holder">
+          <div class="canvas__holder" v-child="fs" v-if="fs"></div>
           <img class="delete__icon" src="/img/delete.svg" alt="" @click="deletePhoto(i)">
         </div>
          <img class="add__photo" src="/img/add__image.svg" alt="" @click="firedFileInput">
@@ -54,21 +55,40 @@
 
 <script>
 import conditionalRender from '@/components/conditionalRender.vue'
+import * as imageConversion from 'image-conversion';
 import {
   resizeImage
 } from "@/hooks/resizeImage";
-const files = []
+// const files = []
 export default {
+  //   Vue.directive("child", {
+  // 	bind(el, binding, vnode) {
+  // 		el.appendChild(binding.value);
+  // 	}
+  // }),
+  directives: {
+    child: {
+      // определение директивы
+      mounted(el, binding, vnode) {
+        binding.value.classList.add("canvas__el");
+        el.appendChild(binding.value);
+      }
+    }
+  },
   components: {
     conditionalRender,
   },
   data() {
     return {
+      canvas: null,
       filesBlobSRC: [],
       imageToUpload: [],
       filesSRC: [],
       resizeBlob: [],
-      files: [],
+      files: {
+        f: [],
+        c: []
+      },
       errorTemplate: null,
       errorBody: {
         Открыто: {},
@@ -85,159 +105,7 @@ export default {
   created() {
     // !this.$store.state.template && this.$store.dispatch("GET_template");
   },
-  mounted() {
-
-
-
-    if (!HTMLCanvasElement.prototype.toBlob) {
-      Object.defineProperty(HTMLCanvasElement.prototype, 'toBlob', {
-        value: function (callback, type, quality) {
-
-          var binStr = atob(this.toDataURL(type, quality).split(',')[1]),
-            len = binStr.length,
-            arr = new Uint8Array(len);
-
-          for (var i = 0; i < len; i++) {
-            arr[i] = binStr.charCodeAt(i);
-          }
-
-          callback(new Blob([arr], {
-            type: type || 'image/png'
-          }));
-        }
-      });
-    }
-
-    window.URL = window.URL || window.webkitURL;
-
-    // Modified from https://stackoverflow.com/a/32490603, cc by-sa 3.0
-    // -2 = not jpeg, -1 = no data, 1..8 = orientations
-    function getExifOrientation(file, callback) {
-      // Suggestion from http://code.flickr.net/2012/06/01/parsing-exif-client-side-using-javascript-2/:
-      if (file.slice) {
-        file = file.slice(0, 131072);
-      } else if (file.webkitSlice) {
-        file = file.webkitSlice(0, 131072);
-      }
-
-      var reader = new FileReader();
-      reader.onload = function (e) {
-        var view = new DataView(e.target.result);
-        if (view.getUint16(0, false) != 0xFFD8) {
-          callback(-2);
-          return;
-        }
-        var length = view.byteLength,
-          offset = 2;
-        while (offset < length) {
-          var marker = view.getUint16(offset, false);
-          offset += 2;
-          if (marker == 0xFFE1) {
-            if (view.getUint32(offset += 2, false) != 0x45786966) {
-              callback(-1);
-              return;
-            }
-            var little = view.getUint16(offset += 6, false) == 0x4949;
-            offset += view.getUint32(offset + 4, little);
-            var tags = view.getUint16(offset, little);
-            offset += 2;
-            for (var i = 0; i < tags; i++)
-              if (view.getUint16(offset + (i * 12), little) == 0x0112) {
-                callback(view.getUint16(offset + (i * 12) + 8, little));
-                return;
-              }
-          } else if ((marker & 0xFF00) != 0xFF00) break;
-          else offset += view.getUint16(offset, false);
-        }
-        callback(-1);
-      };
-      reader.readAsArrayBuffer(file);
-    }
-
-    // Derived from https://stackoverflow.com/a/40867559, cc by-sa
-    function imgToCanvasWithOrientation(img, rawWidth, rawHeight, orientation) {
-      var canvas = document.createElement('canvas');
-      if (orientation > 4) {
-        canvas.width = rawHeight;
-        canvas.height = rawWidth;
-      } else {
-        canvas.width = rawWidth;
-        canvas.height = rawHeight;
-      }
-
-      if (orientation > 1) {
-        console.log("EXIF orientation = " + orientation + ", rotating picture");
-      }
-
-      var ctx = canvas.getContext('2d');
-      switch (orientation) {
-        case 2:
-          ctx.transform(-1, 0, 0, 1, rawWidth, 0);
-          break;
-        case 3:
-          ctx.transform(-1, 0, 0, -1, rawWidth, rawHeight);
-          break;
-        case 4:
-          ctx.transform(1, 0, 0, -1, 0, rawHeight);
-          break;
-        case 5:
-          ctx.transform(0, 1, 1, 0, 0, 0);
-          break;
-        case 6:
-          ctx.transform(0, 1, -1, 0, rawHeight, 0);
-          break;
-        case 7:
-          ctx.transform(0, -1, -1, 0, rawHeight, rawWidth);
-          break;
-        case 8:
-          ctx.transform(0, -1, 1, 0, 0, rawWidth);
-          break;
-      }
-      ctx.drawImage(img, 0, 0, rawWidth, rawHeight);
-      return canvas;
-    }
-
-    function reduceFileSize(file, acceptFileSize, maxWidth, maxHeight, quality, callback) {
-      if (file.size <= acceptFileSize) {
-        callback(file);
-        return;
-      }
-      var img = new Image();
-      img.onerror = function () {
-        URL.revokeObjectURL(this.src);
-        callback(file);
-      };
-      img.onload = function () {
-        URL.revokeObjectURL(this.src);
-        getExifOrientation(file, function (orientation) {
-          var w = img.width,
-            h = img.height;
-          var scale = (orientation > 4 ?
-            Math.min(maxHeight / w, maxWidth / h, 1) :
-            Math.min(maxWidth / w, maxHeight / h, 1));
-          h = Math.round(h * scale);
-          w = Math.round(w * scale);
-
-          var canvas = imgToCanvasWithOrientation(img, w, h, orientation);
-          canvas.toBlob(function (blob) {
-            console.log("Resized image to " + w + "x" + h + ", " + (blob.size >> 10) + "kB");
-            callback(blob);
-          }, 'image/jpeg', quality);
-        });
-      };
-      img.src = URL.createObjectURL(file);
-    }
-
-
-
-
-
-
-
-
-
-    console.log(resizeImage);
-  },
+  mounted() {},
   methods: {
     setItemRef(el) {
       // if (el) {
@@ -249,9 +117,9 @@ export default {
       window.URL.revokeObjectURL(fs)
     },
     deletePhoto(i) {
-      this.files.splice(i, 1)
+      this.files.f.splice(i, 1)
       this.filesSRC.splice(i, 1)
-      console.log(this.filesSRC, this.files);
+      // console.log(this.filesSRC, this.files);
     },
     firedFileInput() {
       this.$refs.fileInput.click()
@@ -259,57 +127,23 @@ export default {
     async checkFile() {
 
       Object.values(this.$refs.fileInput.files).forEach(f => {
-        !this.files.some(file => f.name === file.name) && this.files.push(f)
+        !this.files.f.some(file => f.name === file.name) && this.files.f.push(f)
       })
-      //  this.imageToUpload = []
-      console.log(this.files);
-const blobArr = []
-      this.files.forEach(file => {
-        const newBlobUrl = URL.createObjectURL(file);
-        const reader = new FileReader();
-        reader.onload = e => !this.filesSRC.some(file => e.target.result === file) && this.filesSRC.push(e.target.result) && this.filesBlobSRC.push(newBlobUrl)
-        reader.readAsDataURL(file);
-        // this.filesBlobSRC.push(newBlobUrl)
-        // console.log(newBlobUrl,'newBlobUrl');
 
-        const image = new Image();
-        image.src = newBlobUrl
-        image.onerror = () => {
-          URL.revokeObjectURL(newBlobUrl);
-        };
-        image.onload = () => {
-
-          // Resize the image
-          const canvas = document.createElement('canvas');
-          let max_size = 2024, // TODO : pull max size from a site config
-            width = image.width,
-            height = image.height;
-          if (width > height) {
-            if (width > max_size) {
-              height *= max_size / width;
-              width = max_size;
-            }
-          } else {
-            if (height > max_size) {
-              width *= max_size / height;
-              height = max_size;
-            }
-          }
-          canvas.width = width;
-          canvas.height = height;
-          canvas.getContext('2d').drawImage(image, 0, 0, width, height);
-
-          const blob = new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 90));
-          blob.then(res => blobArr.push(res))
-          // URL.revokeObjectURL(newBlobUrl)
-// debugger
-          //  canvas.toBlob(b => {
-          //    console.log(b, 'after resize')
-          //    this.resizeBlob.push(b)
-          //  }, 'image/jpeg', 90)
-        }
+      const view = async (f, i) => {
+        const compressBlob = await imageConversion.compressAccurately(f, 500)
+        const newBlobUrl = URL.createObjectURL(compressBlob);
+        const img = await imageConversion.urltoImage(newBlobUrl)
+        const canvas = await imageConversion.imagetoCanvas(img)
+        canvas.style.width = '100%'
+        canvas.style.height = '100%'
+        canvas.style.objectFit = 'cover'
+        canvas.style.objectPosition = 'center' //, ...canvas.style}
+        this.files.c[i] = canvas
+      }
+      this.files.f.forEach((file, i) => {
+        view(file, i)
       })
-this.resizeBlob = blobArr
       addEventListener("beforeunload", this.beforeUnloadListener, {
         capture: true
       });
@@ -430,7 +264,7 @@ this.resizeBlob = blobArr
           Принято: {},
           Устранено: {}
         }
-        this.files = []
+        this.files.f = []
         this.$store.commit("changeLoader", false)
       }
       // await fetch(
@@ -459,14 +293,19 @@ this.resizeBlob = blobArr
 
 
 <style lang="css" scoped>
+.canvas__holder{
+  width: inherit;
+  height: inherit;
+}
 .add__photo{
   width: 100px;
   height: 100px;
   place-self: center;
   cursor: pointer;
 }
-.photo__image{
-    width: 100%;
+.canvas__el{
+  display: block;
+  width: 100%;
   height: 100%;
   object-fit: cover;
   object-position: center;
