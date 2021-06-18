@@ -25,7 +25,6 @@
         id="imageFile"
         ref="fileInput"
         multiple
-        name="imagefile[]"
         type="file"
         accept="image/*"
         @input="checkFile"
@@ -33,8 +32,9 @@
       />
       <!-- <div v-child="canvas" v-if="canvas"></div> -->
       <div v-if="files" class="photo__gallery">
-        <div  v-for="(fs, i) in files.c" :key="i" class="photo__holder">
-          <div class="canvas__holder" v-child="fs" v-if="fs"></div>
+        <div  v-for="(url, i) in files.blobUrl" :key="i" class="photo__holder">
+          <!-- <div class="canvas__holder" v-child="fs" v-if="fs"></div> -->
+          <img class="canvas__el" :src="url" alt="ph" >
           <img class="delete__icon" src="/img/delete.svg" alt="" @click="deletePhoto(i)">
         </div>
          <img class="add__photo" src="/img/add__image.svg" alt="" @click="firedFileInput">
@@ -87,7 +87,8 @@ export default {
       resizeBlob: [],
       files: {
         f: [],
-        c: []
+        compressBlob: [],
+        blobUrl: []
       },
       errorTemplate: null,
       errorBody: {
@@ -107,43 +108,49 @@ export default {
   },
   mounted() {},
   methods: {
-    setItemRef(el) {
-      // if (el) {
-      this.imageToUpload.length === 0 && this.imageToUpload.push(el)
-      // }
-    },
     revoke(fs) {
       console.log('blob is revoked');
       window.URL.revokeObjectURL(fs)
     },
     deletePhoto(i) {
       this.files.f.splice(i, 1)
-      this.filesSRC.splice(i, 1)
-      // console.log(this.filesSRC, this.files);
+      URL.revokeObjectURL(this.files.blobUrl[i])
+      this.files.compressBlob.splice(i, 1)
+      this.files.blobUrl.splice(i, 1)
     },
     firedFileInput() {
       this.$refs.fileInput.click()
     },
     async checkFile() {
-
-      Object.values(this.$refs.fileInput.files).forEach(f => {
-        !this.files.f.some(file => f.name === file.name) && this.files.f.push(f)
-      })
-
       const view = async (f, i) => {
-        const compressBlob = await imageConversion.compressAccurately(f, 500)
+        this.files.blobUrl[i] = '/img/Eclipse.gif'
+        const compressBlob = await imageConversion.compressAccurately(f, {
+          size: 500,
+          accuracy: 0.9, //The compressed image size is 100kb
+          type: "image/jpeg",
+        })
+        this.files.compressBlob[i] = compressBlob
         const newBlobUrl = URL.createObjectURL(compressBlob);
-        const img = await imageConversion.urltoImage(newBlobUrl)
-        const canvas = await imageConversion.imagetoCanvas(img)
-        canvas.style.width = '100%'
-        canvas.style.height = '100%'
-        canvas.style.objectFit = 'cover'
-        canvas.style.objectPosition = 'center' //, ...canvas.style}
-        this.files.c[i] = canvas
+        this.files.blobUrl[i] = newBlobUrl
+
+
+        // ON A FEATURE
+
+        // const img = await imageConversion.urltoImage(newBlobUrl)
+        // const canvas = await imageConversion.imagetoCanvas(img)
+        // canvas.style.width = '100%'
+        // canvas.style.height = '100%'
+        // canvas.style.objectFit = 'cover'
+        // canvas.style.objectPosition = 'center' //, ...canvas.style}
       }
-      this.files.f.forEach((file, i) => {
-        view(file, i)
+      Object.values(this.$refs.fileInput.files).forEach(f => {
+        console.log(f);
+        if (!this.files.f.some(file => f.name === file.name)) {
+          this.files.f.push(f)
+          view(f, this.files.f.length - 1)
+        }
       })
+
       addEventListener("beforeunload", this.beforeUnloadListener, {
         capture: true
       });
@@ -164,17 +171,6 @@ export default {
       }
     },
     async postError(e) {
-      // const f = document.getElementById('postError')
-      // console.log(f);
-      // const formData = new FormData(f)
-      // console.log(formData);
-      // return
-
-
-
-
-
-
 
       this.$store.commit("changeLoader", true)
 
@@ -211,37 +207,20 @@ export default {
         status: error.status,
       }
       try {
-        await Promise.all(this.resizeBlob &&
-          this.resizeBlob.map(async (e, i) => {
-            // debugger
-            // const formData = new FormData()
-
-            // formData.append(`photo${i}`, e, `${i}.jpg`)
-            // console.log(formData);
-            // debugger
-            const imageName = `${id}__${this.$store.state.user.info.userDetails.toLowerCase()}__${i}.jpg`
-            // const postImage = async () => {
-            // const blobResponse = 
-            await fetch(
-              `/api/blob?fileName=${imageName}`, {
-                method: 'POST',
-                body: e,
-                keepalive: true,
-              },
-            )
-            // console.log(blobResponse);
-            // if (blobResponse.ok) {
-            //   e = {
-            //     ...e,
-            //     status: 'ok',
-            //   }
-            //   // Notiflix.Notify.Success(`Файл ${e.name} успешно загружен`)
-            // } else {
-            //   // Notiflix.Notify.Failure(`Ошибка, файл  ${e.name} не загружен`)
-            // }
-            // }
-
-          }))
+        const formData = new FormData()
+        this.files.compressBlob.map((e, i) => {
+          const imageName = `${id}__${this.$store.state.user.info.userDetails.toLowerCase()}__${i+1}.jpg`
+          error.photos.push(imageName)
+          formData.set(`photo${i+1}`, e, imageName)
+        })
+        // console.log(formData);
+        await fetch(
+          '/api/blob?test=true', {
+            method: 'POST',
+            body: formData,
+            // keepalive: true,
+          },
+        )
         await fetch('/api/POST_error', {
           method: 'POST', // или 'PUT'
           body: JSON.stringify({
@@ -265,6 +244,7 @@ export default {
           Устранено: {}
         }
         this.files.f = []
+        this.$router.push('/errors')
         this.$store.commit("changeLoader", false)
       }
       // await fetch(
@@ -304,7 +284,6 @@ export default {
   cursor: pointer;
 }
 .canvas__el{
-  display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;

@@ -30,24 +30,46 @@ module.exports = async function (context, req) {
     const boundary = multipart.getBoundary(req.headers["content-type"]);
     const parts = multipart.Parse(bodyBuffer, boundary);
 
-    context.log(parts[0])
-    const testDataBlockBlobClient = containerClient.getBlockBlobClient(parts[0].filename);
+    
 
-  const uploadBlobResponse = await testDataBlockBlobClient.upload(
-    parts[0].data,
-    parts[0].data.length, {
-      blobHTTPHeaders: {
-        blobContentType: parts[0].type,
-      },
-    }
-  );
-  context.log(
-    "Blob was uploaded successfully. requestId: ",
-    uploadBlobResponse.requestId
-  );
+    parts.forEach(e=>{
+      const originBlob = containerClient.getBlockBlobClient(e.filename);
+      const thumbBlob = containerClient.getBlockBlobClient("thumb__" + e.filename);
+      originBlob.upload(
+        e.data,
+        e.data.length, {
+          blobHTTPHeaders: {
+            blobContentType: e.type,
+          },
+        }
+      );
 
+      sharp(e.data)
+      .resize({
+        width: 100,
+        height: null,
+      })
+      .toBuffer({
+          resolveWithObject: true,
+        },
+        // eslint-disable-next-line no-unused-vars
+        async (_, data) => {
+          await thumbBlob.uploadData(data.buffer, {
+            blobHTTPHeaders: {
+              blobContentType: parts[0].type,
+            },
+          });
+        }
+      );
 
-    // context.log(parts[0])
+      context.log(
+        "Blob was uploaded successfully. requestId: ",
+      );
+    })
+    context.res = {
+      // status defaults to 200 */
+      body: "ok",
+    };
     return
   }
 
