@@ -29,7 +29,10 @@
         </form>
       </section>
       <h3 v-if="error.photos[0]">Фотографии</h3>
-      <input 
+       <error-photos :current-photos="error.photos"
+        @delete-blob="setPH" 
+        @resized-blob="compressBlob = $event"/>
+      <!-- <input 
          v-show="false"
         ref="fileInput" 
         class="custom-file-input" 
@@ -49,7 +52,7 @@
           </a>
           <img v-if="changeInfo" class="delete__image" src="/img/cancel.svg" alt="" @click="deleteBlob(value, index)" />
         </div>
-      </section>
+      </section> -->
     </div>
     <div v-else class="loading" />
     <p v-if="errorIsNotDef">{{ errorIsNotDef }}</p>
@@ -75,15 +78,18 @@
 </template>
 
 <script>
+import errorPhotos from '@/components/errorPhotos.vue'
 import conditionalRender from "@/components/conditionalRender.vue";
 import infoRender from "@/components/infoRender.vue";
 export default {
   components: {
+    errorPhotos,
     conditionalRender,
     infoRender,
   },
   data() {
     return {
+      compressBlob:[],
       files: [],
       linkPhoto: 'https://icaenter.blob.core.windows.net/errors-photo/',
       showPhotos: false,
@@ -105,6 +111,17 @@ export default {
     this.error.body = this.error.body[this.error.body.length - 1];
   },
   methods: {
+    setPH(e){
+      this.deletMethods = e.del 
+      this.error.photos.splice(e.index, 1)
+      // this.error.photos = e.actual
+    },
+    resizedBlob(e){
+      console.log(e,"!!!!!!!!!!!!!!!!!!!!!!");
+    },
+    deleteFromBase(e){
+      console.log(e);
+    },
     firedFileInput(){
       this.$refs.fileInput.click()
     },
@@ -194,22 +211,37 @@ export default {
       }
       // console.log(updateErorBody);
       try {
-        this.files && await Promise.all(
-          this.files.map(async (e, i) => {
-            const formData = new FormData()
-            formData.append(`photo${i}`, e)
-            const imageName = `${err.id}__${this.$store.state.user.info.userDetails.toLowerCase()}__${e.name}`
-            const imageRes = await fetch(
-              `/api/blob?fileName=${imageName}`, {
-                method: 'POST',
-                body: formData,
-                keepalive: true,
-              },
-            )
-            if (imageRes.ok) {
-              this.error.photos.push(`${imageName}`)
-            }
-          }))
+ const formData = new FormData()
+        this.compressBlob.map((e, i) => {
+          const imageName = `${err.id}__${this.$store.state.user.info.userDetails.toLowerCase()}__${i+1}.jpg`
+        this.error.photos.push(imageName)
+          formData.set(`photo${i+1}`, e, imageName)
+        })
+        await fetch(
+          '/api/blob?test=true', {
+            method: 'POST',
+            body: formData,
+          },
+        )
+
+
+
+        // this.files && await Promise.all(
+        //   this.files.map(async (e, i) => {
+        //     const formData = new FormData()
+        //     formData.append(`photo${i}`, e)
+        //     const imageName = `${err.id}__${this.$store.state.user.info.userDetails.toLowerCase()}__${e.name}`
+        //     const imageRes = await fetch(
+        //       `/api/blob?fileName=${imageName}`, {
+        //         method: 'POST',
+        //         body: formData,
+        //         keepalive: true,
+        //       },
+        //     )
+        //     if (imageRes.ok) {
+        //       this.error.photos.push(`${imageName}`)
+        //     }
+        //   }))
         await fetch("/api/POST_error", {
           method: "POST", // или 'PUT'
           body: JSON.stringify({
@@ -225,7 +257,7 @@ export default {
             ...openError
           }),
         });
-        this.deletMethods && await Promise.all(this.deletMethods.map(async e => {
+        this.deletMethods.del && await Promise.all(this.deletMethods.del.map(async e => {
           await fetch(e)
         }))
 

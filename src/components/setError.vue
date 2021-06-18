@@ -21,8 +21,10 @@
         </section>
       </div>
       <br />
-      <input
-        id="imageFile"
+      <error-photos  @resized-blob="files.compressBlob = $event"/>
+      <br>
+      <!-- <input
+        id="imageF"
         ref="fileInput"
         multiple
         type="file"
@@ -30,15 +32,13 @@
         @input="checkFile"
         v-show="false"
       />
-      <!-- <div v-child="canvas" v-if="canvas"></div> -->
       <div v-if="files" class="photo__gallery">
         <div  v-for="(url, i) in files.blobUrl" :key="i" class="photo__holder">
-          <!-- <div class="canvas__holder" v-child="fs" v-if="fs"></div> -->
           <img class="canvas__el" :src="url" alt="ph" >
           <img class="delete__icon" src="/img/delete.svg" alt="" @click="deletePhoto(i)">
         </div>
          <img class="add__photo" src="/img/add__image.svg" alt="" @click="firedFileInput">
-      </div>
+      </div> -->
       <br />
       <br>
       <input :disabled="$store.state.loader" class="add__button" type="submit" value="Добавить" />
@@ -55,11 +55,8 @@
 
 <script>
 import conditionalRender from '@/components/conditionalRender.vue'
+import errorPhotos from '@/components/errorPhotos.vue'
 import * as imageConversion from 'image-conversion';
-import {
-  resizeImage
-} from "@/hooks/resizeImage";
-// const files = []
 export default {
   //   Vue.directive("child", {
   // 	bind(el, binding, vnode) {
@@ -76,7 +73,7 @@ export default {
     }
   },
   components: {
-    conditionalRender,
+    conditionalRender,errorPhotos
   },
   data() {
     return {
@@ -108,10 +105,6 @@ export default {
   },
   mounted() {},
   methods: {
-    revoke(fs) {
-      console.log('blob is revoked');
-      window.URL.revokeObjectURL(fs)
-    },
     deletePhoto(i) {
       this.files.f.splice(i, 1)
       URL.revokeObjectURL(this.files.blobUrl[i])
