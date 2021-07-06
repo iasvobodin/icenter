@@ -22,8 +22,10 @@
       </div>
       <br>
       <hr>
-
     </div>
+    <router-link to="/projects/addnewproject">
+<img class="add__button" src="/img/add.svg" alt="Добавить новый проект">
+</router-link>
   </div>
 </template>
 
@@ -102,6 +104,14 @@ export default {
 </script>
 
 <style lang="css" scoped>
+.add__button{
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+}
 input {
   height: 30px;
   border: 1px solid orange;

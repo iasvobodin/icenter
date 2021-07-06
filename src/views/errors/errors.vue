@@ -1,5 +1,5 @@
 <template>
-  <router-link to="/errors/addnew">Добавить новую ошибку</router-link>
+
   <br />
   <br />
   <div class="selectStatus">
@@ -32,6 +32,9 @@
   </div>
   <div v-if="errorMessage">{{ errorMessage }}</div>
   <div v-if="fetchStatus" class="loading" />
+      <router-link to="/errors/addnewerror">
+<img class="add__button" src="/img/add.svg" alt="Добавить новый проект">
+</router-link>
 </template>
 
 <script>
@@ -74,6 +77,14 @@
 </script>
 
 <style lang="css" scoped>
+.add__button{
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+}
 .selectStatus > h3 {
   display: inline;
 }

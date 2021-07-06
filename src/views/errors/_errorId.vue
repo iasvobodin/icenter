@@ -29,30 +29,11 @@
         </form>
       </section>
       <h3 v-if="error.photos[0]">Фотографии</h3>
-       <error-photos :current-photos="error.photos"
+       <error-photos 
+       :change-photos="changeInfo"
+       :current-photos="error.photos"
         @delete-blob="setPH" 
         @resized-blob="compressBlob = $event"/>
-      <!-- <input 
-         v-show="false"
-        ref="fileInput" 
-        class="custom-file-input" 
-        multiple 
-        type="file"
-        accept="image/*" 
-        @input="checkFile" />
-       
-      <div v-if="files">
-        <p v-for="(f, i) in files" :key="f.lastModified">{{i+1}} {{ f.name }} {{f.status}}</p>
-      </div>
-      <section class="photos">
-          <img class="add__photo" @click="firedFileInput" v-if="changeInfo" src="/img/add__image.svg" alt="">
-        <div v-for="(value, index) in error.photos" v-show="value" :key="index" class="photo__holder">
-          <a :href="`${linkPhoto}${value}`">
-            <img class="error__photos" :src="`${linkPhoto}thumb__${value}`" alt="" />
-          </a>
-          <img v-if="changeInfo" class="delete__image" src="/img/cancel.svg" alt="" @click="deleteBlob(value, index)" />
-        </div>
-      </section> -->
     </div>
     <div v-else class="loading" />
     <p v-if="errorIsNotDef">{{ errorIsNotDef }}</p>

@@ -47,8 +47,8 @@ const routes = [
     component: ()=>  import("@/views/errors/_errorId.vue"),
   },
   {
-    path: "/errors/addNew",
-    component: ()=>  import("@/views/errors/addNew.vue"),
+    path: "/errors/addNewError",
+    component: ()=>  import("@/views/errors/addNewError.vue"),
   },
   {
     path: "/tasks",
@@ -77,6 +77,10 @@ const routes = [
   {
     path: "/projects",
     component: ()=>  import("@/views/projects/projects.vue"),
+  },
+  {
+    path: "/projects/addNewProject",
+    component: ()=>  import("@/views/projects/addNewProject.vue"),
   },
   {
     path: "/projects/:projectId",

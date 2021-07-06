@@ -12,7 +12,7 @@
                 <img class="canvas__el" :src="url" alt="ph">
                 <img class="delete__icon" src="/img/delete.svg" alt="" @click="deletePhoto(i)">
             </div>
-            <img class="add__photo" src="/img/add__image.svg" alt="" @click="firedFileInput">
+            <img v-if="changePhotos" class="add__photo" src="/img/add__image.svg" alt="" @click="firedFileInput">
         </div>
     </div>
 </template>
@@ -26,6 +26,10 @@ export default {
             type: Array,
             default: () => []
         },
+        changePhotos:{
+          type: Boolean,
+          default: () => false
+        }
     },
     created() {
         this.copyPhotos = this.currentPhotos;

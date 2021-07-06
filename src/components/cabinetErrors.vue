@@ -1,60 +1,32 @@
 <template>
-    <div>
-        <h1>WO {{$route.params.cabinetId}}</h1>
-<br>
-<br>
-  <button
-     v-for="tab in cabinetTabs"
-     :key="tab.title"
-     :class="['tab-button', { active: currentCabinetTab === tab.value }]"
-     @click="currentCabinetTab = tab.value"
-   >
-    {{ tab.title }}
-  </button>
-  <component :is="currentCabinetTab" class="tab"></component>
-           <!-- <div class="err__tab" v-for="(tab, i) in cabinetTabs" :key="tab">
-                    <input :id="`t${i+1}${key}`" type="radio" :name="`t-control${key}`"
-                        :value="tab">
-                    <label :for="`t${i+1}${key}`" role="button">
-                        {{tab}}
-                    </label>
-                        <div class="content">
-      <p>Stuff for Tab {{i}}</p>
-    </div>
-                </div> -->
-
-
-
-
-        <!-- <div v-for="(item, key)  in cabinetItems" :key="item.id" class="error__holder">
-            <h2>{{item.id }}</h2>
-            <small :style="{backgroundColor: statusColor[item.status]}">Статус: {{item.status}}</small>
-            <br>
-            <br>
-            <div class="err__tabs">
-                <div class="err__tab" v-for="(tab, i) in tabs" :key="tab">
-                    <input v-model="currentTab[key]" :id="`tab${i+1}${key}`" type="radio" :name="`tab-control${key}`"
-                        :value="tab">
-                    <label :for="`tab${i+1}${key}`" role="button">
-                        {{tab}}
-                    </label>
-                </div>
-            </div>
-            <div class="card__holder">
-                <div v-if="currentTab[key] !== 'Фото'">
-                    <info-render :info-data="{...item.body[currentTab[key]]}" />
-                </div>
-                <div class="photo__holder" v-for="ph in item.photos" v-else :key="ph">
-                    <a :href="`https://icaenter.blob.core.windows.net/errors-photo/${ph}`">
-                        <img :src="`https://icaenter.blob.core.windows.net/errors-photo/thumb__${ph}`"
-                            alt="photo error">
-                    </a>
-                </div>
-            </div>
-        </div> -->
-
+    <div v-for="(item, key)  in cabinetItems" :key="item.id" class="error__holder">
+        <h2>{{item.id }}</h2>
+        <small :style="{backgroundColor: statusColor[item.status]}">Статус: {{item.status}}</small>
         <br>
+        <br>
+        <div class="err__tabs">
+            <div class="err__tab" v-for="(tab, i) in tabs" :key="tab">
+                <input v-model="currentTab[key]" :id="`tab${i+1}${key}`" type="radio" :name="`tab-control${key}`"
+                    :value="tab">
+                <label :for="`tab${i+1}${key}`" role="button">
+                    {{tab}}
+                </label>
+            </div>
+        </div>
+        <div class="card__holder">
+            <div v-if="currentTab[key] !== 'Фото'">
+                <info-render :info-data="{...item.body[currentTab[key]]}" />
+            </div>
+            <div class="photo__holder" v-for="ph in item.photos" v-else :key="ph">
+                <a :href="`https://icaenter.blob.core.windows.net/errors-photo/${ph}`">
+                    <img :src="`https://icaenter.blob.core.windows.net/errors-photo/thumb__${ph}`" alt="photo error">
+                </a>
+            </div>
+        </div>
     </div>
+            <br>
+        <button @click="saveBook">Экспорт excel</button>
+        <br>
 </template>
 
 <script>
@@ -71,12 +43,8 @@ import {
     useRoute
 } from 'vue-router'
 import infoRender from '@/components/infoRender.vue'
-import cabinetErrors from '@/components/cabinetErrors.vue'
-import cabinetCabTime from '@/components/cabinetCabTime.vue'
 export default {
     components: {
-        cabinetErrors,
-        cabinetCabTime,
         // conditionalRender,
         infoRender,
         // chooseWoNumber,
@@ -85,21 +53,8 @@ export default {
         const route = useRoute()
         const state = reactive({
             cabinetItems: null,
-            cabinetTabs: [
-                {title:'Информация',
-                value: 'cabinet-info'
-                }, 
-                {title:'CabTime',
-                value: 'cabinet-cab-time'
-                }, 
-                {title:'Ошибки',
-                value: 'cabinet-errors'
-                }, 
-                {title:"Задачи",
-                value: 'cabinet-tasks'
-                }],
+            cabinetTabs: ['Информация', 'CabTime', 'Ошибки', "Задачи"],
             tabs: ['Открыто', 'Принято', 'Устранено', "Фото"],
-            currentCabinetTab:"",
             currentTab: {},
             statusColor: {
                 closed: "green",
@@ -120,7 +75,8 @@ export default {
         }
         getCabinetItems()
 
-        const saveBook = async () => {
+
+         const saveBook = async () => {
             const XLSX = await import('xlsx')
 
             function formatDate(date) {
@@ -158,14 +114,12 @@ export default {
 </script>
 
 <style lang="css" scoped>
-.tab-button.active {
-  background: #0066ff1f;
-}
+
 [type="radio"] {
     display: none;
 }
 
-small{
+small {
     /* border-style: solid;
     border-width: 3px; */
     border-radius: 5px;
