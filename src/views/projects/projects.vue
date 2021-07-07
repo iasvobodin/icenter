@@ -1,4 +1,6 @@
 <template>
+<h1>Проекты.</h1>
+<p>В данном разделе можно добавлять и редактировать информацию по текущим проектам ICenter.</p>
   <br>
   <input v-model="search" type="text" placeholder="мастер или номер проекта">
   <br>
@@ -104,7 +106,20 @@ export default {
 </script>
 
 <style lang="css" scoped>
-.add__button{
+
+.add__button::after {
+  content: "";
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  left: 0;
+  top: 0;
+  background: orange;
+  filter: blur (20px);
+  z-index: 2;
+}
+
+.add__button {
   position: fixed;
   bottom: 20px;
   right: 20px;
@@ -112,6 +127,7 @@ export default {
   height: 40px;
   cursor: pointer;
 }
+
 input {
   height: 30px;
   border: 1px solid orange;
@@ -123,15 +139,19 @@ input {
   margin: auto;
   padding: 0px;
 }
-.selectStatus > h3 {
+
+.selectStatus>h3 {
   display: inline;
 }
+
 .change__status {
   width: auto;
 }
+
 .update__button {
   margin-top: 1vh;
 }
+
 .errors__holder {
   display: grid;
   align-items: stretch;
@@ -141,6 +161,7 @@ input {
   column-gap: 2vh;
   row-gap: 2vh;
 }
+
 .errors__card {
   border: 1px solid orange;
   border-radius: 4px;
@@ -148,26 +169,31 @@ input {
   cursor: pointer;
   min-height: 150px;
 }
-.error__card__holder{
+
+.error__card__holder {
   place-self: stretch;
 
 }
+
 .errors__card:hover {
   border: 1px solid black;
   background: rgba(245, 254, 255, 0.356);
 }
+
 .error__item {
   border-bottom: 1px solid black;
   padding: 2px;
   display: grid;
   grid-template-columns: 2fr 3fr;
 }
+
 .error__item__title {
   justify-self: start;
   align-self: center;
   text-align: start;
   margin: 0;
 }
+
 .error__item__desc {
   height: inherit;
   display: block;
@@ -177,12 +203,14 @@ input {
   margin: 0;
   border-bottom: none;
 }
+
 .loading {
   margin: auto;
   width: 30px;
   height: 30px;
   background: url(/img/loading.gif) no-repeat center bottom;
 }
+
 .error__desc {
   border-bottom: none;
   padding: 2px;
@@ -191,6 +219,7 @@ input {
   grid-template-columns: 1fr;
   border-bottom: none;
 }
+
 .error__item__vertical__title {
   width: inherit;
   text-align: center;
@@ -198,8 +227,10 @@ input {
   white-space: pre-wrap;
   word-wrap: break-word;
 }
-.project__name{
-      white-space: pre-wrap;
+
+.project__name {
+  white-space: pre-wrap;
   word-wrap: break-word;
 }
+
 </style>

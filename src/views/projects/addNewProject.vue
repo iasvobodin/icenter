@@ -1,6 +1,7 @@
 <template>
   <div class="project__holder">
     <div class="project">
+      <br>
       <p v-if="projectList && projectList.lastUpdate">
         LegendStats latest update :
         {{ formatDate(new Date(projectList.lastUpdate * 1000)) }}

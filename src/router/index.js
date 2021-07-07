@@ -52,11 +52,11 @@ const routes = [
   },
   {
     path: "/tasks",
-    component: ()=>  import("@/views/tasks/index.vue"),
+    component: ()=>  import("@/views/tasks/tasks.vue"),
   },
   {
     path: "/tasks/:taskId",
-    component: ()=>  import("@/views/tasks/_taskId/index.vue"),
+    component: ()=>  import("@/views/tasks/_taskId.vue"),
   },
   {
     path: "/cabinets",
@@ -68,11 +68,11 @@ const routes = [
   },
   {
     path: "/cabtimes",
-    component: ()=>  import("@/views/cabtimes/index.vue"),
+    component: ()=>  import("@/views/cabtimes/cabtimes.vue"),
   },
   {
     path: "/cabtimes/:cabtimeId",
-    component: ()=>  import("@/views/cabtimes/_cabtimeId/index.vue"),
+    component: ()=>  import("@/views/cabtimes/_cabtimeId.vue"),
   },
   {
     path: "/projects",

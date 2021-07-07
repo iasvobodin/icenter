@@ -25,7 +25,7 @@
         </div>
     </div>
             <br>
-        <button @click="saveBook">Экспорт excel</button>
+        <button v-if="cabinetItems&&cabinetItems.length>0" @click="saveBook">Экспорт excel</button>
         <br>
 </template>
 

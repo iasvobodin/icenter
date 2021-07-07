@@ -1,13 +1,6 @@
 const multipart = require("parse-multipart");
 const sharp = require("sharp");
-
-
-
-
-
-const {
-  BlobServiceClient
-} = require("@azure/storage-blob");
+const { BlobServiceClient } = require("@azure/storage-blob");
 
 module.exports = async function (context, req) {
 
@@ -52,7 +45,6 @@ module.exports = async function (context, req) {
       .toBuffer({
           resolveWithObject: true,
         },
-        // eslint-disable-next-line no-unused-vars
         async (_, data) => {
           await thumbBlob.uploadData(data.buffer, {
             blobHTTPHeaders: {
@@ -73,7 +65,6 @@ module.exports = async function (context, req) {
     return
   }
 
-
   const uploadDataBlockBlobClient = containerClient.getBlockBlobClient(
     "thumb__" + req.query.fileName
   );
@@ -81,53 +72,55 @@ module.exports = async function (context, req) {
     req.query.fileName
   );
 
+
   if (req.query.delblob) {
+
     blockBlobClient.deleteIfExists()
     uploadDataBlockBlobClient.deleteIfExists()
     return
   }
 
-  var bodyBuffer = Buffer.from(req.body);
-  var boundary = multipart.getBoundary(req.headers["content-type"]);
-  var parts = multipart.Parse(bodyBuffer, boundary);
+  // var bodyBuffer = Buffer.from(req.body);
+  // var boundary = multipart.getBoundary(req.headers["content-type"]);
+  // var parts = multipart.Parse(bodyBuffer, boundary);
 
-  sharp(parts[0].data)
-    .resize({
-      width: 100,
-      height: null,
-    })
-    .toBuffer({
-        resolveWithObject: true,
-      },
-      // eslint-disable-next-line no-unused-vars
-      async (err, data, info) => {
-        await uploadDataBlockBlobClient.uploadData(data.buffer, {
-          blobHTTPHeaders: {
-            blobContentType: parts[0].type,
-          },
-        });
-      }
-    );
+  // sharp(parts[0].data)
+  //   .resize({
+  //     width: 100,
+  //     height: null,
+  //   })
+  //   .toBuffer({
+  //       resolveWithObject: true,
+  //     },
+  //     // eslint-disable-next-line no-unused-vars
+  //     async (err, data, info) => {
+  //       await uploadDataBlockBlobClient.uploadData(data.buffer, {
+  //         blobHTTPHeaders: {
+  //           blobContentType: parts[0].type,
+  //         },
+  //       });
+  //     }
+  //   );
 
 
 
-  sharp(parts[0].data)
-    // .resize({
-    //   width: 1920,
-    //   height: null,
-    // })
-    .toBuffer({
-        resolveWithObject: true,
-      },
-      // eslint-disable-next-line no-unused-vars
-      async (err, data, info) => {
-        await blockBlobClient.uploadData(data.buffer, {
-          blobHTTPHeaders: {
-            blobContentType: parts[0].type,
-          },
-        });
-      }
-    );
+  // sharp(parts[0].data)
+  //   // .resize({
+  //   //   width: 1920,
+  //   //   height: null,
+  //   // })
+  //   .toBuffer({
+  //       resolveWithObject: true,
+  //     },
+  //     // eslint-disable-next-line no-unused-vars
+  //     async (err, data, info) => {
+  //       await blockBlobClient.uploadData(data.buffer, {
+  //         blobHTTPHeaders: {
+  //           blobContentType: parts[0].type,
+  //         },
+  //       });
+  //     }
+  //   );
 
   // const uploadBlobResponse = await blockBlobClient.upload(
   //   parts[0].data,

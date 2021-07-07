@@ -49,7 +49,7 @@
       " @click="changeData">
       {{!changeInfo? 'Редактировать':'Отмена'}}
     </button>
-    <button v-if="changeInfo">Удалить</button>
+    <button @click="deleteError" v-if="changeInfo">Удалить</button>
     <button v-if="changeInfo" type="submit" form="errorData">
       Сохранить
     </button>
@@ -92,6 +92,23 @@ export default {
     this.error.body = this.error.body[this.error.body.length - 1];
   },
   methods: {
+   async deleteError() {
+     const delErr = {
+       method: "POST", // или 'PUT'
+       body: JSON.stringify({
+         id: this.error.id,
+         status: this.error.status,
+         info:{wo: this.error.info.wo },
+         ttl: 1
+       }),
+     }
+       await fetch("/api/POST_openError", delErr)
+       await fetch("/api/POST_error",delErr);
+     this.error.photos.length > 0 && await Promise.all(this.error.photos.map(async e => {
+       await fetch(`/api/blob?fileName=${e}&delblob=true`)
+     }))
+     this.$router.push('/errors')
+   },
     setPH(e){
       this.deletMethods = e.del 
       this.error.photos.splice(e.index, 1)
@@ -173,7 +190,7 @@ export default {
         },
         type: "error",
         status: updateErorBody.status,
-        ttl: 6000,
+        // ttl: 6000,
       };
 
       if (

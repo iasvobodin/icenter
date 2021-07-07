@@ -108,7 +108,7 @@ input[type='submit'] {
   /* border: none; */
   /* color: white; */
   /* padding: 15px 32px; */
-  border: 1px solid rgb(0, 140, 255);
+  border: 1px solid #004481;
   border-radius: 3px;
   text-align: center;
   text-decoration: none;

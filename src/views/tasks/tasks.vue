@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1>&&&&&&&</h1>
+    <h1>Раздел Tasks в разработке</h1>
   </div>
 </template>
 
@@ -12,4 +12,4 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="css" scoped></style>

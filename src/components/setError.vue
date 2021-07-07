@@ -21,7 +21,7 @@
         </section>
       </div>
       <br />
-      <error-photos  @resized-blob="files.compressBlob = $event"/>
+      <error-photos change-photos="true"  @resized-blob="files.compressBlob = $event"/>
       <br>
       <!-- <input
         id="imageF"

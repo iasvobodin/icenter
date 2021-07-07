@@ -1,5 +1,5 @@
 <template>
-<div v-if="$store.state.loader" class="loader">
+<div v-show="$store.state.loader" class="loader">
   <div class="loaderBar"></div>
 </div>
 </template>
@@ -15,33 +15,36 @@ body { background:#333; }
 .loader { 
     box-sizing: border-box;
   width:100%; 
-  margin:0 auto;
+  /* margin:0 auto; */
   border-radius:10px;
   /* border:4px solid transparent; */
   position:fixed;
   top: 0px;
-  padding:2px;
+  /* padding:2px; */
+  height: 3px;
+  z-index: 5;
 }
-.loader:before {
+/* .loader:before {
   content:'';
-  /* border:1px solid rgb(0, 26, 255);  */
+  border:1px solid rgb(0, 26, 255); 
   border-radius:10px;
   position:absolute;
   top:-4px; 
   right:-4px; 
   bottom:-4px; 
   left:-4px;
-}
+} */
 .loader .loaderBar { 
   position:absolute;
   border-radius:10px;
   top:0;
-  right:100%;
+  /* right:100%; */
   bottom:0;
-  left:0;
-  background:rgb(17, 0, 255); 
-  width:0;
+  /* left:0; */
+  background:orange; 
+  /* width:0; */
   animation:borealisBar 2s linear infinite;
+  
 }
 
 @keyframes borealisBar {

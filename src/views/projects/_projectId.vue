@@ -194,8 +194,10 @@ tbody tr:hover {
    .project,
    .project__header,
    .project__controls,
+   .user,
    .app__header{
      display: none;
+     opacity: 0;
    }
    /* .qrs{
      height: 100vh;
