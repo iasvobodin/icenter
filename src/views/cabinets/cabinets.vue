@@ -1,14 +1,15 @@
 <template>
   <div class="scaner">
     <div class="qr__holder">
-      <choose-project-number 
-      :dis="!changeView"
+      <input v-model="search" class="choose" type="text" placeholder="мастер или номер проекта">
+      <!-- <choose-project-number 
+      v-if="cabinets"
+        :dis="!changeView" 
         class="choose" 
-        v-if="cabinets" 
         :data-to-render="ff.map(e =>e.wo + '   ' +e['cab name'])"
         place-holder="Название шкафа или WO"
-        @choose-project-number="$router.push(`/cabinets/${$event.split('   ')[0]}`)" />
-      <img @click="changeView = !changeView" class="qr__icon" src="/img/qr-code.svg" alt="">
+        @choose-project-number="$router.push(`/cabinets/${$event.split('   ')[0]}`)" /> -->
+      <img class="qr__icon" src="/img/qr-code.svg" alt="" @click="changeView = !changeView">
     </div>
     <div v-show="!changeView" class="scanner__holder">
       <img class="frame" src="/img/scanner.svg" alt="">
@@ -16,6 +17,14 @@
       <canvas v-show="false" id="canvas" height="auto" width="100%"></canvas>
     </div>
     <br>
+    <div v-for="(val, key, index) in filter" :key="index" >
+     <h2>{{val.id}}</h2> 
+      <div v-for="(v, k, i) in val.cabinets" :key="i"  >
+        WO {{v.wo  }}
+        <br>
+        {{v['cab name']}} <br>
+      </div>
+    </div>
   </div>
 
 
@@ -46,6 +55,8 @@ export default {
     const qr = ref('')
     const state = reactive({
       cabinets: null,
+      filter:null,
+      search:""
     })
     watch(qr, (newValue, oldValue) => {
       router.push(`/cabinets/${newValue}`)
@@ -60,10 +71,21 @@ export default {
       } = useFetch(url)
       await request()
       state.cabinets = response
+     state.filter = state.cabinets.filter(pr => ['01','02','03'].some(s => pr.info.extends['status project'].includes(s)))//.map(c =>  {  return {[c.id] : c.cabinets}})
+      //  for (const iterator of state.filter) {
+      //   state.filter = {[state.filter], ...iterator}
+      //  }
+      // state.filter = {...state.filter}
        
     }
     getCabinets()
-    const ff = computed(()=> state.cabinets.filter(pr => ['01','02','03'].some(s => pr.info.extends['status project'].includes(s))).map(c=> c.cabinets).flat())
+    const ff = computed(()=> {
+    return state.search ? 
+    state.filter.forEach(e => e.cabinets.fiter(s => s.wo.toLowerCase().includes(state.search.toLowerCase())))  : 
+    state.filter
+    }
+    // state.cabinets.filter(pr => ['01','02','03'].some(s => pr.info.extends['status project'].includes(s))).map(c =>  {  return {[c.id] : [...c.cabinets]}})
+    )
     onMounted(async () => {
       const canvasElement = document.getElementById("canvas");
       const canvas = canvasElement.getContext("2d");

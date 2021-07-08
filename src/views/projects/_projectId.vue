@@ -138,6 +138,7 @@ table {
 }
 td,
 th {
+  height: 15px;
   border: 1px solid #999;
   padding: 4px;
   font-size: 12px;
@@ -179,11 +180,8 @@ tbody tr:hover {
 
 @media print {
   .page{
-    /* page-break-inside:always; */
-    width:29.7cm ;
-    margin: 0;
-    /* margin-top: 0.5cm;
-    margin-bottom: 0.5cm; */
+  width:29.7cm ;
+  margin: 0;
   height:21cm ;
   padding: 1cm;
   }
