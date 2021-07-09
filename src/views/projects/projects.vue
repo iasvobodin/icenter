@@ -6,7 +6,7 @@
   <br>
   <br>
   <div v-if="errors">
-    <div v-for="status in actualStatus" :key="status" >
+    <div v-for="status in actualStatus" v-show="groupProjects(status).length != 0" :key="status" >
       <h2>{{status}}</h2>
       <div class="errors__holder">
         <div v-for="(value, key, index) in groupProjects(status)" :key="index"

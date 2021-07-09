@@ -45,9 +45,7 @@
     watch,
     ref
   } from 'vue'
-  import {
-    useFetch
-  } from '@/hooks/fetch'
+  import { useFetch } from '@/hooks/fetch'
   export default {
 
     setup() {

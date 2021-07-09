@@ -3,13 +3,6 @@
     <h1>Шкафы</h1>
     <div class="qr__holder">
       <input v-model="search" class="choose" type="text" placeholder="wo или название шкафа">
-      <!-- <choose-project-number 
-      v-if="cabinets"
-        :dis="!changeView" 
-        class="choose" 
-        :data-to-render="ff.map(e =>e.wo + '   ' +e['cab name'])"
-        place-holder="Название шкафа или WO"
-        @choose-project-number="$router.push(`/cabinets/${$event.split('   ')[0]}`)" /> -->
       <img class="qr__icon" src="/img/qr-code.svg" alt="" @click="changeView = !changeView">
     </div>
     <div v-show="!changeView" class="scanner__holder">
@@ -18,8 +11,8 @@
       <canvas v-show="false" id="canvas" height="auto" width="100%"></canvas>
     </div>
     <br>
-    <div v-for="(val, key, index) in actualRojects" :key="index">
-      <h2>Проект {{val}}</h2>
+    <div v-for="(val, key, index) in actualRojects" v-show="groupCabinets(val).length != 0" :key="index">
+      <h2 >Проект {{val}}</h2>
       <br>
       <div  class="errors__holder">
       <div v-for="(v, k, i) in groupCabinets(val)" :key="i" class="error__card__holder">
@@ -135,6 +128,7 @@ input {
   height: 30px;
   border: 1px solid orange;
   border-radius: 5px;
+  min-width: 250px;
   line-height: 30px;
   font-size: 18px;
   text-align: center;
