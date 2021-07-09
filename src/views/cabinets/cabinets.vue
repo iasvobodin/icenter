@@ -1,7 +1,8 @@
 <template>
   <div class="scaner">
+    <h1>Шкафы</h1>
     <div class="qr__holder">
-      <input v-model="search" class="choose" type="text" placeholder="мастер или номер проекта">
+      <input v-model="search" class="choose" type="text" placeholder="wo или название шкафа">
       <!-- <choose-project-number 
       v-if="cabinets"
         :dis="!changeView" 
@@ -17,13 +18,21 @@
       <canvas v-show="false" id="canvas" height="auto" width="100%"></canvas>
     </div>
     <br>
-    <div v-for="(val, key, index) in filter" :key="index" >
-     <h2>{{val.id}}</h2> 
-      <div v-for="(v, k, i) in val.cabinets" :key="i"  >
-        WO {{v.wo  }}
-        <br>
-        {{v['cab name']}} <br>
+    <div v-for="(val, key, index) in actualRojects" :key="index">
+      <h2>Проект {{val}}</h2>
+      <br>
+      <div  class="errors__holder">
+      <div v-for="(v, k, i) in groupCabinets(val)" :key="i" class="error__card__holder">
+        <div class="errors__card" @click="$router.push(`/cabinets/${v.wo}`)">
+          WO {{v.wo  }}
+          <br>
+          {{v['cab name']}} <br>
+        </div>
+ </div>
       </div>
+      <br>
+      <hr>
+      <br>
     </div>
   </div>
 
@@ -54,15 +63,17 @@ export default {
     const changeView = ref(true)
     const qr = ref('')
     const state = reactive({
+      projects: null,
       cabinets: null,
       filter:null,
+      groupCabinets:null,
+      actualRojects:null,
       search:""
     })
     watch(qr, (newValue, oldValue) => {
       router.push(`/cabinets/${newValue}`)
     })
     const getCabinets = async () => {
-      //  console.log(import.meta.env);
       let url = new URL('/api/projects', import.meta.env.DEV ? 'http://localhost:8080': 'https://thankful-pebble-012619610.azurestaticapps.net/');
       url.searchParams.set('status', 'open');
       const {
@@ -70,21 +81,17 @@ export default {
         response
       } = useFetch(url)
       await request()
-      state.cabinets = response
-     state.filter = state.cabinets.filter(pr => ['01','02','03'].some(s => pr.info.extends['status project'].includes(s)))//.map(c =>  {  return {[c.id] : c.cabinets}})
-      //  for (const iterator of state.filter) {
-      //   state.filter = {[state.filter], ...iterator}
-      //  }
-      // state.filter = {...state.filter}
-       
+      state.projects = response.value.filter(pr => ['01','02','03'].some(s => pr.info.extends['status project'].includes(s)))
+      state.actualRojects = state.projects.map(p => p.id)
+      state.cabinets = state.projects.map(c =>  c.cabinets.map(cc => {return {...cc, project: c.id}})).flat()
+      state.groupCabinets = project => filter.value.filter(c => c.project === project )
     }
     getCabinets()
-    const ff = computed(()=> {
-    return state.search ? 
-    state.filter.forEach(e => e.cabinets.fiter(s => s.wo.toLowerCase().includes(state.search.toLowerCase())))  : 
-    state.filter
+    const filter = computed(()=> {
+      return state.search ? 
+      state.cabinets.filter(e => [e?.wo, e?.['cab name']].some(s => s && s.toLowerCase().includes(state.search.toLowerCase()))) :
+      state.cabinets
     }
-    // state.cabinets.filter(pr => ['01','02','03'].some(s => pr.info.extends['status project'].includes(s))).map(c =>  {  return {[c.id] : [...c.cabinets]}})
     )
     onMounted(async () => {
       const canvasElement = document.getElementById("canvas");
@@ -116,7 +123,7 @@ export default {
       changeView,
       streamVideo,
       qr,
-      ff,
+      filter,
       ...toRefs(state)
     }
   },
@@ -124,6 +131,38 @@ export default {
 </script>
 
 <style lang="css" scoped>
+input {
+  height: 30px;
+  border: 1px solid orange;
+  border-radius: 5px;
+  line-height: 30px;
+  font-size: 18px;
+  text-align: center;
+  margin: auto;
+  padding: 0px;
+}
+.errors__holder {
+  display: grid;
+  align-items: stretch;
+  width: 95%;
+  margin: auto;
+  grid-template-columns: repeat(auto-fill, minmax(max(20vw, 250px), 1fr));
+  column-gap: 2vh;
+  row-gap: 2vh;
+}
+
+.errors__card {
+  border: 1px solid orange;
+  border-radius: 4px;
+  padding: 5px;
+  cursor: pointer;
+  min-height: 50px;
+}
+
+.error__card__holder {
+  place-self: stretch;
+
+}
 .qr__holder{
   height: 40px;
   display: grid;
@@ -171,5 +210,9 @@ export default {
   width: min(600px, 95vw);
   margin: auto;
   color: #ff5100;
+}
+.errors__card:hover {
+  border: 1px solid black;
+  background: rgba(245, 254, 255, 0.356);
 }
 </style>

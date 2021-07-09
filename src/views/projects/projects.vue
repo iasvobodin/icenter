@@ -9,10 +9,10 @@
     <div v-for="status in actualStatus" :key="status" >
       <h2>{{status}}</h2>
       <div class="errors__holder">
-        <div v-for="(value, key, index) in filterProjects" v-show="value.info.extends['status project'] === status" :key="index"
+        <div v-for="(value, key, index) in groupProjects(status)" :key="index"
           class="error__card__holder" @click="$router.push(`/projects/${value.id}`)">
-          <br v-if="value.info.extends['status project'] === status" class="errors__card">
-          <div v-if="value.info.extends['status project'] === status" class="errors__card">
+          <br  class="errors__card">
+          <div  class="errors__card">
             <h2>{{ value.id }}</h2>
             <p class="project__name" >{{ value.info.base['Project Name'] }}</p>
             <br>
@@ -54,11 +54,13 @@ export default {
     
     const filterProjects = computed(() => {
       //  debugger
-      return state.search ? 
- state.errors.filter(e=> [e?.id, e.info.extends?.['senior fitter']].some(s => s&&s.toLowerCase().includes(state.search.toLowerCase()))) 
- : state.errors
-     
+      return state.search ?
+        state.errors.filter(e => [e?.id, e.info.extends?.['senior fitter']].some(s => s && s.toLowerCase().includes(state.search.toLowerCase()))) :
+        state.errors
+
     })
+    const groupProjects = status =>filterProjects.value && filterProjects.value.filter( f => f.info.extends['status project'] === status )
+    
     const getErrors = async () => {
       const {
         request,
@@ -68,18 +70,7 @@ export default {
       state.errors = response
 
       state.actualStatus = [...state.errors.reduce((acc, pr) => acc.add(pr.info.extends['status project']),new Set())].sort()
-      state.testStatus = {}
-      state.errors.forEach(pr => state.testStatus[pr.info.extends['status project']] =[] ) 
-      //  state.errors.forEach(pr => state.testStatus[pr.info.extends['status project']].push(pr.state.testStatus[pr.info.extends['status project']]) ) // [...state.errors.reduce((acc, pr) => acc.add(pr.info.extends['status project']),new Set())].sort()
-      //    let arr = []
-      //  const groupByStatus = state.errors.reduce((acc, pr) => {
-      //    acc[pr.info.extends['status project']] = pr
-      //   //  [...status].forEach(st =>{
-      //   //   //  if(pr.info.extends['status project'] === st){}
-      //   // //  })
-      //   //  acc.add(pr.info.extends['status project'])
-      //    },{})
-// console.log( groupByStatus);
+
       state.errors.sort(function (a, b) {
         const nameA = a.info.extends['status project'].toLowerCase();
         const nameB = b.info.extends['status project'].toLowerCase();
@@ -89,15 +80,13 @@ export default {
         if (nameA > nameB) {
           return 1;
         }
-
-        // names must be equal
         return 0;
       });
     }
     getErrors()
 
     return {
-      //ordered,
+      groupProjects,
       filterProjects,
       ...toRefs(state),
     }
