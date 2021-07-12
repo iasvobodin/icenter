@@ -3,13 +3,13 @@
 <p>В данном разделе Вы можете посмотреть ошибки добавленные сборщиками и инженерами по тестированию.</p>
   <br />
   <br />
-  <div class="selectStatus">
+  <!-- <div class="selectStatus">
     <h3>Выберете статус ошибки   </h3>
     <select v-model="selectedStatus" class="change__status">
       <option value="open">Открыто</option>
       <option value="confirmed">Принято</option>
     </select>
-  </div>
+  </div> -->
   <br />
   <div v-if="errors" class="errors__holder">
     <div
@@ -60,7 +60,7 @@
         const {
           request,
           response
-        } = useFetch(`/api/errors?status=${selectedStatus.value}`)
+        } = useFetch(`/api/errors`)
         state.errors = response
         await request()
       }

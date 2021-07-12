@@ -135,7 +135,7 @@ label {
     cursor: pointer;
     /* border-radius: 4px; */
     border-radius: 5px 5px 0 0;
-    background-color: rgba(255, 183, 157, 0.13);
+    background-color: rgb(255,246,242);
     display: block;
     width: 100%;
 }
@@ -150,6 +150,7 @@ label {
 
 .card__holder {
     margin-top: 0px;
+    background-color: #fff;
     padding: 15px;
     border-radius: 0 0 5px 5px;
     border: 1px solid orange;
@@ -173,12 +174,14 @@ label {
 }
 
 .error__holder {
-    border-bottom: 1px solid black;
-    /* border-radius:4px; */
+    border: 1px solid black;
+    border-radius:4px;
+    background-color: rgba(224, 236, 255, 0.281);
     width: min(1200px, 95vw);
     margin: auto;
     margin-top: 1vh;
-    padding-bottom: 1vh;
+    padding: 1vh;
+   
 
 }
 </style>

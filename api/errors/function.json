@@ -23,7 +23,7 @@
       "ConnectionStringSetting": "legendstats_DOCUMENTDB",
       "databaseName": "icenter",
       "collectionName": "icenterErrors",
-      "sqlQuery": "SELECT * from c where c.status = {status}"
+      "sqlQuery": "SELECT * from c"
     },
     {
       "type": "cosmosDB",
