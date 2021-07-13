@@ -1,39 +1,38 @@
 <template>
-<div v-for="t in tt" >
-<!-- <h3>{{t}} </h3> -->
-  <table>
-      <tr style="border: solid 2px orange">
-          <th>№</th>
-          <th>{{t}}</th>
-          <th>Кол-во</th>
-          <th>Норма</th>
-          <th>Итого</th>
-      </tr>
-      <tr v-for="(value, key, index) in  $store.state.template.CabTime" v-show="value._type === t" :key="index">
-          <td>{{ value._id }}</td>
-          <td class="cabtime__name">{{ value.name }}</td>
-          <td class="tg-0lax"><input v-model="cabtimeVal[value.name]" class="cabtime__input" type="number"></td>
-          <td class="tg-0lax">{{ value._const }}</td>
-          <td class="tg-0lax"> <div v-show="cabtimeVal[value.name]">{{result(value._const,cabtimeVal[value.name]) }}</div> </td>
-      </tr>
-  </table>
-</div>
-
-             <!-- <div v-for="(value, key, index) in $store.state.template.CabTime" :key="index">
-                 {{value.name}}___{{value._const}}  -->
-            <!-- <div>
-              <h3>Статус ошибки: {{ key }}</h3>-->
-              <!-- <conditional-render  :data-render="value" /> -->
-          <!-- </div> -->
+    <div v-for="t in tt">
+        <!-- <h3>{{t}} </h3> -->
+        <table>
+            <tr style="border: solid 2px orange">
+                <th>№</th>
+                <th>{{t}}</th>
+                <th>Кол-во</th>
+                <th>Норма</th>
+                <th>Итого</th>
+            </tr>
+            <tr v-for="(value, key, index) in  $store.state.template.CabTime" v-show="value._type === t" :key="index">
+                <td>{{ value._id }}</td>
+                <td class="cabtime__name">{{ value.name }}</td>
+                <td class="tg-0lax"><input v-model="cabtimeVal[value.name]" class="cabtime__input" type="number"></td>
+                <td class="tg-0lax">{{ value._const }}</td>
+                <td class="tg-0lax">
+                    <div v-show="cabtimeVal[value.name]">{{result(value._const,cabtimeVal[value.name]) }}</div>
+                </td>
+            </tr>
+        </table>
+    </div>
 </template>
 
 <script>
 import conditionalRender from "@/components/conditionalRender.vue";
 import chooseWoNumber from '@/components/chooseWoNumber.vue';
-import { useStore } from 'vuex';
+import {
+    useStore
+} from 'vuex';
 import {
     reactive,
-    toRefs, computed,nextTick,
+    toRefs,
+    computed,
+    nextTick,
 } from 'vue'
 export default {
     components: {
@@ -43,19 +42,29 @@ export default {
     setup() {
         const store = useStore()
         const cabtimeVal = reactive({})
-        const state = reactive({type: null, tt:null})
-        const result = (a,b)=> Math.ceil(a*b) 
+        const state = reactive({
+            type: null,
+            tt: null
+        })
+        const result = (a, b) => Math.ceil(a * b)
+        //         const filterByGroup = async (f) => {
+        //              await getType()
+        // return store.state.template.CabTime.filter((g) => g._type === f)
+        //               }
         const getType = async () => {
             await store.dispatch('GET_template');
-           state.tt = store.state.template.CabTime.reduce((acc, el) => acc.add(el._type) ,new Set())
+            console.log('dispatch template in cabtime');
+            state.tt = store.state.template.CabTime.reduce((acc, el) => acc.add(el._type), new Set())
         }
-   getType()
-            // [...state.errors.reduce((acc, pr) => acc.add(pr.info.extends['status project']),new Set())].sort()
-        return {result,
-            cabtimeVal, ...toRefs(state)
+        getType()
+        // [...state.errors.reduce((acc, pr) => acc.add(pr.info.extends['status project']),new Set())].sort()
+        return {
+            result, // filterByGroup,
+            cabtimeVal,
+            ...toRefs(state)
         }
     }
-} 
+}
 </script>
 
 <style lang="css" scoped>
