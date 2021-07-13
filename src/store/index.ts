@@ -120,7 +120,7 @@ export default createStore({
         import.meta.env.MODE === 'development') {
         clientPrincipal = {
           identityProvider: "static",
-          userId: "e6f6fd5ed5794627a10c55202215ce68",
+          userId: "9c0c1980f5904d10b43e552d2b7c4041",
           userDetails: "Ivan.Svobodin@Emerson.com",
           userRoles: ["admin", "anonymous", "authenticated"],
         };

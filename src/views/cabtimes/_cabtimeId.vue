@@ -14,7 +14,7 @@
           <td class="cabtime__name">{{ value.name }}</td>
           <td class="tg-0lax"><input v-model="cabtimeVal[value.name]" class="cabtime__input" type="number"></td>
           <td class="tg-0lax">{{ value._const }}</td>
-          <td  class="tg-0lax"> <div v-show="cabtimeVal[value.name]">{{result(value._const,cabtimeVal[value.name]) }}</div> </td>
+          <td class="tg-0lax"> <div v-show="cabtimeVal[value.name]">{{result(value._const,cabtimeVal[value.name]) }}</div> </td>
       </tr>
   </table>
 </div>

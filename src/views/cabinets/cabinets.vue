@@ -67,7 +67,7 @@ export default {
       router.push(`/cabinets/${newValue}`)
     })
     const getCabinets = async () => {
-      let url = new URL('/api/projects', import.meta.env.DEV ? 'http://localhost:8080': 'https://thankful-pebble-012619610.azurestaticapps.net/');
+      let url = new URL('/api/projects', import.meta.env.DEV ? 'http://localhost:8080': 'https://proud-rock-02bbde210.azurestaticapps.net/');
       url.searchParams.set('status', 'open');
       const {
         request,
