@@ -48,7 +48,7 @@ import {
 } from 'vue-router'
 export default {
     components: {
-    chooseProjectNumber,
+    // chooseProjectNumber,
   },
   setup() {
     const router = useRouter()
