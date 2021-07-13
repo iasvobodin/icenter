@@ -1,10 +1,10 @@
 <template>
 <div v-for="t in tt" >
-<h3>{{t}} </h3>
+<!-- <h3>{{t}} </h3> -->
   <table>
       <tr style="border: solid 2px orange">
           <th>№</th>
-          <th>Наименование</th>
+          <th>{{t}}</th>
           <th>Кол-во</th>
           <th>Норма</th>
           <th>Итого</th>
