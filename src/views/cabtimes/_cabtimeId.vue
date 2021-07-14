@@ -1,7 +1,15 @@
 <template>
-    <div v-for="t in tt">
+    <div v-for="t in getType">
         <!-- <h3>{{t}} </h3> -->
         <table>
+                <colgroup>
+       <col span="1" style="width: 5%;">
+       <col span="1" style="width: 70%;">
+       <col span="1" style="width: 15%;">
+        <col span="1" style="width: 5%;">
+         <col span="1" style="width: 5%;">
+    </colgroup>
+<tbody>
             <tr style="border: solid 2px orange">
                 <th>№</th>
                 <th>{{t}}</th>
@@ -9,17 +17,22 @@
                 <th>Норма</th>
                 <th>Итого</th>
             </tr>
-            <tr v-for="(value, key, index) in  $store.state.template.CabTime" v-show="value._type === t" :key="index">
+            <tr v-for="(value, key, index) in  groupBy(t)"  :key="index">
                 <td>{{ value._id }}</td>
                 <td class="cabtime__name">{{ value.name }}</td>
-                <td class="tg-0lax"><input v-model="cabtimeVal[value.name]" class="cabtime__input" type="number"></td>
+                <td class="tg-0lax"><input v-model="$store.state.template.CabTime[value.name]" class="cabtime__input" type="number"></td>
                 <td class="tg-0lax">{{ value._const }}</td>
                 <td class="tg-0lax">
                     <div v-show="cabtimeVal[value.name]">{{result(value._const,cabtimeVal[value.name]) }}</div>
                 </td>
             </tr>
+            </tbody>
         </table>
     </div>
+    <br>
+    <button @click="postCabTime">SEND</button>
+    <br>
+    <br>
 </template>
 
 <script>
@@ -47,18 +60,19 @@ export default {
             tt: null
         })
         const result = (a, b) => Math.ceil(a * b)
-        //         const filterByGroup = async (f) => {
-        //              await getType()
-        // return store.state.template.CabTime.filter((g) => g._type === f)
-        //               }
-        const getType = async () => {
-            await store.dispatch('GET_template');
-            console.log('dispatch template in cabtime');
-            state.tt = store.state.template.CabTime.reduce((acc, el) => acc.add(el._type), new Set())
+        // const copyTemplate = computed(() => {return 
+        store.state.template && (state.tt = store.state.template.CabTime)
+        // })
+        const getType = computed(() => store.state.template && store.state.template.CabTime.reduce((acc, el) => acc.add(el._type), new Set()))
+        const groupBy = t => { return store.state.template && store.state.template.CabTime.filter(g => g._type === t)}
+
+        const postCabTime = async () => {
+            console.log(store.state.template.CabTime.filter(f => Object.keys(cabtimeVal).some(s => f.name === s)  ).map(m => cabtimeVal.find(e => e)  ));
+            // Object.keys(cabtimeVal).some(s => store.state.template.CabTime.filter(f => f.name === s) )
+            // store.state.template.CabTime
         }
-        getType()
-        // [...state.errors.reduce((acc, pr) => acc.add(pr.info.extends['status project']),new Set())].sort()
         return {
+            getType,groupBy,postCabTime,
             result, // filterByGroup,
             cabtimeVal,
             ...toRefs(state)
@@ -79,7 +93,7 @@ table {
   margin-top: 2vh;
   border-collapse: collapse;
   border-radius: 5px;
-  min-width: min(95vw, 800px);
+  width: min(95vw, 800px);
 }
 td,
 th {
@@ -91,6 +105,6 @@ tbody tr:nth-child(odd) {
   background: #eee;
 }
 tbody tr:hover {
-  background: yellow;
+  background: rgba(255, 166, 0, 0.1);
 }
 </style>
