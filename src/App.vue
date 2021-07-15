@@ -81,8 +81,7 @@ export default {
       this.$store.dispatch('GET_auth')
     }
     // !this.$store.state.user.info && this.$store.dispatch('GET_auth')
-    !this.$store.state.template && this.$store.dispatch('GET_template')
-     console.log('dispatch template in app');
+     this.$store.dispatch('GET_template')
   },
 }
 </script>

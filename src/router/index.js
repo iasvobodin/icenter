@@ -75,6 +75,10 @@ const routes = [
     component: ()=>  import("@/views/cabtimes/_cabtimeId.vue"),
   },
   {
+    path: "/cabtimes/addNewCabtime",
+    component: ()=>  import("@/views/cabtimes/addNewCabtime.vue"),
+  },
+  {
     path: "/projects",
     component: ()=>  import("@/views/projects/projects.vue"),
   },
