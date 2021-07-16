@@ -8,7 +8,7 @@
             @choose-project-number="chooseCabinet" />
     </div>
 <section v-if="cabinet">
-        <div v-for="t in getType">
+        <div v-for="(t,i) in $store.state.template.CabTimeType">
             <!-- <h3>{{t}} </h3> -->
             <table>
                 <colgroup>
@@ -21,20 +21,22 @@
                 <tbody>
                     <tr style="border: solid 2px orange">
                         <th>№</th>
-                        <th>{{t}}</th>
+                        <th>{{t.type}}</th>
                         <th>Кол-во</th>
                         <th>Норма</th>
-                        <th>Итого</th>
+                        <th><div v-if="cabtimetype">{{cabtimetype[i].summ}}</div></th>
+                        <!-- <th>Index</th> -->
                     </tr>
-                    <tr v-for="(value, key, index) in  groupBy(t)" :key="index">
+                    <tr v-for="(value, index) in  groupBy(t.type)" :key="index">
                         <td>{{ value._id }}</td>
                         <td class="cabtime__name">{{ value.name }}</td>
                         <td class="tg-0lax"><input class="cabtime__input" type="number"
                                 @input="inputData($event, value.name)"></td>
                         <td class="tg-0lax">{{ value._const }}</td>
                         <td class="tg-0lax">
-                            <div v-show="cabtimeVal[value.name]">{{result(value._const,cabtimeVal[value.name]) }}</div>
+                            <div v-if="tt" >{{value.result}}</div>
                         </td>
+                        <!-- <td>{{`${i+1}.${index+1}`}}</td> -->
                     </tr>
                 </tbody>
             </table>
@@ -76,22 +78,32 @@ export default {
             projectInformation: null,
             projectData: null,
             cabinet:'',
+            cabtimetype: null,
         })
         const inputData = ($event, key) => {
-            !state.tt && (state.tt = store.state.template.CabTime)
+            !state.tt && (state.tt = store.state.template.CabTime);
+            !state.cabtimetype && (state.cabtimetype = store.state.template.CabTimeType);
             state.tt.map(e => {
-                if(e.name === key) {
-                e.value = $event.target.value
-                e.result = $event.target.value * e._const
-                console.log(e);
-            }
-            }
-            )
+                if (e.name === key) {
+                    e.value = $event.target.value
+                    e.result = $event.target.value * e._const
+                    // console.log(e);
+                }
+            })
+            state.cabtimetype.map(e => {
+                return e.summ = state.tt.filter(f => f._type === e.type).reduce((acc, m) => acc += m.result, 0)
+            })
         }
+        // eslint-disable-next-line vue/no-side-effects-in-computed-properties
+        const summByType = computed(()=> state.tt?state.tt.push(store.state.template.CabTime.reduce((acc, el) => acc.add(el._type), new Set())) : 0)
+        //  t =>  state.tt&&state.tt.reduce((acc,f) => f._type === t&&(acc +=f.result),0);
         const result = (a, b) => Math.ceil(a * b)
         const getType = computed(() => store.state.template && store.state.template.CabTime.reduce((acc, el) => acc.add(el._type), new Set()))
         const groupBy = t => {
-            return store.state.template && store.state.template.CabTime.filter(g => g._type === t)
+            if (store.state.template) {
+                state.tt = store.state.template.CabTime
+                return state.tt.filter(g => g._type === t)
+            }
         }
 
         const fetchProjectList = async () => {
@@ -151,6 +163,7 @@ export default {
             choose, // filterByGroup,
             cabtimeVal,
             chooseCabinet,
+            // summByType,
             ...toRefs(state)
         }
     }

@@ -23,7 +23,7 @@
       "ConnectionStringSetting": "legendstats_DOCUMENTDB",
       "databaseName": "icenter",
       "collectionName": "icenterDB",
-      "sqlQuery": "SELECT * from c where c.info.wo = {wo}"
+      "sqlQuery": "SELECT * from c where c.info.wo = {wo} and c.type = 'f_error' or c.type = 't_error'"
     }
   ]
 }
