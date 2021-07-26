@@ -2,10 +2,12 @@
   <div
     v-for="(value, key, index) in dataRender"
     :key="index"
-    :class="{ error__item__desc: key === 'Описание' }"
     class="error__item"
+    :class="{ error__item__desc: key === 'Описание',
+              disble__grid : !onlyField
+     }"
   >
-    <h4
+    <h4 v-if="onlyField"
       :class="{ error__item__vertical__title: key === 'Описание' }"
       class="error__item__title"
     >
@@ -91,6 +93,10 @@
 <script>
 export default {
   props: {
+    onlyField:{
+       type: Boolean,
+      default:()=> true
+    },
     formId:{
       type: String,
       default:"form"
@@ -146,5 +152,9 @@ export default {
   text-align: end;
   align-self: center;
   margin: 0;
+}
+.disble__grid{
+  grid-template-columns: 1fr;
+  border-bottom: 1px solid transparent;
 }
 </style>

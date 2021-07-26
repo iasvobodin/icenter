@@ -29,24 +29,33 @@
 <img class="add__button" src="/img/add.svg" alt="Добавить новый проект">
 </router-link>
   </div>
-  <section v-if="errors" class="table">
-  <table style="width: 150%">
-    <!-- <tr style="border: solid 2px orange">
-      <th>WO</th>
-      <th>Наименование</th>
-    </tr> -->
+ 
+  <section v-if="changeAllFlag" class="table">
+  <table style="width:100%">
      <tr style="border: solid 2px orange">
-      <th>{{ errors[0].id }}</th>
-      <th v-for="(v, k) in errors[0].info.base" >{{k}}</th>
-      <th v-for="(vv,kk) in errors[0].info.extends" >{{kk}}</th>
+      <th>№</th>
+      <th  v-for="(vv,kk) in $store.state.template.template.extend"  @click="sortBy(kk,'extends')" >{{kk}}</th>
     </tr>
-    <tr v-for="(value, key, index) in errors" :key="index">
+    <tbody>
+    <tr v-for="(value, key, index) in projects" :key="index">
       <td>{{ value.id }}</td>
-      <td v-for="v in value.info.base" >{{v}}</td>
-      <td v-for="vv in value.info.extends" >{{vv}}</td>
+      <td v-for="(v,k) in $store.state.template.template.extend">
+          <conditional-render
+          v-model="projects[key].info.extends"
+            :only-field="false"
+            :data-render="{[k]:$store.state.template.template.extend[k]}"
+            :required="false"
+          />
+      </td>
     </tr>
+    </tbody>
   </table>
   </section>
+    <br>
+  <br>
+   <button @click="changeAllFlag = !changeAllFlag">Change ALL</button>
+  <br>
+  <br>
 </template>
 
 <script>
@@ -54,20 +63,23 @@
 import infoRender from '@/components/infoRender.vue'
 import { reactive, toRefs, computed, ref } from 'vue'
 import { useFetch } from '@/hooks/fetch'
-
+import conditionalRender from '@/components/conditionalRender.vue'
 export default {
   components: {
+    conditionalRender,
     infoRender,
   },
   setup() {
     const state = reactive({
+      changeAllFlag: false,
       errors: null,
       resErrors: null,
       fetchStatus: null,
       errorMessage: '',
       actualStatus: null,
       search:"",
-      testStatus : {}
+      testStatus : {},
+      projects:null
     })
     
     const filterProjects = computed(() => {
@@ -86,6 +98,7 @@ export default {
       } = useFetch(`/api/projects?status=open`)
       await request()
       state.errors = response
+      state.projects = JSON.parse(JSON.stringify(state.errors))
 
       state.actualStatus = [...state.errors.reduce((acc, pr) => acc.add(pr.info.extends['status project']),new Set())].sort()
 
@@ -102,8 +115,23 @@ export default {
       });
     }
     getErrors()
-
+const sortBy = (el,p) => {
+  console.log(el,p);
+  // debugger
+        state.projects.sort(function (a, b) {
+        const nameA = a.info[p][el]?.toString().toLowerCase();
+        const nameB = b.info[p][el]?.toString().toLowerCase();
+        if (nameA < nameB) {
+          return -1;
+        }
+        if (nameA > nameB) {
+          return 1;
+        }
+        return 0;
+      })
+}
     return {
+      sortBy,
       groupProjects,
       filterProjects,
       ...toRefs(state),
@@ -255,6 +283,17 @@ tbody tr:nth-child(odd) {
   background: #eee;
 }
 tbody tr:hover {
-  background: yellow;
+  background: rgba(255, 166, 0, 0.07);
+}
+th{
+   position: sticky;
+  top: 50px;
+  color: white;
+  background-color: rgb(0, 68, 129);
+  border: solid 2px orange;
+  box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
+}
+tr>th{
+  cursor: pointer;
 }
 </style>
