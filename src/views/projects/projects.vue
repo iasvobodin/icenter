@@ -29,6 +29,24 @@
 <img class="add__button" src="/img/add.svg" alt="Добавить новый проект">
 </router-link>
   </div>
+  <section v-if="errors" class="table">
+  <table style="width: 150%">
+    <!-- <tr style="border: solid 2px orange">
+      <th>WO</th>
+      <th>Наименование</th>
+    </tr> -->
+     <tr style="border: solid 2px orange">
+      <th>{{ errors[0].id }}</th>
+      <th v-for="(v, k) in errors[0].info.base" >{{k}}</th>
+      <th v-for="(vv,kk) in errors[0].info.extends" >{{kk}}</th>
+    </tr>
+    <tr v-for="(value, key, index) in errors" :key="index">
+      <td>{{ value.id }}</td>
+      <td v-for="v in value.info.base" >{{v}}</td>
+      <td v-for="vv in value.info.extends" >{{vv}}</td>
+    </tr>
+  </table>
+  </section>
 </template>
 
 <script>
@@ -222,4 +240,21 @@ input {
   word-wrap: break-word;
 }
 
+table {
+  margin-top: 2vh;
+  border-collapse: collapse;
+  border-radius: 5px;
+}
+td,
+th {
+  border: 1px solid #999;
+  padding: 0.5rem;
+  font-size: 12px;
+}
+tbody tr:nth-child(odd) {
+  background: #eee;
+}
+tbody tr:hover {
+  background: yellow;
+}
 </style>
