@@ -37,7 +37,7 @@
       <th  v-for="(vv,kk) in $store.state.template.template.extend"  @click="sortBy(kk,'extends')" >{{kk}}</th>
     </tr>
     <tbody>
-    <tr v-for="(value, key, index) in projects" :key="index">
+    <tr v-for="(value, key, index) in projects" :key="index" @click="getIndex(key)">
       <td>{{ value.id }}</td>
       <td v-for="(v,k) in $store.state.template.template.extend">
           <conditional-render
@@ -53,7 +53,8 @@
   </section>
     <br>
   <br>
-   <button @click="changeAllFlag = !changeAllFlag">Change ALL</button>
+   <button v-if="!changeAllFlag" @click="changeAllFlag = !changeAllFlag">Change ALL</button>
+   <button v-else @click="updateChangedProjects">Update</button>
   <br>
   <br>
 </template>
@@ -79,9 +80,11 @@ export default {
       actualStatus: null,
       search:"",
       testStatus : {},
-      projects:null
+      projects:null,
+      updateIndex: new Set(),
     })
-    
+    const getIndex = (i) => state.updateIndex.add(i);
+
     const filterProjects = computed(() => {
       //  debugger
       return state.search ?
@@ -115,8 +118,22 @@ export default {
       });
     }
     getErrors()
+
+        const postProject = async (index) => {
+      const { request, response } = useFetch('/api/POST_project', {
+        method: 'POST', // или 'PUT'
+        body: JSON.stringify({...state.projects[index]}),
+      });
+      await request()
+    }
+     const updateChangedProjects = async () => {
+     await Promise.all([...state.updateIndex].map(async e => {
+       await postProject(e)
+     }))  
+     state.changeAllFlag = !state.changeAllFlag
+     }
 const sortBy = (el,p) => {
-  console.log(el,p);
+  // console.log(el,p);
   // debugger
         state.projects.sort(function (a, b) {
         const nameA = a.info[p][el]?.toString().toLowerCase();
@@ -131,6 +148,8 @@ const sortBy = (el,p) => {
       })
 }
     return {
+      updateChangedProjects,
+      getIndex,
       sortBy,
       groupProjects,
       filterProjects,
