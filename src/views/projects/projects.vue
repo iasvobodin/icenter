@@ -1,24 +1,26 @@
 <template>
-<h1>Проекты.</h1>
-<p>В данном разделе можно добавлять и редактировать информацию по текущим проектам ICenter.</p>
+  <h1>Проекты.</h1>
+  <p>В данном разделе можно добавлять и редактировать информацию по текущим проектам ICenter.</p>
   <br>
   <input v-model="search" type="text" placeholder="мастер или номер проекта">
   <br>
   <br>
   <div v-if="errors">
-    <div v-for="status in actualStatus" v-show="groupProjects(status).length != 0" :key="status" >
+    <div v-for="status in actualStatus" v-show="groupProjects(status).length != 0" :key="status">
       <h2>{{status}}</h2>
       <div class="errors__holder">
-        <div v-for="(value, key, index) in groupProjects(status)" :key="index"
-          class="error__card__holder" @click="$router.push(`/projects/${value.id}`)">
-          <br  class="errors__card">
-          <div  class="errors__card">
+        <div v-for="(value, key, index) in groupProjects(status)" :key="index" class="error__card__holder"
+          @click="$router.push(`/projects/${value.id}`)">
+          <br class="errors__card">
+          <div class="errors__card">
             <h2>{{ value.id }}</h2>
-            <p class="project__name" >{{ value.info.base['Project Name'] }}</p>
+            <p class="project__name">{{ value.info.base['Project Name'] }}</p>
             <br>
             <p> <i>Количество шкафов</i> : {{ value.cabinets.length }}</p>
             <br>
-            <p> <i>Мастер</i> : {{ value.info.extends['senior fitter']&&value.info.extends['senior fitter'].split('@')[0].replace('.',' ') }}</p>
+            <p> <i>Мастер</i> :
+              {{ value.info.extends['senior fitter']&&value.info.extends['senior fitter'].split('@')[0].replace('.',' ') }}
+            </p>
           </div>
         </div>
       </div>
@@ -26,35 +28,31 @@
       <hr>
     </div>
     <router-link to="/projects/addnewproject">
-<img class="add__button" src="/img/add.svg" alt="Добавить новый проект">
-</router-link>
+      <img class="add__button" src="/img/add.svg" alt="Добавить новый проект">
+    </router-link>
   </div>
- 
+
   <section v-if="changeAllFlag" class="table">
-  <table style="width:100%">
-     <tr style="border: solid 2px orange">
-      <th>№</th>
-      <th  v-for="(vv,kk) in $store.state.template.template.extend"  @click="sortBy(kk,'extends')" >{{kk}}</th>
-    </tr>
-    <tbody>
-    <tr v-for="(value, key, index) in projects" :key="index" @click="getIndex(key)">
-      <td>{{ value.id }}</td>
-      <td v-for="(v,k) in $store.state.template.template.extend">
-          <conditional-render
-          v-model="projects[key].info.extends"
-            :only-field="false"
-            :data-render="{[k]:$store.state.template.template.extend[k]}"
-            :required="false"
-          />
-      </td>
-    </tr>
-    </tbody>
-  </table>
+    <table style="width:100%">
+      <tr style="border: solid 2px orange">
+        <th>№</th>
+        <th v-for="(vv,kk) in $store.state.template.template.extend" :key="kk" @click="sortBy(kk,'extends')">{{kk}}</th>
+      </tr>
+      <tbody>
+        <tr v-for="(value, key, index) in projects" :key="index" @click="getIndex(key)">
+          <td>{{ value.id }}</td>
+          <td v-for="(v,k) in $store.state.template.template.extend" :key="k">
+            <conditional-render v-model="projects[key].info.extends" :only-field="false"
+              :data-render="{[k]:$store.state.template.template.extend[k]}" :required="false" />
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </section>
-    <br>
   <br>
-   <button v-if="!changeAllFlag" @click="changeAllFlag = !changeAllFlag">Change ALL</button>
-   <button v-else @click="updateChangedProjects">Update</button>
+  <br>
+  <button v-if="!changeAllFlag" @click="changeAllFlag = !changeAllFlag">Change ALL</button>
+  <button v-else @click="updateChangedProjects">Update</button>
   <br>
   <br>
 </template>
@@ -131,6 +129,7 @@ export default {
        await postProject(e)
      }))  
      state.changeAllFlag = !state.changeAllFlag
+     getErrors()
      }
 const sortBy = (el,p) => {
   // console.log(el,p);
