@@ -116,7 +116,7 @@ export default {
       });
     }
     getErrors()
-
+console.log(Array.from({ length: 20 }).map(()=> ));
         const postProject = async (index) => {
       const { request, response } = useFetch('/api/POST_project', {
         method: 'POST', // или 'PUT'
@@ -159,6 +159,7 @@ const sortBy = (el,p) => {
 </script>
 
 <style lang="css" scoped>
+
 
 .add__button::after {
   content: "";

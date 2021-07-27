@@ -14,9 +14,9 @@
       {{ key }}
     </h4>
     <select
+    v-if="Object.values(value)[0] === 'select'"
     :form="formId"
-    :name="key"
-      v-if="Object.values(value)[0] === 'select'"
+      :name="key"
       :value="modelValue[key]"
       :required="required"
       class="error__item__desc"
@@ -28,9 +28,9 @@
       </option>
     </select>
     <input
+    v-if="Object.values(value)[0] === 'checkbox'"
     :form="formId"
-    :name="key"
-      v-if="Object.values(value)[0] === 'checkbox'"
+      :name="key"
       :value="modelValue[key]"
       :required="required"
       type="checkbox"
@@ -39,9 +39,9 @@
       "
     />
     <input
+    v-if="Object.values(value)[0] === 'number'"
     :form="formId"
-    :name="key"
-      v-if="Object.values(value)[0] === 'number'"
+      :name="key"
       :value="modelValue[key]"
       :required="required"
       type="number"
@@ -50,9 +50,9 @@
       "
     />
     <textarea
+    v-if="Object.values(value)[0] === 'textarea'"
     :form="formId"
-    :name="key"
-      v-if="Object.values(value)[0] === 'textarea'"
+      :name="key"
       :value="modelValue[key]"
       :required="required"
       cols="30"
@@ -91,7 +91,26 @@
 </template>
 
 <script>
+import {h} from 'vue'
+
+const ComponentA = {
+    render() {
+    return h(
+      'p', // имя тега
+       'TEST all work'
+    )
+  },
+  props: {
+    type: {
+      type: String,
+      required: true
+    }
+  }
+}
 export default {
+    components: {
+   ComponentA,
+  },
   props: {
     onlyField:{
        type: Boolean,
