@@ -2,7 +2,7 @@
   <h1>Проекты.</h1>
   <p>В данном разделе можно добавлять и редактировать информацию по текущим проектам ICenter.</p>
   <br>
-  <input v-model="search" type="text" placeholder="мастер или номер проекта">
+  <input v-model="search" class="select__filter" type="text" placeholder="мастер или номер проекта">
   <br>
   <br>
   <div v-if="errors">
@@ -42,8 +42,9 @@
         <tr v-for="(value, key, index) in projects" :key="index" @click="getIndex(key)">
           <td>{{ value.id }}</td>
           <td v-for="(v,k) in $store.state.template.template.extend" :key="k">
-            <conditional-render v-model="projects[key].info.extends" :only-field="false"
-              :data-render="{[k]:$store.state.template.template.extend[k]}" :required="false" />
+            <!-- <conditional-render v-model="projects[key].info.extends" :only-field="false"
+              :data-render="{[k]:$store.state.template.template.extend[k]}" :required="false" /> -->
+              <render-inputs v-model="projects[key].info.extends" :data-render="$store.state.template.template.extend[k]"/>
           </td>
         </tr>
       </tbody>
@@ -51,7 +52,7 @@
   </section>
   <br>
   <br>
-  <button v-if="!changeAllFlag" @click="changeAllFlag = !changeAllFlag">Change ALL</button>
+  <button v-if="!changeAllFlag&&errors" @click="changeAllFlag = !changeAllFlag">Change ALL</button>
   <button v-else @click="updateChangedProjects">Update</button>
   <br>
   <br>
@@ -63,9 +64,11 @@ import infoRender from '@/components/infoRender.vue'
 import { reactive, toRefs, computed, ref } from 'vue'
 import { useFetch } from '@/hooks/fetch'
 import conditionalRender from '@/components/conditionalRender.vue'
+import renderInputs from '@/components/renderInputs.js'
 export default {
   components: {
     conditionalRender,
+    renderInputs,
     infoRender,
   },
   setup() {
@@ -116,7 +119,7 @@ export default {
       });
     }
     getErrors()
-console.log(Array.from({ length: 20 }).map(()=> ));
+// console.log(Array.from({ length: 20 }).map(()=> ));
         const postProject = async (index) => {
       const { request, response } = useFetch('/api/POST_project', {
         method: 'POST', // или 'PUT'
@@ -182,7 +185,7 @@ const sortBy = (el,p) => {
   cursor: pointer;
 }
 
-input {
+.select__filter {
   height: 30px;
   border: 1px solid orange;
   border-radius: 5px;

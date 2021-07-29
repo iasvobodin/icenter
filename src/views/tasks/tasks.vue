@@ -1,32 +1,14 @@
 <template>
-  <div>
+  <div v-if="$store.state.template">
     <!-- <h1>Раздел Tasks в разработке</h1> -->
-    <component-a v-model="model" :data-render="{
-                '_field': 'textarea',
-                'value': '',
-                name: 'f'
-            }"/>
-    <component-a v-model="model" :data-render="{
-                '_field': 'select',
-                'value': [
-                    'Dmitry.Pavlov@Emerson.com',
-                    'Ivan.Svobodin@Emerson.com',
-                    'Andrey.Solodovnikov@Emerson.com',
-                    'Ilgiz.Sibagatullin@Emerson.com',
-                    'Yevgeny.Smirnov@Emerson.com'
-                ],
-                'name':'senior fitter'
-            }" />
-                <component-a v-model="model" :data-render="{
-                '_field': 'checkbox',
-                'value': '',
-                'name':'fitter'
-            }" />
+    <render-inputs v-for="item in $store.state.template.template.extend" :key="item.name" v-model="model" :data-render="item"/>
+
   </div>
 </template>
 
 <script>
 import {h, reactive, toRefs} from 'vue'
+import renderInputs from '@/components/renderInputs.js'
 
 const ComponentA = {
   render() {
@@ -65,25 +47,6 @@ switch (this.dataRender._field) {
       }
     )
 }
-
-    // if (this.dataRender._field === 'select') {
-    //   return h(
-    //     'select', {
-    //       value: this.modelValue[this.dataRender.name],
-    //       onInput: $event => this.addVmodel($event,this.dataRender.name )// this.$emit('update:modelValue', {...this.modelValue, [this.dataRender.name] : $event.target.value}),
-    //     }, this.dataRender.value.map((item) => {
-    //       return h('option', item)
-    //     })
-    //   )
-    // }
-    // if (this.dataRender._field === 'textarea') {
-    //   return h(
-    //     'textarea', {
-    //       value: this.modelValue[this.dataRender.name],
-    //      onInput: $event => this.addVmodel($event,this.dataRender.name )
-    //     }
-    //   )
-    // }
   },
   methods: {
     addVmodel($event,key) {
@@ -110,6 +73,7 @@ switch (this.dataRender._field) {
 export default {
   components: {
    ComponentA,
+   renderInputs,
   },
   setup() {
     const state = reactive({

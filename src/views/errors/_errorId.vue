@@ -33,7 +33,7 @@
        :change-photos="changeInfo"
        :current-photos="error.photos"
         @delete-blob="setPH" 
-        @resized-blob="compressBlob = $event"/>
+        @resized-blob="errorPhotosBlob($event)"/>
     </div>
     <div v-else class="loading" />
     <p v-if="errorIsNotDef">{{ errorIsNotDef }}</p>
@@ -92,6 +92,15 @@ export default {
     this.error.body = this.error.body[this.error.body.length - 1];
   },
   methods: {
+    errorPhotosBlob(e){
+this.compressBlob =  e
+addEventListener('beforeunload', (event) => {
+  // Отмените событие, как указано в стандарте.
+  event.preventDefault();
+  // Chrome требует установки возвратного значения.
+  event.returnValue = 'aaa';
+});
+    },
    async deleteError() {
      const delErr = {
        method: "POST", // или 'PUT'
@@ -114,26 +123,26 @@ export default {
       this.error.photos.splice(e.index, 1)
       // this.error.photos = e.actual
     },
-    resizedBlob(e){
-      console.log(e,"!!!!!!!!!!!!!!!!!!!!!!");
-    },
-    deleteFromBase(e){
-      console.log(e);
-    },
-    firedFileInput(){
-      this.$refs.fileInput.click()
-    },
-    checkFile() {
-      // this.fileInput = document.getElementById('imageFile') 
-      this.files = Object.values(this.$refs.fileInput.files)
-      addEventListener("beforeunload", this.beforeUnloadListener, {
-        capture: true
-      });
-    },
-    deleteBlob(el, i) {
-      this.error.photos.splice(i, 1)
-      this.deletMethods.push(`/api/blob?fileName=${el}&delblob=true`, `/api/blob?fileName=thumb__${el}&delblob=true`)
-    },
+    // resizedBlob(e){
+    //   console.log(e,"!!!!!!!!!!!!!!!!!!!!!!");
+    // },
+    // deleteFromBase(e){
+    //   console.log(e);
+    // },
+    // firedFileInput(){
+    //   this.$refs.fileInput.click()
+    // },
+    // checkFile() {
+    //   // this.fileInput = document.getElementById('imageFile') 
+    //   this.files = Object.values(this.$refs.fileInput.files)
+    //   addEventListener("beforeunload", this.beforeUnloadListener, {
+    //     capture: true
+    //   });
+    // },
+    // deleteBlob(el, i) {
+    //   this.error.photos.splice(i, 1)
+    //   this.deletMethods.push(`/api/blob?fileName=${el}&delblob=true`, `/api/blob?fileName=thumb__${el}&delblob=true`)
+    // },
     // eslint-disable-next-line no-unused-vars
     returnRender(key) {
       if (this.changeInfo&&this.$store.state.user.info.userRoles.includes('admin')) {
@@ -166,22 +175,26 @@ export default {
       this.changeInfo = !this.changeInfo;
     },
     async updateErorData() {
+      //GET CURRENT ITEM FROM DB
       const err = await this.getCurrentError();
+      const photos  = this.error.photos
+      // OBJECT FOR NEW UPDATET ERROR
       const updateErorBody = {
         ...err,
         status: Object.values(this.error.body.Устранено)[0] ?
           "closed" : Object.values(this.error.body.Принято)[0] ?
           "confirmed" : "open",
         body: [
-          ...err.body,
+          ...err.body, //CURRENT BODY + 
           {
-            ...this.error.body,
+            ...this.error.body, //CHANGED BODY
             _changed: JSON.parse(localStorage.getItem("user")).info.userDetails.toLowerCase(),
             _time: `${Date.now()}`,
           },
         ],
-        photos: this.error.photos
+        photos
       };
+      // OBJECT FOR OPEN ERROR
       const openError = {
         id: this.error.id,
         info: {
@@ -192,12 +205,12 @@ export default {
         status: updateErorBody.status,
         // ttl: 6000,
       };
-
+      // DELETE OPEN ERROR IF STATUS IS CLOSED
       if (
         err.status != updateErorBody.status ||
         updateErorBody.status === "closed"
       ) {
-        console.log("comparestatus");
+        // console.log("comparestatus");
         await fetch("/api/POST_openError", {
           method: "POST", // или 'PUT'
           body: JSON.stringify({
@@ -209,10 +222,10 @@ export default {
       }
       // console.log(updateErorBody);
       try {
- const formData = new FormData()
+        const formData = new FormData()
         this.compressBlob.map((e, i) => {
-          const imageName = `${err.id}__${this.$store.state.user.info.userDetails.toLowerCase()}__${i+1}.jpg`
-        this.error.photos.push(imageName)
+          const imageName = `${err.id}__${this.$store.state.user.info.userDetails.toLowerCase()}__${Date.now() + i}.jpg`
+          photos.push(imageName)
           formData.set(`photo${i+1}`, e, imageName)
         })
         await fetch(
@@ -222,24 +235,6 @@ export default {
           },
         )
 
-
-
-        // this.files && await Promise.all(
-        //   this.files.map(async (e, i) => {
-        //     const formData = new FormData()
-        //     formData.append(`photo${i}`, e)
-        //     const imageName = `${err.id}__${this.$store.state.user.info.userDetails.toLowerCase()}__${e.name}`
-        //     const imageRes = await fetch(
-        //       `/api/blob?fileName=${imageName}`, {
-        //         method: 'POST',
-        //         body: formData,
-        //         keepalive: true,
-        //       },
-        //     )
-        //     if (imageRes.ok) {
-        //       this.error.photos.push(`${imageName}`)
-        //     }
-        //   }))
         await fetch("/api/POST_error", {
           method: "POST", // или 'PUT'
           body: JSON.stringify({
@@ -248,9 +243,9 @@ export default {
         });
         if (updateErorBody.status === "closed") {
           return;
-        }
+        } //IF STATUS CLOSED SKIP THIS STEP
         await fetch("/api/POST_openError", {
-          method: "POST", // или 'PUT'
+          method: "POST",
           body: JSON.stringify({
             ...openError
           }),
@@ -261,6 +256,13 @@ export default {
 
       } finally {
         this.changeInfo = !this.changeInfo;
+        this.error.photos = photos
+              removeEventListener("beforeunload", (event) => {
+  // Отмените событие, как указано в стандарте.
+  event.preventDefault();
+  // Chrome требует установки возвратного значения.
+  event.returnValue = '';
+});
       }
     },
     async getCurrentError() {

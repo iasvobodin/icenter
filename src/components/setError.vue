@@ -23,22 +23,6 @@
       <br />
       <error-photos change-photos="true"  @resized-blob="files.compressBlob = $event"/>
       <br>
-      <!-- <input
-        id="imageF"
-        ref="fileInput"
-        multiple
-        type="file"
-        accept="image/*"
-        @input="checkFile"
-        v-show="false"
-      />
-      <div v-if="files" class="photo__gallery">
-        <div  v-for="(url, i) in files.blobUrl" :key="i" class="photo__holder">
-          <img class="canvas__el" :src="url" alt="ph" >
-          <img class="delete__icon" src="/img/delete.svg" alt="" @click="deletePhoto(i)">
-        </div>
-         <img class="add__photo" src="/img/add__image.svg" alt="" @click="firedFileInput">
-      </div> -->
       <br />
       <br>
       <input :disabled="$store.state.loader" class="add__button" type="submit" value="Добавить" />

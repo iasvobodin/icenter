@@ -1,20 +1,20 @@
 <template>
-    <div>
-        <input id="imageFile" ref="fileInput" multiple type="file" accept="image/*" @input="checkFile" v-show="false" />
-        <div  class="photo__gallery">
-            <div v-for="(url, i) in currentPhotos" :key="i" class="photo__holder">
-                <a :href="`${linkPhoto}${url}`">
-                    <img class="canvas__el" :src="`${linkPhoto}thumb__${url}`" alt="" />
-                </a>
-                <img class="delete__icon" src="/img/delete.svg" alt="" @click="deleteBlob(url,i)">
-            </div>
-            <div v-for="(url, i) in files.blobUrl" :key="i" class="photo__holder">
-                <img class="canvas__el" :src="url" alt="ph">
-                <img class="delete__icon" src="/img/delete.svg" alt="" @click="deletePhoto(i)">
-            </div>
-            <img v-if="changePhotos" class="add__photo" src="/img/add__image.svg" alt="" @click="firedFileInput">
-        </div>
+  <div>
+    <input id="imageFile" ref="fileInput" multiple type="file" accept="image/*" @input="checkFile" v-show="false" />
+    <div class="photo__gallery">
+      <div v-for="(url, i) in currentPhotos" :key="i" class="photo__holder">
+        <a :href="`${linkPhoto}${url}`">
+          <img class="canvas__el" :src="`${linkPhoto}thumb__${url}`" alt="" />
+        </a>
+        <img v-if="changePhotos" class="delete__icon" src="/img/delete.svg" alt="" @click="deleteBlob(url,i)">
+      </div>
+      <div v-for="(url, i) in files.blobUrl" :key="i" class="photo__holder">
+        <img v-if="changePhotos" class="canvas__el" :src="url" alt="ph">
+        <img v-if="changePhotos" class="delete__icon" src="/img/delete.svg" alt="" @click="deletePhoto(i)">
+      </div>
+      <img v-if="changePhotos" class="add__photo" src="/img/add__image.svg" alt="" @click="firedFileInput">
     </div>
+  </div>
 </template>
 
 <script>
@@ -48,7 +48,6 @@ export default {
     },
     methods: {
         deleteBlob(el, i) {
-            // this.copyPhotos.splice(i, 1)
             this.deletMethods.push(`/api/blob?fileName=${el}&delblob=true`, `/api/blob?fileName=thumb__${el}&delblob=true`)
             this.$emit('deleteBlob', {del:this.deletMethods, index: i})
         },
@@ -81,13 +80,6 @@ export default {
                 }
             }))
             this.$emit('resizedBlob', this.files.compressBlob)
-            addEventListener("beforeunload", this.beforeUnloadListener, {
-                capture: true
-            });
-        },
-        beforeUnloadListener(event) {
-            event.preventDefault();
-            return event.returnValue = "Are you sure you want to exit?";
         },
     },
 }

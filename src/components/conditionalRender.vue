@@ -91,26 +91,26 @@
 </template>
 
 <script>
-import {h} from 'vue'
+// import {h} from 'vue'
 
-const ComponentA = {
-    render() {
-    return h(
-      'p', // имя тега
-       'TEST all work'
-    )
-  },
-  props: {
-    type: {
-      type: String,
-      required: true
-    }
-  }
-}
+// const ComponentA = {
+//     render() {
+//     return h(
+//       'p', // имя тега
+//        'TEST all work'
+//     )
+//   },
+//   props: {
+//     type: {
+//       type: String,
+//       required: true
+//     }
+//   }
+// }
 export default {
-    components: {
-   ComponentA,
-  },
+  //   components: {
+  //  ComponentA,
+  // },
   props: {
     onlyField:{
        type: Boolean,
