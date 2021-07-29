@@ -44,7 +44,7 @@
       </tr>
       <tbody>
         <tr v-for="(value, key, index) in projects" :key="index" @click="getIndex(key)">
-          <td>{{ value.id }}</td>
+          <td><h2>{{ value.id }}</h2></td>
           <td v-for="(v,k) in $store.state.template.template.extend" :key="k">
             <!-- <conditional-render v-model="projects[key].info.extends" :only-field="false"
               :data-render="{[k]:$store.state.template.template.extend[k]}" :required="false" /> -->
@@ -64,16 +64,16 @@
 
 <script>
 
-import infoRender from '@/components/infoRender.vue'
+// import infoRender from '@/components/infoRender.vue'
 import { reactive, toRefs, computed, ref } from 'vue'
 import { useFetch } from '@/hooks/fetch'
-import conditionalRender from '@/components/conditionalRender.vue'
+// import conditionalRender from '@/components/conditionalRender.vue'
 import renderInputs from '@/components/renderInputs.js'
 export default {
   components: {
-    conditionalRender,
+    // conditionalRender,
     renderInputs,
-    infoRender,
+    // infoRender,
   },
   setup() {
     const state = reactive({
