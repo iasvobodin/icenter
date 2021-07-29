@@ -72,6 +72,7 @@ export default {
     console.log(formatDate(dd))
   },
   created() {
+    fetch('/api/negotiate');
       const user = window.localStorage.getItem("user")
       // console.log(user, 'user');
   if (user) {

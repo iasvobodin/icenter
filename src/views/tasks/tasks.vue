@@ -1,87 +1,40 @@
 <template>
-  <div v-if="$store.state.template">
-    <!-- <h1>Раздел Tasks в разработке</h1> -->
-    <render-inputs v-for="item in $store.state.template.template.extend" :key="item.name" v-model="model" :data-render="item"/>
+  <div>
 
   </div>
 </template>
 
 <script>
-import {h, reactive, toRefs} from 'vue'
-import renderInputs from '@/components/renderInputs.js'
-
-const ComponentA = {
-  render() {
-
-switch (this.dataRender._field) {
-  case 'select':
-    return h(
-      'select', {
-        value: this.modelValue[this.dataRender.name],
-        onInput: $event => this.addVmodel($event, this.dataRender.name) // this.$emit('update:modelValue', {...this.modelValue, [this.dataRender.name] : $event.target.value}),
-      }, this.dataRender.value.map((item) => {
-        return h('option', item)
-      })
-    )
-  case 'textarea':
-    return h(
-      'textarea', {
-        value: this.modelValue[this.dataRender.name],
-        onInput: $event => this.addVmodel($event, this.dataRender.name)
-      }
-    )
-  case 'checkbox':
-    return h(
-      'input', {
-        type: 'checkbox',
-        value: this.modelValue[this.dataRender.name],
-        onInput: $event => this.addVmodel($event, this.dataRender.name)
-      }
-    )
-  case 'number':
-    return h(
-      'input', {
-        type: 'number',
-        value: this.modelValue[this.dataRender.name],
-        onInput: $event => this.addVmodel($event, this.dataRender.name)
-      }
-    )
-}
-  },
-  methods: {
-    addVmodel($event,key) {
-      // console.log($event.target.value);
-              this.$emit('update:modelValue', {
-          ...this.modelValue,
-          [key]: $event.target.value,
-        })
-    }
-  },
-  props: {
-    modelValue: {
-      type: Object,
-      required: true
-    },
-    dataRender: {
-      type: Object,
-      required: true
-    }
-  },
-  emits: ['update:modelValue'],
-}
-
+import * as signalR from '@microsoft/signalr'
 export default {
-  components: {
-   ComponentA,
-   renderInputs,
-  },
   setup() {
-    const state = reactive({
-      model:{}
-    })
-    return {...toRefs(state)};
-  },
-};
+
+    const connect = () => {
+      const connection = new signalR.HubConnectionBuilder()
+        .withUrl('/api')
+        .build();
+
+      connection.onclose(() => {
+        console.log('SignalR connection disconnected');
+        setTimeout(() => connect(), 2000);
+      });
+
+      connection.on('updated', updatedStock => {
+        console.log(updatedStock);
+        alert('бд обновлена')
+      });
+
+      connection.start().then(() => {
+        console.log("SignalR connection established");
+      });
+    };
+
+    connect();
+    return {}
+  }
+}
 </script>
 
-<style lang="css" scoped></style>
+<style lang="css" scoped>
+
+</style>
