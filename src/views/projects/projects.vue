@@ -21,6 +21,10 @@
             <p> <i>Мастер</i> :
               {{ value.info.extends['senior fitter']&&value.info.extends['senior fitter'].split('@')[0].replace('.',' ') }}
             </p>
+            <br>
+            <p> <i>PM</i> :
+              {{ value.info.base?.PM }}
+            </p>
           </div>
         </div>
       </div>
