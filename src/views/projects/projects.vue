@@ -93,7 +93,7 @@ export default {
     const filterProjects = computed(() => {
       //  debugger
       return state.search ?
-        state.errors.filter(e => [e?.id, e.info.extends?.['senior fitter']].some(s => s && s.toLowerCase().includes(state.search.toLowerCase()))) :
+        state.errors.filter(e => [e?.id, e.info.base?.PM, e.info.extends?.['senior fitter']].some(s => s && s.toLowerCase().includes(state.search.toLowerCase()))) :
         state.errors
 
     })
