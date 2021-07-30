@@ -21,7 +21,7 @@ export default {
 
       connection.on('updated', updatedStock => {
         console.log(updatedStock);
-        alert('бд обновлена')
+        alert(`${updatedStock.id} обновлена`)
       });
 
       connection.start().then(() => {
