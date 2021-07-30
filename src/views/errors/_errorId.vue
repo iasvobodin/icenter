@@ -70,7 +70,7 @@ export default {
   },
   data() {
     return {
-      compressBlob:[],
+      compressBlob: [],
       files: [],
       linkPhoto: 'https://icaenter.blob.core.windows.net/errors-photo/',
       showPhotos: false,
@@ -92,34 +92,36 @@ export default {
     this.error.body = this.error.body[this.error.body.length - 1];
   },
   methods: {
-    errorPhotosBlob(e){
-this.compressBlob =  e
-addEventListener('beforeunload', (event) => {
-  // Отмените событие, как указано в стандарте.
-  event.preventDefault();
-  // Chrome требует установки возвратного значения.
-  event.returnValue = 'aaa';
-});
+    errorPhotosBlob(e) {
+      this.compressBlob = e
+      addEventListener('beforeunload', (event) => {
+        // Отмените событие, как указано в стандарте.
+        event.preventDefault();
+        // Chrome требует установки возвратного значения.
+        event.returnValue = 'aaa';
+      });
     },
-   async deleteError() {
-     const delErr = {
-       method: "POST", // или 'PUT'
-       body: JSON.stringify({
-         id: this.error.id,
-         status: this.error.status,
-         info:{wo: this.error.info.wo },
-         ttl: 1
-       }),
-     }
-       await fetch("/api/POST_openError", delErr)
-       await fetch("/api/POST_error",delErr);
-     this.error.photos.length > 0 && await Promise.all(this.error.photos.map(async e => {
-       await fetch(`/api/blob?fileName=${e}&delblob=true`)
-     }))
-     this.$router.push('/errors')
-   },
-    setPH(e){
-      this.deletMethods = e.del 
+    async deleteError() {
+      const delErr = {
+        method: "POST", // или 'PUT'
+        body: JSON.stringify({
+          id: this.error.id,
+          status: this.error.status,
+          info: {
+            wo: this.error.info.wo
+          },
+          ttl: 1
+        }),
+      }
+      await fetch("/api/POST_openError", delErr)
+      await fetch("/api/POST_error", delErr);
+      this.error.photos.length > 0 && await Promise.all(this.error.photos.map(async e => {
+        await fetch(`/api/blob?fileName=${e}&delblob=true`)
+      }))
+      this.$router.push('/errors')
+    },
+    setPH(e) {
+      this.deletMethods = e.del
       this.error.photos.splice(e.index, 1)
       // this.error.photos = e.actual
     },
@@ -145,10 +147,10 @@ addEventListener('beforeunload', (event) => {
     // },
     // eslint-disable-next-line no-unused-vars
     returnRender(key) {
-      if (this.changeInfo&&this.$store.state.user.info.userRoles.includes('admin')) {
+      if (this.changeInfo && this.$store.state.user.info.userRoles.includes('admin')) {
         return true
       }
-      if (this.changeInfo&&this.error.status === 'confirmed') {
+      if (this.changeInfo && this.error.status === 'confirmed') {
         if (key === "Открыто") {
           return false;
         }
@@ -159,7 +161,7 @@ addEventListener('beforeunload', (event) => {
           return true;
         }
       }
-      if (this.changeInfo&&this.$store.state.user.info.userDetails.toLowerCase() === this.error.info.Добавил) {
+      if (this.changeInfo && this.$store.state.user.info.userDetails.toLowerCase() === this.error.info.Добавил) {
         if (key === "Открыто") {
           return true;
         }
@@ -177,7 +179,7 @@ addEventListener('beforeunload', (event) => {
     async updateErorData() {
       //GET CURRENT ITEM FROM DB
       const err = await this.getCurrentError();
-      const photos  = this.error.photos
+      const photos = this.error.photos
       // OBJECT FOR NEW UPDATET ERROR
       const updateErorBody = {
         ...err,
@@ -241,6 +243,9 @@ addEventListener('beforeunload', (event) => {
             ...updateErorBody
           }),
         });
+        this.deletMethods.del && await Promise.all(this.deletMethods.del.map(async e => {
+          await fetch(e)
+        }))
         if (updateErorBody.status === "closed") {
           return;
         } //IF STATUS CLOSED SKIP THIS STEP
@@ -250,19 +255,17 @@ addEventListener('beforeunload', (event) => {
             ...openError
           }),
         });
-        this.deletMethods.del && await Promise.all(this.deletMethods.del.map(async e => {
-          await fetch(e)
-        }))
+
 
       } finally {
         this.changeInfo = !this.changeInfo;
         this.error.photos = photos
-              removeEventListener("beforeunload", (event) => {
-  // Отмените событие, как указано в стандарте.
-  event.preventDefault();
-  // Chrome требует установки возвратного значения.
-  event.returnValue = '';
-});
+        removeEventListener("beforeunload", (event) => {
+          // Отмените событие, как указано в стандарте.
+          event.preventDefault();
+          // Chrome требует установки возвратного значения.
+          event.returnValue = '';
+        });
       }
     },
     async getCurrentError() {
