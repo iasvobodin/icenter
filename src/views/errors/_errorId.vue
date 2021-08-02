@@ -222,7 +222,7 @@ export default {
           }),
         });
       }
-      // console.log(updateErorBody);
+    
       try {
         const formData = new FormData()
         this.compressBlob.map((e, i) => {
@@ -230,22 +230,26 @@ export default {
           photos.push(imageName)
           formData.set(`photo${i+1}`, e, imageName)
         })
+         // UPLOAD PHOTOS
         await fetch(
           '/api/blob?test=true', {
             method: 'POST',
             body: formData,
           },
         )
-
+        // DELETE PHOTOS FROM AZURE STORAGE
+       await Promise.all(this.deletMethods?.del.map(async e => {
+          await fetch(e)
+        }))
+        // UPDATE ERROR IN ICENTERDB
         await fetch("/api/POST_error", {
           method: "POST", // или 'PUT'
           body: JSON.stringify({
             ...updateErorBody
           }),
         });
-        this.deletMethods.del && await Promise.all(this.deletMethods.del.map(async e => {
-          await fetch(e)
-        }))
+
+
         if (updateErorBody.status === "closed") {
           return;
         } //IF STATUS CLOSED SKIP THIS STEP

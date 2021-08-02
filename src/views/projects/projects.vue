@@ -25,6 +25,11 @@
             <p> <i>PM</i> :
               {{ value.info.base?.PM }}
             </p>
+            <br>
+            <p> <i>Дата отгрузки</i> :
+{{ value.info.extends['Shipping date']}}
+            </p>
+          
           </div>
         </div>
       </div>
