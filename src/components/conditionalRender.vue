@@ -23,7 +23,7 @@
       @input="addVmodel($event,key)
       "
     >
-      <option v-for="(v, i) in Object.values(value)[1]" :key="i">
+      <option v-for="(v, i) in Object.values(value)[2]" :key="i">
         {{ v }}
       </option>
     </select>
