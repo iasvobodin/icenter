@@ -72,7 +72,7 @@ export default {
       const {
         request,
         response
-      } = useFetch(url)
+      } = useFetch('/api/projects?status=open')
       await request()
       state.projects = response.value.filter(pr => ['01','02','03'].some(s => pr.info.extends['status project'].includes(s)))
       state.actualRojects = state.projects.map(p => p.id)
