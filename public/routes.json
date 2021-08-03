@@ -16,7 +16,7 @@
       "allowedRoles": ["admin"]
     },
     {
-      "route": "/admin/*",
+      "route": "/projects/*",
       "serve": "/index.html",
       "allowedRoles": ["admin"]
     },

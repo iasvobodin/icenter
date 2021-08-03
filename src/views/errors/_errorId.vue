@@ -11,29 +11,27 @@
       <section v-for="(val, key, index) in error.body" :key="index" class="eror__body">
         <div v-if="!key.startsWith('_')&&Object.values(val)[1]">
           <div v-if="!returnRender(key, val)">
-            <h2 >{{ key }}</h2>
-          <info-render :info-data="val" />
+            <h2>{{ key }}</h2>
+            <info-render :info-data="val" />
           </div>
         </div>
       </section>
       <section class="mod__error__body">
         <form id="errorData" @submit.prevent="updateErorData">
-          <div v-for="(value, key, index) in $store.state.template.error[
+          <div v-for="(value, key, index) in $store.state.template?.error[
               error.type
             ]" :key="index">
             <div v-if="returnRender(key, value)">
               <h3>Статус ошибки: {{ key }}</h3>
-              <conditional-render v-model="error.body[key]" :data-render="value" :required="!$store.state.user.info.userRoles.includes('admin')" />
+              <conditional-render v-model="error.body[key]" :data-render="value"
+                :required="!$store.state.user.info.userRoles.includes('admin')" />
             </div>
           </div>
         </form>
       </section>
       <h3 v-if="error.photos[0]">Фотографии</h3>
-       <error-photos 
-       :change-photos="changeInfo"
-       :current-photos="error.photos"
-        @delete-blob="setPH" 
-        @resized-blob="errorPhotosBlob($event)"/>
+      <error-photos :change-photos="changeInfo" :current-photos="error.photos" @delete-blob="setPH"
+        @resized-blob="errorPhotosBlob($event)" />
     </div>
     <div v-else class="loading" />
     <p v-if="errorIsNotDef">{{ errorIsNotDef }}</p>
@@ -228,6 +226,8 @@ export default {
         this.compressBlob.map((e, i) => {
           const imageName = `${err.id}__${this.$store.state.user.info.userDetails.toLowerCase()}__${Date.now() + i}.jpg`
           photos.push(imageName)
+          // debugger
+          // console.log(photos, i);
           formData.set(`photo${i+1}`, e, imageName)
         })
          // UPLOAD PHOTOS
@@ -238,10 +238,12 @@ export default {
           },
         )
         // DELETE PHOTOS FROM AZURE STORAGE
-       await Promise.all(this.deletMethods?.del.map(async e => {
+       this.deletMethods.del && await Promise.all(this.deletMethods?.del.map(async e => {
           await fetch(e)
         }))
         // UPDATE ERROR IN ICENTERDB
+        console.log(updateErorBody);
+        // debugger
         await fetch("/api/POST_error", {
           method: "POST", // или 'PUT'
           body: JSON.stringify({
@@ -262,6 +264,7 @@ export default {
 
 
       } finally {
+        this.error = await this.getCurrentError();
         this.changeInfo = !this.changeInfo;
         this.error.photos = photos
         removeEventListener("beforeunload", (event) => {

@@ -1,37 +1,30 @@
 <template>
-<div v-click-away="onClickAway" v-if="showMenu" class="navigation">
-  <nav >
-    <ul>
-            <li>
-        <router-link :to="`/projects`">Проекты</router-link>
-      </li>
-      <li>
-        <router-link :to="`/cabinets`">Шкафы</router-link>
-      </li>
-      <!-- <li>
-        <router-link :to="`/admin/profile`">Личный кабинет</router-link>
-      </li> -->
-     
-      <!-- <li>
-        <router-link :to="`/admin/addcabtime`">Расчёт CabTime</router-link>
-      </li> -->
-      <li>
-        <router-link :to="`/errors`">Ошибки</router-link>
-      </li>
-      <li>
-        <router-link :to="`/tasks`">Задачи</router-link>
-      </li>
-      <li>
-        <router-link :to="`/cabtimes`">CabTimes</router-link>
-      </li>
-       <li>
-        <router-link :to="`/admin/reports`">Отчёты</router-link>
-      </li>
-    </ul>
-  </nav>
-</div>
-<img  @click="showMenu = !showMenu" class="menu_button" src="/img/menu.svg" alt="">
-<!-- <button class="menu_button" @click="showMenu = !showMenu">{{!showMenu?'Menu':'Close'}}</button> -->
+  <div v-click-away="onClickAway" v-if="showMenu" class="navigation">
+    <nav>
+      <ul>
+        <li>
+          <router-link :to="`/projects`">Проекты</router-link>
+        </li>
+        <li>
+          <router-link :to="`/cabinets`">Шкафы</router-link>
+        </li>
+        <li>
+          <router-link :to="`/errors`">Ошибки</router-link>
+        </li>
+        <li>
+          <router-link :to="`/tasks`">Задачи</router-link>
+        </li>
+        <li>
+          <router-link :to="`/cabtimes`">CabTimes</router-link>
+        </li>
+        <li>
+          <router-link :to="`/admin/reports`">Отчёты</router-link>
+        </li>
+      </ul>
+    </nav>
+  </div>
+  <img @click="showMenu = !showMenu" class="menu_button" src="/img/menu.svg" alt="">
+  <!-- <button class="menu_button" @click="showMenu = !showMenu">{{!showMenu?'Menu':'Close'}}</button> -->
 </template>
 
 <script>
@@ -102,6 +95,8 @@ li:hover{
     background-color: #003768;
 }
 a{
+  width: 100%;
+  display: block;
 text-decoration-line: none;
 color: #ffffff;
 text-decoration-color: rgb(255, 255, 255);
