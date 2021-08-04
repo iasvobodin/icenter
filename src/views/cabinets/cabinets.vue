@@ -74,7 +74,7 @@ export default {
         response
       } = useFetch('/api/projects?status=open')
       await request()
-      state.projects = response.value.filter(pr => ['01','02','03'].some(s => pr.info.extends['status project'].includes(s)))
+      state.projects = response.value.filter(pr => ['01','02','03','04'].some(s => pr.info.extends['status project'].includes(s)))
       state.actualRojects = state.projects.map(p => p.id)
       state.cabinets = state.projects.map(c =>  c.cabinets.map(cc => {return {...cc, project: c.id}})).flat()
       state.groupCabinets = project => filter.value.filter(c => c.project === project )

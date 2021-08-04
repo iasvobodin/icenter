@@ -2,7 +2,7 @@
   <h1>Проекты.</h1>
   <p>В данном разделе можно добавлять и редактировать информацию по текущим проектам ICenter.</p>
   <br>
-  <input v-model="search" class="select__filter" type="text" placeholder="мастер или номер проекта">
+  <input v-model="search" id="select__filter" type="text" placeholder="мастер или номер проекта">
   <br>
   <br>
   <div v-if="errors">
@@ -59,7 +59,7 @@
       </tr>
       <tbody>
         <tr v-for="(value, key, index) in projects" :key="index" @click="getIndex(key)">
-          <td><h2>{{ value.id }}</h2></td>
+          <td><h2 class="project__number">{{ value.id }}</h2></td>
           <td v-for="(v,k) in $store.state.template.template.extend" :key="k">
             <!-- <conditional-render v-model="projects[key].info.extends" :only-field="false"
               :data-render="{[k]:$store.state.template.template.extend[k]}" :required="false" /> -->
@@ -182,7 +182,10 @@ const sortBy = (el,p) => {
 
 <style lang="css" scoped>
 
-
+.project__number{
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
 .add__button::after {
   content: "";
   width: 100%;
@@ -204,17 +207,7 @@ const sortBy = (el,p) => {
   cursor: pointer;
 }
 
-.select__filter {
-  height: 30px;
-  border: 1px solid orange;
-  border-radius: 5px;
-  line-height: 30px;
-  font-size: 18px;
-  text-align: center;
-  width: min(400px, 95vw);
-  margin: auto;
-  padding: 0px;
-}
+
 
 .selectStatus>h3 {
   display: inline;
@@ -348,5 +341,16 @@ input[type="text"]{
 }
 textarea{
   height: 90px;
+}
+#select__filter{
+  height: 30px;
+  border: 1px solid orange;
+  border-radius: 5px;
+  line-height: 30px;
+  font-size: 18px;
+  text-align: center;
+  width: min(400px, 95vw);
+  margin: auto;
+  padding: 0px;
 }
 </style>
