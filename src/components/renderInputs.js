@@ -36,6 +36,14 @@ export default {
           onInput: $event => this.addVmodel($event, this.dataRender.name)
         }
       )
+      case 'text':
+        return h(
+          'input', {
+            type: 'text',
+            value: this.modelValue[this.dataRender.name],
+            onInput: $event => this.addVmodel($event, this.dataRender.name)
+          }
+        )
   }
     },
     methods: {

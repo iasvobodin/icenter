@@ -49,6 +49,17 @@
        addVmodel($event,key)
       "
     />
+    <input
+    v-if="Object.values(value)[0] === 'text'"
+    :form="formId"
+      :name="key"
+      :value="modelValue[key]"
+      :required="required"
+      type="text"
+      @input="
+       addVmodel($event,key)
+      "
+    />
     <textarea
     v-if="Object.values(value)[0] === 'textarea'"
     :form="formId"

@@ -43,6 +43,16 @@
 
   <section v-if="changeAllFlag" class="table">
     <table style="width:100%">
+                  <colgroup>
+                    <col span="1" style="width: 6%;">
+                    <col span="1" style="width: 10%;">
+                    <col span="1" style="width: 10%;">
+                    <col span="1" style="width: auto;">
+                    <col span="1" style="width: auto;">
+                    <col span="1" style="width: 6%;">
+                    <col span="1" style="width: 6%;">
+                    <col span="1" style="width: 6%;">
+                </colgroup>
       <tr style="border: solid 2px orange">
         <th>№</th>
         <th v-for="(vv,kk) in $store.state.template.template.extend" :key="kk" @click="sortBy(kk,'extends')">{{kk}}</th>
@@ -307,14 +317,18 @@ table {
 td,
 th {
   border: 1px solid #999;
-  padding: 0.5rem;
+  padding: 5px;
   font-size: 12px;
 }
 tbody tr:nth-child(odd) {
   background: #eee;
 }
+tbody tr {
+  height: 80px;
+  }
+
 tbody tr:hover {
-  background: rgba(255, 166, 0, 0.07);
+  background: rgba(0, 132, 255, 0.07);
 }
 th{
    position: sticky;
@@ -326,5 +340,13 @@ th{
 }
 tr>th{
   cursor: pointer;
+}
+input[type="number"],
+input[type="text"]{
+  width: 100%;
+  text-align: center;
+}
+textarea{
+  height: 90px;
 }
 </style>
