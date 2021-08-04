@@ -8,7 +8,7 @@
   <div v-if="errors">
     <div v-for="status in actualStatus" v-show="groupProjects(status).length != 0" :key="status">
       <!-- <hr style="margin:0;"> -->
-      <h3 class="project__status">{{status}}</h3>
+      <h3 class="project__status">{{status.split('-')[1].split('/')[0]}}</h3>
       <div class="errors__holder">
         <div v-for="(value, key, index) in groupProjects(status)" :key="index" class="error__card__holder"
           @click="$router.push(`/projects/${value.id}`)">
