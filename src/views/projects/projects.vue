@@ -13,8 +13,18 @@
         <div v-for="(value, key, index) in groupProjects(status)" :key="index" class="error__card__holder"
           @click="$router.push(`/projects/${value.id}`)">
           <div class="errors__card">
+            <info-render :info-data="{[value.id]: value.info.base['Project Name']}" />
+            <div class="double">
+              <info-render :info-data="{'PM': value.info.base?.PM}" />
+              <info-render :info-data="{'SF': value.info.extends['senior fitter']?.split('@')[0].replace('.',' ')}" />
+            </div>
+             <div class="double">
+            <info-render :info-data="{'Отгрузка': value.info.extends['Shipping date']}" />
+            <info-render :info-data="{'QTY': value.cabinets.length}" />
+             </div>
+            <info-render :info-data="{'Comments': value.info.extends['Comments field']}" />
             <!-- <h2></h2> -->
-            <p class="props"> <b>{{ value.id }}</b> {{ value.info.base['Project Name'] }}
+            <!-- <p class="props"> <b>{{ value.id }}</b> {{ value.info.base['Project Name'] }}
             </p>
             <p class="props"> <b>PM</b> :
               {{ value.info.base?.PM }} <b>SF</b> :
@@ -22,8 +32,8 @@
             </p>
             <p class="props"> <b>Отгрузка</b> : {{ value.info.extends['Shipping date']}} <b
                 style="text-align: right;">QTY </b> : {{ value.cabinets.length }}
-            </p>
-            <p class="props"> <b>Comments field</b> : {{ value.info.extends['Comments field']}}</p>
+            </p> -->
+            <!-- <p class="props"> <b>Comments field</b> : {{ value.info.extends['Comments field']}}</p> -->
           </div>
         </div>
       </div>
@@ -79,13 +89,14 @@
 // import infoRender from '@/components/infoRender.vue'
 import { reactive, toRefs, computed, ref } from 'vue'
 import { useFetch } from '@/hooks/fetch'
+import infoRender from "@/components/infoRender.vue";
 // import conditionalRender from '@/components/conditionalRender.vue'
 import renderInputs from '@/components/renderInputs.js'
 export default {
   components: {
     // conditionalRender,
     renderInputs,
-    // infoRender,
+    infoRender,
   },
   setup() {
     const state = reactive({
@@ -235,11 +246,13 @@ const sortBy = (el,p) => {
   padding: 5px;
   cursor: pointer;
   min-height: 150px;
+  height: 100%;
 }
 
 
 .error__card__holder {
   place-self: stretch;
+  height: 100%;
 
 }
 
@@ -374,4 +387,12 @@ border-bottom: 1px solid white;
 text-align: left;
 
 }
+.double{
+    display: grid;
+    grid-auto-flow: column;
+    column-gap: 1vw;
+    grid-template-columns: 5fr 4fr;
+    justify-content: space-between;
+}
+
 </style>

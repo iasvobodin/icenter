@@ -34,7 +34,7 @@
   padding: 5px;
   /* width: 100%; */
   display: grid;
-  grid-template-columns: 2fr 3fr;
+  grid-template-columns: 2fr 5fr;
 }
 /* .cabinet__info__item:last-child{
   border-bottom: 0px;
