@@ -16,8 +16,8 @@
             <h2>{{ value.id }}</h2>
             <p class="project__name">{{ value.info.base['Project Name'] }}</p>
             <br>
-            <p> <i>Количество шкафов</i> : {{ value.cabinets.length }}</p>
-            <br>
+            <!-- <p> <i>Количество шкафов</i> : {{ value.cabinets.length }}</p>
+            <br> -->
             <p> <i>Мастер</i> :
               {{ value.info.extends['senior fitter']&&value.info.extends['senior fitter'].split('@')[0].replace('.',' ') }}
             </p>
@@ -26,8 +26,8 @@
               {{ value.info.base?.PM }}
             </p>
             <br>
-            <p> <i>Дата отгрузки</i> :
-{{ value.info.extends['Shipping date']}}
+            <p> <i>Отгрузка</i> : {{ value.info.extends['Shipping date']}} <b style="text-align: right;">QTY : {{ value.cabinets.length }}</b> 
+
             </p>
           
           </div>
@@ -48,7 +48,7 @@
                     <col span="1" style="width: 10%;">
                     <col span="1" style="width: 10%;">
                     <col span="1" style="width: auto;">
-                    <col span="1" style="width: 20%;">
+                    <col span="1" style="width: auto;">
                     <col span="1" style="width: 6%;">
                     <col span="1" style="width: 6%;">
                     <col span="1" style="width: 6%;">
@@ -196,6 +196,7 @@ const sortBy = (el,p) => {
   background: orange;
   filter: blur (20px);
   z-index: 2;
+  
 }
 
 .add__button {
