@@ -48,7 +48,7 @@
                     <col span="1" style="width: 10%;">
                     <col span="1" style="width: 10%;">
                     <col span="1" style="width: auto;">
-                    <col span="1" style="width: auto;">
+                    <col span="1" style="width: 20%;">
                     <col span="1" style="width: 6%;">
                     <col span="1" style="width: 6%;">
                     <col span="1" style="width: 6%;">
