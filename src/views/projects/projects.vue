@@ -20,7 +20,7 @@
             <!-- <info-render :info-data="{[value.id]: value.info.base['Project Name']}" /> -->
             <div class="double">
               <info-render :info-data="{'PM': value.info.base?.PM}" />
-              <info-render :info-data="{'SF': value.info.extends['senior fitter']?.split('@')[0].replace('.',' ')}" />
+              <info-render :info-data="{'SF': value.info.extends['senior fitter']?.split('@')[0].split('.')[1]}" />
             </div>
              <div class="double">
             <info-render :info-data="{'Отгрузка': value.info.extends['Shipping date']}" />
@@ -251,6 +251,7 @@ const sortBy = (el,p) => {
   cursor: pointer;
   min-height: 150px;
   height: 100%;
+  overflow: hidden;
 }
 
 
@@ -408,6 +409,8 @@ text-align: left;
 }
 .double:first-child>p{
     place-self: center;
+        white-space: pre-wrap;
+  word-wrap: break-word;
 }
 
 
