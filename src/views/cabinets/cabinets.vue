@@ -158,12 +158,13 @@ input {
 
 }
 .qr__holder{
-  height: 40px;
-  display: grid;
-  grid-auto-flow: column;
-  column-gap: 10px;
-  margin-top: 1vh;
-  margin-bottom: 1vh;
+    height: 40px;
+    display: grid;
+    grid-auto-flow: column;
+    column-gap: 10px;
+    margin-top: 1vh;
+    margin-bottom: 1vh;
+    justify-content: center;
 }
 .qr__icon{
   width: 30px;
