@@ -131,7 +131,8 @@ h4 {
   margin: 0;
 }
 h2{
-  margin: 1vh;
+  margin: 0.3vh;
+  
 }
 p {
   margin: 0;

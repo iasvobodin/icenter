@@ -2,39 +2,33 @@
   <h1>Проекты.</h1>
   <p>В данном разделе можно добавлять и редактировать информацию по текущим проектам ICenter.</p>
   <br>
-  <input v-model="search" id="select__filter" type="text" placeholder="мастер или номер проекта">
+  <input id="select__filter" v-model="search" type="text" placeholder="SF, PM, №">
   <br>
   <br>
   <div v-if="errors">
     <div v-for="status in actualStatus" v-show="groupProjects(status).length != 0" :key="status">
-      <h2>{{status}}</h2>
+      <!-- <hr style="margin:0;"> -->
+      <h3 class="project__status">{{status}}</h3>
       <div class="errors__holder">
         <div v-for="(value, key, index) in groupProjects(status)" :key="index" class="error__card__holder"
           @click="$router.push(`/projects/${value.id}`)">
-          <br class="errors__card">
           <div class="errors__card">
-            <h2>{{ value.id }}</h2>
-            <p class="project__name">{{ value.info.base['Project Name'] }}</p>
-            <br>
-            <!-- <p> <i>Количество шкафов</i> : {{ value.cabinets.length }}</p>
-            <br> -->
-            <p> <i>Мастер</i> :
-              {{ value.info.extends['senior fitter']&&value.info.extends['senior fitter'].split('@')[0].replace('.',' ') }}
+            <!-- <h2></h2> -->
+            <p class="props"> <b>{{ value.id }}</b> {{ value.info.base['Project Name'] }}
             </p>
-            <br>
-            <p> <i>PM</i> :
-              {{ value.info.base?.PM }}
+            <p class="props"> <b>PM</b> :
+              {{ value.info.base?.PM }} <b>SF</b> :
+              {{value.info.extends['senior fitter']?.split('@')[0].replace('.',' ') }}
             </p>
-            <br>
-            <p> <i>Отгрузка</i> : {{ value.info.extends['Shipping date']}} <b style="text-align: right;">QTY : {{ value.cabinets.length }}</b> 
-
+            <p class="props"> <b>Отгрузка</b> : {{ value.info.extends['Shipping date']}} <b
+                style="text-align: right;">QTY </b> : {{ value.cabinets.length }}
             </p>
-          
+            <p class="props"> <b>Comments field</b> : {{ value.info.extends['Comments field']}}</p>
           </div>
         </div>
       </div>
       <br>
-      <hr>
+      <!-- <hr> -->
     </div>
     <router-link to="/projects/addnewproject">
       <img class="add__button" src="/img/add.svg" alt="Добавить новый проект">
@@ -43,27 +37,30 @@
 
   <section v-if="changeAllFlag" class="table">
     <table style="width:100%">
-                  <colgroup>
-                    <col span="1" style="width: 6%;">
-                    <col span="1" style="width: 10%;">
-                    <col span="1" style="width: 10%;">
-                    <col span="1" style="width: auto;">
-                    <col span="1" style="width: auto;">
-                    <col span="1" style="width: 6%;">
-                    <col span="1" style="width: 6%;">
-                    <col span="1" style="width: 6%;">
-                </colgroup>
+      <colgroup>
+        <col span="1" style="width: 6%;">
+        <col span="1" style="width: 10%;">
+        <col span="1" style="width: 10%;">
+        <col span="1" style="width: auto;">
+        <col span="1" style="width: auto;">
+        <col span="1" style="width: 6%;">
+        <col span="1" style="width: 6%;">
+        <col span="1" style="width: 6%;">
+      </colgroup>
       <tr style="border: solid 2px orange">
         <th>№</th>
         <th v-for="(vv,kk) in $store.state.template.template.extend" :key="kk" @click="sortBy(kk,'extends')">{{kk}}</th>
       </tr>
       <tbody>
         <tr v-for="(value, key, index) in projects" :key="index" @click="getIndex(key)">
-          <td><h2 class="project__number">{{ value.id }}</h2></td>
+          <td>
+            <h2 class="project__number">{{ value.id }}</h2>
+          </td>
           <td v-for="(v,k) in $store.state.template.template.extend" :key="k">
             <!-- <conditional-render v-model="projects[key].info.extends" :only-field="false"
               :data-render="{[k]:$store.state.template.template.extend[k]}" :required="false" /> -->
-              <render-inputs v-model="projects[key].info.extends" :data-render="$store.state.template.template.extend[k]"/>
+            <render-inputs v-model="projects[key].info.extends"
+              :data-render="$store.state.template.template.extend[k]" />
           </td>
         </tr>
       </tbody>
@@ -240,6 +237,7 @@ const sortBy = (el,p) => {
   min-height: 150px;
 }
 
+
 .error__card__holder {
   place-self: stretch;
 
@@ -353,5 +351,27 @@ textarea{
   width: min(400px, 95vw);
   margin: auto;
   padding: 0px;
+}
+.project__status{
+  position: sticky;
+  top: 50px;
+  background-color: #004481;
+  color: white;
+  margin: 1vh auto;
+  border-radius: 5px;
+  /* width: min(700px, 95%); */
+  padding: 0.5vh;
+  font-size: min(20px 5vw );
+  /* transform: translateY(-50%); */
+}
+.props{
+margin-top: 5px;
+border-bottom: 1px solid black;
+
+}
+.props:last-child {
+border-bottom: 1px solid white;
+text-align: left;
+
 }
 </style>
