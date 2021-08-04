@@ -7,7 +7,8 @@
       {{ typeof v === 'string'&&v.includes('@')? v.split('@')[0].replace('.', ' ') : v }}
     </p>
     </div>
-  <div class="card__border"></div>
+    <hr style="margin:0;">
+  <!-- <div class="card__border"></div> -->
   </div>
 </template>
 

@@ -13,7 +13,11 @@
         <div v-for="(value, key, index) in groupProjects(status)" :key="index" class="error__card__holder"
           @click="$router.push(`/projects/${value.id}`)">
           <div class="errors__card">
-            <info-render :info-data="{[value.id]: value.info.base['Project Name']}" />
+            <div class="double">
+             <h2>{{value.id}}:</h2><p>{{value.info.base['Project Name']}}</p>
+            </div>
+            <hr style="margin:0;">
+            <!-- <info-render :info-data="{[value.id]: value.info.base['Project Name']}" /> -->
             <div class="double">
               <info-render :info-data="{'PM': value.info.base?.PM}" />
               <info-render :info-data="{'SF': value.info.extends['senior fitter']?.split('@')[0].replace('.',' ')}" />
@@ -188,7 +192,7 @@ const sortBy = (el,p) => {
 }
 </script>
 
-<style lang="css" scoped>
+<style lang="css">
 
 .project__number{
   white-space: pre-wrap;
@@ -394,5 +398,17 @@ text-align: left;
     grid-template-columns: 5fr 4fr;
     justify-content: space-between;
 }
+.double:first-child{
+    display: grid;
+    grid-auto-flow: column;
+    column-gap: 1vw;
+    grid-template-columns: 1fr 4fr;
+    justify-content: space-between;
+    margin-bottom: 1vh;
+}
+.double:first-child>p{
+    place-self: center;
+}
+
 
 </style>
