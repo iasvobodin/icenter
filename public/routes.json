@@ -16,11 +16,6 @@
       "allowedRoles": ["admin"]
     },
     {
-      "route": "/projects/*",
-      "serve": "/index.html",
-      "allowedRoles": ["admin"]
-    },
-    {
       "route": "/api/*"
     },
     {

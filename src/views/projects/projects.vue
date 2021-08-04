@@ -192,7 +192,7 @@ const sortBy = (el,p) => {
 }
 </script>
 
-<style lang="css">
+<style lang="css" scoped>
 
 .project__number{
   white-space: pre-wrap;

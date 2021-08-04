@@ -19,11 +19,6 @@
         src="/img/cancel.svg"
         alt=""
       />
-      <!-- <button @click="clearState" class="clear__state" >Clear state</button> -->
-      <!-- @focus.once="getProjectList" -->
-      <!-- <datalist id="projetList">
-        <option :value="pr" v-for="pr in dataToRender" :key="pr">
-      </datalist> -->
     </div>
     <div v-if="dataToRender" v-show="listIsActive"  class="project_list_holder">
       <ul class="project_list">

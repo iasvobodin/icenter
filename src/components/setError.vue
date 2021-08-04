@@ -172,7 +172,7 @@ export default {
           ...this.errorBody,
           _changed: this.$store.state.user.info.userDetails.toLowerCase(),
           _time: `${Date.now()}`,
-        }, ],
+        }],
       }
       const openError = {
         id,
