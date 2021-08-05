@@ -101,10 +101,16 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes,
 });
-// router.beforeEach((to, from) => {
+router.beforeEach((to, from) => {
+  const user = JSON.parse(window.localStorage.getItem("user")) 
+  // console.log(user, !user.info.userRoles.includes('admin'),to);
+  if (to.path === '/login') {
+    return true
+  }
+  if (!user.info.userRoles.includes('icenter')) return '/login'
 // //  return router.push('/login')
 //   // next({ name: 'login' })
-// })
+})
 //   // canUserAccess() returns `true` or `false`
 //   const user = window.localStorage.getItem("user")
 //   if (!user) {

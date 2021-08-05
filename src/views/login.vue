@@ -1,7 +1,7 @@
 <template>
 <div class="login__holder">
   <div class="login">
-    <h1>Login</h1>
+    <h1>iCenterApp<br>Login </h1>
     <a href="/.auth/login/aad">
     <img src="/img/Microsoft.svg" alt=""></a>
    <br>
@@ -25,7 +25,7 @@
 }
 .login{
   place-self: center;
-  padding-bottom: 10vh;
+  padding-bottom: 20vh;
 }
 img{
   width: 150px;
