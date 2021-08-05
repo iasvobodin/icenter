@@ -107,7 +107,7 @@ router.beforeEach((to, from) => {
   if (to.path === '/login') {
     return true
   }
-  if (!user.info.userRoles.includes('icenter')) return '/login'
+  if (user&&!user.info.userRoles.includes('icenter')) return '/login'
 // //  return router.push('/login')
 //   // next({ name: 'login' })
 })
