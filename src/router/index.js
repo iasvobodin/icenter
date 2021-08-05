@@ -103,8 +103,8 @@ const router = createRouter({
 });
 router.beforeEach((to, from) => {
   const user = JSON.parse(window.localStorage.getItem("user")) 
-  if (!user) return '/login'
   if (to.path === '/login')  return true
+  // if (!user) return '/login'
   if (!user.info.userRoles.includes('icenter')) {
     return '/login'
   } else {
