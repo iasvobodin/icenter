@@ -31,7 +31,7 @@
     {
       "errorType": "Unauthenticated",
       "statusCode": "302",
-      "serve": "/.auth/login/aad?post_login_redirect_uri=/login"
+      "serve": "/.auth/login/aad?post_login_redirect_uri=/user"
     }
   ]
 }

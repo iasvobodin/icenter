@@ -2,7 +2,7 @@
   <div v-if="$store.state.user.info">
     <h1>Личная старница {{ $store.state.user.info.userDetails.split('@')[0].replace('.',' ') }}</h1>
     <p>в разработке</p>
-    <p class="info">{{$store.state.user}}</p>
+    <!-- <p class="info">{{$store.state.user}}</p> -->
     <br>
     <button v-if="localUser" @click="clearUser">Log out</button>
   </div>
