@@ -109,13 +109,17 @@ router.beforeEach(async (to, from) => {
     store.commit('setUserAuth', user)
   } else{
     await  store.dispatch('GET_auth')
+    return '/login'
   }
-
-const uu = JSON.parse(user)
-  // if (!user) return '/login'
-  if (!uu.info.userRoles.includes('icenter')) {
+console.log('after store get auth');
+console.log(JSON.parse(user).info.userRoles.includes('icenter'));
+// const uu = JSON.parse(user)
+//   // if (!user) return '/login'
+  if (!JSON.parse(user).info.userRoles.includes('icenter')) {
+    console.log('inside');
     return '/login'
   } else {
+    console.log('inside else');
     return true
   }
 // return true
