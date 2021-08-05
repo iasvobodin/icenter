@@ -1,5 +1,5 @@
 <template>
-  <app-header />
+  <app-header v-if="!$route.path.includes('login')" />
 <div id="view">
   <router-view  />
 </div>
