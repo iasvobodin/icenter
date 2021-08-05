@@ -22,7 +22,7 @@
       "route": "/",
       "serve": "/index.html",
       "allowedRoles": ["authenticated"]
-    }
+    },
     {
       "route": "/*",
       "serve": "/index.html",
