@@ -2,10 +2,10 @@
 <div class="login__holder">
   <div class="login">
     <h1>iCenterApp<br>Login </h1>
-    <a href="/.auth/login/aad">
+    <a href="/.auth/login/aad?post_login_redirect_uri=/user">
     <img src="/img/Microsoft.svg" alt=""></a>
    <br>
-    <a href="/.auth/login/google">
+    <a href="/.auth/login/google?post_login_redirect_uri=/user">
     <img src="/img/Google.svg" alt="">
     </a>
   </div>
