@@ -19,14 +19,9 @@
       "route": "/api/*"
     },
     {
-      "route": "/",
-      "serve": "/index.html",
-      "allowedRoles": ["anonymous"]
-    },
-    {
       "route": "/*",
       "serve": "/index.html",
-      "allowedRoles": ["authenticated"]
+      "allowedRoles": ["anonymous"]
     }
   ],
   "platformErrorOverrides": [{
@@ -36,7 +31,7 @@
     {
       "errorType": "Unauthenticated",
       "statusCode": "302",
-      "serve": "/login"
+      "serve": "/.auth/login/aad?post_login_redirect_uri=/login"
     }
   ]
 }

@@ -101,16 +101,38 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes,
 });
-router.beforeEach((to, from) => {
-  // const user = JSON.parse(window.localStorage.getItem("user")) 
-  // if (to.path === '/login')  return true
-  // if (!user) return '/login'
-  // if (!user.info.userRoles.includes('icenter')) {
-  //   return '/login'
-  // } else {
-  //   return true
-  // }
-return true
-})
+// router.beforeEach((to, from) => {
+//   // const user = JSON.parse(window.localStorage.getItem("user")) 
+//   // if (to.path === '/login')  return true
+//   // if (!user) return '/login'
+//   // if (!user.info.userRoles.includes('icenter')) {
+//   //   return '/login'
+//   // } else {
+//   //   return true
+//   // }
+// return true
+// })
+// router.beforeEach((to, from) => {
+// //  return router.push('/login')
+//   // next({ name: 'login' })
+// })
+//   // canUserAccess() returns `true` or `false`
+//   const user = window.localStorage.getItem("user")
+//   if (!user) {
+//     return '/login'
+//     // next({ name: 'User' })
+    
+//   //   store.commit('setUserAuth', user)
+//   //   next()
+//   // } else {
+
+//   // await store.dispatch('GET_auth')
+//   // if (!store.state.user.info) next({ name: 'login' })
+//   // else
+//   //  next()
+//   } else{
+//     // next()
+//   } 
+// })
 
 export default router;
