@@ -102,12 +102,12 @@ const router = createRouter({
   routes,
 });
 router.beforeEach((to, from) => {
-  const user = JSON.parse(window.localStorage.getItem("user")) 
+  let user = window.localStorage.getItem("user") 
+  user&&(user = JSON.parse(user))
   // console.log(user, !user.info.userRoles.includes('admin'),to);
-  if (to.path === '/login') {
-    return true
-  }
-  if (user&&!user.info.userRoles.includes('icenter')) return '/login'
+  if (to.path === '/login')  return true
+  if (!user) return '/login'
+  if (!user.info.userRoles.includes('icenter')) return '/login'
 // //  return router.push('/login')
 //   // next({ name: 'login' })
 })
