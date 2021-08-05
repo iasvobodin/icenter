@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router";
-import store from '@/store/index'
+import store from '@/store/index.ts'
 const routes = [
   {
     path: "/",
@@ -102,7 +102,8 @@ const router = createRouter({
   routes,
 });
 router.beforeEach(async (to, from) => {
-  const user = JSON.parse(window.localStorage.getItem("user")) 
+  // const user = JSON.parse(window.localStorage.getItem("user")) 
+  const user = window.localStorage.getItem("user")
   if (to.path === '/login')  return true
   if (user) {
     store.commit('setUserAuth', user)
@@ -110,9 +111,9 @@ router.beforeEach(async (to, from) => {
     await  store.dispatch('GET_auth')
   }
 
-
+const uu = JSON.parse(user)
   // if (!user) return '/login'
-  if (!user?.info.userRoles.includes('icenter')) {
+  if (!uu.info.userRoles.includes('icenter')) {
     return '/login'
   } else {
     return true
