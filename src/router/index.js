@@ -101,8 +101,11 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes,
 });
+router.beforeEach((to, from) => {
+  if (to.path === '/login')  return true
+})
+
 router.beforeEach(async (to, from) => {
-  // const user = JSON.parse(window.localStorage.getItem("user")) 
   const user = window.localStorage.getItem("user")
   if (to.path === '/login')  return true
   if (user) {
@@ -111,18 +114,12 @@ router.beforeEach(async (to, from) => {
     await  store.dispatch('GET_auth')
     return '/login'
   }
-console.log('after store get auth');
-console.log(JSON.parse(user).info.userRoles.includes('icenter'));
-// const uu = JSON.parse(user)
-//   // if (!user) return '/login'
+
   if (!JSON.parse(user).info.userRoles.includes('icenter')) {
-    console.log('inside');
     return '/login'
   } else {
-    console.log('inside else');
     return true
   }
-// return true
 })
 // router.beforeEach((to, from) => {
 // //  return router.push('/login')
