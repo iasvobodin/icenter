@@ -101,10 +101,17 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes,
 });
-router.beforeEach((to, from) => {
+router.beforeEach(async (to, from) => {
   const user = JSON.parse(window.localStorage.getItem("user")) 
   if (to.path === '/login')  return true
-  if (!user) return '/login'
+  if (user) {
+    store.commit('setUserAuth', user)
+  } else{
+    await  store.dispatch('GET_auth')
+  }
+
+
+  // if (!user) return '/login'
   if (!user?.info.userRoles.includes('icenter')) {
     return '/login'
   } else {

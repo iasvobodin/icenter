@@ -75,12 +75,12 @@ export default {
     fetch('/api/negotiate');
       const user = window.localStorage.getItem("user")
       // console.log(user, 'user');
-  if (user) {
-      this.$store.commit('setUserAuth', user)
-    } else{
-      console.log('not user');
-      this.$store.dispatch('GET_auth')
-    }
+  // if (user) {
+  //     this.$store.commit('setUserAuth', user)
+  //   } else{
+  //     console.log('not user');
+  //     this.$store.dispatch('GET_auth')
+  //   }
     // !this.$store.state.user.info && this.$store.dispatch('GET_auth')
      this.$store.dispatch('GET_template')
   },
