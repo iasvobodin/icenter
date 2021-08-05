@@ -1,21 +1,6 @@
 {
   "routes": [
     {
-      "route": "/login",
-      "serve": "/index.html",
-      "allowedRoles": ["anonymous"]
-    },
-    {
-      "route": "/user",
-      "serve": "/index.html",
-      "allowedRoles": ["authenticated"]
-    },
-    {
-      "route": "/projects",
-      "serve": "/index.html",
-      "allowedRoles": ["admin"]
-    },
-    {
       "route": "/api/*"
     },
     {
