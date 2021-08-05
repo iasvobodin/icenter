@@ -21,7 +21,7 @@
     {
       "route": "/",
       "serve": "/index.html",
-      "allowedRoles": ["anonymous","authenticated"]
+      "allowedRoles": ["anonymous"]
     },
     {
       "route": "/*",
