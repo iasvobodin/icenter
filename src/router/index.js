@@ -113,11 +113,12 @@ router.beforeEach((to, from) => {
 router.beforeEach(async (to, from) => {
   const user = window.localStorage.getItem("user")
   if (to.path === '/login')  return true
+  if (to.path === '/role')  return true
   if (user) {
-    store.commit('setUserAuth', user)
+    store.commit('setUserAuth', user) //ADD USER TO VUEX
   } else{
-    await  store.dispatch('GET_auth')
-    return '/login'
+    await  store.dispatch('GET_auth') // TRY TO GET AUTH
+    // return '/'
   }
 
   if (!JSON.parse(user).info.userRoles.includes('icenter')) {

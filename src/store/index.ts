@@ -126,7 +126,7 @@ export default createStore({
           identityProvider: "static",
           userId: "9c0c1980f5904d10b43e552d2b7c4041",
           userDetails: "Ivan.Svobodin@Emerson.com",
-          userRoles: ["admin","icenter","anonymous", "authenticated"],
+          userRoles: ["admin","anonymous", "authenticated"],
         };
       } else {
         console.log('try auth');
