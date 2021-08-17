@@ -17,6 +17,11 @@ const routes = [
     component:()=>  import("@/views/login.vue"),
   },
   {
+    path: '/role',
+    name: 'role',
+    component:()=>  import("@/views/role.vue"),
+  },
+  {
     path: "/admin",
     component: ()=> import("@/views/admin/index.vue"),
     children: [
@@ -116,7 +121,7 @@ router.beforeEach(async (to, from) => {
   }
 
   if (!JSON.parse(user).info.userRoles.includes('icenter')) {
-    return '/login'
+    return '/role'
   } else {
     return true
   }

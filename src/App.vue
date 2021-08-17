@@ -1,5 +1,5 @@
 <template>
-  <app-header v-if="!$route.path.includes('login')" />
+  <app-header v-if="!match" />
 <div id="view">
   <router-view  />
 </div>
@@ -15,6 +15,11 @@ import appHeader from "@/components/header.vue";
 export default {
   components: {
     loader,appHeader
+  },
+  methods:{
+match(){
+  return (this.$route.path.includes('role') || this.$route.path.includes('login'))
+}
   },
   //   beforeRouteEnter (to, from, next) {
   //     // return false
