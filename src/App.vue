@@ -1,5 +1,5 @@
 <template>
-  <app-header v-if="!match" />
+  <app-header v-if="match()" />
 <div id="view">
   <router-view  />
 </div>
@@ -18,7 +18,13 @@ export default {
   },
   methods:{
 match(){
-  return (this.$route.path.includes('role') || this.$route.path.includes('login'))
+  if (this.$route.path.includes('role')) {
+    return false
+  } 
+  if (this.$route.path.includes('login')) {
+    return false
+  }
+  return true
 }
   },
   //   beforeRouteEnter (to, from, next) {
