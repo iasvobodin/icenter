@@ -1,5 +1,5 @@
 <template>
-    <h1>У вас недостаточно прав для доступа!</h1>
+    <h1>acces dinaed</h1>
     <button @click="clearUser">Log out</button>
 </template>
 

@@ -112,45 +112,16 @@ router.beforeEach((to, from) => {
 
 router.beforeEach(async (to, from) => {
   const user = window.localStorage.getItem("user")
-  if (to.path === '/login')  return true
-  if (to.path === '/role')  return true
+  if (to.path === '/login' || to.path === '/role')  return true
+  // if (to.path === '/role')  return true
   if (user) {
-    store.commit('setUserAuth', user) //ADD USER TO VUEX
     if (!JSON.parse(user).info.userRoles.includes('icenter')) { //CHECK ROLE
       return '/role'
     }
+    store.commit('setUserAuth', user) //ADD USER TO VUEX
   } else{
     await  store.dispatch('GET_auth') // TRY TO GET AUTH
-    // return '/'
   }
-
-  // if (!JSON.parse(user).info.userRoles.includes('icenter')) {
-  //   return '/role'
-  // } else {
-  //   return true
-  // }
 })
-// router.beforeEach((to, from) => {
-// //  return router.push('/login')
-//   // next({ name: 'login' })
-// })
-//   // canUserAccess() returns `true` or `false`
-//   const user = window.localStorage.getItem("user")
-//   if (!user) {
-//     return '/login'
-//     // next({ name: 'User' })
-    
-//   //   store.commit('setUserAuth', user)
-//   //   next()
-//   // } else {
-
-//   // await store.dispatch('GET_auth')
-//   // if (!store.state.user.info) next({ name: 'login' })
-//   // else
-//   //  next()
-//   } else{
-//     // next()
-//   } 
-// })
 
 export default router;
