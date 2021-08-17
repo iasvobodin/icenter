@@ -116,16 +116,19 @@ router.beforeEach(async (to, from) => {
   if (to.path === '/role')  return true
   if (user) {
     store.commit('setUserAuth', user) //ADD USER TO VUEX
+    if (!JSON.parse(user).info.userRoles.includes('icenter')) { //CHECK ROLE
+      return '/role'
+    }
   } else{
     await  store.dispatch('GET_auth') // TRY TO GET AUTH
     // return '/'
   }
 
-  if (!JSON.parse(user).info.userRoles.includes('icenter')) {
-    return '/role'
-  } else {
-    return true
-  }
+  // if (!JSON.parse(user).info.userRoles.includes('icenter')) {
+  //   return '/role'
+  // } else {
+  //   return true
+  // }
 })
 // router.beforeEach((to, from) => {
 // //  return router.push('/login')

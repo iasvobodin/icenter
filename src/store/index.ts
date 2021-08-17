@@ -126,7 +126,7 @@ export default createStore({
           identityProvider: "static",
           userId: "9c0c1980f5904d10b43e552d2b7c4041",
           userDetails: "Ivan.Svobodin@Emerson.com",
-          userRoles: ["admin","anonymous", "authenticated"],
+          userRoles: ["admin","anonymous", "icenter", "authenticated"],
         };
       } else {
         console.log('try auth');
@@ -134,10 +134,10 @@ export default createStore({
         const userAuth = await responseUserAuth.json();
         clientPrincipal = userAuth.clientPrincipal;
         if(!clientPrincipal) return
-        // if (!clientPrincipal&&!window.location.toString().includes('login')) {
-        //   window.location.href = '/login'
-        //   return
-        // }
+        if (!clientPrincipal&&!window.location.toString().includes('login')) {
+          window.location.href = '/login'
+          return
+        }
       }
       console.log(clientPrincipal, "clientPrincipal after check auth");
       clientPrincipal.userDetails = clientPrincipal.userDetails.toLowerCase();
