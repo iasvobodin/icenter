@@ -1,5 +1,5 @@
 <template>
-    <h1>acces dinaed</h1>
+    <h1>Access is denied</h1>
     <button @click="clearUser">Log out</button>
 </template>
 
