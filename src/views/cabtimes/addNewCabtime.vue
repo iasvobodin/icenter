@@ -8,7 +8,7 @@
             @choose-project-number="chooseCabinet" />
     </div>
 <section v-if="cabinet">
-        <div v-for="(t,i) in $store.state.template.CabTimeType">
+        <div v-for="(t,i) in $store.state.template.CabTimeGroup">
             <!-- <h3>{{t}} </h3> -->
             <table>
                 <colgroup>
@@ -21,17 +21,17 @@
                 <tbody>
                     <tr style="border: solid 2px orange">
                         <th>№</th>
-                        <th>{{t.type}}</th>
+                        <th>{{t.name}}</th>
                         <th>Кол-во</th>
                         <th>Норма</th>
                         <th><div v-if="cabtimetype">{{cabtimetype[i].summ}}</div></th>
                         <!-- <th>Index</th> -->
                     </tr>
-                    <tr v-for="(value, index) in  groupBy(t.type)" :key="index">
+                    <tr v-for="(value, index) in  groupBy(t.name)" :key="index">
                         <td>{{ value._id }}</td>
                         <td class="cabtime__name">{{ value.name }}</td>
                         <td class="tg-0lax"><input class="cabtime__input" type="number"
-                                @input="inputData($event, value.name)"></td>
+                                @input="inputData($event, value._id)"></td>
                         <td class="tg-0lax">{{ value._const }}</td>
                         <td class="tg-0lax">
                             <div v-if="tt" >{{value.result}}</div>
@@ -81,18 +81,18 @@ export default {
             cabtimetype: null,
         })
         const inputData = ($event, key) => {
-            !state.tt && (state.tt = store.state.template.CabTime);
-            !state.cabtimetype && (state.cabtimetype = store.state.template.CabTimeType);
+            !state.tt && (state.tt = store.state.template.CabTimeV2);
+            !state.cabtimetype && (state.cabtimetype = store.state.template.CabTimeGroup);
             state.tt.map(e => {
-                if (e.name === key) {
+                if (e._id === key) {
                     e.value = $event.target.value
                     e.result = $event.target.value * e._const
-                    // console.log(e);
                 }
             })
             state.cabtimetype.map(e => {
-                return e.summ = state.tt.filter(f => f._type === e.type).reduce((acc, m) => acc += m.result, 0)
+                return e.summ = state.tt.filter(f => f._type === e.name).reduce((acc, m) => {return m.result ? acc += +m.result: acc }, 0)
             })
+                // debugger
         }
         // eslint-disable-next-line vue/no-side-effects-in-computed-properties
         const summByType = computed(()=> state.tt?state.tt.push(store.state.template.CabTime.reduce((acc, el) => acc.add(el._type), new Set())) : 0)
@@ -101,7 +101,7 @@ export default {
         const getType = computed(() => store.state.template && store.state.template.CabTime.reduce((acc, el) => acc.add(el._type), new Set()))
         const groupBy = t => {
             if (store.state.template) {
-                state.tt = store.state.template.CabTime
+                state.tt = store.state.template.CabTimeV2
                 return state.tt.filter(g => g._type === t)
             }
         }

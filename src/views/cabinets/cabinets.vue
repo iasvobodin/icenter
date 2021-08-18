@@ -8,7 +8,7 @@
     <div v-show="!changeView" class="scanner__holder">
       <img class="frame" src="/img/scanner.svg" alt="">
       <video ref="streamVideo" class="video__stream" playsinline="true" autoplay="true"></video>
-      <canvas v-show="false" id="canvas" height="auto" width="100%"></canvas>
+      <canvas v-show="false" id="canvas" ref="vCanvas" height="auto" width="100%"></canvas>
     </div>
     <br>
     <div v-for="(val, key, index) in actualRojects" v-show="groupCabinets(val).length != 0" :key="index">
@@ -41,6 +41,7 @@ import {
   onMounted,
   toRefs,
   computed,
+  onUnmounted,
   watch
 } from 'vue';
 import {
@@ -53,6 +54,9 @@ export default {
   setup() {
     const router = useRouter()
     const streamVideo = ref(null)
+    const stream = ref(null)
+    const vCanvas = ref(null)
+    const tick = ref(null)
     const changeView = ref(true)
     const qr = ref('')
     const state = reactive({
@@ -86,24 +90,43 @@ export default {
       state.cabinets
     }
     )
+    onUnmounted(() => {
+      clearInterval(tick.value);
+     vCanvas.value = null
+     stream.value = null
+    })
     onMounted(async () => {
-      const canvasElement = document.getElementById("canvas");
-      const canvas = canvasElement.getContext("2d");
+      // const canvasElement = document.getElementById("canvas");
+      const canvas = vCanvas.value.getContext("2d");
 
-      const stream = await navigator.mediaDevices.getUserMedia({
-        audio: false,
-        video: {
-          facingMode: "environment"
-        }
-      })
+      try {
+        stream.value = await navigator.mediaDevices.getUserMedia({
+          audio: false,
+          video: {
+            facingMode: "environment",
+            width: {
+              "min": 640,
+              "max": 1024
+            },
+            height: {
+              "min": 480,
+              "max": 768
+            }
+          }
+        })
+      } catch (err) {
+        console.log(err.name + ": " + err.message);
+      }
+
+
       const video = streamVideo.value
-      video.srcObject = stream
-      const tick = setInterval(() => {
+      video.srcObject = stream.value
+      tick.value = setInterval(() => {
         if (video.readyState === video.HAVE_ENOUGH_DATA) {
-          canvasElement.height = video.videoHeight;
-          canvasElement.width = video.videoWidth;
-          canvas.drawImage(video, 0, 0, canvasElement.width, canvasElement.height);
-          const imageData = canvas.getImageData(0, 0, canvasElement.width, canvasElement.height);
+          vCanvas.value.height = video.videoHeight;
+          vCanvas.value.width = video.videoWidth;
+          canvas.drawImage(video, 0, 0, vCanvas.value.width, vCanvas.value.height);
+          const imageData = canvas.getImageData(0, 0, vCanvas.value.width, vCanvas.value.height);
           const code = jsQR(imageData.data, imageData.width, imageData.height, {
             inversionAttempts: "dontInvert",
           });
@@ -113,6 +136,7 @@ export default {
     })
 
     return {
+      vCanvas,
       changeView,
       streamVideo,
       qr,
