@@ -68,7 +68,7 @@
            
             </tbody>
             </table>
-
+<h3>Итогоый результат в часах</h3>
                     <table>
             <tbody>
  
@@ -79,10 +79,10 @@
                 <th>Итого</th>
             </tr>
             <tr>
-                <td>{{finalResult}}</td>
-                <td>{{cabtimetype[8].summ}}</td>
-                <td>{{Math.round(+finalResult*+adminCoef/100 + +documents)}}</td>
-                <td>{{+finalResult + Math.round(+finalResult*+adminCoef/100 + +documents)}}</td>
+                <td>{{Math.round(finalResult/60)}}</td>
+                <td>{{Math.round(cabtimetype[8].summ/60)}}</td>
+                <td>{{Math.round(Math.round(+finalResult*+adminCoef/100 + +documents)/60)}}</td>
+                <td>{{Math.round((+finalResult + Math.round(+finalResult*+adminCoef/100 + +documents))/60)}}</td>
             </tr>
             </tbody>
             </table>
