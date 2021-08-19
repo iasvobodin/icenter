@@ -54,6 +54,45 @@
                 </tbody>
             </table>
         </div>
+        <table>
+            <tbody>
+            <tr style="border: solid 2px orange">
+                <th>Подготовка чертежей в минутах</th>
+                <th>Коэффициент на администрирвание в %</th>
+            </tr>
+            
+            <tr>
+                <td><input v-model.number="documents" type="number"></td>
+                <td><input v-model.number="adminCoef" type="number"></td>
+            </tr>
+           
+            </tbody>
+            </table>
+
+                    <table>
+            <tbody>
+ 
+            <tr style="border: solid 2px orange">
+                <th>Сборка</th>
+                <th>Тестирование</th>
+                <th>Администрирвание</th>
+                <th>Итого</th>
+            </tr>
+            <tr>
+                <td>{{finalResult}}</td>
+                <td>{{cabtimetype[8].summ}}</td>
+                <td>{{Math.round(+finalResult*+adminCoef/100 + +documents)}}</td>
+                <td>{{+finalResult + Math.round(+finalResult*+adminCoef/100 + +documents)}}</td>
+            </tr>
+            </tbody>
+            </table>
+            
+                    <!-- <div class="administration">
+            <h3>Подготовка чертежей в минутах</h3><input type="number">
+        </div>
+         <div class="administration">
+            <h3>Коэффициент на администрирвание в %</h3><input type="number">
+        </div> -->
         </section>
         <br>
         <button v-if="cabinet" @click="postCabTime">SEND</button>
@@ -85,6 +124,8 @@ export default {
         const route = useRoute()
         const cabtimeVal = reactive({})
         const state = reactive({
+            adminCoef:"12",
+            documents:"240",
             type: null,
             tt: null,
             fetchProject: null,
@@ -93,9 +134,14 @@ export default {
             cabinet: '',
             cabtimetype: null,
         })
+        const setState = async () => {
+            await store.dispatch('GET_template')
+            state.tt = store.state.template.CabTimeV2;
+            state.cabtimetype = store.state.template.CabTimeGroup;
+        };
+        setState()
         const inputData = ($event, key, val) => {
-            !state.tt && (state.tt = store.state.template.CabTimeV2);
-            !state.cabtimetype && (state.cabtimetype = store.state.template.CabTimeGroup);
+          
             let arr, coef;
             switch (key) {
                 case '1.3':
@@ -145,11 +191,6 @@ export default {
                             e.result = Math.round(e.value * e._const)
                         }
                     });
-
-                    // if (e._id === '2.4') {
-                    //     e[val] = $event.target.value
-                    //     e.result = Math.round(e.value * e._const)
-                    // }
                 }
                 if (e._id === key) {
                     e[val] = $event.target.value
@@ -168,6 +209,14 @@ export default {
         //  t =>  state.tt&&state.tt.reduce((acc,f) => f._type === t&&(acc +=f.result),0);
         const result = (a, b) => Math.ceil(a * b)
         const getType = computed(() => store.state.template && store.state.template.CabTime.reduce((acc, el) => acc.add(el._type), new Set()))
+        const finalResult = computed(() => state.cabtimetype ? state.cabtimetype.reduce((acc,e) => {
+            if (e.name === 'Тестирование и Поверка') {
+                return acc
+            } else{
+
+                return acc += e.summ
+            }
+            } ,0):0)
         const groupBy = t => {
             if (store.state.template) {
                 state.tt = store.state.template.CabTimeV2
@@ -238,6 +287,7 @@ export default {
             }, )
             console.log(e)
         };
+
         return {
             addNewRow,
             getType,
@@ -249,6 +299,7 @@ export default {
             choose, // filterByGroup,
             cabtimeVal,
             chooseCabinet,
+            finalResult,
             // summByType,
             ...toRefs(state)
         }
@@ -257,6 +308,11 @@ export default {
 </script>
 
 <style lang="css" scoped>
+.administration{
+    display: grid;
+    grid-auto-flow: column;
+    grid-template-columns: 1fr 1fr;
+}
 .add__row{
     border: 1px solid orange;
     border-radius: 50%;

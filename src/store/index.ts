@@ -71,26 +71,24 @@ export default createStore({
     },
   },
   actions: {
-    async GET_template({commit, state}) {
-      
-        if (!state.template) {
-          if(!state.loader) {
-          commit("changeLoader", true); 
-          try {
-           const resposeTemplate = await fetch(
+    async GET_template({
+      commit,
+      state
+    }) {
+      console.log("GET TEMPLATE");
+
+        !state.loader&&commit("changeLoader", true);
+
+        try {
+          const resposeTemplate = await fetch(
             "/api/templates/templateProject/ver1"
           );
           const template = await resposeTemplate.json();
           commit("setTemplate", template);
-          commit("changeLoader", false); 
+          commit("changeLoader", false);
         } catch (error) {
           console.log(error, "GETTEMPLATEERROR");
         }
-        } 
-          console.log('gettemplate');
-        }
-     
-      // console.log(state.template, "state.template");
     },
     async checkUser({
       commit,
