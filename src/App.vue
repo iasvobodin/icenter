@@ -63,8 +63,12 @@ match(){
   //   // because it has not been created yet when this guard is called!
   // },
   mounted() {
-    this.$store.state.user.body&&document.documentElement.style.setProperty('--bg', `${this.$store.state.user.body.bg}`);
-    this.$store.state.user.body?.customCursor&&document.documentElement.style.setProperty('--cursor', `url('/img/unicorn.png')`);
+    this.$store.state.user.body?.bg&&document.documentElement.style.setProperty('--bg', `${this.$store.state.user.body.bg}`);
+    // this.$store.state.user.body?.customCursor&&document.documentElement.style.setProperty('--cursor', `url('/img/unicorn.png')`);
+    // if () {
+      // this.$store.state.user.body&&
+    // }
+    
     // console.log(this.$store.state.user.body.bg,'!!!!!!!!!!!');
     function formatDate(date) {
       return (
@@ -94,7 +98,13 @@ match(){
   //     this.$store.dispatch('GET_auth')
   //   }
     // !this.$store.state.user.info && this.$store.dispatch('GET_auth')
-     this.$store.dispatch('GET_template')
+    const getTT = async () => {
+      await this.$store.dispatch('GET_template')
+      // console.log(this.$store.state.user.body&&this.$store.state.user.body.customCursor, 'cursor');
+      this.$store.state.user.body?.customCursor&&document.documentElement.style.setProperty('--cursor', `url('/img/unicorn.png')`);
+      this.$store.state.user.body?.bg&&document.documentElement.style.setProperty('--bg', `${this.$store.state.user.body.bg}`);
+    }
+    getTT()
   },
 }
 </script>
