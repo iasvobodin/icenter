@@ -64,6 +64,7 @@ match(){
   // },
   mounted() {
     this.$store.state.user.body&&document.documentElement.style.setProperty('--bg', `${this.$store.state.user.body.bg}`);
+    this.$store.state.user.body?.customCursor&&document.documentElement.style.setProperty('--cursor', `url('/img/unicorn.png')`);
     // console.log(this.$store.state.user.body.bg,'!!!!!!!!!!!');
     function formatDate(date) {
       return (
@@ -104,6 +105,9 @@ match(){
 *:before,
 *:after {
   box-sizing: border-box;
+}
+*{
+  cursor: var(--cursor), auto;	
 }
 html{
   height: 100%;

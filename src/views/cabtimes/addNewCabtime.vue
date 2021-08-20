@@ -89,10 +89,10 @@
                     <th>Итого</th>
                 </tr>
                 <tr>
-                    <td>{{Math.round(finalResult/60)}}</td>
-                    <td>{{Math.round(cabtimetype[8].summ/60)}}</td>
+                    <td v-for="val in cabtimeResult">{{val}}</td>
+                    <!-- <td>{{Math.round(cabtimetype[8].summ/60)}}</td>
                     <td>{{Math.round(Math.round(+finalResult*+adminCoef/100 + +documents)/60)}}</td>
-                    <td>{{Math.round((+finalResult + Math.round(+finalResult*+adminCoef/100 + +documents))/60)}}</td>
+                    <td>{{Math.round((+finalResult + Math.round(+finalResult*+adminCoef/100 + +documents))/60)}}</td> -->
                 </tr>
             </tbody>
         </table>
@@ -212,14 +212,15 @@ export default {
         //  t =>  state.tt&&state.tt.reduce((acc,f) => f._type === t&&(acc +=f.result),0);
         const result = (a, b) => Math.ceil(a * b)
         const getType = computed(() => store.state.template && store.state.template.CabTime.reduce((acc, el) => acc.add(el._type), new Set()))
-        const finalResult = computed(() => state.cabtimetype ? state.cabtimetype.reduce((acc,e) => {
-            if (e.name === 'Тестирование и Поверка') {
-                return acc
-            } else{
-
-                return acc += e.summ
+        const finalResult = computed(() => state.cabtimetype ? state.cabtimetype.reduce((acc,e) =>  e.name === 'Тестирование и Поверка'? acc:acc += e.summ ,0):0)
+        const cabtimeResult = computed(() => {
+            return {
+                assemble: Math.round(finalResult.value/60),
+                test: Math.round(state.cabtimetype[8].summ/60),
+                admin: Math.round(Math.round(+finalResult.value*+state.adminCoef/100 + +state.documents)/60),
+                final: Math.round((+finalResult.value + Math.round(+finalResult.value*+state.adminCoef/100 + +state.documents))/60)
             }
-            } ,0):0)
+        })
         const groupBy = t => {
             if (store.state.template) {
                 state.tt = store.state.template.CabTimeV2
@@ -292,6 +293,7 @@ export default {
         };
 
         return {
+            cabtimeResult,
             addNewRow,
             getType,
             groupBy,
