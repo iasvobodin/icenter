@@ -1,5 +1,5 @@
 <template>
-<h2>Расчёт нового CabTime</h2>
+    <h2>Расчёт нового CabTime</h2>
     <choose-project-number :data-to-render="projectData" @input-project-event="fetchProjectList"
         @choose-project-number="choose" />
     <div v-if="projectInformation">
@@ -7,7 +7,7 @@
         <choose-project-number :data-to-render="projectInformation.cabinets.map(e =>e.wo + '   ' +e['cab name'])"
             @choose-project-number="chooseCabinet" />
     </div>
-<section v-if="cabinet">
+    <section v-if="cabinet">
         <div v-for="(t,i) in $store.state.template.CabTimeGroup">
             <table>
                 <colgroup>
@@ -24,7 +24,6 @@
                         <th>Кол-во</th>
                         <th>Норма</th>
                         <th>{{cabtimetype&&cabtimetype[i].summ}}</th>
-                        <!-- <th>Index</th> -->
                     </tr>
                     <tr v-for="(value, index) in  groupBy(t.name)" :key="index">
                         <td>
@@ -38,10 +37,11 @@
                             {{ value.name }}
                         </td>
                         <td>
-                            <input class="cabtime__input" type="number" :value="value.value" @input="inputData($event, value._id, 'value')">
+                            <input class="cabtime__input" min="0" type="number" :value="value.value"
+                                @input="inputData($event, value._id, 'value')">
                         </td>
                         <td v-if="value.new">
-                            <input class="cabtime__input" type="number" @input="inputData($event, value._id, '_const')">
+                            <input class="cabtime__input" min="0" type="number" @input="inputData($event, value._id, '_const')">
                         </td>
                         <td v-else>
                             {{ value._const }}
@@ -55,49 +55,52 @@
             </table>
         </div>
         <table>
+            <colgroup>
+                <col span="1" style="width: 50%;">
+                <col span="1" style="width: 50%;">
+            </colgroup>
             <tbody>
-            <tr style="border: solid 2px orange">
-                <th>Подготовка чертежей в минутах</th>
-                <th>Коэффициент на администрирвание в %</th>
-            </tr>
-            
-            <tr>
-                <td><input v-model.number="documents" type="number"></td>
-                <td><input v-model.number="adminCoef" type="number"></td>
-            </tr>
-           
+                <tr style="border: solid 2px orange">
+                    <th>Подготовка чертежей в минутах</th>
+                    <th>Коэффициент на администрирвание в %</th>
+                </tr>
+
+                <tr>
+                    <td><input v-model.number="documents" min="0" type="number"></td>
+                    <td><input v-model.number="adminCoef" min="0" type="number"></td>
+                </tr>
+
             </tbody>
-            </table>
-<h3>Итогоый результат в часах</h3>
-                    <table>
+        </table>
+        <h3>Итоговый результат в часах</h3>
+        <table>
+            <colgroup>
+                <col span="1" style="width: 25%;">
+                <col span="1" style="width: 25%;">
+                <col span="1" style="width: 25%;">
+                <col span="1" style="width: 25%;">
+            </colgroup>
             <tbody>
- 
-            <tr style="border: solid 2px orange">
-                <th>Сборка</th>
-                <th>Тестирование</th>
-                <th>Администрирвание</th>
-                <th>Итого</th>
-            </tr>
-            <tr>
-                <td>{{Math.round(finalResult/60)}}</td>
-                <td>{{Math.round(cabtimetype[8].summ/60)}}</td>
-                <td>{{Math.round(Math.round(+finalResult*+adminCoef/100 + +documents)/60)}}</td>
-                <td>{{Math.round((+finalResult + Math.round(+finalResult*+adminCoef/100 + +documents))/60)}}</td>
-            </tr>
+
+                <tr style="border: solid 2px orange">
+                    <th>Сборка</th>
+                    <th>Тестирование</th>
+                    <th>Администрирвание</th>
+                    <th>Итого</th>
+                </tr>
+                <tr>
+                    <td>{{Math.round(finalResult/60)}}</td>
+                    <td>{{Math.round(cabtimetype[8].summ/60)}}</td>
+                    <td>{{Math.round(Math.round(+finalResult*+adminCoef/100 + +documents)/60)}}</td>
+                    <td>{{Math.round((+finalResult + Math.round(+finalResult*+adminCoef/100 + +documents))/60)}}</td>
+                </tr>
             </tbody>
-            </table>
-            
-                    <!-- <div class="administration">
-            <h3>Подготовка чертежей в минутах</h3><input type="number">
-        </div>
-         <div class="administration">
-            <h3>Коэффициент на администрирвание в %</h3><input type="number">
-        </div> -->
-        </section>
-        <br>
-        <button v-if="cabinet" @click="postCabTime">SEND</button>
-        <br>
-        <br>
+        </table>
+    </section>
+    <br>
+    <button v-if="cabinet" @click="postCabTime">SEND</button>
+    <br>
+    <br>
 </template>
 
 <script>
