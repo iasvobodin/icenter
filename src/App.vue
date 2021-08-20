@@ -101,6 +101,7 @@ match(){
     const getTT = async () => {
       await this.$store.dispatch('GET_template')
       // console.log(this.$store.state.user.body&&this.$store.state.user.body.customCursor, 'cursor');
+      this.$store.state.user.body?.customCursor&&document.documentElement.style.setProperty('--cursor__p', `url('/img/unicorn2.png')`);
       this.$store.state.user.body?.customCursor&&document.documentElement.style.setProperty('--cursor', `url('/img/unicorn.png')`);
       this.$store.state.user.body?.bg&&document.documentElement.style.setProperty('--bg', `${this.$store.state.user.body.bg}`);
     }
@@ -118,6 +119,7 @@ match(){
 }
 *{
   cursor: var(--cursor), auto;	
+  cursor: var(--cursor__p), pointer;
 }
 html{
   height: 100%;
