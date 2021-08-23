@@ -10,18 +10,17 @@ import * as signalR from '@microsoft/signalr'
 // import headerVue from '@/components/header.vue'
 export default {
   setup() {
-    if ('serviceWorker' in navigator) {
-      console.log('!!!!!');
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('../../../service-worker.js')
-    .then(registration => {
-      console.log('Service Worker is registered', registration);
-    })
-    .catch(err => {
-      console.error('Registration failed:', err);
-    });
-  });
-}
+//     if ('serviceWorker' in navigator) {
+//   window.addEventListener('load', () => {
+//     navigator.serviceWorker.register('/sw.js')
+//     .then(registration => {
+//       console.log('Service Worker is registered', registration);
+//     })
+//     .catch(err => {
+//       console.error('Registration failed:', err);
+//     });
+//   });
+// }
 
 if (!('Notification' in window)) {
   console.log('This browser does not support notifications!');
@@ -32,36 +31,27 @@ if (!('Notification' in window)) {
 Notification.requestPermission(status => {
   console.log('Notification permission status:', status);
 });
- const app = ()=>{
-
-
-
-function displayNotification() {
-  console.log('notification');
-  if (Notification.permission == 'granted') {
+//  const app = ()=>{
+// const displayNotification = () => {
+  // console.log('notification');
+  if (Notification.permission == 'granted'&&'serviceWorker' in navigator) {
     navigator.serviceWorker.getRegistration().then(reg => {
-      var options = {
+      console.log(reg);
+      const options = {
         body: 'test notice',
-        // icon: 'images/example.png',
         vibrate: [100, 50, 100],
         data: {
           dateOfArrival: Date.now(),
           primaryKey: 1
         },
-        // actions: [
-        //   {action: 'explore', title: 'Explore this new world',
-        //     icon: 'images/checkmark.png'},
-        //   {action: 'close', title: 'Close notification',
-        //     icon: 'images/xmark.png'},
-        // ]
       };
       reg.showNotification('Hello world!', options);
     });
   }
-}
-displayNotification()
-}
-app()
+// }
+// displayNotification()
+// }
+// app()
 // const ff = async ()=>{
 //   // await fetch("https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id=4cd0c647-2554-4150-a8d9-e82416eede9f&response_type=id_token+token&redirect_uri=http%3A%2F%2Flocalhost%2Fmyapp%2F&scope=openid%20https%3A%2F%2Fgraph.microsoft.com%2Fmail.read&response_mode=fragment&state=12345&nonce=678910",{
 //   //   method: "GET"
