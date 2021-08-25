@@ -14,7 +14,7 @@
       }
     ],
     "start_url": "/",
-    "background_color": "#004481",
+    "background_color": "white",
     "display_override": ["window-control-overlay", "minimal-ui"],
     "display": "fullscreen",
     "scope": "/",
