@@ -34,20 +34,27 @@ Notification.requestPermission(status => {
 //  const app = ()=>{
 // const displayNotification = () => {
   // console.log('notification');
-  if (Notification.permission == 'granted'&&'serviceWorker' in navigator) {
-    navigator.serviceWorker.getRegistration().then(reg => {
-      console.log(reg);
-      const options = {
-        body: 'test notice',
-        vibrate: [100, 50, 100],
-        data: {
-          dateOfArrival: Date.now(),
-          primaryKey: 1
-        },
-      };
-      reg.showNotification('Hello world!', options);
-    });
-  }
+
+
+
+  // if (Notification.permission == 'granted'&&'serviceWorker' in navigator) {
+  //   navigator.serviceWorker.getRegistration().then(reg => {
+  //     console.log(reg);
+  //     const options = {
+  //       body: 'test notice',
+  //       vibrate: [100, 50, 100],
+  //       data: {
+  //         dateOfArrival: Date.now(),
+  //         primaryKey: 1
+  //       },
+  //     };
+  //     reg.showNotification('Hello world!', options);
+  //   });
+  // }
+
+
+
+
 // }
 // displayNotification()
 // }
@@ -66,27 +73,41 @@ Notification.requestPermission(status => {
 // }
 
 
-    const connect = () => {
-      const connection = new signalR.HubConnectionBuilder()
-        .withUrl('/api')
-        .build();
+  //   const connect = () => {
+  //     const connection = new signalR.HubConnectionBuilder()
+  //       .withUrl('/api')
+  //       .build();
 
-      connection.onclose(() => {
-        console.log('SignalR connection disconnected');
-        setTimeout(() => connect(), 2000);
-      });
+  //     connection.onclose(() => {
+  //       console.log('SignalR connection disconnected');
+  //       setTimeout(() => connect(), 2000);
+  //     });
 
-      connection.on('updated', updatedStock => {
-        console.log(updatedStock);
-        alert(`${updatedStock.id} обновлена`)
-      });
+  //     connection.on('updated', updatedStock => {
+  //         if (Notification.permission == 'granted'&&'serviceWorker' in navigator) {
+  //   navigator.serviceWorker.getRegistration().then(reg => {
+  //     console.log(reg);
+  //     const options = {
+  //       body: 'updated',
+  //       vibrate: [100, 50, 100],
+  //       data: {
+  //         dateOfArrival: Date.now(),
+  //         primaryKey: 1
+  //       },
+  //     };
+  //     reg.showNotification(`${updatedStock.id}`, options);
+  //   });
+  // }
+  //       // console.log(updatedStock);
+  //       // alert(`${updatedStock.id} обновлена`)
+  //     });
 
-      connection.start().then(() => {
-        console.log("SignalR connection established");
-      });
-    };
+  //     connection.start().then(() => {
+  //       console.log("SignalR connection established");
+  //     });
+  //   };
 
-    connect();
+  //   connect();
     // return {ff}
   }
 }
