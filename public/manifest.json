@@ -1,0 +1,23 @@
+{
+    "short_name": "ICenter",
+    "name": "Chelybinsk ICenter PWA",
+    "icons": [
+      {
+        "src": "/img/logo192.png",
+        "type": "image/png",
+        "sizes": "192x192"
+      },
+      {
+        "src": "/img/logo512.png",
+        "type": "image/png",
+        "sizes": "512x512"
+      }
+    ],
+    "start_url": "/",
+    "background_color": "#004481",
+    "display_override": ["window-control-overlay", "minimal-ui"],
+    "display": "fullscreen",
+    "scope": "/",
+    "theme_color": "#004481",
+    "description": "optimization process"
+  }
