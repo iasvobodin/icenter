@@ -62,3 +62,20 @@ self.addEventListener('fetch', (e) => {
      .catch(() => caches.match('./src/404.html'))
  )
 })
+
+self.addEventListener('notificationclick', event => {
+  const notification = event.notification;
+  const primaryKey = notification.data.primaryKey;
+  console.log(primaryKey);
+  const action = event.action;
+
+  if (action === 'close') {
+    notification.close();
+  } else {
+    self.clients.openWindow('projects');
+    notification.close();
+  }
+
+  // TODO 5.3 - close all notifications when one is clicked
+
+});

@@ -22,15 +22,7 @@ export default {
 //   });
 // }
 
-if (!('Notification' in window)) {
-  console.log('This browser does not support notifications!');
-  return;
-}
 
-// TODO 2.2 - request permission to show notifications
-Notification.requestPermission(status => {
-  console.log('Notification permission status:', status);
-});
 //  const app = ()=>{
 // const displayNotification = () => {
   // console.log('notification');

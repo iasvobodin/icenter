@@ -55,6 +55,17 @@ export default {
     console.log(formatDate(dd))
   },
   created() {
+const getNotificationPermission = () =>{
+if (!('Notification' in window)) {
+  console.log('This browser does not support notifications!');
+  return;
+}
+
+Notification.requestPermission(status => {
+  console.log('Notification permission status:', status);
+});
+}
+  getNotificationPermission()
 
     const connect = async () => {
       await await fetch('/api/negotiate');
@@ -71,27 +82,25 @@ export default {
       connection.on('updated', updatedStock => {
 
         //CHECK AND PUSH NOTIFICATION
-        console.log('try to push');
-        if (!('Notification' in window)) {
-          console.log('This browser does not support notifications!');
-          return;
-        }
 
-        Notification.requestPermission(status => {
-          console.log('Notification permission status:', status);
-        });
         if (Notification.permission == 'granted' && 'serviceWorker' in navigator) {
           navigator.serviceWorker.getRegistration().then(reg => {
-            console.log(reg);
+            // console.log(reg);
             const options = {
-              body: `${this.$store.state?.user.info.userDetails} is updated`,
+              body: `${this.$store.state?.user.info.userDetails} updated the project.`,
               vibrate: [100, 50, 100],
+              actions: [
+                {action: 'explore', title: 'Explore',
+                  icon: '/img/checkmark.png'},
+                {action: 'close', title: 'Close',
+                  icon: '/img/xmark.png'},
+              ],
               data: {
                 dateOfArrival: Date.now(),
                 primaryKey: 1 
               },
             };
-            reg.showNotification(`Project ${updatedStock.id}`, options);
+            reg.showNotification(`${updatedStock.id}`, options);
           });
         }
         // console.log(updatedStock);
