@@ -15,26 +15,27 @@ import * as signalR from '@microsoft/signalr'
 // import { ref } from "vue";
 export default {
   components: {
-    loader,appHeader
+    loader,
+    appHeader
   },
-  methods:{
-match(){
-  if (this.$route.path.includes('role')) {
-    return false
-  } 
-  if (this.$route.path.includes('login')) {
-    return false
-  }
-  return true
-}
+  methods: {
+    match() {
+      if (this.$route.path.includes('role')) {
+        return false
+      }
+      if (this.$route.path.includes('login')) {
+        return false
+      }
+      return true
+    }
   },
   mounted() {
-    this.$store.state.user.body?.bg&&document.documentElement.style.setProperty('--bg', `${this.$store.state.user.body.bg}`);
+    this.$store.state.user.body?.bg && document.documentElement.style.setProperty('--bg', `${this.$store.state.user.body.bg}`);
     // this.$store.state.user.body?.customCursor&&document.documentElement.style.setProperty('--cursor', `url('/img/unicorn.png')`);
     // if () {
-      // this.$store.state.user.body&&
+    // this.$store.state.user.body&&
     // }
-    
+
     // console.log(this.$store.state.user.body.bg,'!!!!!!!!!!!');
     function formatDate(date) {
       return (
@@ -70,7 +71,7 @@ match(){
       connection.on('updated', updatedStock => {
 
         //CHECK AND PUSH NOTIFICATION
-console.log('try to push');
+        console.log('try to push');
         if (!('Notification' in window)) {
           console.log('This browser does not support notifications!');
           return;
@@ -83,11 +84,11 @@ console.log('try to push');
           navigator.serviceWorker.getRegistration().then(reg => {
             console.log(reg);
             const options = {
-              body: 'is updated',
+              body: `${this.$store.state?.user.info.userDetails} is updated`,
               vibrate: [100, 50, 100],
               data: {
                 dateOfArrival: Date.now(),
-                primaryKey: 1
+                primaryKey: 1 
               },
             };
             reg.showNotification(`Project ${updatedStock.id}`, options);
@@ -105,10 +106,10 @@ console.log('try to push');
     connect();
 
 
-    this.$store.state.user.body ?.customCursor && document.documentElement.style.setProperty('--cursor__p', `url('/img/unicorn2.png')`)
-    this.$store.state.user.body ?.customCursor && document.documentElement.style.setProperty('--cursor', `url('/img/unicorn.png')`)
-    this.$store.state.user.body ?.bg && document.documentElement.style.setProperty('--bg', `${this.$store.state.user.body.bg}`)
-    
+    this.$store.state.user.body?.customCursor && document.documentElement.style.setProperty('--cursor__p', `url('/img/unicorn2.png')`)
+    this.$store.state.user.body?.customCursor && document.documentElement.style.setProperty('--cursor', `url('/img/unicorn.png')`)
+    this.$store.state.user.body?.bg && document.documentElement.style.setProperty('--bg', `${this.$store.state.user.body.bg}`)
+
     const getTT = async () => {
       await this.$store.dispatch('GET_template')
     }

@@ -1,11 +1,18 @@
 const testF = async () => {
-  const data = await fetch('./manifest.json')
-   const dataRes = await data.json()
-   const FILES = []
-   for (const iterator in dataRes) {
-     FILES.push(dataRes[iterator].file);
-   }
-     return FILES
+  try {
+    const data = await fetch('./manifest.json')
+    if (data.ok) {
+      const dataRes = await data.json()
+      const FILES = []
+      for (const iterator in dataRes) {
+        FILES.push(dataRes[iterator].file);
+      }
+        return FILES
+    } return []
+  } catch (error) {
+    throw new Error(error)
+  }
+
    }
 
 

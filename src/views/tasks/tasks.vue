@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div>v2
 <!-- <button @click="ff">FF</button>
 <a href="https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id=4cd0c647-2554-4150-a8d9-e82416eede9f&response_type=id_token+token&redirect_uri=http%3A%2F%2Flocalhost%2Fmyapp%2F&scope=openid%20https%3A%2F%2Fgraph.microsoft.com%2Fmail.read&response_mode=fragment&state=12345&nonce=678910">!!!!!!!!!!!!!!!!</a> -->
   </div>
