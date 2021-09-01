@@ -1,3 +1,29 @@
+
+if (typeof idb === "undefined") {
+  self.importScripts('../src/hooks/idb.js');
+}
+
+function createDB() {
+  if (!('indexedDB' in self)) {
+    console.log('This browser doesn\'t support IndexedDB');
+    return;
+  }
+  const dbPromise = idb.open('products', 1, (upgradeDB) => {
+    if (!upgradeDb.objectStoreNames.contains('beverages')) {
+     const store = upgradeDb.createObjectStore('beverages', {
+      keyPath: 'id'
+    });
+    }
+    var store = upgradeDB.createObjectStore('beverages', {
+      keyPath: 'id'
+    });
+    store.put({id: 123, name: 'coke', price: 10.99, quantity: 200});
+    store.put({id: 321, name: 'pepsi', price: 8.99, quantity: 100});
+    store.put({id: 222, name: 'water', price: 11.99, quantity: 300});
+  });
+}
+
+
 const testF = async () => {
   try {
     const data = await fetch('./manifest.json')
@@ -30,6 +56,7 @@ self.addEventListener('install', (e) => {
 
 self.addEventListener('activate', (e) => {
  e.waitUntil(
+  createDB(),
    caches.keys().then((keys) =>
      Promise.all(
        keys.map((key) => {

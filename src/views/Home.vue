@@ -1,6 +1,6 @@
 <template>
-  <h1>Test iCenterApp</h1>
-  <p>this application is in development mode</p>
+  <h1>iCenter</h1>
+  <p>This application development is in progress</p>
   <!-- <chooseCabinet />
   <setError /> -->
 </template>
