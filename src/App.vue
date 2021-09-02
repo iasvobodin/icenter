@@ -7,127 +7,138 @@
 </template>
 
 
-<script>
+<script setup>
 import loader from '@/components/loader.vue'
 import appHeader from "@/components/header.vue";
 import * as signalR from '@microsoft/signalr'
-// import { onBeforeRouteLeave, onBeforeRouteUpdate } from "vue-router";
-// import { ref } from "vue";
-export default {
-  components: {
-    loader,
-    appHeader
-  },
-  methods: {
-    match() {
-      if (this.$route.path.includes('role')) {
-        return false
-      }
-      if (this.$route.path.includes('login')) {
-        return false
-      }
-      return true
-    }
-  },
-  mounted() {
-    this.$store.state.user.body?.bg && document.documentElement.style.setProperty('--bg', `${this.$store.state.user.body.bg}`);
-    // this.$store.state.user.body?.customCursor&&document.documentElement.style.setProperty('--cursor', `url('/img/unicorn.png')`);
-    // if () {
-    // this.$store.state.user.body&&
-    // }
+import {
+  useRoute
+} from 'vue-router'
+import {
+  useStore
+} from 'vuex'
+import {
+  ref
+} from 'vue'
 
-    // console.log(this.$store.state.user.body.bg,'!!!!!!!!!!!');
-    function formatDate(date) {
-      return (
-        date.getDate() +
-        '/' +
-        '0' +
-        (date.getMonth() + 1) +
-        '/' +
-        date.getFullYear() +
-        ' ' +
-        date.getHours() +
-        ':' +
-        date.getMinutes()
-      )
-    }
-    const dd = new Date()
-    console.log(formatDate(dd))
-  },
-  created() {
-const getNotificationPermission = () =>{
-if (!('Notification' in window)) {
-  console.log('This browser does not support notifications!');
-  return;
+
+const store = useStore()
+const route = useRoute()
+const match = () => route.path.includes('role') || route.path.includes('login') ? false : true
+
+const getNotificationPermission = () => {
+  if (!('Notification' in window)) {
+    console.log('This browser does not support notifications!');
+    return;
+  }
+
+  Notification.requestPermission(status => {
+    console.log('Notification permission status:', status);
+  });
 }
+getNotificationPermission()
 
-Notification.requestPermission(status => {
-  console.log('Notification permission status:', status);
-});
-}
-  getNotificationPermission()
+const connect = async () => {
+  let negotiateRes;
+  try{
+ const negotiate = await fetch('/api/negotiate');
+ if (negotiate.ok) {
+   negotiateRes = await negotiate.json()
+   console.log(negotiateRes, 'negGGGGGGGGGGGGGG');
+ }
+  }catch(e){
+    throw new Error(e)
+  }
 
-    const connect = async () => {
-      await await fetch('/api/negotiate');
 
-      const connection = new signalR.HubConnectionBuilder()
-        .withUrl('/api')
-        .build();
+  const connection = new signalR.HubConnectionBuilder()
+    .withUrl('/api', {
+        accessTokenFactory: () => negotiateRes.accessToken
+      })
+      .configureLogging(signalR.LogLevel.Information)
+    .build();
+console.log(connection, 'connection!!!!!!!!!!!!!');
+  connection.onclose(() => {
+    console.log('SignalR connection disconnected');
+    setTimeout(() => connect(), 2000);
+  });
 
-      connection.onclose(() => {
-        console.log('SignalR connection disconnected');
-        setTimeout(() => connect(), 2000);
+  connection.on('updated', updatedStock => {
+    // NEED TO UPDATE IDB!!!
+    //DISPATCH STORE
+
+
+    //CHECK AND PUSH NOTIFICATION
+
+    if (Notification.permission == 'granted' && 'serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistration().then(reg => {
+        // console.log(reg);
+        const options = {
+          body: `${this.$store.state?.user.info.userDetails} updated the project.`,
+          vibrate: [100, 50, 100],
+          actions: [{
+              action: 'explore',
+              title: 'Explore',
+              icon: '/img/checkmark.png'
+            },
+            {
+              action: 'close',
+              title: 'Close',
+              icon: '/img/xmark.png'
+            },
+          ],
+          data: {
+            dateOfArrival: Date.now(),
+            primaryKey: 1
+          },
+        };
+        reg.showNotification(`${updatedStock.id}`, options);
       });
-
-      connection.on('updated', updatedStock => {
-
-        //CHECK AND PUSH NOTIFICATION
-
-        if (Notification.permission == 'granted' && 'serviceWorker' in navigator) {
-          navigator.serviceWorker.getRegistration().then(reg => {
-            // console.log(reg);
-            const options = {
-              body: `${this.$store.state?.user.info.userDetails} updated the project.`,
-              vibrate: [100, 50, 100],
-              actions: [
-                {action: 'explore', title: 'Explore',
-                  icon: '/img/checkmark.png'},
-                {action: 'close', title: 'Close',
-                  icon: '/img/xmark.png'},
-              ],
-              data: {
-                dateOfArrival: Date.now(),
-                primaryKey: 1 
-              },
-            };
-            reg.showNotification(`${updatedStock.id}`, options);
-          });
-        }
-        // console.log(updatedStock);
-        // alert(`${updatedStock.id} обновлена`)
-      });
-
-      connection.start().then(() => {
-        console.log("SignalR connection established");
-      });
-    };
-
-    connect();
-
-
-    this.$store.state.user.body?.customCursor && document.documentElement.style.setProperty('--cursor__p', `url('/img/unicorn2.png')`)
-    this.$store.state.user.body?.customCursor && document.documentElement.style.setProperty('--cursor', `url('/img/unicorn.png')`)
-    this.$store.state.user.body?.bg && document.documentElement.style.setProperty('--bg', `${this.$store.state.user.body.bg}`)
-
-    const getTT = async () => {
-      await this.$store.dispatch('GET_template')
     }
-    getTT()
+    // console.log(updatedStock);
+    // alert(`${updatedStock.id} обновлена`)
+  });
 
+  connection.start().then(() => {
+    console.log("SignalR connection established");
+  });
+};
 
-
-  },
+connect();
+const getTT = async () => {
+  await store.dispatch('GET_template')
 }
+getTT()
+store.state.user.body?.customCursor && document.documentElement.style.setProperty('--cursor', `url('/img/unicorn.png')`)
+store.state.user.body?.bg && document.documentElement.style.setProperty('--bg', `${store.state.user.body.bg}`)
+// const bg = ref(store.state.user.body?.bg||'red')
+// console.log(bg.value,'bg');
+// return {
+//   match
+// }
+// },
+// mounted() {
+//   // this.$store.state.user.body?.bg && document.documentElement.style.setProperty('--bg', `${this.$store.state.user.body.bg}`);
+
+//   function formatDate(date) {
+//     return (
+//       date.getDate() +
+//       '/' +
+//       '0' +
+//       (date.getMonth() + 1) +
+//       '/' +
+//       date.getFullYear() +
+//       ' ' +
+//       date.getHours() +
+//       ':' +
+//       date.getMinutes()
+//     )
+//   }
+//   const dd = new Date()
+//   console.log(formatDate(dd))
+// },
+
+// }
 </script>
 
 <style>
@@ -138,8 +149,8 @@ Notification.requestPermission(status => {
   box-sizing: border-box;
 }
 *{
+  /* cursor: v-bind(color); */
   cursor: var(--cursor), auto;	
-  cursor: var(--cursor__p), pointer;
 }
 html{
   height: 100%;
@@ -147,6 +158,7 @@ html{
 body{
   width: 100%; 
   min-height: 100%;
+  /* background: v-bind('bg'); */
   background: var(--bg);
 }
 button,
