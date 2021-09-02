@@ -16,7 +16,7 @@ function createDB() {
     store.put({id: 222, name: 'water', price: 11.99, quantity: 300});
     }
   });
-}
+};
 
 
 const testF = async () => {
