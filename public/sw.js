@@ -50,6 +50,7 @@ self.addEventListener('install', (e) => {
 })
 
 self.addEventListener('activate', (e) => {
+  console.log(e, 'hellow from activate');
  e.waitUntil(
   createDB(),
    caches.keys().then((keys) =>
@@ -74,9 +75,10 @@ self.addEventListener('fetch', (e) => {
          response ||
          fetch(e.request).then((response) =>
            caches.open(NAME).then((cache) => {
-             // if (e.request.method === 'GET') {
-             //   cache.put(e.request, response.clone())
-             // }
+             if (e.request.url.includes('api/templates')) {
+               console.log(e.request);
+              //  cache.put(e.request, response.clone())
+             }
              return response
            })
          )
