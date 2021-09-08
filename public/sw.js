@@ -1,19 +1,34 @@
-
-  self.importScripts('../src/hooks/idb.js');
+self.importScripts('../src/hooks/idb.js');
 
 function createDB() {
   if (!('indexedDB' in self)) {
     console.log('This browser doesn\'t support IndexedDB');
     return;
   }
+  // eslint-disable-next-line no-undef
   const dbPromise = idb.open('products', 1, upgradeDB => {
     if (!upgradeDB.objectStoreNames.contains('beverages')) {
-     const store = upgradeDB.createObjectStore('beverages', {
-      keyPath: 'id'
-    });
-    store.put({id: 123, name: 'coke', price: 10.99, quantity: 200});
-    store.put({id: 321, name: 'pepsi', price: 8.99, quantity: 100});
-    store.put({id: 222, name: 'water', price: 11.99, quantity: 300});
+      const store = upgradeDB.createObjectStore('beverages', {
+        keyPath: 'id'
+      });
+      store.put({
+        id: 123,
+        name: 'coke',
+        price: 10.99,
+        quantity: 200
+      });
+      store.put({
+        id: 321,
+        name: 'pepsi',
+        price: 8.99,
+        quantity: 100
+      });
+      store.put({
+        id: 222,
+        name: 'water',
+        price: 11.99,
+        quantity: 300
+      });
     }
   });
 };
@@ -28,63 +43,63 @@ const testF = async () => {
       for (const iterator in dataRes) {
         FILES.push(dataRes[iterator].file);
       }
-        return FILES
-    } return []
+      return FILES
+    }
+    return []
   } catch (error) {
     throw new Error(error)
   }
-
-   }
+}
 
 
 
 const NAME = 'v1'
 
 self.addEventListener('install', (e) => {
- e.waitUntil(testF()
- .then(FILES => {
-   caches.open(NAME)
-   .then((cache) => cache.addAll([...FILES, 'index.html']))
-   self.skipWaiting()
- }))
+  e.waitUntil(testF()
+    .then(FILES => {
+      caches.open(NAME)
+        .then((cache) => cache.addAll([...FILES, 'index.html']))
+      self.skipWaiting()
+    }))
 })
 
 self.addEventListener('activate', (e) => {
   console.log(e, 'hellow from activate');
- e.waitUntil(
-  createDB(),
-   caches.keys().then((keys) =>
-     Promise.all(
-       keys.map((key) => {
-         if (key !== NAME) {
-           return caches.delete(key)
-         }
-       })
-     )
-   )
- )
- self.clients.claim()
+  e.waitUntil(
+    createDB(),
+    caches.keys().then((keys) =>
+      Promise.all(
+        keys.map((key) => {
+          if (key !== NAME) {
+            return caches.delete(key)
+          }
+        })
+      )
+    )
+  )
+  self.clients.claim()
 })
 
 self.addEventListener('fetch', (e) => {
- e.respondWith(
-   caches
-     .match(e.request)
-     .then(
-       (response) =>
-         response ||
-         fetch(e.request).then((response) =>
-           caches.open(NAME).then((cache) => {
-             if (e.request.url.includes('api/templates')) {
-               console.log(e.request);
-              //  cache.put(e.request, response.clone())
-             }
-             return response
-           })
-         )
-     )
-     .catch(() => caches.match('./src/404.html'))
- )
+  e.respondWith(
+    caches
+    .match(e.request)
+    .then(
+      (response) =>
+      response ||
+      fetch(e.request).then((response) =>
+        caches.open(NAME).then((cache) => {
+          if (e.request.url.includes('api/templates')) {
+            console.log(e.request);
+            //  cache.put(e.request, response.clone())
+          }
+          return response
+        })
+      )
+    )
+    .catch(() => caches.match('./src/404.html'))
+  )
 })
 
 self.addEventListener('notificationclick', event => {
@@ -99,7 +114,4 @@ self.addEventListener('notificationclick', event => {
     self.clients.openWindow('projects');
     notification.close();
   }
-
-  // TODO 5.3 - close all notifications when one is clicked
-
 });

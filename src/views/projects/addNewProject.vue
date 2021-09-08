@@ -28,7 +28,6 @@
           <conditional-render
             v-model="selected.extend"
             :data-render="$store.state.template.template.extend"
-            :required="false"
           />
           <div class="cabinet__info">
             <h3>Выберете шкафные линии</h3>
