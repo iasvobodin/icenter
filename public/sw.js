@@ -21,12 +21,14 @@ const testF = async () => {
 const NAME = 'v1'
 
 self.addEventListener('install', (e) => {
-  e.waitUntil(testF()
+  self.skipWaiting(),
+  e.waitUntil(
+    testF()
     .then(FILES => {
       caches.open(NAME)
         .then((cache) => cache.addAll([...FILES, 'index.html']))
-      self.skipWaiting()
-    }))
+    })
+    )
 })
 
 self.addEventListener('activate', (e) => {
