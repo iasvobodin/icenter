@@ -18,7 +18,7 @@ const testF = async () => {
 
 
 
-const NAME = 'v1'
+const NAME = 'v2'
 
 self.addEventListener('install', (e) => {
   self.skipWaiting(),
@@ -32,7 +32,7 @@ self.addEventListener('install', (e) => {
 })
 
 self.addEventListener('activate', (e) => {
-  console.log(e, 'hellow from activate');
+  // console.log(e, 'hellow from activate');
   e.waitUntil(
     caches.keys().then((keys) =>
       Promise.all(
