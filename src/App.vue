@@ -199,6 +199,7 @@ p {
 select {
   height: 30px;
   width: 100%;
+  font-size: 16px;
 }
 textarea {
   /* height: 30px; */
