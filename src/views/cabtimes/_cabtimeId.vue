@@ -1,14 +1,17 @@
-<template>
-    <div >
-    </div>
-</template>
+<script setup>
+import { ref, computed } from 'vue'
 
-<script>
-    export default {
-        
-    }
+const color = ref('red')
 </script>
 
-<style lang="css" scoped>
+<template>
+  <button class="tttbotton" @click="color = color === 'red' ? 'green' : 'red'">
+    Color is: {{ color }}
+  </button>
+</template>
 
+<style>
+.tttbotton {
+  color: v-bind(color);
+}
 </style>

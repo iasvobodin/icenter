@@ -18,12 +18,13 @@ import {
   useStore
 } from 'vuex'
 import {
-  ref
+  ref, computed
 } from 'vue'
 
 
 const store = useStore()
 const route = useRoute()
+
 const match = () => route.path.includes('role') || route.path.includes('login') ? false : true
 
 const getNotificationPermission = () => {
@@ -109,16 +110,8 @@ const getTT = async () => {
   await store.dispatch('GET_template')
 }
 getTT()
-store.state.user.body?.customCursor && document.documentElement.style.setProperty('--cursor', `url('/img/unicorn.png')`)
-store.state.user.body?.bg && document.documentElement.style.setProperty('--bg', `${store.state.user.body.bg}`)
-// const bg = ref(store.state.user.body?.bg||'red')
-// console.log(bg.value,'bg');
-// return {
-//   match
-// }
-// },
-// mounted() {
-//   // this.$store.state.user.body?.bg && document.documentElement.style.setProperty('--bg', `${this.$store.state.user.body.bg}`);
+const bg = computed(()=> store.state.user.body?.bg && document.documentElement.style.setProperty('--bg', `${store.state.user.body.bg}`) )
+const customCursor = computed(()=> store.state.user.body?.customCursor && document.documentElement.style.setProperty('--cursor', `url('/img/unicorn.png')`))
 
 //   function formatDate(date) {
 //     return (
@@ -167,7 +160,6 @@ body{
   width: 100%; 
   min-height: 100%;
   margin: 0;
-  /* background: v-bind('bg'); */
   background: var(--bg);
 }
 button,
@@ -185,10 +177,6 @@ input[type='submit'] {
   box-sizing: border-box;
   font-size: 16px;
 }
-/* ::-webkit-file-upload-button{
-  background-image: url('/img/add__image.svg');
-  background-repeat: no-repeat;
-} */
 input[type='submit']:hover {
   background-color: #00a2ff5b;
 }
@@ -200,7 +188,6 @@ h4 {
 }
 h2{
   margin: 0.3vh;
-  
 }
 p {
   margin: 0;
@@ -208,11 +195,8 @@ p {
 select {
   height: 30px;
   width: 100%;
-  /* font-size: 16px; */
 }
 textarea {
-  /* font-size: inherit; */
-  /* height: 30px; */
   width: 100%;
   box-sizing: border-box;
   border-radius: 4px;
@@ -239,10 +223,5 @@ h6 {
   font-family: 'Roboto Slab', serif;
   font-weight: normal;
 }
-body{
- 
-}
-/* #app{
 
-} */
 </style>
