@@ -152,12 +152,21 @@ store.state.user.body?.bg && document.documentElement.style.setProperty('--bg', 
   /* cursor: v-bind(color); */
   cursor: var(--cursor), auto;	
 }
+textarea,
+select,
+input[type='text'],
+input[type='number']{
+  font-size: 16px;
+
+}
 html{
   height: 100%;
+  
 }
 body{
   width: 100%; 
   min-height: 100%;
+  margin: 0;
   /* background: v-bind('bg'); */
   background: var(--bg);
 }
@@ -199,9 +208,10 @@ p {
 select {
   height: 30px;
   width: 100%;
-  font-size: 16px;
+  /* font-size: 16px; */
 }
 textarea {
+  /* font-size: inherit; */
   /* height: 30px; */
   width: 100%;
   box-sizing: border-box;
@@ -230,7 +240,7 @@ h6 {
   font-weight: normal;
 }
 body{
-  margin: 0;
+ 
 }
 /* #app{
 
