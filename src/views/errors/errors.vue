@@ -1,5 +1,7 @@
 <template>
-<h1>Текущие ошибки по шкафам</h1><button class="info" @click="$router.push('/errors/info')">Как пользоваться?</button>
+<h1>Текущие ошибки по шкафам</h1>
+
+<!-- <button >Как пользоваться?</button> -->
 <p>В данном разделе Вы можете посмотреть ошибки добавленные сборщиками и инженерами по тестированию.</p>
   <br />
   <br />
@@ -33,9 +35,11 @@
   </div>
   <div v-if="errorMessage">{{ errorMessage }}</div>
   <div v-if="fetchStatus" class="loading" />
-      <router-link to="/errors/addnewerror">
-<img class="add__button" src="/img/add.svg" alt="Добавить новую ошибку">
-</router-link>
+  <div class="button__holder">
+<img  @click="$router.push('/errors/info')" class="info" src="/img/information.svg" alt="Справка">
+<img @click="$router.push('/errors/addnewerror')" class="add__button" src="/img/add.svg" alt="Добавить новую ошибку">
+  </div>
+
 </template>
 
 <script>
@@ -76,17 +80,33 @@
 </script>
 
 <style lang="css" scoped>
-.info{
-  position: absolute;
-  right: 10px;
-  top: 60px;
-}
-.add__button{
+/* .info{
   position: fixed;
   bottom: 20px;
-  right: 20px;
+  right: 80px;
   width: 40px;
   height: 40px;
+  cursor: pointer;
+} */
+.button__holder{
+  display: grid;
+  grid-auto-flow: column;
+  column-gap: 20px;
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+  width: 120px;
+  height: 60px;
+  cursor: pointer;
+  background-color: white;
+  border: 1px solid blue;
+  padding: 10px;
+  border-radius: 10px;
+}
+.button__holder>img{
+  place-self: center;
+  width: 100%;
+  height: 100%;
   cursor: pointer;
 }
 .selectStatus > h3 {
