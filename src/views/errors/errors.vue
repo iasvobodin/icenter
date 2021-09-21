@@ -1,5 +1,5 @@
 <template>
-<h1>Текущие ошибки по шкафам</h1>
+<h1>Текущие ошибки по шкафам</h1><button class="info" @click="$router.push('/errors/info')">Как пользоваться?</button>
 <p>В данном разделе Вы можете посмотреть ошибки добавленные сборщиками и инженерами по тестированию.</p>
   <br />
   <br />
@@ -76,6 +76,11 @@
 </script>
 
 <style lang="css" scoped>
+.info{
+  position: absolute;
+  right: 10px;
+  top: 60px;
+}
 .add__button{
   position: fixed;
   bottom: 20px;
