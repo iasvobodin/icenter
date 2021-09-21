@@ -34,7 +34,7 @@
   <div v-if="errorMessage">{{ errorMessage }}</div>
   <div v-if="fetchStatus" class="loading" />
       <router-link to="/errors/addnewerror">
-<img class="add__button" src="/img/add.svg" alt="Добавить новый проект">
+<img class="add__button" src="/img/add.svg" alt="Добавить новую ошибку">
 </router-link>
 </template>
 

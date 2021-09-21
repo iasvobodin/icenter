@@ -56,6 +56,10 @@ const routes = [
     component: ()=>  import("@/views/errors/addNewError.vue"),
   },
   {
+    path: "/errors/info",
+    component: ()=>  import("@/views/errors/info.vue"),
+  },
+  {
     path: "/tasks",
     component: ()=>  import("@/views/tasks/tasks.vue"),
   },

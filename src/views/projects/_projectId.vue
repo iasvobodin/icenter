@@ -39,6 +39,7 @@
       <br>
       <button v-if="!changeData" @click="changeData = !changeData">Редактировать</button>
       <button v-else @click="updateProject">Сохранить</button>
+      <button v-if="project?.info.extends['status project'] === '10-Отгружено Заказчику/Shipped to Customer' " @click="closeProject">Перевести в закрытые</button>
       <button v-if="changeData" @click="updateWO">Обновить WO</button>
       <button @click="generatedQR = true">Сгенерировать QR</button>
       <br>
@@ -67,6 +68,7 @@ export default {
   },
   setup() {
     const route = useRoute()
+    const router = useRouter()
     const state = reactive({
       project: null,
       newWO: null,
@@ -115,8 +117,41 @@ const updateProject = async () => {
       state.changeData = !state.changeData
       state.updateWOFlag = false
 }
+const closeProject = async () => {
+  const updateOptions = {
+        method: 'POST', // или 'PUT'
+        body: JSON.stringify({
+          ...state.project, 
+          id: state.project.id.includes('.')?state.project.id.replace('.',','): state.project.id,
+          status: 'closed'
+        }),
+      }
+        const { request, response } = useFetch(
+        `/api/projects?updateProject=true`, updateOptions
+      )
+      await request()
+
+        const deleteProject = {
+        method: 'POST', // или 'PUT'
+        body: JSON.stringify({
+          id: state.project.id.includes('.')?state.project.id.replace('.',','): state.project.id,
+          status: 'open',
+          ttl: 1
+        }),
+      }
+      const dp = async () => {
+      const { request, response } = useFetch(
+        `/api/projects?updateProject=true`, deleteProject
+      )
+      await request()
+      }
+      await dp()
+router.push('/projects/')
+      // state.changeData = !state.changeData
+      // state.updateWOFlag = false
+}
     return {
-      updateWO,updateProject,
+      updateWO,updateProject,closeProject,
       ...toRefs(state),
     }
   },

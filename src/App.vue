@@ -93,7 +93,7 @@ console.log(connection, 'connection!!!!!!!!!!!!!');
             primaryKey: 1
           },
         };
-        reg.showNotification(`${updatedStock.id}`, options);
+        // reg.showNotification(`${updatedStock.id}`, options);
       });
     }
     // console.log(updatedStock);

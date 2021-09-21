@@ -135,7 +135,7 @@ export default {
       state.errors = response
       state.projects = JSON.parse(JSON.stringify(state.errors))
 
-      state.actualStatus = [...state.errors.reduce((acc, pr) => acc.add(pr.info.extends['status project']),new Set())].sort()
+      state.actualStatus = [...state.errors.reduce((acc, pr) => acc.add(pr.info?.extends['status project']),new Set())].sort()
 
       state.errors.sort(function (a, b) {
         const nameA = a.info.extends['status project']?.toLowerCase();
