@@ -119,36 +119,38 @@ const updateProject = async () => {
 }
 const closeProject = async () => {
   const updateOptions = {
-        method: 'POST', // или 'PUT'
-        body: JSON.stringify({
-          ...state.project, 
-          id: state.project.id.includes('.')?state.project.id.replace('.',','): state.project.id,
-          status: 'closed'
-        }),
-      }
-        const { request, response } = useFetch(
-        `/api/projects?updateProject=true`, updateOptions
-      )
-      await request()
+    method: 'POST', // или 'PUT'
+    body: JSON.stringify({
+      ...state.project,
+      id: state.project.id.includes('.') ? state.project.id.replace('.', ',') : state.project.id,
+      status: 'closed'
+    }),
+  }
+  const deleteOptions = {
+    method: 'POST', // или 'PUT'
+    body: JSON.stringify({
+      id: state.project.id.includes('.') ? state.project.id.replace('.', ',') : state.project.id,
+      status: 'open',
+      ttl: 1
+    }),
+  }
+  const {
+    request: updateProject
+  } = useFetch(
+    `/api/projects?updateProject=true`, updateOptions
+  )
+  const {
+    request: deleteProject
+  } = useFetch(
+    `/api/projects?updateProject=true`, deleteOptions
+  )
 
-        const deleteProject = {
-        method: 'POST', // или 'PUT'
-        body: JSON.stringify({
-          id: state.project.id.includes('.')?state.project.id.replace('.',','): state.project.id,
-          status: 'open',
-          ttl: 1
-        }),
-      }
-      const dp = async () => {
-      const { request, response } = useFetch(
-        `/api/projects?updateProject=true`, deleteProject
-      )
-      await request()
-      }
-      await dp()
-router.push('/projects/')
-      // state.changeData = !state.changeData
-      // state.updateWOFlag = false
+  await deleteProject()
+  await updateProject()
+
+  router.push('/projects/')
+  // state.changeData = !state.changeData
+  // state.updateWOFlag = false
 }
     return {
       updateWO,updateProject,closeProject,

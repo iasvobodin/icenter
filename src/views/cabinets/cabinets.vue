@@ -2,7 +2,7 @@
   <div class="scaner">
     <h1>Шкафы</h1>
     <div class="qr__holder">
-      <input v-model="search" class="choose" type="text" placeholder="wo или название шкафа">
+      <input v-model="state.search" class="choose" type="text" placeholder="wo или название шкафа">
       <img class="qr__icon" src="/img/qr-code.svg" alt="" @click="changeView = !changeView">
     </div>
     <div v-show="!changeView" class="scanner__holder">
@@ -11,11 +11,11 @@
       <canvas v-show="false" id="canvas" ref="vCanvas" height="auto" width="100%"></canvas>
     </div>
     <br>
-    <div v-for="(val, key, index) in actualRojects" v-show="groupCabinets(val).length != 0" :key="index">
+    <div v-for="(val, key, index) in state.actualRojects" v-show="state.groupCabinets(val).length != 0" :key="index">
       <h2 >Проект {{val}}</h2>
       <br>
       <div  class="errors__holder">
-      <div v-for="(v, k, i) in groupCabinets(val)" :key="i" class="error__card__holder">
+      <div v-for="(v, k, i) in state.groupCabinets(val)" :key="i" class="error__card__holder">
         <div class="errors__card" @click="$router.push(`/cabinets/${v.wo}`)">
           WO {{v.wo  }}
           <br>
@@ -31,7 +31,7 @@
 
 
 </template>
-<script>
+<script setup>
 import { useFetch } from '@/hooks/fetch'
 import chooseProjectNumber from "@/components/chooseProjectNumber.vue";
 import jsQR from "jsqr";
@@ -47,11 +47,11 @@ import {
 import {
   useRouter
 } from 'vue-router'
-export default {
-    components: {
-    // chooseProjectNumber,
-  },
-  setup() {
+// export default {
+//     components: {
+//     // chooseProjectNumber,
+//   },
+  // setup() {
     const router = useRouter()
     const streamVideo = ref(null)
     const stream = ref(null)
@@ -135,16 +135,16 @@ export default {
       }, 500)
     })
 
-    return {
-      vCanvas,
-      changeView,
-      streamVideo,
-      qr,
-      filter,
-      ...toRefs(state)
-    }
-  },
-};
+//     return {
+//       vCanvas,
+//       changeView,
+//       streamVideo,
+//       qr,
+//       filter,
+//       ...toRefs(state)
+//     }
+//   },
+// };
 </script>
 
 <style lang="css" scoped>

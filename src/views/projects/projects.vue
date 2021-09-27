@@ -124,7 +124,7 @@ export default {
         state.errors
 
     })
-    const groupProjects = status =>filterProjects.value && filterProjects.value.filter( f => f.info.extends['status project'] === status )
+    const groupProjects = status =>filterProjects.value && filterProjects.value.filter( f => f.info?.extends['status project'] === status )
     
     const getErrors = async () => {
       const {
@@ -138,8 +138,8 @@ export default {
       state.actualStatus = [...state.errors.reduce((acc, pr) => acc.add(pr.info?.extends['status project']),new Set())].sort()
 
       state.errors.sort(function (a, b) {
-        const nameA = a.info.extends['status project']?.toLowerCase();
-        const nameB = b.info.extends['status project']?.toLowerCase();
+        const nameA = a.info?.extends['status project']?.toLowerCase();
+        const nameB = b.info?.extends['status project']?.toLowerCase();
         if (nameA < nameB) {
           return -1;
         }
@@ -376,7 +376,7 @@ textarea{
   background-color: #004481;
   color: white;
   margin: 1vh auto;
-  border-radius: 5px;
+  /* border-radius: 5px; */
   /* width: min(700px, 95%); */
   padding: 0.5vh;
   font-size: min(20px 5vw );

@@ -73,11 +73,12 @@
       getErrors()
       watch(selectedStatus, () => getErrors())
 
-    onBeforeRouteUpdate((to, from) => {
-      console.log(to, 'onBeforeRouteUpdate');
-      console.log(from, 'onBeforeRouteUpdate');
+    onBeforeRouteUpdate(async (to, from) => {
+      if (from.contains('error')) {
+        alert('a')
+      }
     })
-    onBeforeRouteLeave((to, from) => {
+    onBeforeRouteLeave( (to, from) => {
       console.log(to, 'onBeforeRouteLeave');
       console.log(from, 'onBeforeRouteLeave');
     })
