@@ -8,8 +8,8 @@
       <section class="information">
         <info-render :info-data="error.info" />
       </section>
-      <section v-for="(val, key) in error.body" :key="val.id" class="eror__body">
-        <div v-if="Object.values(val)[1]&&!key.startsWith('_')">
+      <section v-for="(val, key, index) in error.body" :key="index" class="eror__body">
+        <div v-if="!key.startsWith('_')&&Object.values(val)[1]">
           <!-- {{key}} -->
           <div v-if="!returnRender(key, val)">
             <h2>{{ key }}</h2>
@@ -24,29 +24,8 @@
             ]" :key="index">
             <div v-if="returnRender(key, value)">
               <h3>Статус ошибки: {{ key }}</h3>
-              <div v-for="(v, k, i) in value" :key="i" class="error__item"
-                :class="{ error__item__desc: k === 'Описание'}">
-                <h4 :class="{ error__item__vertical__title: k === 'Описание' }" class="error__item__title">{{ k }}</h4>
-                <render-inputs :required="!$store.state.user.info.userRoles.includes('admin')" v-model="error.body[key]"
-                  :data-render="v" />
-              </div>
-              <div v-if="error.body[key] && error.body[key]['Ответственный']">
-                <div class="error__item">
-                  <h4 class="error__item__title">
-                    {{ error.body[key]["Ответственный"] }}
-                  </h4>
-                  <select v-model="error.body[key]['Ошибку допустил']" required :name="key"
-                    :value="error.body[key]['Ошибку допустил']" class="error__item__desc">
-                    <option v-for="(value, key, index) in $store.state.template[
-           error.body[key]['Ответственный']
-          ]" :key="index">
-                      {{ value }}
-                    </option>
-                  </select>
-                </div>
-              </div>
-              <!-- <conditional-render v-model="error.body[key]" :data-render="value"
-                :required="!$store.state.user.info.userRoles.includes('admin')" /> -->
+              <conditional-render v-model="error.body[key]" :data-render="value"
+                :required="!$store.state.user.info.userRoles.includes('admin')" />
             </div>
           </div>
         </form>
@@ -69,7 +48,7 @@
       " @click="changeData">
       {{!changeInfo? 'Редактировать':'Отмена'}}
     </button>
-    <button v-if="changeInfo" @click="deleteError">Удалить</button>
+    <button @click="deleteError" v-if="changeInfo">Удалить</button>
     <button v-if="changeInfo" type="submit" form="errorData">
       Сохранить
     </button>
@@ -82,12 +61,10 @@
 import errorPhotos from '@/components/errorPhotos.vue'
 import conditionalRender from "@/components/conditionalRender.vue";
 import infoRender from "@/components/infoRender.vue";
-import renderInputs from '@/components/renderInputs.js'
 export default {
   components: {
     errorPhotos,
-    // conditionalRender,
-    renderInputs,
+    conditionalRender,
     infoRender,
   },
   data() {
@@ -289,7 +266,6 @@ export default {
 
       } finally {
         this.error = await this.getCurrentError();
-        this.error.body = this.error.body[this.error.body.length - 1];
         this.changeInfo = !this.changeInfo;
         this.error.photos = photos
         removeEventListener("beforeunload", (event) => {

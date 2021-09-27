@@ -1,33 +1,46 @@
 <template>
   <div v-if="$store.state.template">
     <form id="postError" name="postError" @submit.prevent="postError">
-      <div
-        v-if="$store.state.user.info.userRoles.includes('admin')"
-        class="error__item"
-      >
+      <div v-if="$store.state.user.info.userRoles.includes('admin')" class="error__item">
         <h4 class="error__item__title">Выберете роль</h4>
         <select v-model="role" form="postError" class="change__status error__item__desc">
           <option selected value="f_error">Сборщик</option>
           <option value="t_error">Тестировщик</option>
         </select>
       </div>
-      <div
-        v-for="(value, key, index) in $store.state.template.error[role]"
-        :key="index"
-      >
+      <div v-for="(value, key, index) in $store.state.template.error[role]" :key="index">
         <section v-if="returnRender(key)">
           <h3>Статус ошибки: {{ key }}</h3>
-          <conditional-render v-model="errorBody[key]" form-id="postError" :data-render="value" />
+          <!-- <conditional-render v-model="errorBody[key]" form-id="postError" :data-render="value" /> -->
+          <div v-for="(v, k, i) in value" :key="i" class="error__item" :class="{ error__item__desc: k === 'Описание'}">
+            <h4 :class="{ error__item__vertical__title: k === 'Описание' }" class="error__item__title">{{ k }}</h4>
+            <render-inputs v-model="errorBody[key]" :data-render="v" />
+          </div>
+          <div v-if="errorBody[key] && errorBody[key]['Ответственный']">
+            <div class="error__item">
+              <h4 class="error__item__title">
+                {{ errorBody[key]["Ответственный"] }}
+              </h4>
+              <select v-model="errorBody[key]['Ошибку допустил']" required :name="key"
+                :value="errorBody[key]['Ошибку допустил']" class="error__item__desc">
+                <option v-for="(value, key, index) in $store.state.template[
+           errorBody[key]['Ответственный']
+          ]" :key="index">
+                  {{ value }}
+                </option>
+              </select>
+            </div>
+          </div>
         </section>
       </div>
       <br />
-      <error-photos change-photos="true"  @resized-blob="files.compressBlob = $event"/>
+      <error-photos :change-photos="true" @resized-blob="files.compressBlob = $event" />
       <br>
       <br />
       <br>
       <input :disabled="$store.state.loader" class="add__button" type="submit" value="Добавить" />
     </form>
-  <br>
+    <br>
     <button @click="statusConfirmed = !statusConfirmed">
       Подтвердить ошибку
     </button>
@@ -40,6 +53,7 @@
 <script>
 import conditionalRender from '@/components/conditionalRender.vue'
 import errorPhotos from '@/components/errorPhotos.vue'
+import renderInputs from '@/components/renderInputs.js'
 import * as imageConversion from 'image-conversion';
 export default {
   //   Vue.directive("child", {
@@ -57,7 +71,7 @@ export default {
     }
   },
   components: {
-    conditionalRender,errorPhotos
+    conditionalRender,errorPhotos,renderInputs,
   },
   data() {
     return {

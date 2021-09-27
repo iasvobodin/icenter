@@ -5,7 +5,7 @@
       @choose-project-number="choose" />
     <div v-if="projectInformation">
       <br>
-      <choose-project-number :data-to-render="projectInformation.cabinets.map(e =>e.wo + '   ' +e['cab name'])"
+      <choose-project-number placeHolder="Введите номер WO" :data-to-render="projectInformation.cabinets.map(e =>e.wo + '   ' +e['cab name'])"
         @choose-project-number="chooseCabinet" />
       <div v-if="cabinet">
         <set-error />

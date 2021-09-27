@@ -50,6 +50,7 @@
     ref
   } from 'vue'
   import { useFetch } from '@/hooks/fetch'
+  import { onBeforeRouteLeave, onBeforeRouteUpdate } from 'vue-router'
   export default {
 
     setup() {
@@ -68,9 +69,18 @@
         state.errors = response
         await request()
       }
+      
       getErrors()
       watch(selectedStatus, () => getErrors())
 
+    onBeforeRouteUpdate((to, from) => {
+      console.log(to, 'onBeforeRouteUpdate');
+      console.log(from, 'onBeforeRouteUpdate');
+    })
+    onBeforeRouteLeave((to, from) => {
+      console.log(to, 'onBeforeRouteLeave');
+      console.log(from, 'onBeforeRouteLeave');
+    })
       return {
         selectedStatus,
         ...toRefs(state),
