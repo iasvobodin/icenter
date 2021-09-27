@@ -14,19 +14,19 @@
           @click="$router.push(`/projects/${value.id}`)">
           <div class="errors__card">
             <div class="double">
-             <h2>{{value.id}}:</h2><p>{{value.info.base?.['Project Name']}}</p>
+             <h2>{{value.id}}:</h2><p>{{value.info?.base?.['Project Name']}}</p>
             </div>
             <hr style="margin:0;">
             <!-- <info-render :info-data="{[value.id]: value.info.base['Project Name']}" /> -->
             <div class="double">
-              <info-render :info-data="{'PM': value.info.base?.PM}" />
-              <info-render :info-data="{'SF': value.info.extends?.['senior fitter']?.split('@')[0].split('.')[1]}" />
+              <info-render :info-data="{'PM': value.info?.base?.PM}" />
+              <info-render :info-data="{'SF': value.info?.extends?.['senior fitter']?.split('@')[0].split('.')[1]}" />
             </div>
              <div class="double">
-            <info-render :info-data="{'Отгрузка': value.info.extends?.['Shipping date']}" />
-            <info-render :info-data="{'QTY': value.cabinets.length}" />
+            <info-render :info-data="{'Отгрузка': value.info?.extends?.['Shipping date']}" />
+            <info-render :info-data="{'QTY': value.cabinets?.length}" />
              </div>
-            <info-render :info-data="{'Comments': value.info.extends?.['Comments field']}" />
+            <info-render :info-data="{'Comments': value.info?.extends?.['Comments field']}" />
             <!-- <h2></h2> -->
             <!-- <p class="props"> <b>{{ value.id }}</b> {{ value.info.base['Project Name'] }}
             </p>

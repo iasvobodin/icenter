@@ -146,7 +146,11 @@ const closeProject = async () => {
   )
 
   await deleteProject()
-  await updateProject()
+  setTimeout(async() => {
+      await updateProject()
+      console.log("UPDATE PROJECT");
+  }, 1);
+
 
   router.push('/projects/')
   // state.changeData = !state.changeData
