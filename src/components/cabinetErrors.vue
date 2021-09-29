@@ -1,4 +1,7 @@
 <template>
+<div v-if="computedItems.length>0">
+
+
     <div v-for="(item, key)  in computedItems" :key="item.id" class="error__holder">
         <h2>{{item.id }}</h2>
         <small :style="{backgroundColor: statusColor[item.status]}">Статус: {{item.status}}</small>
@@ -24,6 +27,8 @@
             </div>
         </div>
     </div>
+    </div>
+    <div v-else><h2>Безошибочный шкаф</h2></div>
     <br>
     <button v-if="cabinetItems&&cabinetItems.length > 0" @click="saveBook">Экспорт excel</button>
     <br>
