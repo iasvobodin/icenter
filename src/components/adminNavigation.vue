@@ -85,6 +85,7 @@ ul{
 }
 li {
   display: block;
+  cursor: pointer;
   /* height: 40px; */
       border-bottom: 1px solid #292D38;
   /* border-radius: 4px; */

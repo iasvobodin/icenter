@@ -1,8 +1,6 @@
 <template>
-<h1>Текущие ошибки по шкафам</h1>
-
-<!-- <button >Как пользоваться?</button> -->
-<p>В данном разделе Вы можете посмотреть ошибки добавленные сборщиками и инженерами по тестированию.</p>
+  <h1>Текущие ошибки по шкафам</h1>
+  <p>В данном разделе Вы можете посмотреть ошибки добавленные сборщиками и инженерами по тестированию.</p>
   <br />
   <br />
   <!-- <div class="selectStatus">
@@ -12,53 +10,47 @@
       <option value="confirmed">Принято</option>
     </select>
   </div> -->
-  <br />
-  <div v-if="errors" class="errors__holder">
-    <div
-      v-for="(value, key, index) in errors"
-      :key="index"
-      class="errors__card"
-      @click="$router.push(`/errors/${value.id}`)"
-    >
-      <div
-        v-for="(v, k, i) in value.info"
-        :key="i"
-        :class="{error__item__desc : k ==='Описание'}"
-        class="error__item"
-      >
+  <!-- <h3 class="search__title">Поиск</h3> -->
+  <label for="search">Поиск: </label>
+    <input id="search" v-model="state.search" class="choose" type="text" placeholder="WO или номер проекта">
+    <br><br>
+  <div v-if="state.errors" class="errors__holder">
+    <div v-for="(value, key, index) in filter" :key="index" class="errors__card"
+      @click="$router.push(`/errors/${value.id}`)">
+      <div v-for="(v, k, i) in value.info" :key="i" :class="{error__item__desc : k ==='Описание'}" class="error__item">
         <h3 :class="{ error__item__vertical__title: k === 'Описание' }" class="error__item__title">{{ k }}:</h3>
         <p :class="{ error__item__vertical__title: k === 'Описание' }" class="error__item__desc">
-          {{ v.includes('@')? v.split('@')[0].replace('.', ' ') : v }}
+          {{ v?.includes('@')? v.split('@')[0].replace('.', ' ') : v }}
         </p>
       </div>
     </div>
   </div>
-  <div v-if="errorMessage">{{ errorMessage }}</div>
-  <div v-if="fetchStatus" class="loading" />
+  <!-- <div v-if="errorMessage">{{ errorMessage }}</div> -->
+  <div v-if="state.fetchStatus" class="loading" />
   <div class="button__holder">
-<img  @click="$router.push('/errors/info')" class="info" src="/img/information.svg" alt="Справка">
-<img @click="$router.push('/errors/addnewerror')" class="add__button" src="/img/add.svg" alt="Добавить новую ошибку">
+    <img @click="$router.push('/errors/info')" class="info" src="/img/information.svg" alt="Справка">
+    <img @click="$router.push('/errors/addnewerror')" class="add__button" src="/img/add.svg"
+      alt="Добавить новую ошибку">
   </div>
-
 </template>
 
-<script>
+<script setup>
   import {
     reactive,
-    toRefs,
+    computed,
     watch,
     ref
   } from 'vue'
   import { useFetch } from '@/hooks/fetch'
   import { onBeforeRouteLeave, onBeforeRouteUpdate } from 'vue-router'
-  export default {
+  // export default {
 
-    setup() {
+  //   setup() {
       const state = reactive({
         errors: null,
-        resErrors: null,
+        // resErrors: null,
         fetchStatus: null,
-        errorMessage: "",
+        // errorMessage: "",
       })
       const selectedStatus = ref("open")
       const getErrors = async () => {
@@ -82,12 +74,17 @@
       console.log(to, 'onBeforeRouteLeave');
       console.log(from, 'onBeforeRouteLeave');
     })
-      return {
-        selectedStatus,
-        ...toRefs(state),
-      }
-    },
-  };
+    const filter = computed(()=> {
+      return state.search ? 
+      state.errors.filter(e => [e?.info.wo, e?.info['Проект']].some(s => s && s.toLowerCase().includes(state.search.toLowerCase()))) :
+      state.errors
+    })
+      // return {
+      //   selectedStatus,
+      //   ...toRefs(state),
+      // }
+  //   },
+  // };
 </script>
 
 <style lang="css" scoped>
@@ -99,6 +96,20 @@
   height: 40px;
   cursor: pointer;
 } */
+.search__title{
+  width: auto;
+}
+input {
+  height: 30px;
+  border: 1px solid orange;
+  border-radius: 5px;
+  min-width: 250px;
+  line-height: 30px;
+  font-size: 18px;
+  text-align: center;
+  margin: auto;
+  padding: 0px;
+}
 .button__holder{
   display: grid;
   grid-auto-flow: column;

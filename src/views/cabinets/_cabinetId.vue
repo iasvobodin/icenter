@@ -1,120 +1,87 @@
 <template>
     <div>
         <h1>WO {{$route.params.cabinetId}}</h1>
-<br>
-  <button
-  class="cabinets__category"
-     v-for="tab in cabinetTabs"
-     :key="tab.title"
-     :class="['tab-button', { active: currentCabinetTab === tab.value }]"
-     @click="currentCabinetTab = tab.value"
-   >
-    {{ tab.title }}
-  </button>
-  <br>
-  <br>
-  <component :is="currentCabinetTab" class="tab"></component>
+        <br>
+        <button v-for="tab in state.cabinetTabs" :key="tab.title" class="cabinets__category"
+            :class="['tab-button', { active: state.currentCabinetTab === tab.value }]"
+            @click="state.currentCabinetTab = tab.title">
+            {{ tab.title }}
+        </button>
+        <br>
+        <br>
+        <component :is="condition(state.currentCabinetTab)"></component>
     </div>
 </template>
 
-<script>
-// import XLSX from 'xlsx'
+<script setup>
 import {
     useFetch
 } from '@/hooks/fetch'
 import {
     reactive,
-    toRefs
 } from 'vue'
 import {
-    useRouter,
     useRoute
 } from 'vue-router'
-import infoRender from '@/components/infoRender.vue'
-import cabinetErrors from '@/components/cabinetErrors.vue'
-import cabinetCabTime from '@/components/cabinetCabTime.vue'
-export default {
-    components: {
-        cabinetErrors,
-        cabinetCabTime,
-        // conditionalRender,
-        infoRender,
-        // chooseWoNumber,
-    },
-    setup() {
-        const route = useRoute()
-        const state = reactive({
-            cabinetItems: null,
-            cabinetTabs: [
-                {title:'Информация',
-                value: 'cabinet-info'
-                }, 
-                {title:'CabTime',
-                value: 'cabinet-cab-time'
-                }, 
-                {title:'Ошибки',
-                value: 'cabinet-errors'
-                }, 
-                {title:"Задачи",
-                value: 'cabinet-tasks'
-                }],
-            tabs: ['Открыто', 'Принято', 'Устранено', "Фото"],
-            currentCabinetTab:"",
-            currentTab: {},
-            statusColor: {
-                closed: "green",
-                open: "red",
-                confirmed: "yellow"
-            }
-        })
-        const getCabinetItems = async () => {
-            const {request, response} = useFetch(
-                `/api/cabinetItems?wo=${route.params.cabinetId}`,
-            )
-            await request()
-            state.cabinetItems = response
-            //need to chanche tabs set default OPEN
-            state.cabinetItems.forEach((e, i) => {
-                state.currentTab[i] = "Открыто"
-            });
-        }
-        getCabinetItems()
+import Errors from '@/components/cabinetErrors.vue'
+import Cabtime from '@/components/cabinetCabTime.vue'
+import Info from '@/components/cabinetInfo.vue'
+import Tasks from '@/components/cabinetTasks.vue'
+import { useStore } from 'vuex'
 
-        const saveBook = async () => {
-            const XLSX = await import('xlsx')
 
-            function formatDate(date) {
-                return `${date.getDate()}.0${date.getMonth() + 1}.${date.getFullYear()}`
-            }
-
-            const arrArr = []
-            state.cabinetItems.map((e, i) => {
-                arrArr.push([
-                    i + 1, e.body.Открыто.Описание,
-                    e.info.Добавил.split('@')[0].replace('.', ' '),
-                    formatDate(new Date(+e._ts)),
-                    e.body.Принято.Описание, e.info.Мастер.split('@')[0].replace('.', ' '),
-                    e.body.Устранено['Статус коррекции'],
-                    e.body.Устранено['Время на устранение'],
-                    e.body._changed.split('@')[0].replace('.', ' '),
-                    formatDate(new Date(+e.body._time)),
-                    ...e.photos.map(p => `https://icaenter.blob.core.windows.net/errors-photo/${p}`)
-                ])
-            })
-            const worksheet = XLSX.utils.aoa_to_sheet([
-                ['№', "Описание замечания", "ФИО", "Дата", "Описание решения", "ФИО", "Статус", "Время на устранение", "ФИО", "Дата", "Фото"], ...arrArr
-            ]);
-            const new_workbook = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(new_workbook, worksheet, route.params.cabinetId);
-            XLSX.writeFile(new_workbook, `${Date.now()}.xlsx`);
+const route = useRoute()
+const store = useStore()
+const state = reactive({
+    cabinetItems: null,
+    cabinetTabs: [{
+            title: 'Информация',
+            // value: Info
+        },
+        {
+            title: 'CabTime',
+            // value: `Cabtime`
+        },
+        {
+            title: 'Ошибки',
+            // value: Errors
+        },
+        {
+            title: "Задачи",
+            // value: Tasks
         }
-        return {
-            saveBook,
-            //   updateWO,
-            ...toRefs(state),
-        }
-    },
+    ],
+    currentCabinetTab: "Info",
+})
+const condition = (a) => {
+    switch (a) {
+        case 'Информация':
+            return Info
+        case 'CabTime':
+            return Cabtime
+        case 'Ошибки':
+            return Errors
+        case 'Задачи':
+            return Tasks
+    }
 }
+store.dispatch('GET_cabinetItems', route.params.cabinetId )
+// const getCabinetItems = async () => {
+//     const {
+//         request,
+//         response
+//     } = useFetch(
+//         `/api/cabinetItems?wo=${route.params.cabinetId}`,
+//     )
+//     await request()
+//     state.cabinetItems = response
+//     //need to chanche tabs set default OPEN
+//     state.cabinetItems.forEach((e, i) => {
+//         state.currentTab[i] = "Открыто"
+//     });
+// }
+// getCabinetItems()
+
 </script>
 
 <style lang="css" scoped>

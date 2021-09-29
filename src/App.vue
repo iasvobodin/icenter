@@ -150,6 +150,8 @@ select,
 input[type='text'],
 input[type='number']{
   font-size: 16px;
+  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji;
+  line-height: 1.15;
 
 }
 html{

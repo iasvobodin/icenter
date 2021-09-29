@@ -7,7 +7,6 @@
   <br>
   <div v-if="errors">
     <div v-for="status in actualStatus" v-show="groupProjects(status).length != 0" :key="status">
-      <!-- <hr style="margin:0;"> -->
       <h3 class="project__status">{{status?.split('-')[1].split('/')[0]}}</h3>
       <div class="errors__holder">
         <div v-for="(value, key, index) in groupProjects(status)" :key="index" class="error__card__holder"
@@ -27,22 +26,10 @@
             <info-render :info-data="{'QTY': value.cabinets?.length}" />
              </div>
             <info-render :info-data="{'Comments': value.info?.extends?.['Comments field']}" />
-            <!-- <h2></h2> -->
-            <!-- <p class="props"> <b>{{ value.id }}</b> {{ value.info.base['Project Name'] }}
-            </p>
-            <p class="props"> <b>PM</b> :
-              {{ value.info.base?.PM }} <b>SF</b> :
-              {{value.info.extends['senior fitter']?.split('@')[0].replace('.',' ') }}
-            </p>
-            <p class="props"> <b>Отгрузка</b> : {{ value.info.extends['Shipping date']}} <b
-                style="text-align: right;">QTY </b> : {{ value.cabinets.length }}
-            </p> -->
-            <!-- <p class="props"> <b>Comments field</b> : {{ value.info.extends['Comments field']}}</p> -->
           </div>
         </div>
       </div>
       <br>
-      <!-- <hr> -->
     </div>
     <router-link to="/projects/addnewproject">
       <img class="add__button" src="/img/add.svg" alt="Добавить новый проект">
@@ -91,8 +78,15 @@
 <script>
 
 // import infoRender from '@/components/infoRender.vue'
-import { reactive, toRefs, computed, ref } from 'vue'
-import { useFetch } from '@/hooks/fetch'
+import {
+  reactive,
+  toRefs,
+  computed,
+  ref
+} from 'vue'
+import {
+  useFetch
+} from '@/hooks/fetch'
 import infoRender from "@/components/infoRender.vue";
 // import conditionalRender from '@/components/conditionalRender.vue'
 import renderInputs from '@/components/renderInputs.js'
@@ -110,9 +104,9 @@ export default {
       fetchStatus: null,
       errorMessage: '',
       actualStatus: null,
-      search:"",
-      testStatus : {},
-      projects:null,
+      search: "",
+      testStatus: {},
+      projects: null,
       updateIndex: new Set(),
     })
     const getIndex = (i) => state.updateIndex.add(i);
@@ -120,12 +114,11 @@ export default {
     const filterProjects = computed(() => {
       //  debugger
       return state.search ?
-        state.errors.filter(e => [e?.id, e.info.base?.PM, e.info.extends?.['senior fitter']].some(s => s && s.toLowerCase().includes(state.search.toLowerCase()))) :
+        state.errors.filter(e => [e ?.id, e.info.base?.PM, e.info.extends?.['senior fitter']].some(s => s && s.toLowerCase().includes(state.search.toLowerCase()))) :
         state.errors
-
     })
-    const groupProjects = status =>filterProjects.value && filterProjects.value.filter( f => f.info?.extends['status project'] === status )
-    
+    const groupProjects = status => filterProjects.value && filterProjects.value.filter(f => f.info?.extends['status project'] === status)
+
     const getErrors = async () => {
       const {
         request,
@@ -135,7 +128,7 @@ export default {
       state.errors = response
       state.projects = JSON.parse(JSON.stringify(state.errors))
 
-      state.actualStatus = [...state.errors.reduce((acc, pr) => acc.add(pr.info?.extends['status project']),new Set())].sort()
+      state.actualStatus = [...state.errors.reduce((acc, pr) => acc.add(pr.info?.extends['status project']), new Set())].sort()
 
       state.errors.sort(function (a, b) {
         const nameA = a.info?.extends['status project']?.toLowerCase();
@@ -150,25 +143,27 @@ export default {
       });
     }
     getErrors()
-// console.log(Array.from({ length: 20 }).map(()=> ));
-        const postProject = async (index) => {
-      const { request, response } = useFetch('/api/POST_project', {
+    // console.log(Array.from({ length: 20 }).map(()=> ));
+    const postProject = async (index) => {
+      const {  request: postProject  } = useFetch('/api/POST_project', {
         method: 'POST', // или 'PUT'
-        body: JSON.stringify({...state.projects[index]}),
+        body: JSON.stringify({
+          ...state.projects[index]
+        }),
       });
-      await request()
+      await postProject()
     }
-     const updateChangedProjects = async () => {
-     await Promise.all([...state.updateIndex].map(async e => {
-       await postProject(e)
-     }))  
-     state.changeAllFlag = !state.changeAllFlag
-     getErrors()
-     }
-const sortBy = (el,p) => {
-  // console.log(el,p);
-  // debugger
-        state.projects.sort(function (a, b) {
+    const updateChangedProjects = async () => {
+      await Promise.all([...state.updateIndex].map(async e => {
+        await postProject(e)
+      }))
+      state.changeAllFlag = !state.changeAllFlag
+      getErrors()
+    }
+    const sortBy = (el, p) => {
+      // console.log(el,p);
+      // debugger
+      state.projects.sort(function (a, b) {
         const nameA = a.info[p][el]?.toString().toLowerCase();
         const nameB = b.info[p][el]?.toString().toLowerCase();
         if (nameA < nameB) {
@@ -179,7 +174,7 @@ const sortBy = (el,p) => {
         }
         return 0;
       })
-}
+    }
     return {
       updateChangedProjects,
       getIndex,

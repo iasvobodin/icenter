@@ -1,6 +1,9 @@
 import {
   createStore
 } from "vuex";
+import {
+  useFetch
+} from '@/hooks/fetch'
 const createName = (clientPrincipal) =>{
   if (clientPrincipal.identityProvider === 'aad') {
     const splitName = clientPrincipal.userDetails.split('@')[0].split('.')
@@ -19,8 +22,12 @@ export default createStore({
     projectInfo: {},
     user: {},
     currentError: null,
+    cabinetItems:[]
   },
   mutations: {
+    SET_cabinetItems(state, payload){
+      state.cabinetItems = payload
+    },
     changeLoader(state, payload) {
       state.loader = payload
     },
@@ -71,6 +78,15 @@ export default createStore({
     },
   },
   actions: {
+    async GET_cabinetItems({ commit }, payload) {
+      const { request, response } = useFetch(
+        `/api/cabinetItems?wo=${payload}`,
+    )
+    await request()
+
+    commit('SET_cabinetItems', response.value)
+
+    },
     async GET_template({
       commit,
       state

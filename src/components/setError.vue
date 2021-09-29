@@ -218,12 +218,15 @@ export default {
             ...error
           }),
         })
-        await fetch('/api/POST_openError', {
-          method: 'POST', // или 'PUT'
-          body: JSON.stringify({
-            ...openError
-          }),
-        })
+         if (error.status !== "closed") {
+           await fetch('/api/POST_openError', {
+             method: 'POST', // или 'PUT'
+             body: JSON.stringify({
+               ...openError
+             }),
+           })
+         }
+
       } finally {
         e.target.reset()
         removeEventListener("beforeunload", this.beforeUnloadListener, {

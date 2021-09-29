@@ -1,5 +1,5 @@
 <template>
-    <div v-for="(item, key)  in cabinetItems" :key="item.id" class="error__holder">
+    <div v-for="(item, key)  in computedItems" :key="item.id" class="error__holder">
         <h2>{{item.id }}</h2>
         <small :style="{backgroundColor: statusColor[item.status]}">Статус: {{item.status}}</small>
         <br>
@@ -24,17 +24,19 @@
             </div>
         </div>
     </div>
-            <br>
-        <button v-if="cabinetItems&&cabinetItems.length>0" @click="saveBook">Экспорт excel</button>
-        <br>
+    <br>
+    <button v-if="cabinetItems&&cabinetItems.length > 0" @click="saveBook">Экспорт excel</button>
+    <br>
 </template>
 
 <script>
 // import XLSX from 'xlsx'
+import {useStore} from 'vuex'
 import {
     useFetch
 } from '@/hooks/fetch'
 import {
+    computed,
     reactive,
     toRefs
 } from 'vue'
@@ -51,6 +53,7 @@ export default {
     },
     setup() {
         const route = useRoute()
+        const store = useStore()
         const state = reactive({
             cabinetItems: null,
             cabinetTabs: ['Информация', 'CabTime', 'Ошибки', "Задачи"],
@@ -59,24 +62,31 @@ export default {
             statusColor: {
                 closed: "green",
                 open: "red",
-                confirmed: "yellow"
+                confirmed: "rgb(175, 164, 0)"
             }
         })
-        const getCabinetItems = async () => {
-            const {request, response} = useFetch(
-                `/api/cabinetItems?wo=${route.params.cabinetId}`,
-            )
-            await request()
-            state.cabinetItems = response
-            //need to chanche tabs set default OPEN
-            state.cabinetItems.forEach((e, i) => {
+        const computedItems = computed(()=> store.state.cabinetItems)
+        computedItems.value.forEach((e, i) => {
                 state.currentTab[i] = "Открыто"
             });
-        }
-        getCabinetItems()
+        // const getCabinetItems = async () => {
+        //     const {
+        //         request,
+        //         response
+        //     } = useFetch(
+        //         `/api/cabinetItems?wo=${route.params.cabinetId}`,
+        //     )
+        //     await request()
+        //     state.cabinetItems = response
+        //     //need to chanche tabs set default OPEN
+        //     state.cabinetItems.forEach((e, i) => {
+        //         state.currentTab[i] = "Открыто"
+        //     });
+        // }
+        // getCabinetItems()
 
 
-         const saveBook = async () => {
+        const saveBook = async () => {
             const XLSX = await import('xlsx')
 
             function formatDate(date) {
@@ -105,6 +115,7 @@ export default {
             XLSX.writeFile(new_workbook, `${Date.now()}.xlsx`);
         }
         return {
+            computedItems,
             saveBook,
             //   updateWO,
             ...toRefs(state),

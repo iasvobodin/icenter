@@ -231,8 +231,7 @@ export default {
       };
       // DELETE OPEN ERROR IF STATUS IS CLOSED
       if (
-        err.status != updateErorBody.status ||
-        updateErorBody.status === "closed"
+        err.status != updateErorBody.status === "closed" || updateErorBody.status
       ) {
         // console.log("comparestatus");
         await fetch("/api/POST_openError", {
