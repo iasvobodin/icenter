@@ -1,7 +1,7 @@
 <template>
     <h2>Расчёт нового CabTime</h2>
-     <div v-if="!$store.state.projectInfo.wo">
-    <choose-project-number v-if="!$store.state.projectInfo.pm" :data-to-render="projectData" @input-project-event="fetchProjectList"
+     <div v-if="!projectInfoState.wo">
+    <choose-project-number v-if="!projectInfoState.pm" :data-to-render="projectData" @input-project-event="fetchProjectList"
         @choose-project-number="choose" />
     <div v-if="projectInformation">
         <br>
@@ -12,7 +12,7 @@
     <section v-else>
         <h3>Номер проекта {{projectInfoState['project number']}} <span style="cursor: pointer" @click="clearstate">&#10060;</span> </h3>
       <h3>Номер WO {{projectInfoState['wo']}} </h3>
-        <div v-for="(t,i) in $store.state.template.CabTimeGroup" :key="i">
+        <div v-for="(t,i) in CabTimeGroup" :key="i">
             <table>
                 <colgroup>
                     <col span="1" style="width: 5%;">
@@ -92,7 +92,7 @@
         </table>
     </section>
     <br>
-    <button v-if="cabinet" @click="postCabTime">SEND</button>
+    <button v-if="projectInfoState.wo" @click="postCabTime">SEND</button>
     <br>
     <br>
 </template>
@@ -136,6 +136,8 @@ export default {
             state.tt = store.state.template.CabTimeV2;
             state.cabtimetype = store.state.template.CabTimeGroup;
         };
+        
+        const CabTimeGroup = computed(()=> store.state.template.CabTimeGroup)
         setState()
         const inputData = ($event, key, val) => {
             let arr, coef;
@@ -194,7 +196,7 @@ export default {
                 }
 
             })
-            state.cabtimetype.map(e => {
+            CabTimeGroup.value.map(e => {
                 return e.summ = state.tt.filter(f => f._type === e.name).reduce((acc, m) => {
                     return m.result ? acc += +m.result : acc
                 }, 0)
@@ -205,11 +207,11 @@ export default {
         //  t =>  state.tt&&state.tt.reduce((acc,f) => f._type === t&&(acc +=f.result),0);
         const result = (a, b) => Math.ceil(a * b)
         const getType = computed(() => store.state.template && store.state.template.CabTime.reduce((acc, el) => acc.add(el._type), new Set()))
-        const finalResult = computed(() => state.cabtimetype ? state.cabtimetype.reduce((acc,e) =>  e.name === 'Тестирование и Поверка'? acc:acc += e.summ ,0):0)
+        const finalResult = computed(() => CabTimeGroup.value ? CabTimeGroup.value.reduce((acc,e) =>  e.name === 'Тестирование и Поверка'? acc:acc += e.summ ,0):0)
         const cabtimeResult = computed(() => {
             return {
                 assemble: Math.round(finalResult.value/60),
-                test: Math.round(state.cabtimetype[8].summ/60),
+                test: Math.round(CabTimeGroup.value[8].summ/60),
                 admin: Math.round(Math.round(+finalResult.value*+state.adminCoef/100 + +state.documents)/60),
                 final: Math.round((+finalResult.value + Math.round(+finalResult.value*+state.adminCoef/100 + +state.documents))/60)
             }
@@ -253,9 +255,9 @@ export default {
             const cabTime = {
                 "id": `cabtime__${Date.now()}`,
                 "info": {
-                    Проект: store.state.projectInfo['project number'],
-                    Шкаф: store.state.projectInfo['cab name'],
-                    wo: store.state.projectInfo.wo.toString(),
+                    Проект: projectInfoState.value['project number'],
+                    Шкаф: projectInfoState.value['cab name'],
+                    wo: projectInfoState.value.wo.toString(),
                 },
                 "type": "cabtime",
                 adminCoef: state.adminCoef,
@@ -297,6 +299,7 @@ const clearstate = () => {
 }
 const projectInfoState = computed(() => store.state.projectInfo)
         return {
+            CabTimeGroup,
             projectInfoState,
             clearstate,
             cabtimeResult,
