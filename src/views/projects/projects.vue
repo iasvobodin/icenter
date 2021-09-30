@@ -5,13 +5,29 @@
   <input id="select__filter" v-model="search" type="text" placeholder="SF, PM, №">
   <br>
   <br>
+  <div class="holder__switch">
+  <div class="open" :class="{isactive : !selectedStatus}">
+
+  <h3>Открытые</h3>
+  </div>
+    <div class="switch">
+    <input id="switch-1" v-model="selectedStatus" type="checkbox" class="switch-input" />
+    <label for="switch-1" class="switch-label">Switch</label>
+  </div>
+  <div class="close" :class="{isactive : selectedStatus}">
+    
+  <h3>Закрытые</h3>
+  </div>
+  </div>
+
+  <br>
   <div v-if="errors">
     <div v-for="status in actualStatus" v-show="groupProjects(status).length != 0" :key="status">
       <h3 class="project__status">{{status?.split('-')[1].split('/')[0]}}</h3>
       <div class="errors__holder">
         <div v-for="(value, key, index) in groupProjects(status)" :key="index" class="error__card__holder"
-          @click="$router.push(`/projects/${value.id}`)">
-          <div class="errors__card">
+          @click="!selectedStatus&&$router.push(`/projects/${value.id}`)">
+          <div class="errors__card" :class="{closed__card : selectedStatus}">
             <div class="double">
              <h2>{{value.id}}:</h2><p>{{value.info?.base?.['Project Name']}}</p>
             </div>
@@ -81,6 +97,7 @@
 import {
   reactive,
   toRefs,
+  watch,
   computed,
   ref
 } from 'vue'
@@ -119,11 +136,11 @@ export default {
     })
     const groupProjects = status => filterProjects.value && filterProjects.value.filter(f => f.info?.extends['status project'] === status)
 
-    const getErrors = async () => {
+    const getErrors = async (status) => {
       const {
         request,
         response
-      } = useFetch(`/api/projects?status=open`)
+      } = useFetch(`/api/projects?status=${status}`)
       await request()
       state.errors = response
       state.projects = JSON.parse(JSON.stringify(state.errors))
@@ -142,7 +159,17 @@ export default {
         return 0;
       });
     }
-    getErrors()
+    getErrors('open')
+
+        const selectedStatus = ref(false)
+        watch(selectedStatus, (newValue, oldValue ) => {
+      if (newValue === true) {
+        getErrors('closed')
+      }
+            if (newValue === false) {
+        getErrors('open')
+      }
+    })
     // console.log(Array.from({ length: 20 }).map(()=> ));
     const postProject = async (index) => {
       const {  request: postProject  } = useFetch('/api/POST_project', {
@@ -158,7 +185,7 @@ export default {
         await postProject(e)
       }))
       state.changeAllFlag = !state.changeAllFlag
-      getErrors()
+     selectedStatus.value === true ? getErrors('closed') : getErrors('open')
     }
     const sortBy = (el, p) => {
       // console.log(el,p);
@@ -180,6 +207,7 @@ export default {
       getIndex,
       sortBy,
       groupProjects,
+      selectedStatus,
       filterProjects,
       ...toRefs(state),
     }
@@ -188,6 +216,77 @@ export default {
 </script>
 
 <style lang="css" scoped>
+.isactive{
+  border-bottom: 1px solid orange;
+  /* border-radius: 5px; */
+}
+.holder__switch{
+  display: grid;
+  grid-auto-flow: column;
+  grid-template-columns: auto;
+  justify-content: center;
+}
+
+.close,
+.open{
+  width: 100px;
+  display: inline-block;
+}
+h3{
+  margin: 0;
+}
+.switch {
+  margin: 0 1vw;
+  position: relative;
+  display: inline-block;
+}
+.switch-input {
+  display: none;
+}
+.switch-label {
+  display: block;
+  width: 48px;
+  height: 24px;
+  text-indent: -150%;
+  clip: rect(0 0 0 0);
+  color: transparent;
+  user-select: none;
+}
+.switch-label::before,
+.switch-label::after {
+  content: "";
+  display: block;
+  position: absolute;
+  cursor: pointer;
+}
+.switch-label::before {
+  width: 100%;
+  height: 100%;
+  background-color: #dedede;
+  border-radius: 9999em;
+  -webkit-transition: background-color 0.25s ease;
+  transition: background-color 0.25s ease;
+}
+.switch-label::after {
+  top: 0;
+  left: 0;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 1px solid orange;
+  background-color: #fff;
+  box-shadow: 0 0 2px rgba(0, 0, 0, 0.45);
+  -webkit-transition: left 0.25s ease;
+  transition: left 0.25s ease;
+}
+.switch-input:checked + .switch-label::before {
+  background-color: #dedede;
+}
+.switch-input:checked + .switch-label::after {
+  left: 24px;
+}
+
+
 
 .project__number{
   white-space: pre-wrap;
@@ -248,7 +347,15 @@ export default {
   height: 100%;
   overflow: hidden;
 }
-
+.closed__card {
+  border: 2px solid red;
+  border-radius: 4px;
+  padding: 5px;
+  cursor: auto;
+  min-height: 150px;
+  height: 100%;
+  overflow: hidden;
+}
 
 .error__card__holder {
   place-self: stretch;

@@ -3,7 +3,7 @@
         <h1>WO {{$route.params.cabinetId}}</h1>
         <br>
         <button v-for="tab in state.cabinetTabs" :key="tab.title" class="cabinets__category"
-            :class="['tab-button', { active: state.currentCabinetTab === tab.value }]"
+            :class="['tab-button', { active: state.currentCabinetTab === tab.title }]"
             @click="state.currentCabinetTab = tab.title">
             {{ tab.title }}
         </button>
