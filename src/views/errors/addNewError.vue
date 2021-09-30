@@ -63,7 +63,8 @@ const fetchProjectList = async () => {
   }
 }
 fetchProjectList();
-const clearstate = () => store.commit('SETcurrentProject', {})
+const clearstate = () => {store.commit('SETcurrentProject', {})
+ state.projectInformation = null}
 
 </script>
 

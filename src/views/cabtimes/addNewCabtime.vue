@@ -1,14 +1,18 @@
 <template>
     <h2>Расчёт нового CabTime</h2>
-    <choose-project-number :data-to-render="projectData" @input-project-event="fetchProjectList"
+     <div v-if="!$store.state.projectInfo.wo">
+    <choose-project-number v-if="!$store.state.projectInfo.pm" :data-to-render="projectData" @input-project-event="fetchProjectList"
         @choose-project-number="choose" />
     <div v-if="projectInformation">
         <br>
         <choose-project-number :data-to-render="projectInformation.cabinets.map(e =>e.wo + '   ' +e['cab name'])"
             @choose-project-number="chooseCabinet" />
     </div>
-    <section v-if="cabinet">
-        <div v-for="(t,i) in $store.state.template.CabTimeGroup">
+     </div>
+    <section v-else>
+        <h3>Номер проекта {{projectInfoState['project number']}} <span style="cursor: pointer" @click="clearstate">&#10060;</span> </h3>
+      <h3>Номер WO {{projectInfoState['wo']}} </h3>
+        <div v-for="(t,i) in $store.state.template.CabTimeGroup" :key="i">
             <table>
                 <colgroup>
                     <col span="1" style="width: 5%;">
@@ -26,29 +30,19 @@
                         <th>{{cabtimetype&&cabtimetype[i].summ}}</th>
                     </tr>
                     <tr v-for="(value, index) in  groupBy(t.name)" :key="index">
-                        <td>
-                            {{ value._id }}
-
-                        </td>
+                        <td>{{ value._id }}</td>
                         <td v-if="value.new" class="cabtime__name">
                             <textarea rows="1"></textarea>
                         </td>
-                        <td v-else class="cabtime__name">
-                            {{ value.name }}
-                        </td>
-                        <td>
-                            <input class="cabtime__input" min="0" type="number" :value="value.value"
-                                @input="inputData($event, value._id, 'value')">
-                        </td>
+                        <td v-else class="cabtime__name">{{ value.name }}</td>
+                        <td><input class="cabtime__input" min="0" type="number" :value="value.value"
+                                @input="inputData($event, value._id, 'value')"></td>
                         <td v-if="value.new">
-                            <input class="cabtime__input" min="0" type="number" @input="inputData($event, value._id, '_const')">
+                            <input class="cabtime__input" min="0" type="number"
+                                @input="inputData($event, value._id, '_const')">
                         </td>
-                        <td v-else>
-                            {{ value._const }}
-                        </td>
-                        <td>
-                            {{tt&&value.result}}
-                        </td>
+                        <td v-else>{{ value._const }}</td>
+                        <td>{{tt&&value.result}}</td>
                     </tr>
                     <div class="add__row" @click="addNewRow(t.name)"> + </div>
                 </tbody>
@@ -108,7 +102,7 @@ import conditionalRender from "@/components/conditionalRender.vue";
 import chooseWoNumber from '@/components/chooseWoNumber.vue';
 import chooseProjectNumber from "@/components/chooseProjectNumber.vue";
 import { useStore } from 'vuex';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import {
     reactive,
     toRefs,
@@ -124,7 +118,7 @@ export default {
     },
     setup() {
         const store = useStore()
-        const route = useRoute()
+        const router = useRouter()
         const cabtimeVal = reactive({})
         const state = reactive({
             adminCoef:"12",
@@ -138,13 +132,12 @@ export default {
             cabtimetype: null,
         })
         const setState = async () => {
-            await store.dispatch('GET_template')
+           await store.dispatch('GET_template')
             state.tt = store.state.template.CabTimeV2;
             state.cabtimetype = store.state.template.CabTimeGroup;
         };
         setState()
         const inputData = ($event, key, val) => {
-          
             let arr, coef;
             switch (key) {
                 case '1.3':
@@ -265,7 +258,12 @@ export default {
                     wo: store.state.projectInfo.wo.toString(),
                 },
                 "type": "cabtime",
-                "body": state.tt
+                adminCoef: state.adminCoef,
+                    documents: state.documents,
+                    cabtimeResult: cabtimeResult.value,
+                "body": {
+                    ...state.tt.filter(e => e.value),
+                }
             }
             await fetch('/api/POST_error', {
                 method: 'POST', // или 'PUT'
@@ -273,6 +271,8 @@ export default {
                     ...cabTime
                 }),
             })
+            state.tt = {}
+            router.push('/cabtimes')
             // console.log(route.params.cabtimeId);
         }
         const addNewRow = (e) => {
@@ -291,8 +291,14 @@ export default {
             }, )
             console.log(e)
         };
-
+const clearstate = () => {
+    store.commit('SETcurrentProject', {})
+    state.projectInformation = null
+}
+const projectInfoState = computed(() => store.state.projectInfo)
         return {
+            projectInfoState,
+            clearstate,
             cabtimeResult,
             addNewRow,
             getType,

@@ -1,40 +1,40 @@
 <template>
-<div v-if="computedItems.length>0">
-
-
-    <div v-for="(item, key)  in computedItems" :key="item.id" class="error__holder">
-        <h2 @click="$router.push(`/errors/${item.id}`)">{{item.id}}</h2>
-        <small :style="{backgroundColor: statusColor[item.status]}">Статус: {{item.status}}</small>
-        <br>
-        <br>
-        <div class="err__tabs">
-            <div class="err__tab" v-for="(tab, i) in tabs" :key="tab">
-                <input v-model="currentTab[key]" :id="`tab${i+1}${key}`" type="radio" :name="`tab-control${key}`"
-                    :value="tab">
-                <label :for="`tab${i+1}${key}`" role="button">
-                    {{tab}}
-                </label>
+    <div v-if="computedItems.length>0">
+        <div v-for="(item, key)  in computedItems" :key="item.id" class="error__holder">
+            <h2 @click="$router.push(`/errors/${item.id}`)">{{item.id}}</h2>
+            <small :style="{backgroundColor: statusColor[item.status]}">Статус: {{item.status}}</small>
+            <br>
+            <br>
+            <div class="err__tabs">
+                <div v-for="(tab, i) in tabs" :key="tab" class="err__tab">
+                    <input :id="`tab${i+1}${key}`" v-model="currentTab[key]" type="radio" :name="`tab-control${key}`"
+                        :value="tab">
+                    <label :for="`tab${i+1}${key}`" role="button">
+                        {{tab}}
+                    </label>
+                </div>
             </div>
-        </div>
-        <div class="card__holder">
-            <div v-if="currentTab[key] !== 'Фото'">
-                <info-render :info-data="{...item.body[currentTab[key]]}" />
-            </div>
-            <div class="photo__holder" v-for="ph in item.photos" v-else :key="ph">
-                <a :href="`https://icaenter.blob.core.windows.net/errors-photo/${ph}`">
-                    <img :src="`https://icaenter.blob.core.windows.net/errors-photo/thumb__${ph}`" alt="photo error">
-                </a>
+            <div class="card__holder">
+                <div v-if="currentTab[key] !== 'Фото'">
+                    <info-render :info-data="{...item.body[currentTab[key]]}" />
+                </div>
+                <div v-for="ph in item.photos" v-else :key="ph" class="photo__holder">
+                    <a :href="`https://icaenter.blob.core.windows.net/errors-photo/${ph}`">
+                        <img :src="`https://icaenter.blob.core.windows.net/errors-photo/thumb__${ph}`"
+                            alt="photo error">
+                    </a>
+                </div>
             </div>
         </div>
     </div>
+    <div v-else>
+        <h2>Безошибочный шкаф</h2>
     </div>
-    <div v-else><h2>Безошибочный шкаф</h2></div>
     <br>
     <button v-if="cabinetItems&&cabinetItems.length > 0" @click="saveBook">Экспорт excel</button>
     <br>
-    <!-- <button @click="$router.push('/errors/addnewerror/')"></button> -->
-        <router-link to="/errors/addnewerror">
-      <img class="add__button" src="/img/add.svg" alt="Добавить новую ошибку">
+    <router-link to="/errors/addnewerror">
+        <img class="add__button" src="/img/add.svg" alt="Добавить новую ошибку">
     </router-link>
 </template>
 
@@ -64,6 +64,7 @@ export default {
         const route = useRoute()
         const store = useStore()
         const state = reactive({
+            // computedItems: null,
             cabinetItems: null,
             cabinetTabs: ['Информация', 'CabTime', 'Ошибки', "Задачи"],
             tabs: ['Открыто', 'Принято', 'Устранено', "Фото"],
@@ -74,7 +75,8 @@ export default {
                 confirmed: "rgb(175, 164, 0)"
             }
         })
-        const computedItems = computed(()=> store.state.cabinetItems)
+        const computedItems = computed(()=> store.state.cabinetItems.filter(e => e.type.endsWith('error')))
+
         computedItems.value.forEach((e, i) => {
                 state.currentTab[i] = "Открыто"
             });
