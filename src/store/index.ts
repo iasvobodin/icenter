@@ -57,13 +57,17 @@ export default createStore({
         "this.$store.state.selectedProjectNumber"
       );
     },
+    SETcurrentProject(state, payload) {
+      state.projectInfo = payload;
+      // console.log(state.projectInfo, "state.projectInfo");
+    },
     SETprojectInfo(state, payload) {
       state.projectInfo = {
         "project number": payload.id,
         ...payload.info.base,
         ...payload.info.extends,
       };
-      console.log(state.projectInfo, "state.projectInfo");
+      // console.log(state.projectInfo, "state.projectInfo");
     },
     SETcabinetInfo(state, payload) {
       state.projectInfo = {
@@ -71,7 +75,7 @@ export default createStore({
         wo: payload.split('   ')[0],
         'cab name': payload.split('   ')[1]
       };
-      console.log(state.projectInfo, "state.projectInfo");
+      // console.log(state.projectInfo, "state.projectInfo");
     },
     SET_projectList(state, payload) {
       state.projectList = payload;

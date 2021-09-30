@@ -16,7 +16,7 @@
       <br>
       <div  class="errors__holder">
       <div v-for="(v, k, i) in state.groupCabinets(val)" :key="i" class="error__card__holder">
-        <div class="errors__card" @click="$router.push(`/cabinets/${v.wo}`)">
+        <div class="errors__card" @click="routeToCabinet(v.wo, val)">
           WO {{v.wo  }}
           <br>
           {{v['cab name']}} <br>
@@ -32,7 +32,10 @@
 
 </template>
 <script setup>
-import { useFetch } from '@/hooks/fetch'
+import {useStore} from 'vuex'
+import {
+  useFetch
+} from '@/hooks/fetch'
 import chooseProjectNumber from "@/components/chooseProjectNumber.vue";
 import jsQR from "jsqr";
 import {
@@ -51,89 +54,108 @@ import {
 //     components: {
 //     // chooseProjectNumber,
 //   },
-  // setup() {
-    const router = useRouter()
-    const streamVideo = ref(null)
-    const stream = ref(null)
-    const vCanvas = ref(null)
-    const tick = ref(null)
-    const changeView = ref(true)
-    const qr = ref('')
-    const state = reactive({
-      projects: null,
-      cabinets: null,
-      filter:null,
-      groupCabinets:null,
-      actualRojects:null,
-      search:""
-    })
-    watch(qr, (newValue, oldValue) => {
-      router.push(`/cabinets/${newValue}`)
-    })
-    const getCabinets = async () => {
-      let url = new URL('/api/projects', import.meta.env.DEV ? 'http://localhost:8080': 'https://proud-rock-02bbde210.azurestaticapps.net/');
-      url.searchParams.set('status', 'open');
-      const {
-        request,
-        response
-      } = useFetch('/api/projects?status=open')
-      await request()
-      state.projects = response.value.filter(pr => ['01','02','03','04'].some(s => pr.info.extends['status project'].includes(s)))
-      state.actualRojects = state.projects.map(p => p.id)
-      state.cabinets = state.projects.map(c =>  c.cabinets.map(cc => {return {...cc, project: c.id}})).flat()
-      state.groupCabinets = project => filter.value.filter(c => c.project === project )
+// setup() {
+const router = useRouter()
+const store = useStore()
+const streamVideo = ref(null)
+const stream = ref(null)
+const vCanvas = ref(null)
+const tick = ref(null)
+const changeView = ref(true)
+const qr = ref('')
+const state = reactive({
+  projects: null,
+  cabinets: null,
+  filter: null,
+  groupCabinets: null,
+  actualRojects: null,
+  search: ""
+})
+watch(qr, (newValue, oldValue) => {
+  router.push(`/cabinets/${newValue}`)
+})
+
+const routeToCabinet = (wo, val) => {
+  router.push(`/cabinets/${wo}`)
+  const currentProject = state.projects.find(c => c.id === val)
+  const curretCabinet = currentProject.cabinets.find(cabinet => cabinet.wo === wo)
+  const payload = {
+    "project number": currentProject.id,
+    ...currentProject.info.base,
+    ...currentProject.info.extends,
+    ...curretCabinet
     }
-    getCabinets()
-    const filter = computed(()=> {
-      return state.search ? 
-      state.cabinets.filter(e => [e?.wo, e?.['cab name']].some(s => s && s.toLowerCase().includes(state.search.toLowerCase()))) :
-      state.cabinets
+    store.commit('SETcurrentProject',payload)
+    console.log(payload);
+  // console.log(state.projects.find(c => c.id === val));
+}
+
+const getCabinets = async () => {
+  const {
+    request,
+    response
+  } = useFetch('/api/projects?status=open')
+  await request()
+  state.projects = response.value.filter(pr => ['01', '02', '03', '04'].some(s => pr.info.extends['status project'].includes(s)))
+  state.actualRojects = state.projects.map(p => p.id)
+  state.cabinets = state.projects.map(c => c.cabinets.map(cc => {
+    return {
+      ...cc,
+      project: c.id
     }
-    )
-    onUnmounted(() => {
-      clearInterval(tick.value);
-     vCanvas.value = null
-     stream.value = null
-    })
-    onMounted(async () => {
-      // const canvasElement = document.getElementById("canvas");
-      const canvas = vCanvas.value.getContext("2d");
+  })).flat()
+  state.groupCabinets = project => filter.value.filter(c => c.project === project)
+}
+getCabinets()
+const filter = computed(() => {
+  return state.search ?
+    state.cabinets.filter(e => [e?.wo, e?. ['cab name']].some(s => s && s.toLowerCase().includes(state.search.toLowerCase()))) :
+    state.cabinets
+})
+onUnmounted(() => {
+  clearInterval(tick.value);
+  vCanvas.value = null
+  stream.value = null
+})
+onMounted(async () => {
+  // const canvasElement = document.getElementById("canvas");
+  const canvas = vCanvas.value.getContext("2d");
 
-      try {
-        stream.value = await navigator.mediaDevices.getUserMedia({
-          audio: false,
-          video: {
-            facingMode: "environment",
-            width: {
-              "min": 640,
-              "max": 1024
-            },
-            height: {
-              "min": 480,
-              "max": 768
-            }
-          }
-        })
-      } catch (err) {
-        console.log(err.name + ": " + err.message);
-      }
-
-
-      const video = streamVideo.value
-      video.srcObject = stream.value
-      tick.value = setInterval(() => {
-        if (video.readyState === video.HAVE_ENOUGH_DATA) {
-          vCanvas.value.height = video.videoHeight;
-          vCanvas.value.width = video.videoWidth;
-          canvas.drawImage(video, 0, 0, vCanvas.value.width, vCanvas.value.height);
-          const imageData = canvas.getImageData(0, 0, vCanvas.value.width, vCanvas.value.height);
-          const code = jsQR(imageData.data, imageData.width, imageData.height, {
-            inversionAttempts: "dontInvert",
-          });
-          code  && (qr.value = code.data)
+  try {
+    stream.value = await navigator.mediaDevices.getUserMedia({
+      audio: false,
+      video: {
+        facingMode: "environment",
+        width: {
+          "min": 640,
+          "max": 1024
+        },
+        height: {
+          "min": 480,
+          "max": 768
         }
-      }, 500)
+      }
     })
+  } catch (err) {
+    console.log(err.name + ": " + err.message);
+  }
+
+
+  const video = streamVideo.value
+  video.srcObject = stream.value
+  tick.value = setInterval(() => {
+    if (video.readyState === video.HAVE_ENOUGH_DATA) {
+      vCanvas.value.height = video.videoHeight;
+      vCanvas.value.width = video.videoWidth;
+      canvas.drawImage(video, 0, 0, vCanvas.value.width, vCanvas.value.height);
+      const imageData = canvas.getImageData(0, 0, vCanvas.value.width, vCanvas.value.height);
+      const code = jsQR(imageData.data, imageData.width, imageData.height, {
+        inversionAttempts: "dontInvert",
+      });
+      code && (qr.value = code.data)
+    }
+  }, 500)
+})
 
 //     return {
 //       vCanvas,

@@ -87,6 +87,7 @@ store.dispatch('GET_cabinetItems', route.params.cabinetId )
 <style lang="css" scoped>
 .cabinets__category{
     min-width: 20%;
+    cursor: pointer;
 }
 .tab-button.active {
   background: #0066ff1f;

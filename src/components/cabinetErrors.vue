@@ -3,7 +3,7 @@
 
 
     <div v-for="(item, key)  in computedItems" :key="item.id" class="error__holder">
-        <h2>{{item.id }}</h2>
+        <h2 @click="$router.push(`/errors/${item.id}`)">{{item.id}}</h2>
         <small :style="{backgroundColor: statusColor[item.status]}">Статус: {{item.status}}</small>
         <br>
         <br>
@@ -32,6 +32,10 @@
     <br>
     <button v-if="cabinetItems&&cabinetItems.length > 0" @click="saveBook">Экспорт excel</button>
     <br>
+    <!-- <button @click="$router.push('/errors/addnewerror/')"></button> -->
+        <router-link to="/errors/addnewerror">
+      <img class="add__button" src="/img/add.svg" alt="Добавить новую ошибку">
+    </router-link>
 </template>
 
 <script>
@@ -130,7 +134,14 @@ export default {
 </script>
 
 <style lang="css" scoped>
-
+.add__button {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+}
 [type="radio"] {
     display: none;
 }
@@ -199,5 +210,8 @@ label {
     padding: 1vh;
    
 
+}
+.error__holder > h2{
+    cursor: pointer;
 }
 </style>

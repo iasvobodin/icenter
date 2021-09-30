@@ -1,95 +1,70 @@
 <template>
   <div>
     <h2>Добавление новой ошибки.</h2>
-    <choose-project-number :data-to-render="projectData" @input-project-event="fetchProjectList"
-      @choose-project-number="choose" />
-    <div v-if="projectInformation">
-      <br>
-      <choose-project-number placeHolder="Введите номер WO" :data-to-render="projectInformation.cabinets.map(e =>e.wo + '   ' +e['cab name'])"
-        @choose-project-number="chooseCabinet" />
-      <div v-if="cabinet">
-        <set-error />
+    <div v-if="!$store.state.projectInfo.wo">
+      <choose-project-number v-if="!$store.state.projectInfo.pm" :data-to-render="state.projectData"
+        @input-project-event="fetchProjectList" @choose-project-number="choose" />
+      <div v-if="state.projectInformation">
+        <br>
+        <choose-project-number placeHolder="Введите номер WO"
+          :data-to-render="state.projectInformation.cabinets.map(e =>e.wo + '   ' +e['cab name'])"
+          @choose-project-number="chooseCabinet" />
       </div>
+    </div>
+    <div v-else>
+      <h3>Номер проекта {{projectInfoState['project number']}} <span style="cursor: pointer" @click="clearstate">&#10060;</span> </h3>
+      <h3>Номер WO {{projectInfoState['wo']}} </h3>
+      <set-error />
     </div>
   </div>
 </template>
 
-<script>
+<script setup>
+
+import {useStore} from 'vuex';
+import {computed, reactive, ref} from 'vue';
+import { useFetch } from '@/hooks/fetch'
 import setError from "@/components/setError.vue";
 import chooseProjectNumber from "@/components/chooseProjectNumber.vue";
-export default {
-  components: {
-    setError,
-    chooseProjectNumber,
-  },
-  setup() {
-    return {};
-  },
-  data() {
-    return {
-      projectData: null,
-      fetchProject: null,
-      projectInformation: null,
-      projectStatus: "open",
-      woState: false,
-      cabinet: "",
-    };
-  },
-  watch: {
-    projectStatus(oldv, newv) {
-      if (newv === "closed") {
-        this.fetchProjectList();
-      }
-      this.projectData = null;
-      // this.choose();
-    },
-  },
-  mounted () {
-     this.fetchProjectList();
 
-//      const beforeUnloadListener = (event) => {
-//   event.preventDefault();
-//   return event.returnValue = "Are you sure you want to exit?";
-// };
+const store = useStore()
+const state = reactive({
+  projectData: null,
+  fetchProject: null,
+  projectInformation: null,
+  woState: false,
+  cabinet: "",
+});
+const projectInfoState = computed(() => store.state.projectInfo)
+const chooseCabinet = (e) => {
+  state.cabinet = e.split('   ')[0];
+  store.commit("SETcabinetInfo", e);
+  state.woState = true;
+}
+const choose = ($event) => {
+  if (!$event) {
+    state.projectInformation = false;
+    return;
+  }
+  state.projectInformation = state.fetchProject.filter(
+    (e) => e.id === $event
+  )[0];
+  store.commit("SETprojectInfo", state.projectInformation);
+}
+const fetchProjectList = async () => {
+  if (!state.projectData) {
+    const {
+      request,
+      response
+    } = useFetch(`/api/projects?status=open`)
+    await request()
+    state.fetchProject = response
+    state.projectData = state.fetchProject.map((el) => el.id)
+  }
+}
+fetchProjectList();
+const clearstate = () => store.commit('SETcurrentProject', {})
 
-//   addEventListener("beforeunload", beforeUnloadListener, {capture: true});
-//   //     removeEventListener("beforeunload", beforeUnloadListener, {capture: true});
-// const nameInput = document.querySelector("#name");
-
-// nameInput.addEventListener("input", (event) => {
-//   if (event.target.value !== "") {
-//   } else {
-//   }
-// });
-  },
-  methods: {
-    chooseCabinet(e) {
-      this.cabinet = e.split('   ')[0];
-      this.$store.commit("SETcabinetInfo", e);
-      this.woState = true;
-    },
-    choose($event) {
-      if (!$event) {
-        this.projectInformation = false;
-        return;
-      }
-      this.projectInformation = Object.values(this.fetchProject).filter(
-        (e) => e.id === $event
-      )[0];
-      console.log(this.projectInformation, "this.projectInformation");
-      this.$store.commit("SETprojectInfo", this.projectInformation);
-    },
-    async fetchProjectList() {
-      if (!this.projectData) {
-        this.fetchProject = await (
-          await fetch(`/api/projects?status=${this.projectStatus}`)
-        ).json();
-        this.projectData = this.fetchProject.map((el) => el.id);
-        // this.projectData = this.fetchProject.map(el => el.id);
-      }
-    },
-  },
-};
 </script>
 
 <style lang="css" scoped>
