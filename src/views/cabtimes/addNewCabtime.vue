@@ -36,10 +36,10 @@
                         </td>
                         <td v-else class="cabtime__name">{{ value.name }}</td>
                         <td><input class="cabtime__input" min="0" type="number" :value="value.value"
-                                @input="inputData($event, value._id, 'value')"></td>
+                                @input="calculateLogic($event, value._id, 'value')"></td>
                         <td v-if="value.new">
                             <input class="cabtime__input" min="0" type="number"
-                                @input="inputData($event, value._id, '_const')">
+                                @input="calculateLogic($event, value._id, '_const')">
                         </td>
                         <td v-else>{{ value._const }}</td>
                         <td>{{tt&&value.result}}</td>
@@ -58,7 +58,6 @@
                     <th>Подготовка чертежей в минутах</th>
                     <th>Коэффициент на администрирвание в %</th>
                 </tr>
-
                 <tr>
                     <td><input v-model.number="documents" min="0" type="number"></td>
                     <td><input v-model.number="adminCoef" min="0" type="number"></td>
@@ -83,7 +82,7 @@
                     <th>Итого</th>
                 </tr>
                 <tr>
-                    <td v-for="val in cabtimeResult">{{val}}</td>
+                    <td v-for="(val, index) in cabtimeResult" :key="index">{{val}}</td>
                     <!-- <td>{{Math.round(cabtimetype[8].summ/60)}}</td>
                     <td>{{Math.round(Math.round(+finalResult*+adminCoef/100 + +documents)/60)}}</td>
                     <td>{{Math.round((+finalResult + Math.round(+finalResult*+adminCoef/100 + +documents))/60)}}</td> -->
@@ -102,7 +101,7 @@ import conditionalRender from "@/components/conditionalRender.vue";
 import chooseWoNumber from '@/components/chooseWoNumber.vue';
 import chooseProjectNumber from "@/components/chooseProjectNumber.vue";
 import { useStore } from 'vuex';
-import { useRoute, useRouter } from 'vue-router';
+import { onBeforeRouteUpdate, useRouter } from 'vue-router';
 import {
     reactive,
     toRefs,
@@ -117,6 +116,19 @@ export default {
     chooseProjectNumber,
     },
     setup() {
+
+//           async beforeRouteUpdate(to, from) {
+//     this.post = null
+//     try {
+//       this.post = await getPost(to.params.id)
+//     } catch (error) {
+//       this.error = error.toString()
+//     }
+//   },
+  onBeforeRouteUpdate((to, from) => {
+      // only fetch the user if the id changed as maybe only the query or the hash changed
+   console.log('onBeforeRouteUpdate');
+    })
         const store = useStore()
         const router = useRouter()
         const cabtimeVal = reactive({})
@@ -131,15 +143,15 @@ export default {
             cabinet: '',
             cabtimetype: null,
         })
-        const setState = async () => {
-           await store.dispatch('GET_template')
+        // const setState = async () => {
+        //    await store.dispatch('GET_template')
             state.tt = store.state.template.CabTimeV2;
             state.cabtimetype = store.state.template.CabTimeGroup;
-        };
+        // };
+        // setState()
         
-        const CabTimeGroup = computed(()=> store.state.template.CabTimeGroup)
-        setState()
-        const inputData = ($event, key, val) => {
+
+        const calculateLogic = ($event, key, val) => {
             let arr, coef;
             switch (key) {
                 case '1.3':
@@ -205,8 +217,11 @@ export default {
         // eslint-disable-next-line vue/no-side-effects-in-computed-properties
         // const summByType = computed(() => state.tt ? state.tt.push(store.state.template.CabTime.reduce((acc, el) => acc.add(el._type), new Set())) : 0)
         //  t =>  state.tt&&state.tt.reduce((acc,f) => f._type === t&&(acc +=f.result),0);
-        const result = (a, b) => Math.ceil(a * b)
-        const getType = computed(() => store.state.template && store.state.template.CabTime.reduce((acc, el) => acc.add(el._type), new Set()))
+        // const result = (a, b) => Math.ceil(a * b)
+
+        const CabTimeGroup = computed(()=> store.state.template.CabTimeGroup)
+
+        // const getType = computed(() => store.state.template && store.state.template.CabTime.reduce((acc, el) => acc.add(el._type), new Set()))
         const finalResult = computed(() => CabTimeGroup.value ? CabTimeGroup.value.reduce((acc,e) =>  e.name === 'Тестирование и Поверка'? acc:acc += e.summ ,0):0)
         const cabtimeResult = computed(() => {
             return {
@@ -218,7 +233,7 @@ export default {
         })
         const groupBy = t => {
             if (store.state.template) {
-                state.tt = store.state.template.CabTimeV2
+                state.tt = store.state.template?.CabTimeV2
                 return state.tt.filter(g => g._type === t)
             }
         }
@@ -253,17 +268,17 @@ export default {
 
         const postCabTime = async () => {
             const cabTime = {
-                "id": `cabtime__${Date.now()}`,
+                "id": `cabtime__${projectInfoState.value.wo}`,
                 "info": {
                     Проект: projectInfoState.value['project number'],
                     Шкаф: projectInfoState.value['cab name'],
                     wo: projectInfoState.value.wo.toString(),
                 },
-                "type": "cabtime",
+                type: "cabtime",
                 adminCoef: state.adminCoef,
-                    documents: state.documents,
-                    cabtimeResult: cabtimeResult.value,
-                "body": {
+                documents: state.documents,
+                cabtimeResult: cabtimeResult.value,
+                body: {
                     ...state.tt.filter(e => e.value),
                 }
             }
@@ -304,12 +319,12 @@ const projectInfoState = computed(() => store.state.projectInfo)
             clearstate,
             cabtimeResult,
             addNewRow,
-            getType,
+            // getType,
             groupBy,
             postCabTime,
             fetchProjectList,
-            result,
-            inputData,
+            // result,
+            calculateLogic,
             choose, // filterByGroup,
             cabtimeVal,
             chooseCabinet,

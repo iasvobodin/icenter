@@ -12,7 +12,8 @@ import loader from '@/components/loader.vue'
 import appHeader from "@/components/header.vue";
 import * as signalR from '@microsoft/signalr'
 import {
-  useRoute
+  useRoute,
+  onBeforeRouteUpdate
 } from 'vue-router'
 import {
   useStore
@@ -106,11 +107,21 @@ console.log(connection, 'connection!!!!!!!!!!!!!');
 };
 
 connect();
-const getTT = async () => {
-  await store.dispatch('GET_template')
-}
-getTT()
-const bg = computed(()=> store.state.user.body?.bg && document.documentElement.style.setProperty('--bg', `${store.state.user.body.bg}`) )
+const ttemp = ref(null)
+  onBeforeRouteUpdate(async ( to, from, next) => {
+    console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+  // ttemp.value = await store.dispatch('GET_template')
+  //  next()
+    })
+
+// const getTT = async () => {
+//   await store.dispatch('GET_template')
+// }
+
+// getTT()
+
+
+const bg = computed(()=> store.state.user.body?.bg ? document.documentElement.style.setProperty('--bg', `${store.state.user.body.bg}`): "white" )
 const customCursor = computed(()=> store.state.user.body?.customCursor && document.documentElement.style.setProperty('--cursor', `url('/img/unicorn.png')`))
 
 //   function formatDate(date) {
@@ -142,9 +153,20 @@ const customCursor = computed(()=> store.state.user.body?.customCursor && docume
   box-sizing: border-box;
 }
 *{
-  /* cursor: v-bind(color); */
   cursor: var(--cursor), auto;	
 }
+
+html{
+  height: 100%;
+}
+
+body{
+  width: 100%; 
+  min-height: 100%;
+  margin: 0;
+  background: var(--bg);
+}
+
 textarea,
 select,
 input[type='text'],
@@ -152,18 +174,9 @@ input[type='number']{
   font-size: 16px;
   font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji;
   line-height: 1.15;
+}
 
-}
-html{
-  height: 100%;
-  
-}
-body{
-  width: 100%; 
-  min-height: 100%;
-  margin: 0;
-  background: var(--bg);
-}
+
 button,
 input[type='submit'] {
   height: 40px;

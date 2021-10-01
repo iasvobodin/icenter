@@ -90,6 +90,19 @@ const routes = [
   {
     path: "/projects",
     component: ()=>  import("@/views/projects/projects.vue"),
+//     async beforeEnter(to, from, next) {
+//   try {
+//     var hasPermission = await store.dispatch("auth/hasPermission");
+//     if (hasPermission) {
+//       next()
+//     }
+//   } catch (e) {
+//     next({
+//       name: "login", // back to safety route //
+//       query: { redirectFrom: to.fullPath }
+//     })
+//   }
+// }
   },
   {
     path: "/projects/addNewProject",
@@ -115,6 +128,7 @@ router.beforeEach((to, from) => {
 })
 
 router.beforeEach(async (to, from) => {
+  !store.state.template && await store.dispatch('GET_template')
   const user = window.localStorage.getItem("user")
   if (to.path === '/login' || to.path === '/role')  return true
   // if (to.path === '/role')  return true

@@ -285,9 +285,6 @@ h3{
 .switch-input:checked + .switch-label::after {
   left: 24px;
 }
-
-
-
 .project__number{
   white-space: pre-wrap;
   word-wrap: break-word;
@@ -302,9 +299,7 @@ h3{
   background: orange;
   filter: blur (20px);
   z-index: 2;
-  
 }
-
 .add__button {
   position: fixed;
   bottom: 20px;
@@ -348,7 +343,7 @@ h3{
   overflow: hidden;
 }
 .closed__card {
-  border: 2px solid red;
+  border: 1px solid red;
   border-radius: 4px;
   padding: 5px;
   cursor: auto;
