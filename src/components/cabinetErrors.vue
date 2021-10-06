@@ -105,7 +105,7 @@ export default {
             }
 
             const arrArr = []
-            state.cabinetItems.map((e, i) => {
+            computedItems.value.map((e, i) => {
                 arrArr.push([
                     i + 1, e.body.Открыто.Описание,
                     e.info.Добавил.split('@')[0].replace('.', ' '),
