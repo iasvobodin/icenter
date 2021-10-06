@@ -15,9 +15,20 @@ module.exports = async function (context, req) {
 
   // Get a reference to a container
   const containerClient = blobServiceClient.getContainerClient("errors-photo");
-
-
-
+  if (req.query.list) {
+  // let i = 1;
+  const list = []
+  for await (const blob of containerClient.listBlobsFlat()) {
+    list.push(blob.name)
+    // context.log(`Blob ${i++}: ${blob.name}`);
+  }
+  // context.log(list)
+  context.res = {
+    // status defaults to 200 */
+    body: list,
+  };
+  return
+  }
   if (req.query.test) {
     const bodyBuffer = Buffer.from(req.body);
     const boundary = multipart.getBoundary(req.headers["content-type"]);

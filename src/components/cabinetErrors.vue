@@ -56,15 +56,12 @@ import {
 import infoRender from '@/components/infoRender.vue'
 export default {
     components: {
-        // conditionalRender,
         infoRender,
-        // chooseWoNumber,
     },
     setup() {
         const route = useRoute()
         const store = useStore()
         const state = reactive({
-            // computedItems: null,
             cabinetItems: null,
             cabinetTabs: ['Информация', 'CabTime', 'Ошибки', "Задачи"],
             tabs: ['Открыто', 'Принято', 'Устранено', "Фото"],
@@ -128,7 +125,6 @@ export default {
         return {
             computedItems,
             saveBook,
-            //   updateWO,
             ...toRefs(state),
         }
     },

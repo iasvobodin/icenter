@@ -28,13 +28,15 @@
   <!-- <div v-if="errorMessage">{{ errorMessage }}</div> -->
   <div v-if="state.fetchStatus" class="loading" />
   <div class="button__holder">
-    <img @click="$router.push('/errors/info')" class="info" src="/img/information.svg" alt="Справка">
-    <img @click="$router.push('/errors/addnewerror')" class="add__button" src="/img/add.svg"
-      alt="Добавить новую ошибку">
+    <img class="info" src="/img/information.svg" alt="Справка" @click="$router.push('/errors/info')">
+    <img class="add__button" src="/img/add.svg" alt="Добавить новую ошибку"
+      @click="$router.push('/errors/addnewerror')">
   </div>
+
 </template>
 
 <script setup>
+import errorPhotos from '@/components/errorPhotos.vue'
   import {
     reactive,
     computed,
@@ -48,6 +50,7 @@
   //   setup() {
       const state = reactive({
         errors: null,
+        phList:[],
         // resErrors: null,
         fetchStatus: null,
         // errorMessage: "",
@@ -62,6 +65,8 @@
         await request()
       }
       
+
+
       getErrors()
       watch(selectedStatus, () => getErrors())
 
@@ -88,6 +93,7 @@
 </script>
 
 <style lang="css" scoped>
+
 /* .info{
   position: fixed;
   bottom: 20px;

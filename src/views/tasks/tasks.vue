@@ -1,110 +1,73 @@
 <template>
-  <div>v2
-<!-- <button @click="ff">FF</button>
-<a href="https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id=4cd0c647-2554-4150-a8d9-e82416eede9f&response_type=id_token+token&redirect_uri=http%3A%2F%2Flocalhost%2Fmyapp%2F&scope=openid%20https%3A%2F%2Fgraph.microsoft.com%2Fmail.read&response_mode=fragment&state=12345&nonce=678910">!!!!!!!!!!!!!!!!</a> -->
+  <div class="photolist">
+    <div v-for="(item, i) in state.phList" :key="i" class="holder">
+      <img :src="`https://icaenter.blob.core.windows.net/errors-photo/${item}`" alt="" class="listphotos">
+      <div class="cross" @click="deletPh(i, item)">&#10060</div>
+    </div>
+    <!-- <error-photos :current-photos="state.phList" /> -->
   </div>
+  <button @click="dd">DD</button>
 </template>
 
-<script>
-import * as signalR from '@microsoft/signalr'
-// import headerVue from '@/components/header.vue'
-export default {
-  setup() {
-//     if ('serviceWorker' in navigator) {
-//   window.addEventListener('load', () => {
-//     navigator.serviceWorker.register('/sw.js')
-//     .then(registration => {
-//       console.log('Service Worker is registered', registration);
-//     })
-//     .catch(err => {
-//       console.error('Registration failed:', err);
-//     });
-//   });
-// }
+<script setup>
+ import { useFetch } from '@/hooks/fetch'
+   import {
+    reactive,
+    computed,
+    watch,
+    ref
+  } from 'vue'
+        const state = reactive({
+        errors: null,
+        phList:[],
+        delphotos:[],
+        // resErrors: null,
+        fetchStatus: null,
+        // errorMessage: "",
+      })
+      const deletPh = (i, item) => {
+        state.phList.splice(i, 1)
+      state.delphotos.push(item)
+      }
+      const dd = async () => {
+                    // this.error.photos.length > 0 && 
+                    await Promise.all(state.delphotos.map(async e => {
+        await fetch(`/api/blob?fileName=${e}&delblob=true`)
+      }))
+      }
 
-
-//  const app = ()=>{
-// const displayNotification = () => {
-  // console.log('notification');
-
-
-
-  // if (Notification.permission == 'granted'&&'serviceWorker' in navigator) {
-  //   navigator.serviceWorker.getRegistration().then(reg => {
-  //     console.log(reg);
-  //     const options = {
-  //       body: 'test notice',
-  //       vibrate: [100, 50, 100],
-  //       data: {
-  //         dateOfArrival: Date.now(),
-  //         primaryKey: 1
-  //       },
-  //     };
-  //     reg.showNotification('Hello world!', options);
-  //   });
-  // }
-
-
-
-
-// }
-// displayNotification()
-// }
-// app()
-// const ff = async ()=>{
-//   // await fetch("https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id=4cd0c647-2554-4150-a8d9-e82416eede9f&response_type=id_token+token&redirect_uri=http%3A%2F%2Flocalhost%2Fmyapp%2F&scope=openid%20https%3A%2F%2Fgraph.microsoft.com%2Fmail.read&response_mode=fragment&state=12345&nonce=678910",{
-//   //   method: "GET"
-//   // })
-// await fetch("https://management.azure.com/subscriptions/a5746592-9d11-4360-940b-b8fdb1042923/resourceGroups/icenterJuly/providers/Microsoft.DataFactory/factories/icenter/pipelines/icenter/createRun?api-version=2018-06-01",{
-//   method: "POST",
-//   headers:{
-//     Authorization:"Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6Im5PbzNaRHJPRFhFSzFqS1doWHNsSFJfS1hFZyIsImtpZCI6Im5PbzNaRHJPRFhFSzFqS1doWHNsSFJfS1hFZyJ9.eyJhdWQiOiIwMDAwMDAwMy0wMDAwLTBmZjEtY2UwMC0wMDAwMDAwMDAwMDAvZW1lcnNvbi5zaGFyZXBvaW50LmNvbUBlYjA2OTg1ZC0wNmNhLTRhMTctODFkYS02MjlhYjk5ZjY1MDUiLCJpc3MiOiIwMDAwMDAwMS0wMDAwLTAwMDAtYzAwMC0wMDAwMDAwMDAwMDBAZWIwNjk4NWQtMDZjYS00YTE3LTgxZGEtNjI5YWI5OWY2NTA1IiwiaWF0IjoxNjI3OTAwMjAyLCJuYmYiOjE2Mjc5MDAyMDIsImV4cCI6MTYyNzk4NjkwMiwiaWRlbnRpdHlwcm92aWRlciI6IjAwMDAwMDAxLTAwMDAtMDAwMC1jMDAwLTAwMDAwMDAwMDAwMEBlYjA2OTg1ZC0wNmNhLTRhMTctODFkYS02MjlhYjk5ZjY1MDUiLCJuYW1laWQiOiI4M2U2M2JiZC02Y2I5LTRhNGYtOTdlNC01MzM1NzUxMjEwNzRAZWIwNjk4NWQtMDZjYS00YTE3LTgxZGEtNjI5YWI5OWY2NTA1Iiwib2lkIjoiMjYyNmQxYzAtYzA2Ni00YzA5LTg2ZDQtZDFiY2E4Zjk5NzQ5Iiwic3ViIjoiMjYyNmQxYzAtYzA2Ni00YzA5LTg2ZDQtZDFiY2E4Zjk5NzQ5IiwidHJ1c3RlZGZvcmRlbGVnYXRpb24iOiJmYWxzZSJ9.mch0YJOscVsJDRGFLZZZj-FVfw0Zih_9O8uIFlnUNbrh6so1-wb5rzp4JZfO8D4-kM-KMJP98yKPTsI6aAUJGDcMTQdAdyVkXRNk7U-6DKTrL3EFx46crNtR9UjXse5B-lg3W27W8YSWM-8puTPLcPu2vwBQEPxWPD0K1E3V6-PG_Epm-HUlHc-XuDTof4Bij28TmUmdcAF9eEbC2QlYJMmw9aZ6LQYJKBPmXC9bbvXO57k675kEiOBeI6MFiEydExLBB1HEonLyHzHtsABQKguBvuLhyI6w4uHky4hnAtWSz4UqVMGmwi6lD0Xwm_28Dlkv54tWK59RCh6xCrXpQQ"
-//   }
-// })
-// console.log('FETCHED');
-// }
-
-
-  //   const connect = () => {
-  //     const connection = new signalR.HubConnectionBuilder()
-  //       .withUrl('/api')
-  //       .build();
-
-  //     connection.onclose(() => {
-  //       console.log('SignalR connection disconnected');
-  //       setTimeout(() => connect(), 2000);
-  //     });
-
-  //     connection.on('updated', updatedStock => {
-  //         if (Notification.permission == 'granted'&&'serviceWorker' in navigator) {
-  //   navigator.serviceWorker.getRegistration().then(reg => {
-  //     console.log(reg);
-  //     const options = {
-  //       body: 'updated',
-  //       vibrate: [100, 50, 100],
-  //       data: {
-  //         dateOfArrival: Date.now(),
-  //         primaryKey: 1
-  //       },
-  //     };
-  //     reg.showNotification(`${updatedStock.id}`, options);
-  //   });
-  // }
-  //       // console.log(updatedStock);
-  //       // alert(`${updatedStock.id} обновлена`)
-  //     });
-
-  //     connection.start().then(() => {
-  //       console.log("SignalR connection established");
-  //     });
-  //   };
-
-  //   connect();
-    // return {ff}
-  }
-}
+const getphotoList = async () => {
+       const {
+          request: photoListreq,
+          response: phList
+        } = useFetch(`/api/blob?list=true`)
+        state.phList = phList
+        await photoListreq()
+      }
+getphotoList()
 </script>
 
 <style lang="css" scoped>
-
+.cross{
+  position: absolute;
+  top: 0;
+  right: 0;
+  cursor: pointer;
+}
+.holder{
+  position: relative;
+}
+.photolist{
+  
+  margin-top: 5vh;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  grid-auto-columns: 200px;
+}
+.listphotos{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
 </style>
