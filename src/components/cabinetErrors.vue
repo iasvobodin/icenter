@@ -31,7 +31,7 @@
         <h2>Безошибочный шкаф</h2>
     </div>
     <br>
-    <button v-if="cabinetItems&&cabinetItems.length > 0" @click="saveBook">Экспорт excel</button>
+    <button v-if="computedItems&&computedItems.length > 0" @click="saveBook">Экспорт excel</button>
     <br>
     <router-link to="/errors/addnewerror">
         <img class="add__button" src="/img/add.svg" alt="Добавить новую ошибку">

@@ -1,6 +1,22 @@
 <template>
-    <section>
-        <div v-for="(t,i) in $store.state.template.CabTimeGroup" :key="i">
+    <h2>Расчёт нового CabTime</h2>
+     <div v-if="!projectInfoState.wo">
+    <choose-project-number v-if="!projectInfoState.pm" :data-to-render="state.projectData" @input-project-event="fetchProjectList"
+        @choose-project-number="choose" />
+    <div v-if="state.projectInformation">
+        <br>
+        <choose-project-number :data-to-render="state.projectInformation.cabinets.map(e =>e.wo + '   ' +e['cab name'])"
+            @choose-project-number="chooseCabinet" />
+    </div>
+     </div>
+    <section v-else>
+        <h3>Номер проекта {{projectInfoState['project number']}} <span style="cursor: pointer" @click="clearstate">&#10060;</span> </h3>
+      <h3>Номер WO {{projectInfoState['wo']}} </h3>
+            <div v-for="(value, key) in state.ctg.keys()" :key="key">
+                {{value}}
+          <!-- {{value}} <hr> <p v-for="item in value[1] ">{{item}}<hr></p>    -->
+      </div>
+        <div v-for="(t,i) in state.cabtimetype" :key="i">
             <table>
                 <colgroup>
                     <col span="1" style="width: 5%;">
@@ -15,31 +31,77 @@
                         <th>{{t.name}}</th>
                         <th>Кол-во</th>
                         <th>Норма</th>
-                        <th>{{$store.state.template.CabTimeGroup[i].summ}}</th>
+                        <th>{{state.cabtimetype&&state.cabtimetype[i].summ}}</th>
                     </tr>
                     <tr v-for="(value, index) in  groupBy(t.name)" :key="index">
                         <td>{{ value._id }}</td>
-                        <td v-if="value.new" class="cabtime__name">
-                            <textarea rows="1"></textarea>
+                        <td class="cabtime__name">
+                            <textarea v-if="value.new" rows="1"></textarea>
+                            <p v-else>{{ value.name }}</p>
                         </td>
-                        <td v-else class="cabtime__name">{{ value.name }}</td>
-                        <td><input class="cabtime__input" min="0" type="number" :value="value.value"
-                                @input="calculateLogic($event, value._id, 'value')"></td>
-                        <td v-if="value.new">
-                            <input class="cabtime__input" min="0" type="number"
+                        <td>
+                            <input class="cabtime__input" min="0" type="number" :value="value.value"
+                                @input="calculateLogic($event, value._id, 'value')">
+                        </td>
+                        <td>
+                            <input v-if="value.new" class="cabtime__input" min="0" type="number"
                                 @input="calculateLogic($event, value._id, '_const')">
+                            <p v-else>{{ value._const }}</p>
                         </td>
-                        <td v-else>{{ value._const }}</td>
-                        <td>{{tt&&value.result}}</td>
+                        <td>{{cabtimeTemplateCopy&&value.result}}</td>
                     </tr>
                     <div class="add__row" @click="addNewRow(t.name)"> + </div>
                 </tbody>
             </table>
         </div>
+        <table>
+            <colgroup>
+                <col span="1" style="width: 50%;">
+                <col span="1" style="width: 50%;">
+            </colgroup>
+            <tbody>
+                <tr style="border: solid 2px orange">
+                    <th>Подготовка чертежей в минутах</th>
+                    <th>Коэффициент на администрирвание в %</th>
+                </tr>
+                <tr>
+                    <td><input v-model.number="state.documents" min="0" type="number"></td>
+                    <td><input v-model.number="state.adminCoef" min="0" type="number"></td>
+                </tr>
+
+            </tbody>
+        </table>
+        <h3>Итоговый результат в часах</h3>
+        <table>
+            <colgroup>
+                <col span="1" style="width: 25%;">
+                <col span="1" style="width: 25%;">
+                <col span="1" style="width: 25%;">
+                <col span="1" style="width: 25%;">
+            </colgroup>
+            <tbody>
+                <tr style="border: solid 2px orange">
+                    <th>Сборка</th>
+                    <th>Тестирование + Поверка</th>
+                    <th>Администрирвание</th>
+                    <th>Сборка + Админ</th>
+                </tr>
+                <tr>
+                    <td v-for="(val, index) in cabtimeResult" :key="index">{{val}}</td>
+                </tr>
+            </tbody>
+        </table>
     </section>
+    <br>
+    <button v-if="projectInfoState.wo" @click="postCabTime">SEND</button>
+    <br>
+    <br>
 </template>
 
 <script setup>
+import conditionalRender from "@/components/conditionalRender.vue";
+import chooseWoNumber from '@/components/chooseWoNumber.vue';
+import chooseProjectNumber from "@/components/chooseProjectNumber.vue";
 import { useStore } from 'vuex';
 import { onBeforeRouteUpdate, useRouter } from 'vue-router';
 import {
@@ -50,28 +112,53 @@ import {
     onMounted,
 } from 'vue'
 
-const props = defineProps({
-  CabtimeFromServer: String
-})
- const store = useStore()
- const state = reactive({
+        const store = useStore()
+        const router = useRouter()
+        // const cabtimeVal = reactive({})
+        const state = reactive({
             adminCoef:"12",
             documents:"240",
             type: null,
-            tt: null,
+            cabtimeCopy: null,
             fetchProject: null,
             projectInformation: null,
             projectData: null,
             cabinet: '',
             cabtimetype: null,
+            ctg: null,
         })
-        const groupBy = t => {
-            if (store.state.template) {
-                state.tt = store.state.template?.CabTimeV2
-                return state.tt.filter(g => g._type === t)
-            }
-        }
-                const calculateLogic = ($event, key, val) => {
+            //INPUT DATA NEED TO CHANGE ON PROPS
+            // state.cabtimeCopy =store.state.template.CabTimeV2;
+            const deepCopy = JSON.stringify(store.state.template.CabTimeV2)
+            state.cabtimeCopy = JSON.parse(deepCopy)// store.state.template.CabTimeV2
+            const cabtimeTemplateCopy = computed(()=> state.cabtimeCopy )
+
+            // state.cabtimetype = store.state.template.CabTimeGroup;
+
+
+
+            const typeSet = new Set()
+            cabtimeTemplateCopy.value.map(e => typeSet.add(e._type))
+            console.log(typeSet, 'unic types');
+            state.cabtimetype = [...typeSet].map(e => {
+                return {
+                    name: e,
+                    total: ""
+                }
+            })
+            state.ctg = new Map()
+
+        // state.ctg = 
+        state.cabtimetype.map(( e) => {
+            state.ctg.set(e, JSON.parse(deepCopy).filter(c => c._type === e.name))
+            // debugger
+        //   return{
+        //     [e.name] : state.cabtimeCopy.filter(c => c._type === e.name)
+        //       }
+        }) //state.cabtimeCopy
+
+
+        const calculateLogic = ($event, key, val) => {
             let arr, coef;
             switch (key) {
                 case '1.3':
@@ -113,7 +200,7 @@ const props = defineProps({
                 default:
                     break;
             }
-            state.tt.map(e => {
+            cabtimeTemplateCopy.value.map(e => {
                 if (arr) {
                     arr.forEach(el => {
                         if (e._id === el) {
@@ -128,14 +215,181 @@ const props = defineProps({
                 }
 
             })
-            CabTimeGroup.value.map(e => {
-                return e.summ = state.tt.filter(f => f._type === e.name).reduce((acc, m) => {
+            state.cabtimetype.map(e => {
+                return e.summ = cabtimeTemplateCopy.value.filter(f => f._type === e.name).reduce((acc, m) => {
                     return m.result ? acc += +m.result : acc
                 }, 0)
             })
         }
+        // eslint-disable-next-line vue/no-side-effects-in-computed-properties
+        // const summByType = computed(() => cabtimeTemplateCopy.value ? cabtimeTemplateCopy.value.push(store.state.template.CabTime.reduce((acc, el) => acc.add(el._type), new Set())) : 0)
+        //  t =>  cabtimeTemplateCopy.value&&cabtimeTemplateCopy.value.reduce((acc,f) => f._type === t&&(acc +=f.result),0);
+        // const result = (a, b) => Math.ceil(a * b)
+
+        // const CabTimeGroup = computed(()=> state.cabtimetype)
+
+        // const getType = computed(() => store.state.template && store.state.template.CabTime.reduce((acc, el) => acc.add(el._type), new Set()))
+        const finalResult = computed(() => state.cabtimetype ? state.cabtimetype.reduce((acc,e) =>  e.name === 'Тестирование и Поверка'? acc:acc += e.summ ,0):0)
+        const cabtimeResult = computed(() => {
+            return {
+                assemble: Math.round(finalResult.value/60),
+                test: Math.round(state.cabtimetype[8].summ/60),
+                admin: Math.round(Math.round(+finalResult.value*+state.adminCoef/100 + +state.documents)/60),
+                final: Math.round((+finalResult.value + Math.round(+finalResult.value*+state.adminCoef/100 + +state.documents))/60)
+            }
+        })
+        const groupBy = t => {
+            if (store.state.template) {
+                // state.cabtimeCopy = store.state.template.CabTimeV2
+                return state.cabtimeCopy.filter(g => g._type === t)
+            }
+        }
+
+        const fetchProjectList = async () => {
+            if (!state.projectData) {
+                // debugger
+                state.fetchProject = await (
+                    await fetch(`/api/projects?status=open`)
+                ).json();
+                state.projectData = state.fetchProject.map((el) => el.id);
+                // this.projectData = this.fetchProject.map(el => el.id);
+            }
+        }
+        fetchProjectList()
+        const chooseCabinet = (e) => {
+            // state.cabinet = e.split('   ')[0];
+            store.commit("SETcabinetInfo", e);
+            //   this.woState = true;
+        }
+        const choose = ($event) => {
+            if (!$event) {
+                state.projectInformation = false;
+                return;
+            }
+            state.projectInformation = state.fetchProject.filter(
+                (e) => e.id === $event
+            )[0];
+            //   console.log(this.projectInformation, "this.projectInformation");
+            store.commit("SETprojectInfo", state.projectInformation);
+        }
+
+        const postCabTime = async () => {
+            const cabTime = {
+                "id": `cabtime__${projectInfoState.value.wo}`,
+                "info": {
+                    Проект: projectInfoState.value['project number'],
+                    Шкаф: projectInfoState.value['cab name'],
+                    wo: projectInfoState.value.wo.toString(),
+                },
+                type: "cabtime",
+                adminCoef: state.adminCoef,
+                documents: state.documents,
+                cabtimeResult: cabtimeResult.value,
+                body: {
+                    ...cabtimeTemplateCopy.value.filter(e => e.value),
+                }
+            }
+            await fetch('/api/POST_error', {
+                method: 'POST', // или 'PUT'
+                body: JSON.stringify({
+                    ...cabTime
+                }),
+            })
+            state.cabtimeCopy = JSON.parse(deepCopy)
+            router.push('/cabtimes')
+            // console.log(route.params.cabtimeId);
+        }
+        const addNewRow = (e) => {
+            //filter by type
+            const ff = cabtimeTemplateCopy.value.filter(g => g._type === e)
+            //take last and create array by dot
+            const id = ff[ff.length - 1]._id.split('.')
+            // increese the last element and joy
+            const dd = [id[0], +id[1] + 1].join('.')
+
+            cabtimeTemplateCopy.value.push({
+                new: true,
+                "_id": dd,
+                "name": "",
+                "_const": "",
+                "_type": e,
+                "_field": "",
+                "value": ""
+            }, )
+            // console.log(e)
+        };
+const clearstate = () => {
+    store.commit('SETcurrentProject', {})
+    state.projectInformation = null
+     state.cabtimeCopy = JSON.parse(deepCopy)
+}
+const projectInfoState = computed(() => store.state.projectInfo)
+//         return {
+//             CabTimeGroup,
+//             projectInfoState,
+//             clearstate,
+//             cabtimeResult,
+//             addNewRow,
+//             // getType,
+//             groupBy,
+//             postCabTime,
+//             fetchProjectList,
+//             // result,
+//             calculateLogic,
+//             choose, // filterByGroup,
+//             cabtimeVal,
+//             chooseCabinet,
+//             finalResult,
+//             // summByType,
+//             ...toRefs(state)
+//         }
+//     }
+// }
 </script>
 
-<style lang="scss" scoped>
-
+<style lang="css" scoped>
+.administration{
+    display: grid;
+    grid-auto-flow: column;
+    grid-template-columns: 1fr 1fr;
+}
+.add__row{
+    border: 1px solid orange;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    margin-top: 5px;
+    font-size: 30px;
+    line-height: 1;
+}
+.add__row:hover{
+    color: white;
+    background-color: orange;
+}
+.cabtime__name{
+    text-align: start;
+}
+.cabtime__input{
+    width: min(100%, 60px);
+}
+table {
+    margin: auto;
+  margin-top: 2vh;
+  border-collapse: collapse;
+  border-radius: 5px;
+  width: min(95vw, 800px);
+}
+td,
+th {
+  border: 1px solid #999;
+  padding: 0.5rem;
+  font-size: 12px;
+}
+tbody tr:nth-child(odd) {
+  background: #eee;
+}
+tbody tr:hover {
+  background: rgba(255, 166, 0, 0.1);
+}
 </style>
