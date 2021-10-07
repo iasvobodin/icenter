@@ -179,7 +179,7 @@ input[type='number']{
 
 button,
 input[type='submit'] {
-  height: 40px;
+  height: 30px;
   background-color: #ffffff;
   /* border: none; */
   /* color: white; */
@@ -191,6 +191,11 @@ input[type='submit'] {
   display: inline-block;
   box-sizing: border-box;
   font-size: 16px;
+}
+button,
+input[type='submit']{
+  width: min(95vw, 400px);
+  margin: auto;
 }
 input[type='submit']:hover {
   background-color: #00a2ff5b;

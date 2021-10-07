@@ -38,15 +38,15 @@
       <br>
       <br />
       <br>
-      <input :disabled="$store.state.loader" class="add__button" type="submit" value="Добавить" />
+      <input :disabled="$store.state.loader" class="add__button" type="submit" value="Добавить ошибку" />
     </form>
     <br>
     <button @click="statusConfirmed = !statusConfirmed">
-      Подтвердить ошибку
-    </button>
+      Изменить статус на "Принято"
+    </button> <br> <br>
     <button v-if="statusConfirmed" @click="statusClosed = !statusClosed">
-      Закрыть ошибку
-    </button>
+      Изменить статус на "Устранено"
+    </button> <br> <br>
   </div>
 </template>
 
@@ -317,6 +317,7 @@ export default {
   padding-top: 6px;
   padding-bottom: 6px;
   display: grid;
+  align-items: center;
   grid-template-columns: 2fr 3fr;
 }
 .error__item__title {
@@ -343,5 +344,16 @@ form {
 .error__item__vertical__title {
   text-align: center;
   margin: 5px;
+}
+input[type='submit']{
+  border: 1px solid green;
+  background-color: rgba(0, 207, 0, 0.205);
+}
+input[type='number']{
+  height: 30px;
+}
+input[type='submit']:hover{
+  background-color: rgb(0, 83, 0);
+  color: white;
 }
 </style>
