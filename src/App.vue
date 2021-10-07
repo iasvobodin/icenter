@@ -121,8 +121,8 @@ const ttemp = ref(null)
 // getTT()
 
 
-const bg = computed(()=> store.state.user.body?.bg ? document.documentElement.style.setProperty('--bg', `${store.state.user.body.bg}`): "white" )
-const customCursor = computed(()=> store.state.user.body?.customCursor && document.documentElement.style.setProperty('--cursor', `url('/img/unicorn.png')`))
+document.documentElement.style.setProperty('--bg', `${store.state.user.body?.bg}`)
+document.documentElement.style.setProperty('--cursor', `${store.state.user.body?.customCursor}`)
 
 //   function formatDate(date) {
 //     return (
