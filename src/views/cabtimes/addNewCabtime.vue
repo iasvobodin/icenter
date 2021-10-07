@@ -1,7 +1,7 @@
 <template>
     <h2>Расчёт нового CabTime</h2>
-     <div v-if="!projectInfoState.wo">
-    <choose-project-number v-if="!projectInfoState.pm" :data-to-render="state.projectData" @input-project-event="fetchProjectList"
+     <div v-if="!projectInfoState?.wo">
+    <choose-project-number  :data-to-render="state.projectData" @input-project-event="fetchProjectList"
         @choose-project-number="choose" />
     <div v-if="state.projectInformation">
         <br>
@@ -90,7 +90,7 @@
         </table>
     </section>
     <br>
-    <button v-if="projectInfoState.wo" @click="postCabTime">SEND</button>
+    <button v-if="projectInfoState" @click="postCabTime">SEND</button>
     <br>
     <br>
 </template>
@@ -111,7 +111,12 @@ import {
 
         const store = useStore()
         const router = useRouter()
-        // const cabtimeVal = reactive({})
+        router.afterEach((to, from) => {
+            if (from.fullPath === '/cabtimes') {
+                console.log(from,'frooooom');
+                store.commit('SETcurrentProject', null)
+            }
+        })
         const state = reactive({
             adminCoef:"12",
             documents:"240",
@@ -126,9 +131,9 @@ import {
             ctv3: null,
         })
            // DEEP COPY OBJECT
-           const deepCopy = JSON.parse(JSON.stringify(store.state.template.CabTimeV3))
+        //    const deepCopy = JSON.parse(JSON.stringify(store.state.template.CabTimeV3))
             state.ctv3 = JSON.parse(JSON.stringify(store.state.template.CabTimeV3))
-
+const projectInfoState = computed(() => store.state.projectInfo)
 
         const calculateLogic = ($event, key, val) => {
             let arr, coef;
@@ -290,7 +295,7 @@ const clearstate = () => {
     state.projectInformation = null
     state.ctv3 = JSON.parse(JSON.stringify(store.state.template.CabTimeV3))
 }
-const projectInfoState = computed(() => store.state.projectInfo)
+
 //         return {
 //             CabTimeGroup,
 //             projectInfoState,

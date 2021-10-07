@@ -15,7 +15,7 @@
     <input id="search" v-model="state.search" class="choose" type="text" placeholder="WO или номер проекта">
     <br><br>
   <div v-if="state.errors" class="errors__holder">
-    <div v-for="(value, key, index) in filter" :key="index" class="errors__card"
+    <div v-for="(value, key, index) in filter" :key="index" class="item__card"
       @click="$router.push(`/errors/${value.id}`)">
       <div v-for="(v, k, i) in value.info" :key="i" :class="{error__item__desc : k ==='Описание'}" class="error__item">
         <h3 :class="{ error__item__vertical__title: k === 'Описание' }" class="error__item__title">{{ k }}:</h3>
@@ -150,7 +150,7 @@ input {
   display: grid;
   width: 98%;
   margin: auto;
-  grid-template-columns: repeat(auto-fit, minmax(max(25vw, 250px), 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(max(25vw, 250px), 1fr));
   column-gap: 2vh;
   row-gap: 2vh;
 }

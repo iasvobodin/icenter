@@ -238,5 +238,37 @@ h6 {
   font-family: 'Roboto Slab', serif;
   font-weight: normal;
 }
-
+.item__card{
+  background-color: white;
+  /* border: 1px solid orange; */
+  /* box-shadow: 0 0 25px rgb(0 0 0 / 8%); */
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.05) 0px 4px 6px -2px;
+  border-radius: 4px;
+  padding: 5px;
+  cursor: pointer;
+  min-height: 150px;
+  height: 100%;
+  overflow: hidden;
+}
+.item__card:hover{
+    box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
+}
+.group__items{
+  position: sticky;
+  top: 50px;
+  width: 100%;
+  min-height: 50px;
+  z-index: 2;
+  background-color: #ffffff;
+  /* color: black; */
+  margin: 1.5vh auto;
+  margin-bottom: 40px;
+  /* display: block; */
+  box-shadow: rgba(0, 0, 0, 0.20) 0px 25px 20px -20px;
+  /* border-radius: 5px; */
+  /* width: min(700px, 95%); */
+  /* padding: 0.01vh; */
+  /* font-size: min(20px 5vw ); */
+  /* transform: translateY(-50%); */
+}
 </style>

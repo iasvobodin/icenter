@@ -1,8 +1,8 @@
 <template>
   <div>
     <h2>Добавление новой ошибки.</h2>
-    <div v-if="!$store.state.projectInfo.wo">
-      <choose-project-number v-if="!$store.state.projectInfo.pm" :data-to-render="state.projectData"
+    <div v-if="!$store.state.projectInfo?.wo">
+      <choose-project-number v-if="!$store.state.projectInfo?.pm" :data-to-render="state.projectData"
         @input-project-event="fetchProjectList" @choose-project-number="choose" />
       <div v-if="state.projectInformation">
         <br>
@@ -22,11 +22,13 @@
 <script setup>
 
 import {useStore} from 'vuex';
-import {computed, reactive, ref} from 'vue';
+import {computed, reactive, ref, onUnmounted} from 'vue';
 import { useFetch } from '@/hooks/fetch'
+import { useRouter } from 'vue-router'
 import setError from "@/components/setError.vue";
 import chooseProjectNumber from "@/components/chooseProjectNumber.vue";
 
+const router = useRouter()
 const store = useStore()
 const state = reactive({
   projectData: null,
@@ -35,6 +37,13 @@ const state = reactive({
   woState: false,
   cabinet: "",
 });
+// console.log(router, 'router');
+router.afterEach((to, from) => {
+  if (from.fullPath === '/errors') {
+    store.commit('SETcurrentProject', null)
+  }
+})
+// onUnmounted(()=> store.commit('SETcurrentProject', null))
 const projectInfoState = computed(() => store.state.projectInfo)
 const chooseCabinet = (e) => {
   state.cabinet = e.split('   ')[0];

@@ -12,11 +12,11 @@
     </div>
     <br>
     <div v-for="(val, key, index) in state.actualRojects" v-show="state.groupCabinets(val).length != 0" :key="index">
-      <h2 >Проект {{val}}</h2>
+      <h2 class="group__items" >Проект {{val}}</h2>
       <br>
       <div  class="errors__holder">
       <div v-for="(v, k, i) in state.groupCabinets(val)" :key="i" class="error__card__holder">
-        <div class="errors__card" @click="routeToCabinet(v.wo, val)">
+        <div class="item__card" @click="$router.push(`/cabinets/${v.wo}`)">
           WO {{v.wo  }}
           <br>
           {{v['cab name']}} <br>
@@ -24,7 +24,7 @@
  </div>
       </div>
       <br>
-      <hr>
+      <!-- <hr> -->
       <br>
     </div>
   </div>
@@ -77,16 +77,16 @@ watch(qr, (newValue, oldValue) => {
 
 const routeToCabinet = (wo, val) => {
   router.push(`/cabinets/${wo}`)
-  const currentProject = state.projects.find(c => c.id === val)
-  const curretCabinet = currentProject.cabinets.find(cabinet => cabinet.wo === wo)
-  const payload = {
-    "project number": currentProject.id,
-    ...currentProject.info.base,
-    ...currentProject.info.extends,
-    ...curretCabinet
-    }
-    store.commit('SETcurrentProject',payload)
-    console.log(payload);
+  // const currentProject = state.projects.find(c => c.id === val)
+  // const curretCabinet = currentProject.cabinets.find(cabinet => cabinet.wo === wo)
+  // const payload = {
+  //   "project number": currentProject.id,
+  //   ...currentProject.info.base,
+  //   ...currentProject.info.extends,
+  //   ...curretCabinet
+  //   }
+  //   store.commit('SETcurrentProject',payload)
+    // console.log(payload);
   // console.log(state.projects.find(c => c.id === val));
 }
 
@@ -170,6 +170,11 @@ onMounted(async () => {
 </script>
 
 <style lang="css" scoped>
+.project__number{
+  position: sticky;
+  top: 50px;
+  background-color: white;
+}
 input {
   height: 30px;
   border: 1px solid orange;
@@ -183,24 +188,28 @@ input {
 }
 .errors__holder {
   display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(max(17vw, 250px), 1fr));
   align-items: stretch;
+  /* grid-auto-flow: column dense; */
+  grid-auto-columns: max(17vw, 250px);
   width: 95%;
   margin: auto;
-  grid-template-columns: repeat(auto-fill, minmax(max(20vw, 250px), 1fr));
   column-gap: 2vh;
+  justify-content: center;
   row-gap: 2vh;
 }
 
-.errors__card {
-  border: 1px solid orange;
-  border-radius: 4px;
-  padding: 5px;
+.item__card {
+  /* border: 1px solid orange; */
+  /* border-radius: 4px; */
+  /* padding: 5px; */
   cursor: pointer;
   min-height: 50px;
+  width: max(17vw, 250px);
 }
 
 .error__card__holder {
-  place-self: stretch;
+  place-self: center;
 
 }
 .qr__holder{
@@ -252,8 +261,8 @@ input {
   margin: auto;
   color: #ff5100;
 }
-.errors__card:hover {
-  border: 1px solid black;
-  background: rgba(245, 254, 255, 0.356);
+.item__card:hover {
+  /* border: 1px solid black;
+  background: rgba(245, 254, 255, 0.356); */
 }
 </style>

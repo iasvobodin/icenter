@@ -1,25 +1,24 @@
 <template>
     <div class="app__header">
         <navigation-panel />
-        <img class="back__image"  src="/img/back.svg" alt="" @click="$router.back()" />
+        <img class="back__image" src="/img/back.svg" alt="" @click="$router.back()" />
         <div>
-            <h4 @click="$router.push('/login')" v-if="!$store.state.user.info">Необходима авторизация</h4>
+            <h4 class="checkAuth" v-if="!userInfo">Проверка авторизации</h4>
             <div v-else class="user" @click="$router.push('/user')"> 
-            <span>
-                {{ $store.state.user.body.name}}
+                <span>
+                    {{ $store.state.user.body.name}}
                 </span>
             </div>
         </div>
     </div>
 </template>
 
-<script>
-import navigationPanel from "@/components/adminNavigation.vue";
-    export default {
-          components: {
-    navigationPanel
-    }
-    }
+<script setup>
+    import {computed} from 'vue'
+    import navigationPanel from "@/components/adminNavigation.vue";
+    import {useStore} from 'vuex'
+    const store = useStore()
+    const userInfo = computed(()=> store.state.user.info )
 </script>
 
 <style lang="css" scoped>
@@ -54,7 +53,11 @@ a {
     display: grid;
     cursor: pointer;
 }
-
+.checkAuth{
+    line-height: 50px;
+    color: white;
+    font-weight: 300;
+}
 .user>span {
     place-self: center;
     color: white;

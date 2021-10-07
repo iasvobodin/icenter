@@ -7,7 +7,7 @@
       {{ typeof v === 'string'&&v.includes('@')? v.split('@')[0].replace('.', ' ') : v }}
     </p>
     </div>
-    <hr style="margin:0;">
+    <hr v-if="hr" style="margin:0;">
   <!-- <div class="card__border"></div> -->
   </div>
 </template>
@@ -15,6 +15,10 @@
 <script>
   export default {
     props: {
+      hr:{
+        type: Boolean,
+        default: ()=> true,
+      },
       infoData: {
         type: Object,
         required: true

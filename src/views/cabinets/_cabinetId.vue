@@ -14,15 +14,9 @@
 </template>
 
 <script setup>
-import {
-    useFetch
-} from '@/hooks/fetch'
-import {
-    reactive,
-} from 'vue'
-import {
-    useRoute
-} from 'vue-router'
+import { useFetch } from '@/hooks/fetch'
+import { reactive, onUnmounted } from 'vue'
+import { useRoute } from 'vue-router'
 import Errors from '@/components/cabinetErrors.vue'
 import Cabtime from '@/components/cabinetCabTime.vue'
 import Info from '@/components/cabinetInfo.vue'
@@ -34,25 +28,24 @@ const route = useRoute()
 const store = useStore()
 const state = reactive({
     cabinetItems: null,
-    cabinetTabs: [{
-            title: 'Информация',
-            // value: Info
-        },
-        {
-            title: 'CabTime',
-            // value: `Cabtime`
-        },
-        {
-            title: 'Ошибки',
-            // value: Errors
-        },
-        {
-            title: "Задачи",
-            // value: Tasks
-        }
+    cabinetTabs: [
+        { title: 'Информация', },
+        { title: 'CabTime', },
+        { title: 'Ошибки', },
+        { title: "Задачи", }
     ],
-    currentCabinetTab: "Info",
+    currentCabinetTab:  null,
 })
+
+// onUnmounted(()=> store.commit('SETcurrentProject', null))
+
+
+const setState = async () => {
+    await store.dispatch('getCabinetsInfo', route.params.cabinetId)  
+    await store.dispatch('GET_cabinetItems', route.params.cabinetId )
+}
+setState()
+
 const condition = (a) => {
     switch (a) {
         case 'Информация':
@@ -63,24 +56,9 @@ const condition = (a) => {
             return Errors
         case 'Задачи':
             return Tasks
+        default: return Info
     }
 }
-store.dispatch('GET_cabinetItems', route.params.cabinetId )
-// const getCabinetItems = async () => {
-//     const {
-//         request,
-//         response
-//     } = useFetch(
-//         `/api/cabinetItems?wo=${route.params.cabinetId}`,
-//     )
-//     await request()
-//     state.cabinetItems = response
-//     //need to chanche tabs set default OPEN
-//     state.cabinetItems.forEach((e, i) => {
-//         state.currentTab[i] = "Открыто"
-//     });
-// }
-// getCabinetItems()
 
 </script>
 

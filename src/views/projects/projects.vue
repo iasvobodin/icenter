@@ -23,11 +23,13 @@
   <br>
   <div v-if="errors">
     <div v-for="status in actualStatus" v-show="groupProjects(status).length != 0" :key="status">
-      <h3 class="project__status">{{status?.split('-')[1].split('/')[0]}}</h3>
+      <div class="group__items">
+      <h3 >{{status?.split('-')[1].split('/')[0]}}</h3>
+      </div>
       <div class="errors__holder">
         <div v-for="(value, key, index) in groupProjects(status)" :key="index" class="error__card__holder"
           @click="!selectedStatus&&$router.push(`/projects/${value.id}`)">
-          <div class="errors__card" :class="{closed__card : selectedStatus}">
+          <div class="item__card" :class="{closed__card : selectedStatus}">
             <div class="double">
              <h2>{{value.id}}:</h2><p>{{value.info?.base?.['Project Name']}}</p>
             </div>
@@ -41,7 +43,7 @@
             <info-render :info-data="{'Отгрузка': value.info?.extends?.['Shipping date']}" />
             <info-render :info-data="{'QTY': value.cabinets?.length}" />
              </div>
-            <info-render :info-data="{'Comments': value.info?.extends?.['Comments field']}" />
+            <info-render :hr="false" :info-data="{'Comments': value.info?.extends?.['Comments field']}" />
           </div>
         </div>
       </div>
@@ -329,19 +331,11 @@ h3{
   width: 95%;
   margin: auto;
   grid-template-columns: repeat(auto-fill, minmax(max(20vw, 250px), 1fr));
-  column-gap: 2vh;
-  row-gap: 2vh;
+  column-gap: 3vh;
+  row-gap: 3vh;
 }
 
-.errors__card {
-  border: 1px solid orange;
-  border-radius: 4px;
-  padding: 5px;
-  cursor: pointer;
-  min-height: 150px;
-  height: 100%;
-  overflow: hidden;
-}
+
 .closed__card {
   border: 1px solid red;
   border-radius: 4px;
@@ -358,10 +352,11 @@ h3{
 
 }
 
-.errors__card:hover {
+/* .item__card:hover {
   border: 1px solid black;
   background: rgba(245, 254, 255, 0.356);
-}
+} */
+
 
 .error__item {
   border-bottom: 1px solid black;
@@ -467,17 +462,26 @@ textarea{
   margin: auto;
   padding: 0px;
 }
-.project__status{
+:global(.group__items){
   position: sticky;
   top: 50px;
-  background-color: #004481;
-  color: white;
-  margin: 1vh auto;
+  width: 100%;
+  min-height: 50px;
+  z-index: 2;
+  background-color: #ffffff;
+  /* color: black; */
+  margin: 1.5vh auto;
+  margin-bottom: 40px;
+  /* display: block; */
+  box-shadow: rgba(0, 0, 0, 0.20) 0px 25px 20px -20px;
   /* border-radius: 5px; */
   /* width: min(700px, 95%); */
-  padding: 0.5vh;
-  font-size: min(20px 5vw );
+  /* padding: 0.01vh; */
+  /* font-size: min(20px 5vw ); */
   /* transform: translateY(-50%); */
+}
+.group__items h3{
+  line-height: 50px;
 }
 .props{
 margin-top: 5px;

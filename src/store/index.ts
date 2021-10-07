@@ -19,7 +19,7 @@ export default createStore({
     projectList: null,
     testState: "testState",
     selectedProjectNumber: "",
-    projectInfo: {},
+    projectInfo: null,
     user: {},
     currentError: null,
     cabinetItems:[]
@@ -82,6 +82,25 @@ export default createStore({
     },
   },
   actions: {
+    async getCabinetsInfo ({ commit }, payload) {
+      const projects = [];
+      const { request, response } = useFetch('/api/projects?status=open')
+      await request()
+      response.value.forEach(p =>{
+          p.cabinets.forEach(c=>{
+              let payload = {
+                  "project number": p.id,
+                  ...c,
+                  ...p.info.base,
+                  ...p.info.extends,
+              }
+              projects.push(payload)
+          })
+      }) 
+    const currentInfo = projects.find(e => e.wo === payload)
+    commit('SETcurrentProject', currentInfo)
+    // console.log(projects);
+    },
     async GET_cabinetItems({ commit }, payload) {
       const { request, response } = useFetch(
         `/api/cabinetItems?wo=${payload}`,
