@@ -88,7 +88,7 @@
   <br>
   <br>
   <button v-if="!changeAllFlag&&errors" @click="changeAllFlag = !changeAllFlag">Change ALL</button>
-  <button v-else @click="updateChangedProjects">Update</button>
+  <button v-if="changeAllFlag&&errors" @click="updateChangedProjects">Update</button>
   <br>
   <br>
 </template>

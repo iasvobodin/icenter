@@ -90,7 +90,7 @@
         </table>
     </section>
     <br>
-    <button v-if="projectInfoState" @click="postCabTime">SEND</button>
+    <button v-if="projectInfoState?.wo" @click="postCabTime">SEND</button>
     <br>
     <br>
 </template>
