@@ -147,6 +147,7 @@ export default createStore({
         window.localStorage.setItem("user", JSON.stringify(user))
       }
       state.user.body&&document.documentElement.style.setProperty('--bg', `${state.user.body.bg}`);
+      state.user.body&&document.documentElement.style.setProperty('--cursor', `${state.user.body?.customCursor}`)
 
     }
     },

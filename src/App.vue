@@ -119,10 +119,13 @@ const ttemp = ref(null)
 // }
 
 // getTT()
+// computed(()=> {
+//   return 
+// })
 
 
-document.documentElement.style.setProperty('--bg', `${store.state.user.body?.bg}`)
-document.documentElement.style.setProperty('--cursor', `${store.state.user.body?.customCursor}`)
+// document.documentElement.style.setProperty('--bg', `${store.state.user.body?.bg}`)
+// document.documentElement.style.setProperty('--cursor', `${store.state.user.body?.customCursor}`)
 
 //   function formatDate(date) {
 //     return (
@@ -249,7 +252,7 @@ h6 {
   /* box-shadow: 0 0 25px rgb(0 0 0 / 8%); */
   box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.05) 0px 4px 6px -2px;
   border-radius: 4px;
-  padding: 5px;
+  padding: 1vh;
   cursor: pointer;
   min-height: 150px;
   height: 100%;
