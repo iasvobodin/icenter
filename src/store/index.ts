@@ -134,20 +134,26 @@ export default createStore({
       state
     }) {
       const registerUserRes = await fetch(`/api/user/${state.user.id}?getRegisterUser=true`)
-      let user;//   console.log(responseUserAuth,'responseUserAuth');
-      if (registerUserRes.ok) {
-        user = await registerUserRes.json()
-        const name = createName(state.user.info)
-        user.body.name = name
-      const LSuser = window.localStorage.getItem("user");
-
-      if (JSON.stringify(user) !== LSuser) {
-        console.log('check user version');
-        commit("setUserAuth", JSON.stringify(user));
-        window.localStorage.setItem("user", JSON.stringify(user))
+      const userFromServer = await registerUserRes.json()
+      const userFromLocal = window.localStorage.getItem("user");
+      if (JSON.stringify(userFromServer) !== userFromLocal){
+        commit("setUserAuth", JSON.stringify(userFromServer));
+        window.localStorage.setItem("user", JSON.stringify(userFromServer))
       }
-      state.user.body&&document.documentElement.style.setProperty('--bg', `${state.user.body.bg}`);
-      state.user.body&&document.documentElement.style.setProperty('--cursor', `${state.user.body?.customCursor}`)
+      
+      // let user;//   console.log(responseUserAuth,'responseUserAuth');
+      // if (registerUserRes.ok) {
+      //   user = await registerUserRes.json()
+      //   const name = createName(state.user.info)
+      //   user.body.name = name
+      // const LSuser = window.localStorage.getItem("user");
+
+      // if (JSON.stringify(user) !== LSuser) {
+      //   console.log('check user version');
+      //   commit("setUserAuth", JSON.stringify(user));
+      //   window.localStorage.setItem("user", JSON.stringify(user))
+      // }
+
 
     }
     },

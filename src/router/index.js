@@ -198,7 +198,7 @@ router.beforeEach(async (to, from) => {
 
   if (
     import.meta.env.MODE === 'development') {
-    let user = {
+    const user = {
       "id": "9c0c1980f5904d10b43e552d2b7c4041",
       "type": "info",
       "info": {

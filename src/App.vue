@@ -19,7 +19,7 @@ import {
   useStore
 } from 'vuex'
 import {
-  ref, computed
+  ref, computed, onBeforeMount
 } from 'vue'
 
 
@@ -107,12 +107,12 @@ console.log(connection, 'connection!!!!!!!!!!!!!');
 };
 
 connect();
-const ttemp = ref(null)
-  onBeforeRouteUpdate(async ( to, from, next) => {
-    console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-  // ttemp.value = await store.dispatch('GET_template')
-  //  next()
-    })
+// const ttemp = ref(null)
+  // onBeforeRouteUpdate(async ( to, from, next) => {
+  //   console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+  // // ttemp.value = await store.dispatch('GET_template')
+  // //  next()
+  //   })
 
 // const getTT = async () => {
 //   await store.dispatch('GET_template')
@@ -122,8 +122,12 @@ const ttemp = ref(null)
 // computed(()=> {
 //   return 
 // })
-
-
+onBeforeMount(()=> {
+  const userFromLocal = JSON.parse(window.localStorage.getItem("user"))
+  document.documentElement.style.setProperty('--bg', `${userFromLocal.body?.bg}`);
+  document.documentElement.style.setProperty('--cursor', `${userFromLocal.body?.customCursor}`)
+})
+      
 // document.documentElement.style.setProperty('--bg', `${store.state.user.body?.bg}`)
 // document.documentElement.style.setProperty('--cursor', `${store.state.user.body?.customCursor}`)
 
