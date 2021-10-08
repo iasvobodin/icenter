@@ -124,7 +124,8 @@ const router = createRouter({
   routes,
 });
 router.beforeEach((to, from) => {
-  if (to.path === '/login')  return true
+  if (to.path === '/login' || to.path === '/role') return true
+  // if (to.path === '/login')  return true
 })
 
 
@@ -192,7 +193,7 @@ const CHECK_userDB = async (user) => {
 }
 
 router.beforeEach(async (to, from) => {
-  if (to.path === '/login' || to.path === '/role') return true
+  
 
     !store.state.template && await store.dispatch('GET_template')
 

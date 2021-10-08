@@ -133,14 +133,17 @@ export default createStore({
       commit,
       state
     }) {
-      const registerUserRes = await fetch(`/api/user/${state.user.id}?getRegisterUser=true`)
+      console.log('checking User frome vuex');
+      
+      const registerUserRes = await fetch(`/api/user/${state.user?.id}?getRegisterUser=true`)
+      if (registerUserRes.ok) {
       const userFromServer = await registerUserRes.json()
       const userFromLocal = window.localStorage.getItem("user");
       if (JSON.stringify(userFromServer) !== userFromLocal){
         commit("setUserAuth", JSON.stringify(userFromServer));
         window.localStorage.setItem("user", JSON.stringify(userFromServer))
       }
-      
+    }
       // let user;//   console.log(responseUserAuth,'responseUserAuth');
       // if (registerUserRes.ok) {
       //   user = await registerUserRes.json()

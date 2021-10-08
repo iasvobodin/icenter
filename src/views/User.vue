@@ -8,31 +8,57 @@
   </div>
 </template>
 
-<script>
-export default {
-  data() {
-    return {
-      localUser: false
-    }
-  },
-  methods: {
-    clearUser() {
-      window.localStorage.removeItem("user")
-      if (
-        import.meta.env.MODE === 'development') {
-          this.$router.push('/login')
-        } else{
-          window.location.href = '/.auth/logout?post_logout_redirect_uri=/login'
-        }
-      this.localUser = window.localStorage.getItem('user')
-    }
-  },
-    mounted() {
-      this.localUser = window.localStorage.getItem('user')
-      this.$store.dispatch('checkUser')
-    // }
-  },
-};
+<script setup>
+import {
+  useStore
+} from 'vuex'
+// import {
+//     useFetch
+// } from '@/hooks/fetch'
+import {
+  computed,
+  reactive,
+  onMounted,
+  watch,
+  ref
+} from 'vue'
+import {
+  useRouter,
+  useRoute
+} from 'vue-router'
+const router = useRouter()
+const store = useStore()
+const localUser = ref(false)
+// export default {
+// data() {
+//   return {
+//     localUser: false
+//   }
+// },
+// methods: {
+const clearUser = () => {
+  window.localStorage.removeItem("user")
+  if (
+    import.meta.env.MODE === 'development') {
+    router.push('/login')
+  } else {
+    window.location.href = '/.auth/logout?post_logout_redirect_uri=/login'
+  }
+  localUser.value = window.localStorage.getItem('user')
+}
+// },
+// const user = computed(() => store.state.user.info ? store.state.user : false );
+
+// watch(user, async () => {
+//   console.log('im watching');
+//   await store.dispatch('checkUser')
+// })
+onMounted(() => {
+  localUser.value = window.localStorage.getItem('user')
+  store.dispatch('checkUser')
+  // }
+})
+// };
 </script>
 
 <style lang="css" scoped>
