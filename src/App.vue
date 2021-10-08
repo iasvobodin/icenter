@@ -173,7 +173,9 @@ body{
   margin: 0;
   background: var(--bg);
 }
-
+#view{
+  min-height: calc(100vh - 50px);
+}
 textarea,
 select,
 input[type='text'],
@@ -207,9 +209,12 @@ input[type='submit']{
 input[type='submit']:hover {
   background-color: #00a2ff5b;
 }
-button:hover {
+button:hover:enabled {
   background-color: #00a2ff5b;
 }
+/* bottom:disabled bottom:hover {
+  background-color: #ffffff;
+} */
 h4 {
   margin: 0;
 }

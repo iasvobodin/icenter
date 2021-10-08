@@ -142,6 +142,8 @@ export default createStore({
       if (JSON.stringify(userFromServer) !== userFromLocal){
         commit("setUserAuth", JSON.stringify(userFromServer));
         window.localStorage.setItem("user", JSON.stringify(userFromServer))
+  //       document.documentElement.style.setProperty('--bg', `${userFromLocal.body?.bg}`);
+  // document.documentElement.style.setProperty('--cursor', `${userFromLocal.body?.customCursor}`)
       }
     }
       // let user;//   console.log(responseUserAuth,'responseUserAuth');

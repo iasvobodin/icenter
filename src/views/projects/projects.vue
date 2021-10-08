@@ -304,6 +304,7 @@ h3{
 }
 .add__button {
   position: fixed;
+  z-index: 2;
   bottom: 20px;
   right: 20px;
   width: 40px;
@@ -467,7 +468,7 @@ textarea{
   top: 50px;
   width: 100%;
   min-height: 50px;
-  z-index: 2;
+  /* z-index: 2; */
   background-color: #ffffff;
   /* color: black; */
   margin: 1.5vh auto;
