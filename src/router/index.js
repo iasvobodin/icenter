@@ -225,7 +225,7 @@ router.beforeEach(async (to, from) => {
         return true
       }
     } else {
-      user = await CHECK_auth()
+     let user = await CHECK_auth()
       if (user) {
         console.log(typeof user, user, 'it is after check auth, before check role');
         console.log(user.info.userRoles.some('icenter'), 'some method in user');
