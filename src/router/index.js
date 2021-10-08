@@ -159,6 +159,7 @@ const CHECK_auth = async () => {
     return false
   } catch (error) {
     console.log(error, 'CHECK AUTH ERROR');
+    return false
   }
 }
 const commitUser = (user) => {
