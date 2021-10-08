@@ -144,14 +144,14 @@ router.beforeEach(async (to, from) => {
 const test = await CHECK_auth()
 console.log(test, 'just check user auth from route own');
 
-async function getUser() {
-  const response = await fetch('/api/user');
-  const payload = await response.json();
-  const { clientPrincipal } = payload;
-  return clientPrincipal;
-}
+// async function getUser() {
+//   const response = await fetch('/api/user');
+//   const payload = await response.json();
+//   const { clientPrincipal } = payload;
+//   return clientPrincipal;
+// }
 
-console.log(await getUser(), 'just check user auth from route ff');
+// console.log(await getUser(), 'just check user auth from route ff');
 
   if (to.path === '/login' || to.path === '/role')  return true
   // if (to.path === '/role')  return true
