@@ -225,15 +225,14 @@ router.beforeEach(async (to, from) => {
         return true
       }
     } else {
-     let user = await CHECK_auth()
-      if (user) {
-        console.log(typeof user, user, 'it is after check auth, before check role');
-        console.log(user.info.userRoles.some('icenter'), 'some method in user');
+     const userCheck = await CHECK_auth()
+      if (userCheck) {
+        console.log(userCheck, 'it is after check auth, before check role');
         //CHECK ROLE
-        if (!user.info.userRoles.some('icenter')) {
+        if (!JSON.stringify(userCheck).includes('icenter')) {
           return '/role'
         } else {
-          CHECK_userDB(user)
+          CHECK_userDB(userCheck)
           return true
         }
       } else {
