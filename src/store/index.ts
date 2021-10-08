@@ -160,7 +160,7 @@ export default createStore({
       //check auth AAD
       if (
         import.meta.env.MODE === 'development') {
-        clientPrincipal = {
+          clientPrincipal = {
           identityProvider: "static",
           userId: "9c0c1980f5904d10b43e552d2b7c4041",
           userDetails: "Ivan.Svobodin@Emerson.com",
@@ -213,72 +213,6 @@ export default createStore({
         window.localStorage.setItem("user", JSON.stringify(user));
         commit("setUserAuth", JSON.stringify(user));
       }
-
-
-
-      //check Register user
-
-
-      // console.log(import.meta.env, 'ENV');
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      // try {
-      //   if (!state.user.info) {
-      //     responseUser = await fetch("/.auth/me");
-      //   }
-      //   try {
-      //     const payload = await responseUser.json();
-      //     clientPrincipal = payload.clientPrincipal;
-      //     // console.log(payload, "payload");
-      //   } catch (error) {
-      //     console.log("Use local user", error.message);
-      //     clientPrincipal = {
-      //       userId: "cfdf07822f6a49ee960a7b76bceb6f79",
-      //       userDetails: "Ivan.Svobodin@Emerson.com",
-      //       userRoles: ["admin", "anonymous", "authenticated"],
-      //     };
-      //   }
-      // } catch (error) {
-      //   console.log("fetch error", error);
-      // }
-      // console.log(clientPrincipal,"clientPrincipal");
-
-
-      // console.log(user,);
-
-      // try {
-      //   const userRes = await fetch(`/api/user/${clientPrincipal.userId}`, {
-      //     method: "POST", // или 'PUT'
-      //     body: JSON.stringify({
-      //       id: clientPrincipal.userId,
-      //       type: "info",
-      //       info: clientPrincipal,
-      //       body: {},
-      //     }),
-      //   });
-      //   const user = await userRes.json();
-      //   const name = user.userDetails.split('@')[0].split('.')
-      //   !state.user.body && commit("setUserInfo", {...user, name : name[0][0].toUpperCase() + '.' + name[1][0].toUpperCase()+ '.'});
-      //   // console.log(state.user,user, "state.user.info");
-      // } catch (error) {
-      //   console.log("user is not def", error);
-      // }
 
       console.log("GETAUTH");
     },

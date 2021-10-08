@@ -127,9 +127,24 @@ router.beforeEach((to, from) => {
   if (to.path === '/login')  return true
 })
 
+const CHECK_auth = async () =>{
+  const responseUserAuth = await fetch("/.auth/me");
+  if (responseUserAuth.ok) {
+      const userAuth = await responseUserAuth.json();
+      return userAuth.clientPrincipal
+      // window.localStorage.setItem("user", JSON.stringify(userAuth));
+  }
+  return false
+  }
+
 router.beforeEach(async (to, from) => {
   !store.state.template && await store.dispatch('GET_template')
   const user = window.localStorage.getItem("user")
+
+const test = await CHECK_auth()
+console.log(test, 'just check user auth from route');
+
+
   if (to.path === '/login' || to.path === '/role')  return true
   // if (to.path === '/role')  return true
   if (user) {
