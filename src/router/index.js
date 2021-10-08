@@ -128,30 +128,36 @@ router.beforeEach((to, from) => {
 })
 
 const CHECK_auth = async () =>{
+try {
   const responseUserAuth = await fetch("/.auth/me");
   if (responseUserAuth.ok) {
-      const userAuth = await responseUserAuth.json();
-      return userAuth.clientPrincipal
+      const user = await responseUserAuth.json();
+      return user
       // window.localStorage.setItem("user", JSON.stringify(userAuth));
   }
   return false
-  }
+  
+} catch (error) {
+  console.log(error);
+}
+}
+
 
 router.beforeEach(async (to, from) => {
   !store.state.template && await store.dispatch('GET_template')
   const user = window.localStorage.getItem("user")
 
-const test = await CHECK_auth()
-console.log(test, 'just check user auth from route own');
+// const test = await CHECK_auth()
+console.log(await CHECK_auth(), 'just check user auth from route own');
 
-// async function getUser() {
-//   const response = await fetch('/api/user');
-//   const payload = await response.json();
-//   const { clientPrincipal } = payload;
-//   return clientPrincipal;
-// }
+async function getUser() {
+  const response = await fetch('/api/user');
+  const payload = await response.json();
+  const { clientPrincipal } = payload;
+  return clientPrincipal;
+}
 
-// console.log(await getUser(), 'just check user auth from route ff');
+console.log(await getUser(), 'just check user auth from route ff');
 
   if (to.path === '/login' || to.path === '/role')  return true
   // if (to.path === '/role')  return true
