@@ -155,7 +155,7 @@ export default createStore({
       // }
 
 
-    }
+    // }
     },
     async GET_auth({
       commit,
