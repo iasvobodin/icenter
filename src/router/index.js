@@ -154,6 +154,7 @@ const CHECK_auth = async () => {
           name: createName(clientPrincipal)
         },
       }
+      console.log(userRes, 'this return from CHEC_auth, if true');
       return userRes
     }
     return false
