@@ -215,13 +215,14 @@ router.beforeEach(async (to, from) => {
     return true
   } else {
     //CHECK USER GLOBAL
-    let user = window.localStorage.getItem("user")
-
+    const user = window.localStorage.getItem("user") // type string
+    
     if (user) {
-      if (!JSON.parse(user).info.userRoles.includes('icenter')) { //CHECK ROLE
+      const userParse = JSON.parse(user) // type object
+      if (!userParse.info.userRoles.includes('icenter')) { //CHECK ROLE
         return '/role'
       } else {
-        CHECK_userDB(user)
+        CHECK_userDB(userParse)
         return true
       }
     } else {
