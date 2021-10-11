@@ -188,7 +188,7 @@ input {
 }
 .errors__holder {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(max(17vw, 250px), 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(95vw, 300px), 1fr));
   align-items: stretch;
   /* grid-auto-flow: column dense; */
   grid-auto-columns: max(17vw, 250px);
@@ -205,7 +205,7 @@ input {
   /* padding: 5px; */
   cursor: pointer;
   min-height: 50px;
-  width: max(17vw, 250px);
+  width: min(95vw, 300px);
 }
 
 .error__card__holder {

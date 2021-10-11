@@ -33,7 +33,7 @@
                     <tr v-for="(value, index) in  groupBy(t.type)" :key="index">
                         <td>{{ value._id }}</td>
                         <td class="cabtime__name">
-                            <textarea @input="calculateLogic($event, value._id, 'name')" v-if="value.new" rows="1"></textarea>
+                            <textarea v-if="value.new" rows="1" @input="calculateLogic($event, value._id, 'name')"></textarea>
                             <p v-else>{{ value.name }}</p>
                         </td>
                         <td>
@@ -62,8 +62,8 @@
                     <th>Коэффициент на администрирвание в %</th>
                 </tr>
                 <tr>
-                    <td><input class="cabtime__input" v-model.number="state.ctv3.control.documents" min="0" type="number"></td>
-                    <td><input class="cabtime__input" v-model.number="state.ctv3.control.adminCoef" min="0" type="number"></td>
+                    <td><input v-model.number="state.ctv3.control.documents" class="cabtime__input" min="0" type="number"></td>
+                    <td><input v-model.number="state.ctv3.control.adminCoef" class="cabtime__input" min="0" type="number"></td>
                 </tr>
 
             </tbody>
@@ -252,7 +252,8 @@ const projectInfoState = computed(() => store.state.projectInfo)
                 },
                 type: "cabtime",
                 ...state.ctv3,
-                body: {...state.ctv3.body.filter(e => e.value)},
+                groupByType: state.ctv3.groupByType.filter(e => e.total),
+                body: state.ctv3.body.filter(e => e.value),
                 result: cabtimeResult.value
                 // adminCoef: state.adminCoef,
                 // documents: state.documents,

@@ -1,22 +1,11 @@
 <template>
-    <h2>Расчёт нового CabTime</h2>
-     <div v-if="!projectInfoState.wo">
-    <choose-project-number v-if="!projectInfoState.pm" :data-to-render="state.projectData" @input-project-event="fetchProjectList"
-        @choose-project-number="choose" />
-    <div v-if="state.projectInformation">
-        <br>
-        <choose-project-number :data-to-render="state.projectInformation.cabinets.map(e =>e.wo + '   ' +e['cab name'])"
-            @choose-project-number="chooseCabinet" />
-    </div>
-     </div>
-    <section v-else>
-        <h3>Номер проекта {{projectInfoState['project number']}} <span style="cursor: pointer" @click="clearstate">&#10060;</span> </h3>
-      <h3>Номер WO {{projectInfoState['wo']}} </h3>
-            <div v-for="(value, key) in state.ctg.keys()" :key="key">
-                {{value}}
-          <!-- {{value}} <hr> <p v-for="item in value[1] ">{{item}}<hr></p>    -->
-      </div>
-        <div v-for="(t,i) in state.cabtimetype" :key="i">
+    <section v-if="state.ctv3.groupByType">
+        <h3>Номер проекта {{inputData.info['Проект']}}
+            <span v-if="changeData" style="cursor: pointer" @click="clearstate">&#10060;</span>
+        </h3>
+        <h3>Номер WO {{inputData.info['wo']}} </h3>
+
+        <div v-for="(t,i) in state.ctv3.groupByType" :key="i">
             <table>
                 <colgroup>
                     <col span="1" style="width: 5%;">
@@ -28,29 +17,31 @@
                 <tbody>
                     <tr style="border: solid 2px orange">
                         <th>№</th>
-                        <th>{{t.name}}</th>
+                        <th>{{t.type}}</th>
                         <th>Кол-во</th>
-                        <th>Норма</th>
-                        <th>{{state.cabtimetype&&state.cabtimetype[i].summ}}</th>
+                        <th>Const</th>
+                        <th>{{state.ctv3.groupByType[i].total}}</th>
                     </tr>
-                    <tr v-for="(value, index) in  groupBy(t.name)" :key="index">
+                    <tr v-for="(value, index) in  groupBy(t.type)" :key="index">
                         <td>{{ value._id }}</td>
                         <td class="cabtime__name">
-                            <textarea v-if="value.new" rows="1"></textarea>
+                            <textarea v-if="value.new" rows="1"
+                                @input="calculateLogic($event, value._id, 'name')"></textarea>
                             <p v-else>{{ value.name }}</p>
                         </td>
                         <td>
-                            <input class="cabtime__input" min="0" type="number" :value="value.value"
+                            <input v-if="changeData" class="cabtime__input" min="0" type="number" :value="value.value"
                                 @input="calculateLogic($event, value._id, 'value')">
+                                <p v-else>{{ value.value }}</p>
                         </td>
                         <td>
                             <input v-if="value.new" class="cabtime__input" min="0" type="number"
                                 @input="calculateLogic($event, value._id, '_const')">
                             <p v-else>{{ value._const }}</p>
                         </td>
-                        <td>{{cabtimeTemplateCopy&&value.result}}</td>
+                        <td>{{value.result}}</td>
                     </tr>
-                    <div class="add__row" @click="addNewRow(t.name)"> + </div>
+                    <div v-if="changeData" class="add__row" @click="addNewRow(t.type)"> + </div>
                 </tbody>
             </table>
         </div>
@@ -65,8 +56,12 @@
                     <th>Коэффициент на администрирвание в %</th>
                 </tr>
                 <tr>
-                    <td><input v-model.number="state.documents" min="0" type="number"></td>
-                    <td><input v-model.number="state.adminCoef" min="0" type="number"></td>
+                    <td><input v-if="changeData" v-model.number="state.ctv3.control.documents" class="cabtime__input" min="0"
+                            type="number">
+                            <p v-else>{{state.ctv3.control.documents}}</p></td>
+                    <td><input v-if="changeData" v-model.number="state.ctv3.control.adminCoef" class="cabtime__input" min="0"
+                            type="number">
+                            <p v-else>{{state.ctv3.control.adminCoef}}</p></td>
                 </tr>
 
             </tbody>
@@ -87,15 +82,11 @@
                     <th>Сборка + Админ</th>
                 </tr>
                 <tr>
-                    <td v-for="(val, index) in cabtimeResult" :key="index">{{val}}</td>
+                    <td v-for="(val, index) in cabtimeResult" :key="index">  {{val ? val : 0}}</td>
                 </tr>
             </tbody>
         </table>
     </section>
-    <br>
-    <button v-if="projectInfoState.wo" @click="postCabTime">SEND</button>
-    <br>
-    <br>
 </template>
 
 <script setup>
@@ -110,11 +101,35 @@ import {
     computed,
     nextTick,
     onMounted,
+    watchEffect,
 } from 'vue'
 
         const store = useStore()
         const router = useRouter()
-        // const cabtimeVal = reactive({})
+
+        // MAYBE I HAVE TO DELETE THIS
+        router.afterEach((to, from) => {
+            if (from.fullPath === '/cabtimes') {
+                store.commit('SETcurrentProject', null)
+            }
+        })
+
+        // eslint-disable-next-line no-undef
+        const props = defineProps({
+            inputData: {
+                type: Object,
+                required: true
+            },
+            changeData: {
+                type: Boolean,
+                default: ()=> false
+            },
+            // templateData: {
+            //     type: Object,
+            //     required: true
+            // },
+        })
+
         const state = reactive({
             adminCoef:"12",
             documents:"240",
@@ -126,37 +141,21 @@ import {
             cabinet: '',
             cabtimetype: null,
             ctg: null,
+            ctv3: null,
         })
-            //INPUT DATA NEED TO CHANGE ON PROPS
-            // state.cabtimeCopy =store.state.template.CabTimeV2;
-            const deepCopy = JSON.stringify(store.state.template.CabTimeV2)
-            state.cabtimeCopy = JSON.parse(deepCopy)// store.state.template.CabTimeV2
-            const cabtimeTemplateCopy = computed(()=> state.cabtimeCopy )
-
-            // state.cabtimetype = store.state.template.CabTimeGroup;
-
-
-
-            const typeSet = new Set()
-            cabtimeTemplateCopy.value.map(e => typeSet.add(e._type))
-            console.log(typeSet, 'unic types');
-            state.cabtimetype = [...typeSet].map(e => {
-                return {
-                    name: e,
-                    total: ""
-                }
-            })
-            state.ctg = new Map()
-
-        // state.ctg = 
-        state.cabtimetype.map(( e) => {
-            state.ctg.set(e, JSON.parse(deepCopy).filter(c => c._type === e.name))
-            // debugger
-        //   return{
-        //     [e.name] : state.cabtimeCopy.filter(c => c._type === e.name)
-        //       }
-        }) //state.cabtimeCopy
-
+           // DEEP COPY OBJECT
+            // const { inputData } = props
+            const {  inputData, changeData } = toRefs(props)
+watchEffect(()=> {
+    props.changeData ? state.ctv3 ={// ...JSON.parse(JSON.stringify(store.state.template.CabTimeV3)),
+ ...inputData.value, 
+ body: [...JSON.parse(JSON.stringify(store.state.template.CabTimeV3)).body, ...inputData.value.body ],
+ groupByType : [...JSON.parse(JSON.stringify(store.state.template.CabTimeV3)).groupByType, ...inputData.value.groupByType ]
+ } : state.ctv3 = inputData.value })
+            
+            // state.ctv3 = JSON.parse(JSON.stringify(store.state.template.CabTimeV3))
+            const inputDataComputed = computed(() => props.changeData ? JSON.parse(JSON.stringify(store.state.template.CabTimeV3)) : inputData.value)
+            const projectInfoState = computed(() => store.state.projectInfo)
 
         const calculateLogic = ($event, key, val) => {
             let arr, coef;
@@ -200,50 +199,42 @@ import {
                 default:
                     break;
             }
-            cabtimeTemplateCopy.value.map(e => {
-                if (arr) {
-                    arr.forEach(el => {
-                        if (e._id === el) {
-                            e[val] = $event.target.value * coef
-                            e.result = Math.round(e.value * e._const)
-                        }
-                    });
-                }
+            state.ctv3.body.map(e => {
+                arr&&arr.forEach(el => {
+                    if (e._id === el) {
+                        e[val] = $event.target.value * coef
+                        e.result = Math.round(e.value * e._const)
+                    }
+                });
                 if (e._id === key) {
                     e[val] = $event.target.value
                     e.result = Math.round(e.value * e._const)
                 }
-
             })
-            state.cabtimetype.map(e => {
-                return e.summ = cabtimeTemplateCopy.value.filter(f => f._type === e.name).reduce((acc, m) => {
+            state.ctv3.groupByType.map(e => {
+                return e.total = state.ctv3.body.filter(f => f._type === e.type).reduce((acc, m) => {
                     return m.result ? acc += +m.result : acc
                 }, 0)
             })
         }
         // eslint-disable-next-line vue/no-side-effects-in-computed-properties
-        // const summByType = computed(() => cabtimeTemplateCopy.value ? cabtimeTemplateCopy.value.push(store.state.template.CabTime.reduce((acc, el) => acc.add(el._type), new Set())) : 0)
-        //  t =>  cabtimeTemplateCopy.value&&cabtimeTemplateCopy.value.reduce((acc,f) => f._type === t&&(acc +=f.result),0);
+        // const summByType = computed(() => state.ctv3.body ? state.ctv3.body.push(store.state.template.CabTime.reduce((acc, el) => acc.add(el._type), new Set())) : 0)
+        //  t =>  state.ctv3.body&&state.ctv3.body.reduce((acc,f) => f._type === t&&(acc +=f.result),0);
         // const result = (a, b) => Math.ceil(a * b)
 
-        // const CabTimeGroup = computed(()=> state.cabtimetype)
+        // const CabTimeGroup = computed(()=> state.ctv3.groupByType)
 
         // const getType = computed(() => store.state.template && store.state.template.CabTime.reduce((acc, el) => acc.add(el._type), new Set()))
-        const finalResult = computed(() => state.cabtimetype ? state.cabtimetype.reduce((acc,e) =>  e.name === 'Тестирование и Поверка'? acc:acc += e.summ ,0):0)
+        const finalResult = computed(() => state.ctv3.groupByType.reduce((acc,e) =>  e.type === 'Тестирование и Поверка'? acc:acc += e.total ,0))
         const cabtimeResult = computed(() => {
             return {
                 assemble: Math.round(finalResult.value/60),
-                test: Math.round(state.cabtimetype[8].summ/60),
+                test: Math.round(state.ctv3.groupByType.find(e => e.type === 'Тестирование и Поверка')?.total/60),
                 admin: Math.round(Math.round(+finalResult.value*+state.adminCoef/100 + +state.documents)/60),
                 final: Math.round((+finalResult.value + Math.round(+finalResult.value*+state.adminCoef/100 + +state.documents))/60)
             }
         })
-        const groupBy = t => {
-            if (store.state.template) {
-                // state.cabtimeCopy = store.state.template.CabTimeV2
-                return state.cabtimeCopy.filter(g => g._type === t)
-            }
-        }
+        const groupBy = t =>  state.ctv3?.body.filter(g => g._type === t)
 
         const fetchProjectList = async () => {
             if (!state.projectData) {
@@ -282,12 +273,15 @@ import {
                     wo: projectInfoState.value.wo.toString(),
                 },
                 type: "cabtime",
-                adminCoef: state.adminCoef,
-                documents: state.documents,
-                cabtimeResult: cabtimeResult.value,
-                body: {
-                    ...cabtimeTemplateCopy.value.filter(e => e.value),
-                }
+                ...state.ctv3,
+                body: {...state.ctv3.body.filter(e => e.value)},
+                result: cabtimeResult.value
+                // adminCoef: state.adminCoef,
+                // documents: state.documents,
+                // cabtimeResult: cabtimeResult.value,
+                // body: {
+                //     ...state.ctv3.body.filter(e => e.value),
+                // }
             }
             await fetch('/api/POST_error', {
                 method: 'POST', // или 'PUT'
@@ -295,19 +289,19 @@ import {
                     ...cabTime
                 }),
             })
-            state.cabtimeCopy = JSON.parse(deepCopy)
-            router.push('/cabtimes')
+            // state.ctv3 = JSON.parse(JSON.stringify(store.state.template.CabTimeV3))
+            router.back()
             // console.log(route.params.cabtimeId);
         }
         const addNewRow = (e) => {
             //filter by type
-            const ff = cabtimeTemplateCopy.value.filter(g => g._type === e)
+            const ff = state.ctv3.body.filter(g => g._type === e)
             //take last and create array by dot
             const id = ff[ff.length - 1]._id.split('.')
             // increese the last element and joy
             const dd = [id[0], +id[1] + 1].join('.')
 
-            cabtimeTemplateCopy.value.push({
+            state.ctv3.body.push({
                 new: true,
                 "_id": dd,
                 "name": "",
@@ -321,9 +315,9 @@ import {
 const clearstate = () => {
     store.commit('SETcurrentProject', {})
     state.projectInformation = null
-     state.cabtimeCopy = JSON.parse(deepCopy)
+    state.ctv3 = JSON.parse(JSON.stringify(store.state.template.CabTimeV3))
 }
-const projectInfoState = computed(() => store.state.projectInfo)
+
 //         return {
 //             CabTimeGroup,
 //             projectInfoState,
@@ -346,6 +340,9 @@ const projectInfoState = computed(() => store.state.projectInfo)
 //     }
 // }
 </script>
+
+
+
 
 <style lang="css" scoped>
 .administration{
