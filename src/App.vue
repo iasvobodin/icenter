@@ -124,8 +124,11 @@ connect();
 // })
 onBeforeMount(()=> {
   const userFromLocal = JSON.parse(window.localStorage.getItem("user"))
+  if (userFromLocal) {
   document.documentElement.style.setProperty('--bg', `${userFromLocal.body?.bg}`);
   document.documentElement.style.setProperty('--cursor', `${userFromLocal.body?.customCursor}`)
+  }
+ 
 })
       
 // document.documentElement.style.setProperty('--bg', `${store.state.user.body?.bg}`)
