@@ -177,21 +177,20 @@ const CHECK_userDB = async (user) => {
     //   console.log(responseUserAuth,'responseUserAuth');
     if (registerUserRes.ok) {
       user = await registerUserRes.json()
-      commitUser(user)
-    } else {
-      try {
-        const options = {
-          method: "POST", // или 'PUT'
-          body: JSON.stringify(user)
-        }
-        await fetch(`/api/user/${user.info.userId}?postRegisterUser=true`, options)
-        commitUser(user)
-      } catch (error) {
-        console.log(error, "error from register user in db");
-      }
-    }
+      user&&commitUser(user)
+    } 
   } catch (error) {
     console.log(error, "from check user in db");
+    try {
+      const options = {
+        method: "POST", // или 'PUT'
+        body: JSON.stringify(user)
+      }
+      await fetch(`/api/user/${user.info.userId}?postRegisterUser=true`, options)
+      commitUser(user)
+    } catch (error) {
+      console.log(error, "error from register user in db");
+    }
   }
 }
 
