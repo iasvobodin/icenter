@@ -45,11 +45,12 @@
           <tr v-for="(value, index) in groupBy(t.type)" :key="index">
             <td>{{ value._id }}</td>
             <td class="cabtime__name">
-              <textarea
-                v-if="value.new"
+              <div class="textarea" v-if="value.new"><textarea
+                
                 rows="1"
                 @input="calculateLogic($event, value._id, 'name')"
-              ></textarea>
+              ></textarea> <div class="close" @click="deleteRow(value._id)">&#10060;</div>
+                </div>
               <p v-else>{{ value.name }}</p>
             </td>
             <td>
@@ -57,7 +58,6 @@
                 class="cabtime__input"
                 min="0"
                 type="number"
-                :value="value.value"
                 @input="calculateLogic($event, value._id, 'value')"
               />
             </td>
@@ -183,28 +183,28 @@ const calculateLogic = ($event, key, val) => {
       arr = ['2.5', '2.6']
       coef = 1
       break
-    case '3.3':
-      arr = ['3.4']
+    case '4.3':
+      arr = ['4.4']
       coef = 1
-      break
-    case '4.4':
-      arr = ['4.5', '4.6']
-      coef = 1
-      break
-    case '4.8':
-      arr = ['4.9', '4.10']
-      coef = 2
-      break
-    case '5.1':
-      arr = ['5.2', '5.3']
-      coef = 2
       break
     case '5.4':
-      arr = ['5.5', '5.6']
+      arr = ['5.5', '6.2']
+      coef = 1
+      break
+    case '5.7':
+      arr = ['5.8', '6.3']
       coef = 2
       break
-    case '5.9':
-      arr = ['5.10', '5.11']
+    case '7.1':
+      arr = ['7.2', '6.4']
+      coef = 2
+      break
+    case '7.3':
+      arr = ['7.4', '6.7']
+      coef = 2
+      break
+    case '7.6':
+      arr = ['7.8', '6.8']
       coef = 2
       break
     default:
@@ -326,7 +326,7 @@ const postCabTime = async () => {
 }
 const addNewRow = (e) => {
   //filter by type
-  const ff = state.ctv3.body.filter((g) => g._type === e)
+  const ff = state.ctv3.body.filter( g => g._type === e)
   //take last and create array by dot
   const id = ff[ff.length - 1]._id.split('.')
   // increese the last element and joy
@@ -342,6 +342,12 @@ const addNewRow = (e) => {
     value: '',
   })
   // console.log(e)
+}
+const deleteRow = (id) =>{
+  const currentArrow = state.ctv3.body.find(e => e._id === id )
+  const index = state.ctv3.body.indexOf(currentArrow)
+  console.log(index);
+  state.ctv3.body.splice(index, 1)
 }
 const clearstate = () => {
   store.commit('SETcurrentProject', {})
@@ -416,5 +422,14 @@ tbody tr:nth-child(odd) {
 }
 tbody tr:hover {
   background: rgba(255, 166, 0, 0.1);
+}
+.textarea{
+  display: grid;
+  grid-template-columns: 1fr 24px;
+  grid-auto-flow: column;
+}
+.close{
+  cursor: pointer;
+  place-self: center;
 }
 </style>

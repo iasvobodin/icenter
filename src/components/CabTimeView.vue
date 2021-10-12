@@ -180,21 +180,29 @@ const state = reactive({
 // DEEP COPY OBJECT
 // const { inputData } = props
 const { inputData, changeData } = toRefs(props)
+
+  // const someId = computed(()=>  inputData&&inputData.value.body.map(e => e._id))
+
+  // console.log(inputData.value.body);
+  const mergeObject = (templateObj, cabTimeObj) => {
+  const bodyResult = [...cabTimeObj.body, ...templateObj.body.filter(e => !cabTimeObj.body.some(s => s._id === e._id))] 
+  const groupByTypeResult = [...cabTimeObj.groupByType, ...templateObj.groupByType.filter(e => !cabTimeObj.groupByType.some(s => s.type === e.type))].sort((a, b) => a._id - b._id)
+  return {...cabTimeObj, body: bodyResult, groupByType: groupByTypeResult}
+  }
+
 watchEffect(() => {
+  const copy = JSON.parse(JSON.stringify(store.state.template.CabTimeV3))
   props.changeData
-    ? (state.ctv3 = {
-        // ...JSON.parse(JSON.stringify(store.state.template.CabTimeV3)),
-        ...inputData.value,
-        body: [
-          ...JSON.parse(JSON.stringify(store.state.template.CabTimeV3)).body,
-          ...inputData.value.body,
-        ],
-        groupByType: [
-          ...JSON.parse(JSON.stringify(store.state.template.CabTimeV3))
-            .groupByType,
-          ...inputData.value.groupByType,
-        ],
-      })
+    ? (state.ctv3 = mergeObject(copy, inputData.value))
+    //  (state.ctv3 = {
+    //     // ...JSON.parse(JSON.stringify(store.state.template.CabTimeV3)),
+    //     ...inputData.value,
+    //     body: mergeObject(),
+    //     groupByType: [
+    //       ...copy.groupByType,
+    //       ...inputData.value.groupByType,
+    //     ],
+    //   })
     : (state.ctv3 = inputData.value)
 })
 
@@ -221,28 +229,28 @@ const calculateLogic = ($event, key, val) => {
       arr = ['2.5', '2.6']
       coef = 1
       break
-    case '3.3':
-      arr = ['3.4']
+    case '4.3':
+      arr = ['4.4']
       coef = 1
-      break
-    case '4.4':
-      arr = ['4.5', '4.6']
-      coef = 1
-      break
-    case '4.8':
-      arr = ['4.9', '4.10']
-      coef = 2
-      break
-    case '5.1':
-      arr = ['5.2', '5.3']
-      coef = 2
       break
     case '5.4':
-      arr = ['5.5', '5.6']
+      arr = ['5.5', '6.2']
+      coef = 1
+      break
+    case '5.7':
+      arr = ['5.8', '6.3']
       coef = 2
       break
-    case '5.9':
-      arr = ['5.10', '5.11']
+    case '7.1':
+      arr = ['7.2', '6.4']
+      coef = 2
+      break
+    case '7.3':
+      arr = ['7.4', '6.7']
+      coef = 2
+      break
+    case '7.6':
+      arr = ['7.8', '6.8']
       coef = 2
       break
     default:
