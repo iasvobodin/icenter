@@ -17,13 +17,12 @@ export default {
   },
   setup(props) {
     const query = ref('')
-    const filter = computed(() => {
-      return
-    })
+    // const filter = computed(() => {
+    //   return
+    // })
     return { query }
   },
 }
 </script>
 
-<style lang="scss" scoped>
-</style>
+<style lang="scss" scoped></style>

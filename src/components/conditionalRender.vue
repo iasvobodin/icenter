@@ -3,90 +3,78 @@
     v-for="(value, key, index) in dataRender"
     :key="index"
     class="error__item"
-    :class="{ error__item__desc: key === 'Описание',
-              disble__grid : !onlyField
-     }"
+    :class="{ error__item__desc: key === 'Описание', disble__grid: !onlyField }"
   >
-    <h4 v-if="onlyField"
+    <h4
+      v-if="onlyField"
       :class="{ error__item__vertical__title: key === 'Описание' }"
       class="error__item__title"
     >
       {{ key }}
     </h4>
     <select
-    v-if="Object.values(value)[0] === 'select'"
-    :form="formId"
+      v-if="Object.values(value)[0] === 'select'"
+      :form="formId"
       :name="key"
       :value="modelValue[key]"
       :required="required"
       class="error__item__desc"
-      @input="addVmodel($event,key)
-      "
+      @input="addVmodel($event, key)"
     >
       <option v-for="(v, i) in Object.values(value)[2]" :key="i">
         {{ v }}
       </option>
     </select>
     <input
-    v-if="Object.values(value)[0] === 'checkbox'"
-    :form="formId"
+      v-if="Object.values(value)[0] === 'checkbox'"
+      :form="formId"
       :name="key"
       :value="modelValue[key]"
       :required="required"
       type="checkbox"
-      @input="
-       addVmodel($event,key)
-      "
+      @input="addVmodel($event, key)"
     />
     <input
-    v-if="Object.values(value)[0] === 'number'"
-    :form="formId"
+      v-if="Object.values(value)[0] === 'number'"
+      :form="formId"
       :name="key"
       :value="modelValue[key]"
       :required="required"
       type="number"
-      @input="
-       addVmodel($event,key)
-      "
+      @input="addVmodel($event, key)"
     />
     <input
-    v-if="Object.values(value)[0] === 'text'"
-    :form="formId"
+      v-if="Object.values(value)[0] === 'text'"
+      :form="formId"
       :name="key"
       :value="modelValue[key]"
       :required="required"
       type="text"
-      @input="
-       addVmodel($event,key)
-      "
+      @input="addVmodel($event, key)"
     />
     <textarea
-    v-if="Object.values(value)[0] === 'textarea'"
-    :form="formId"
+      v-if="Object.values(value)[0] === 'textarea'"
+      :form="formId"
       :name="key"
       :value="modelValue[key]"
       :required="required"
       cols="30"
       rows="5"
-      @input="
-       addVmodel($event,key)
-      "
+      @input="addVmodel($event, key)"
     ></textarea>
   </div>
   <div v-if="modelValue && modelValue['Ответственный']">
     <div class="error__item">
       <h4 class="error__item__title">
-        {{ modelValue["Ответственный"] }}
+        {{ modelValue['Ответственный'] }}
       </h4>
       <select
-      :form="formId"
-      :name="key"
+        :form="formId"
+        :name="key"
         :value="modelValue['Ошибку допустил']"
         :required="required"
         class="error__item__desc"
-        @input="
-         addVmodel($event,'Ошибку допустил')
-        "
+        @input="addVmodel($event, 'Ошибку допустил')"
       >
         <option
           v-for="(value, key, index) in $store.state.template[
@@ -123,13 +111,13 @@ export default {
   //  ComponentA,
   // },
   props: {
-    onlyField:{
-       type: Boolean,
-      default:()=> true
+    onlyField: {
+      type: Boolean,
+      default: () => true,
     },
-    formId:{
+    formId: {
       type: String,
-      default:"form"
+      default: 'form',
     },
     modelValue: {
       type: Object,
@@ -139,21 +127,21 @@ export default {
       type: Object,
       required: true,
     },
-    required:{
+    required: {
       type: Boolean,
-      default:()=> true
-    }
+      default: () => true,
+    },
   },
-  emits: ["update:modelValue"],
+  emits: ['update:modelValue'],
   methods: {
-    addVmodel($event,key) {
-              this.$emit('update:modelValue', {
-          ...this.modelValue,
-          [key]: $event.target.value,
-        })
-    }
+    addVmodel($event, key) {
+      this.$emit('update:modelValue', {
+        ...this.modelValue,
+        [key]: $event.target.value,
+      })
+    },
   },
-};
+}
 </script>
 
 <style lang="css" scoped>
@@ -183,7 +171,7 @@ export default {
   align-self: center;
   margin: 0;
 }
-.disble__grid{
+.disble__grid {
   grid-template-columns: 1fr;
   border-bottom: 1px solid transparent;
 }

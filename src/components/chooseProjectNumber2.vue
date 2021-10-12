@@ -12,7 +12,7 @@
       />
       <!-- @focus.once="getProjectList" -->
       <datalist id="projetList">
-        <option  v-for="pr in dataToRender" :key="pr" :value="pr"/>
+        <option v-for="pr in dataToRender" :key="pr" :value="pr" />
       </datalist>
     </div>
 
@@ -41,7 +41,7 @@ export default {
       default: null,
     },
   },
-  // emits: ["inputProjectEvent", "chooseProjectNumber"],
+  emits: ['inputProjectEvent', 'chooseProjectNumber'],
   setup(props, { emit }) {
     const store = useStore()
     // const { dataToRender } = toRefs(props)

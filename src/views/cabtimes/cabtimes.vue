@@ -1,19 +1,21 @@
 <template>
   <div>
     <h1>Раздел CabTime в разработке</h1>
-    
+
     <router-link to="/cabtimes/addnewcabtime">
-      <img class="add__button" src="/img/add.svg" alt="Добавить новый CabTime">
+      <img
+        class="add__button"
+        src="/img/add.svg"
+        alt="Добавить новый CabTime"
+      />
     </router-link>
   </div>
 </template>
 
-<script setup>
-
-</script>
+<script setup></script>
 
 <style lang="css" scoped>
-.add__button{
+.add__button {
   position: fixed;
   bottom: 20px;
   right: 20px;

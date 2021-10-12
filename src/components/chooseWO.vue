@@ -36,7 +36,7 @@
             </span>
             -
             <span style="text-align: end">
-              {{ project["cab name"] }}
+              {{ project['cab name'] }}
             </span>
           </p>
         </li>
@@ -57,7 +57,7 @@ export default {
       default: null,
     },
   },
-  emits: ["inputProjectEvent", "chooseProjectNumber"],
+  emits: ['inputProjectEvent', 'chooseProjectNumber'],
   data() {
     return {
       selectedProject: null,
@@ -65,7 +65,7 @@ export default {
       filterProjectList: null,
       listIsActive: false,
       spinnerClass: false,
-    };
+    }
   },
   computed: {
     filterProject() {
@@ -73,51 +73,51 @@ export default {
         return Object.values(this.fetchUrl).filter(
           (el) =>
             (el.wo && el.wo.includes(this.selectedProject)) ||
-            (el["cab name"] &&
-              el["cab name"]
+            (el['cab name'] &&
+              el['cab name']
                 .toLowerCase()
                 .includes(this.selectedProject.toLowerCase()))
-        );
+        )
       } else {
-        return this.fetchUrl;
+        return this.fetchUrl
       }
     },
   },
   watch: {
     fetchUrl() {
-      this.listIsActive = true;
-      this.spinnerClass = false;
+      this.listIsActive = true
+      this.spinnerClass = false
       // console.log("watch");
     },
   },
   methods: {
     bl() {
-      setTimeout(() => (this.listIsActive = false), 200);
+      setTimeout(() => (this.listIsActive = false), 200)
     },
     clearState() {
-      this.selectedProject = null;
-      this.$emit("chooseProjectNumber", this.selectedProject);
+      this.selectedProject = null
+      this.$emit('chooseProjectNumber', this.selectedProject)
     },
     getProjectList() {
-      this.$emit("inputProjectEvent");
-      this.spinnerClass = true;
+      this.$emit('inputProjectEvent')
+      this.spinnerClass = true
       if (this.fetchUrl) {
-        this.spinnerClass = false;
-        this.listIsActive = true;
-        this.filterProjectList = this.fetchUrl;
+        this.spinnerClass = false
+        this.listIsActive = true
+        this.filterProjectList = this.fetchUrl
       }
     },
     async chooseProject(index) {
-      this.selectedProject = `${this.fetchUrl[index].wo} ${this.fetchUrl[index]["cab name"]}`;
+      this.selectedProject = `${this.fetchUrl[index].wo} ${this.fetchUrl[index]['cab name']}`
 
-      this.$emit("chooseProjectNumber", this.fetchUrl[index]);
+      this.$emit('chooseProjectNumber', this.fetchUrl[index])
 
       this.$nextTick(() => {
-        this.listIsActive = false;
-      });
+        this.listIsActive = false
+      })
     },
   },
-};
+}
 </script>
 
 <style lang="css" scoped>

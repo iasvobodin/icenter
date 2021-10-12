@@ -1,112 +1,159 @@
 <template>
   <h1>Проекты.</h1>
-  <p>В данном разделе можно добавлять и редактировать информацию по текущим проектам ICenter.</p>
-  <br>
-  <input id="select__filter" v-model="search" type="text" placeholder="SF, PM, №">
-  <br>
-  <br>
+  <p>
+    В данном разделе можно добавлять и редактировать информацию по текущим
+    проектам ICenter.
+  </p>
+  <br />
+  <input
+    id="select__filter"
+    v-model="search"
+    type="text"
+    placeholder="SF, PM, №"
+  />
+  <br />
+  <br />
   <div class="holder__switch">
-  <div class="open" :class="{isactive : !selectedStatus}">
-
-  <h3>Открытые</h3>
-  </div>
+    <div class="open" :class="{ isactive: !selectedStatus }">
+      <h3>Открытые</h3>
+    </div>
     <div class="switch">
-    <input id="switch-1" v-model="selectedStatus" type="checkbox" class="switch-input" />
-    <label for="switch-1" class="switch-label">Switch</label>
-  </div>
-  <div class="close" :class="{isactive : selectedStatus}">
-    
-  <h3>Закрытые</h3>
-  </div>
+      <input
+        id="switch-1"
+        v-model="selectedStatus"
+        type="checkbox"
+        class="switch-input"
+      />
+      <label for="switch-1" class="switch-label">Switch</label>
+    </div>
+    <div class="close" :class="{ isactive: selectedStatus }">
+      <h3>Закрытые</h3>
+    </div>
   </div>
 
-  <br>
+  <br />
   <div v-if="errors">
-    <div v-for="status in actualStatus" v-show="groupProjects(status).length != 0" :key="status">
+    <div
+      v-for="status in actualStatus"
+      v-show="groupProjects(status).length != 0"
+      :key="status"
+    >
       <div class="group__items">
-      <h3 >{{status?.split('-')[1].split('/')[0]}}</h3>
+        <h3>{{ status?.split('-')[1].split('/')[0] }}</h3>
       </div>
       <div class="errors__holder">
-        <div v-for="(value, key, index) in groupProjects(status)" :key="index" class="error__card__holder"
-          @click="!selectedStatus&&$router.push(`/projects/${value.id}`)">
-          <div class="item__card" :class="{closed__card : selectedStatus}">
+        <div
+          v-for="(value, key, index) in groupProjects(status)"
+          :key="index"
+          class="error__card__holder"
+          @click="!selectedStatus && $router.push(`/projects/${value.id}`)"
+        >
+          <div class="item__card" :class="{ closed__card: selectedStatus }">
             <div class="double">
-             <h2>{{value.id}}:</h2><p>{{value.info?.base?.['Project Name']}}</p>
+              <h2>{{ value.id }}:</h2>
+              <p>{{ value.info?.base?.['Project Name'] }}</p>
             </div>
-            <hr style="margin:0;">
+            <hr style="margin: 0" />
             <!-- <info-render :info-data="{[value.id]: value.info.base['Project Name']}" /> -->
             <div class="double">
-              <info-render :info-data="{'PM': value.info?.base?.PM}" />
-              <info-render :info-data="{'SF': value.info?.extends?.['senior fitter']?.split('@')[0].split('.')[1]}" />
+              <info-render :info-data="{ PM: value.info?.base?.PM }" />
+              <info-render
+                :info-data="{
+                  SF: value.info?.extends?.['senior fitter']
+                    ?.split('@')[0]
+                    .split('.')[1],
+                }"
+              />
             </div>
-             <div class="double">
-            <info-render :info-data="{'Отгрузка': value.info?.extends?.['Shipping date']}" />
-            <info-render :info-data="{'QTY': value.cabinets?.length}" />
-             </div>
-            <info-render :hr="false" :info-data="{'Comments': value.info?.extends?.['Comments field']}" />
+            <div class="double">
+              <info-render
+                :info-data="{
+                  Отгрузка: value.info?.extends?.['Shipping date'],
+                }"
+              />
+              <info-render :info-data="{ QTY: value.cabinets?.length }" />
+            </div>
+            <info-render
+              :hr="false"
+              :info-data="{ Comments: value.info?.extends?.['Comments field'] }"
+            />
           </div>
         </div>
       </div>
-      <br>
+      <br />
     </div>
     <router-link to="/projects/addnewproject">
-      <img class="add__button" src="/img/add.svg" alt="Добавить новый проект">
+      <img class="add__button" src="/img/add.svg" alt="Добавить новый проект" />
     </router-link>
   </div>
 
   <section v-if="changeAllFlag" class="table">
-    <table style="width:100%">
+    <table style="width: 100%">
       <colgroup>
-        <col span="1" style="width: 6%;">
-        <col span="1" style="width: 10%;">
-        <col span="1" style="width: 10%;">
-        <col span="1" style="width: auto;">
-        <col span="1" style="width: auto;">
-        <col span="1" style="width: 6%;">
-        <col span="1" style="width: 6%;">
-        <col span="1" style="width: 6%;">
+        <col span="1" style="width: 6%" />
+        <col span="1" style="width: 10%" />
+        <col span="1" style="width: 10%" />
+        <col span="1" style="width: auto" />
+        <col span="1" style="width: auto" />
+        <col span="1" style="width: 6%" />
+        <col span="1" style="width: 6%" />
+        <col span="1" style="width: 6%" />
       </colgroup>
       <tr style="border: solid 2px orange">
         <th>№</th>
-        <th v-for="(vv,kk) in $store.state.template.template.extend" :key="kk" @click="sortBy(kk,'extends')">{{kk}}</th>
+        <th
+          v-for="(vv, kk) in $store.state.template.template.extend"
+          :key="kk"
+          @click="sortBy(kk, 'extends')"
+        >
+          {{ kk }}
+        </th>
       </tr>
       <tbody>
-        <tr v-for="(value, key, index) in projects" :key="index" @click="getIndex(key)">
+        <tr
+          v-for="(value, key, index) in projects"
+          :key="index"
+          @click="getIndex(key)"
+        >
           <td>
             <h2 class="project__number">{{ value.id }}</h2>
           </td>
-          <td v-for="(v,k) in $store.state.template.template.extend" :key="k">
+          <td v-for="(v, k) in $store.state.template.template.extend" :key="k">
             <!-- <conditional-render v-model="projects[key].info.extends" :only-field="false"
               :data-render="{[k]:$store.state.template.template.extend[k]}" :required="false" /> -->
-            <render-inputs v-model="projects[key].info.extends"
-              :data-render="$store.state.template.template.extend[k]" />
+            <render-inputs
+              v-model="projects[key].info.extends"
+              :data-render="$store.state.template.template.extend[k]"
+            />
           </td>
         </tr>
       </tbody>
     </table>
   </section>
-  <br>
-  <br>
-  <button v-if="!changeAllFlag&&errors" @click="changeAllFlag = !changeAllFlag">Change ALL</button>
-  <button v-if="changeAllFlag&&errors" @click="updateChangedProjects">Update</button>
-  <br>
-  <br>
+  <br />
+  <br />
+  <button
+    v-if="
+      !changeAllFlag &&
+      errors &&
+      $store.state.user.info.userRoles.includes('admin')
+    "
+    @click="changeAllFlag = !changeAllFlag"
+  >
+    Change ALL
+  </button>
+  <button v-if="changeAllFlag && errors" @click="updateChangedProjects">
+    Update
+  </button>
+  <br />
+  <br />
 </template>
 
 <script>
-
 // import infoRender from '@/components/infoRender.vue'
-import {
-  reactive,
-  toRefs,
-  watch,
-  computed,
-  ref
-} from 'vue'
-import {
-  useFetch
-} from '@/hooks/fetch'
-import infoRender from "@/components/infoRender.vue";
+import { reactive, toRefs, watch, computed, ref } from 'vue'
+import { useFetch } from '@/hooks/fetch'
+import infoRender from '@/components/infoRender.vue'
 // import conditionalRender from '@/components/conditionalRender.vue'
 import renderInputs from '@/components/renderInputs.js'
 export default {
@@ -123,85 +170,97 @@ export default {
       fetchStatus: null,
       errorMessage: '',
       actualStatus: null,
-      search: "",
+      search: '',
       testStatus: {},
       projects: null,
       updateIndex: new Set(),
     })
-    const getIndex = (i) => state.updateIndex.add(i);
+    const getIndex = (i) => state.updateIndex.add(i)
 
     const filterProjects = computed(() => {
       //  debugger
-      return state.search ?
-        state.errors.filter(e => [e ?.id, e.info.base?.PM, e.info.extends?.['senior fitter']].some(s => s && s.toLowerCase().includes(state.search.toLowerCase()))) :
-        state.errors
+      return state.search
+        ? state.errors.filter((e) =>
+            [e?.id, e.info.base?.PM, e.info.extends?.['senior fitter']].some(
+              (s) => s && s.toLowerCase().includes(state.search.toLowerCase())
+            )
+          )
+        : state.errors
     })
-    const groupProjects = status => filterProjects.value && filterProjects.value.filter(f => f.info?.extends['status project'] === status)
+    const groupProjects = (status) =>
+      filterProjects.value &&
+      filterProjects.value.filter(
+        (f) => f.info?.extends['status project'] === status
+      )
 
     const getErrors = async (status) => {
-      const {
-        request,
-        response
-      } = useFetch(`/api/projects?status=${status}`)
+      const { request, response } = useFetch(`/api/projects?status=${status}`)
       await request()
       state.errors = response
       state.projects = JSON.parse(JSON.stringify(state.errors))
 
-      state.actualStatus = [...state.errors.reduce((acc, pr) => acc.add(pr.info?.extends['status project']), new Set())].sort()
+      state.actualStatus = [
+        ...state.errors.reduce(
+          (acc, pr) => acc.add(pr.info?.extends['status project']),
+          new Set()
+        ),
+      ].sort()
 
       state.errors.sort(function (a, b) {
-        const nameA = a.info?.extends['status project']?.toLowerCase();
-        const nameB = b.info?.extends['status project']?.toLowerCase();
+        const nameA = a.info?.extends['status project']?.toLowerCase()
+        const nameB = b.info?.extends['status project']?.toLowerCase()
         if (nameA < nameB) {
-          return -1;
+          return -1
         }
         if (nameA > nameB) {
-          return 1;
+          return 1
         }
-        return 0;
-      });
+        return 0
+      })
     }
     getErrors('open')
 
-        const selectedStatus = ref(false)
-        watch(selectedStatus, (newValue, oldValue ) => {
+    const selectedStatus = ref(false)
+    watch(selectedStatus, (newValue, oldValue) => {
       if (newValue === true) {
         getErrors('closed')
       }
-            if (newValue === false) {
+      if (newValue === false) {
         getErrors('open')
       }
     })
     // console.log(Array.from({ length: 20 }).map(()=> ));
     const postProject = async (index) => {
-      const {  request: postProject  } = useFetch('/api/POST_project', {
+      const { request: postProject } = useFetch('/api/POST_project', {
         method: 'POST', // или 'PUT'
         body: JSON.stringify({
-          ...state.projects[index]
+          ...state.projects[index],
         }),
-      });
+      })
       await postProject()
     }
     const updateChangedProjects = async () => {
-      await Promise.all([...state.updateIndex].map(async e => {
-        await postProject(e)
-      }))
+      await Promise.all(
+        [...state.updateIndex].map(async (e) => {
+          await postProject(e)
+        })
+      )
       state.changeAllFlag = !state.changeAllFlag
-     selectedStatus.value === true ? getErrors('closed') : getErrors('open')
+      selectedStatus.value === true ? getErrors('closed') : getErrors('open')
     }
     const sortBy = (el, p) => {
       // console.log(el,p);
       // debugger
       state.projects.sort(function (a, b) {
-        const nameA = a.info[p][el]?.toString().toLowerCase();
-        const nameB = b.info[p][el]?.toString().toLowerCase();
+        const nameA = a.info[p][el]?.toString().toLowerCase()
+        const nameB = b.info[p][el]?.toString().toLowerCase()
         if (nameA < nameB) {
-          return -1;
+          return -1
         }
         if (nameA > nameB) {
-          return 1;
+          return 1
         }
-        return 0;
+        return 0
       })
     }
     return {
@@ -218,11 +277,11 @@ export default {
 </script>
 
 <style lang="css" scoped>
-.isactive{
+.isactive {
   border-bottom: 1px solid orange;
   /* border-radius: 5px; */
 }
-.holder__switch{
+.holder__switch {
   display: grid;
   grid-auto-flow: column;
   grid-template-columns: auto;
@@ -230,11 +289,11 @@ export default {
 }
 
 .close,
-.open{
+.open {
   width: 100px;
   display: inline-block;
 }
-h3{
+h3 {
   margin: 0;
 }
 .switch {
@@ -256,7 +315,7 @@ h3{
 }
 .switch-label::before,
 .switch-label::after {
-  content: "";
+  content: '';
   display: block;
   position: absolute;
   cursor: pointer;
@@ -287,12 +346,12 @@ h3{
 .switch-input:checked + .switch-label::after {
   left: 24px;
 }
-.project__number{
+.project__number {
   white-space: pre-wrap;
   word-wrap: break-word;
 }
 .add__button::after {
-  content: "";
+  content: '';
   width: 100%;
   height: 100%;
   position: absolute;
@@ -312,9 +371,7 @@ h3{
   cursor: pointer;
 }
 
-
-
-.selectStatus>h3 {
+.selectStatus > h3 {
   display: inline;
 }
 
@@ -336,7 +393,6 @@ h3{
   row-gap: 3vh;
 }
 
-
 .closed__card {
   border: 1px solid red;
   border-radius: 4px;
@@ -350,14 +406,12 @@ h3{
 .error__card__holder {
   place-self: stretch;
   height: 100%;
-
 }
 
 /* .item__card:hover {
   border: 1px solid black;
   background: rgba(245, 254, 255, 0.356);
 } */
-
 
 .error__item {
   border-bottom: 1px solid black;
@@ -428,31 +482,31 @@ tbody tr:nth-child(odd) {
 }
 tbody tr {
   height: 80px;
-  }
+}
 
 tbody tr:hover {
   background: rgba(0, 132, 255, 0.07);
 }
-th{
-   position: sticky;
+th {
+  position: sticky;
   top: 50px;
   color: white;
   background-color: rgb(0, 68, 129);
   border: solid 2px orange;
   box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
 }
-tr>th{
+tr > th {
   cursor: pointer;
 }
-input[type="number"],
-input[type="text"]{
+input[type='number'],
+input[type='text'] {
   width: 100%;
   text-align: center;
 }
-textarea{
+textarea {
   height: 90px;
 }
-#select__filter{
+#select__filter {
   height: 30px;
   border: 1px solid orange;
   border-radius: 5px;
@@ -463,7 +517,7 @@ textarea{
   margin: auto;
   padding: 0px;
 }
-:global(.group__items){
+:global(.group__items) {
   position: sticky;
   top: 50px;
   width: 100%;
@@ -474,46 +528,42 @@ textarea{
   margin: 1.5vh auto;
   margin-bottom: 40px;
   /* display: block; */
-  box-shadow: rgba(0, 0, 0, 0.20) 0px 25px 20px -20px;
+  box-shadow: rgba(0, 0, 0, 0.2) 0px 25px 20px -20px;
   /* border-radius: 5px; */
   /* width: min(700px, 95%); */
   /* padding: 0.01vh; */
   /* font-size: min(20px 5vw ); */
   /* transform: translateY(-50%); */
 }
-.group__items h3{
+.group__items h3 {
   line-height: 50px;
 }
-.props{
-margin-top: 5px;
-border-bottom: 1px solid black;
-
+.props {
+  margin-top: 5px;
+  border-bottom: 1px solid black;
 }
 .props:last-child {
-border-bottom: 1px solid white;
-text-align: left;
-
+  border-bottom: 1px solid white;
+  text-align: left;
 }
-.double{
-    display: grid;
-    grid-auto-flow: column;
-    column-gap: 1vw;
-    grid-template-columns: 5fr 4fr;
-    justify-content: space-between;
+.double {
+  display: grid;
+  grid-auto-flow: column;
+  column-gap: 1vw;
+  grid-template-columns: 5fr 4fr;
+  justify-content: space-between;
 }
-.double:first-child{
-    display: grid;
-    grid-auto-flow: column;
-    column-gap: 1vw;
-    grid-template-columns: 1fr 4fr;
-    justify-content: space-between;
-    margin-bottom: 1vh;
+.double:first-child {
+  display: grid;
+  grid-auto-flow: column;
+  column-gap: 1vw;
+  grid-template-columns: 1fr 4fr;
+  justify-content: space-between;
+  margin-bottom: 1vh;
 }
-.double:first-child>p{
-    place-self: center;
-        white-space: pre-wrap;
+.double:first-child > p {
+  place-self: center;
+  white-space: pre-wrap;
   word-wrap: break-word;
 }
-
-
 </style>

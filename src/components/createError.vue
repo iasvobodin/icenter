@@ -5,9 +5,9 @@
 <script>
 export default {
   setup() {
-    return {};
+    return {}
   },
-};
+}
 </script>
 
 <style lang="css" scoped></style>

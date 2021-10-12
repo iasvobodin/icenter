@@ -12,4 +12,4 @@ module.exports = async function (context, req) {
   //   status: req.body.status,
   //   ttl: 6000,
   // }
-};
+}

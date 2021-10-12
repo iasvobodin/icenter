@@ -1,29 +1,29 @@
 {
-    "short_name": "ICenter",
-    "name": "Chelybinsk ICenter PWA",
-    "icons": [
-      {
-        "src": "/img/logo192.png",
-        "type": "image/png",
-        "sizes": "192x192"
-      },
-      {
-        "src": "/img/logo512.png",
-        "type": "image/png",
-        "sizes": "512x512"
-      },
-      {
-        "src": "/img/maskable_icon.png",
-        "sizes": "192x192",
-        "type": "image/png",
-        "purpose": "any maskable"
-      }
-    ],
-    "start_url": "/",
-    "background_color": "white",
-    "display_override": ["window-control-overlay", "minimal-ui"],
-    "display": "minimal-ui",
-    "scope": "/",
-    "theme_color": "#004481",
-    "description": "optimization process"
-  }
+  "short_name": "ICenter",
+  "name": "Chelybinsk ICenter PWA",
+  "icons": [
+    {
+      "src": "/img/logo192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/img/logo512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    },
+    {
+      "src": "/img/maskable_icon.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "white",
+  "display_override": ["window-control-overlay", "minimal-ui"],
+  "display": "minimal-ui",
+  "scope": "/",
+  "theme_color": "#004481",
+  "description": "optimization process"
+}

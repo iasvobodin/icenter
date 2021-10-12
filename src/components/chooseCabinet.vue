@@ -66,70 +66,70 @@
 <script>
 // import ColumnGroup from 'primevue/columngroup';
 // eslint-disable-next-line no-unused-vars
-import { computed, reactive, ref, watch } from "vue";
+import { computed, reactive, ref, watch } from 'vue'
 export default {
   components: {},
   setup() {
-    const selctedWO = reactive({ wo: null, cabName: null });
-    const selectedProjectNumber = ref(null);
-    const listIsActive = ref(null);
-    const filterList = ref(null);
-    const getProjectVisible = ref(null);
-    const woList = ref(null);
+    const selctedWO = reactive({ wo: null, cabName: null })
+    const selectedProjectNumber = ref(null)
+    const listIsActive = ref(null)
+    const filterList = ref(null)
+    const getProjectVisible = ref(null)
+    const woList = ref(null)
     // const loadingSpinner = ref(false);
-    let dataProject;
+    let dataProject
 
     const getProject = async () => {
       // loadingSpinner.value = true
       if (!dataProject) {
-        dataProject = await (await fetch(`/api/projectstatus/Open`)).json();
-        getProjectVisible.value = true;
+        dataProject = await (await fetch(`/api/projectstatus/Open`)).json()
+        getProjectVisible.value = true
         // loadingSpinner.value = false
       }
       //  !dataProject && (dataProject = await (await fetch(`/api/projectstatus/Open`)).json())
-    };
+    }
 
     const testFetch = async () => {
-      await fetch("/api/postError", {
-        method: "POST", // или 'PUT'
+      await fetch('/api/postError', {
+        method: 'POST', // или 'PUT'
         body: JSON.stringify({
-          id: "666",
-          data: "testChange2",
+          id: '666',
+          data: 'testChange2',
           newdata: {
-            test: "testChange",
-            test1111: "testChange1111",
-            error: { status: "closed", timestamp: Date.now() },
+            test: 'testChange',
+            test1111: 'testChange1111',
+            error: { status: 'closed', timestamp: Date.now() },
           },
         }),
-      });
-    };
+      })
+    }
 
     const chooseWO = (index) => {
       console.log(
         woList.value[index].id,
         woList.value[index].cabinetInfo.cabName
-      );
-    };
+      )
+    }
     // (async function() {
     //   dataProject = await (await fetch(`/api/projectstatus/Open`)).json();
     // })();
     const chooseProject = async (index) => {
-      listIsActive.value = false;
-      selectedProjectNumber.value = filterList.value[index];
-      let projectNumberQuery = selectedProjectNumber.value;
-      if (!projectNumberQuery.includes(".")) {
-        projectNumberQuery = projectNumberQuery + ".0";
+      listIsActive.value = false
+      selectedProjectNumber.value = filterList.value[index]
+      let projectNumberQuery = selectedProjectNumber.value
+      if (!projectNumberQuery.includes('.')) {
+        projectNumberQuery = projectNumberQuery + '.0'
       }
       woList.value = await (
         await fetch(`/api/cabinetList/${projectNumberQuery}`)
-      ).json();
-    };
+      ).json()
+    }
     watch(selectedProjectNumber, async () => {
-      await getProject();
+      await getProject()
       filterList.value = dataProject.filter((el) =>
         el.includes(selectedProjectNumber.value)
-      );
-    });
+      )
+    })
     return {
       selectedProjectNumber,
       filterList,
@@ -141,7 +141,7 @@ export default {
       testFetch,
       chooseWO,
       selctedWO,
-    };
+    }
   },
   data() {
     return {
@@ -152,28 +152,28 @@ export default {
       selectedProjectCorrection: null,
       selectedCabinet: null,
       showPreloader: false,
-    };
+    }
   },
   mounted() {
-    console.log(this.$store.state.testState, "qqqqqqqqqqqqqqqqqqqq");
+    console.log(this.$store.state.testState, 'qqqqqqqqqqqqqqqqqqqq')
   },
   methods: {
     async getProjectTest() {
-      this.showPreloader = true;
+      this.showPreloader = true
       !this.projectsList &&
         (this.projectsList = await (
           await fetch(`/api/projectstatus/Open`)
-        ).json());
-      this.showPreloader = false;
+        ).json())
+      this.showPreloader = false
     },
     async chooseProjectTest() {
-      this.showPreloader = true;
-      if (!this.selectedProject.includes(".")) {
-        this.selectedProject = this.selectedProject + ".0";
+      this.showPreloader = true
+      if (!this.selectedProject.includes('.')) {
+        this.selectedProject = this.selectedProject + '.0'
       }
       let list = await (
         await fetch(`/api/cabinetList/${this.selectedProject}`)
-      ).json();
+      ).json()
       this.woListTest = list.map((el) => {
         return {
           id: el.id,
@@ -188,12 +188,12 @@ export default {
           buyoutAdministrator: el.cabinetInfo.buyoutAdministrator,
           leadEngineer: el.cabinetInfo.leadEngineer,
           hardwareEngineer: el.cabinetInfo.hardwareEngineer,
-        };
-      });
-      this.showPreloader = false;
+        }
+      })
+      this.showPreloader = false
     },
   },
-};
+}
 </script>
 
 <style lang="css" scoped>

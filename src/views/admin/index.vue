@@ -11,15 +11,18 @@ export default {
   components: {
     // Navigation,
   },
-    beforeRouteEnter (to, from, next) {
-     
-      JSON.parse(window.localStorage.getItem("user")).info.userRoles.includes('admin')? next(): next({name: 'login'})
-  // next(vm => {
-  //   console.log(vm, 'vm');
-  //   // access to component public instance via `vm`
-  // })
+  beforeRouteEnter(to, from, next) {
+    JSON.parse(window.localStorage.getItem('user')).info.userRoles.includes(
+      'admin'
+    )
+      ? next()
+      : next({ name: 'login' })
+    // next(vm => {
+    //   console.log(vm, 'vm');
+    //   // access to component public instance via `vm`
+    // })
   },
-};
+}
 </script>
 
 <style lang="css" scoped>
@@ -27,5 +30,4 @@ export default {
   position: relative;
   height: auto;
 }
-
 </style>

@@ -1,7 +1,7 @@
 <template>
   <div class="project__holder">
     <div class="project">
-      <br>
+      <br />
       <p v-if="projectList && projectList.lastUpdate">
         LegendStats latest update :
         {{ formatDate(new Date(projectList.lastUpdate * 1000)) }}
@@ -87,7 +87,9 @@ export default {
       const { request, response } = useFetch('/api/POST_project', {
         method: 'POST', // или 'PUT'
         body: JSON.stringify({
-          id: selectedProject.value.id.includes('.')?selectedProject.value.id.replace('.',','):selectedProject.value.id,
+          id: selectedProject.value.id.includes('.')
+            ? selectedProject.value.id.replace('.', ',')
+            : selectedProject.value.id,
           status: 'open',
           info: {
             base: selectedProject.value.info,
@@ -99,7 +101,7 @@ export default {
       await request()
       selected.extend = {}
       selected.cabinets = []
-      router.push("/projects")
+      router.push('/projects')
     }
 
     return {

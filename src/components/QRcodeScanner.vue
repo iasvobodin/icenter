@@ -15,35 +15,43 @@ import { Html5QrcodeScanner } from '@/scripts/html5-qrcode/html5-qrcode-scanner'
 export default {
   data() {
     return {
-      scanner: null
+      scanner: null,
     }
   },
   mounted() {
-    this.createQrcodeScanner();
+    this.createQrcodeScanner()
   },
   methods: {
     createQrcodeScanner() {
-      this.scanner = new Html5QrcodeScanner(
-        "reader", { fps: 10, qrbox: 250, enableFileScan: false });
-      this.scanner.render(this.onStartScan, this.onStopScan, this.onScanSuccess, this.onScanError);
+      this.scanner = new Html5QrcodeScanner('reader', {
+        fps: 10,
+        qrbox: 250,
+        enableFileScan: false,
+      })
+      this.scanner.render(
+        this.onStartScan,
+        this.onStopScan,
+        this.onScanSuccess,
+        this.onScanError
+      )
     },
     onStartScan() {
-      console.log("Action on start to scan here");
+      console.log('Action on start to scan here')
     },
     onStopScan() {
-      console.log("Action on stop scanning here");
+      console.log('Action on stop scanning here')
     },
     onScanSuccess(qrCodeMessage) {
       // handle on success condition with the decoded message
-      console.log(qrCodeMessage);
+      console.log(qrCodeMessage)
       // this.scanner.clear();
       // ^ this will stop the scanner (video feed) and clear the scan area.
     },
     onScanError(errorMessage) {
-      console.log(errorMessage);
+      console.log(errorMessage)
       // handle on error condition, with error message
-    }
-  }
+    },
+  },
 }
 </script>
 

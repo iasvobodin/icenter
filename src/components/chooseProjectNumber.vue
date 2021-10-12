@@ -5,34 +5,34 @@
   >
     <div class="input__holder">
       <input
-      :disabled="dis"
         v-model="selectedProject"
+        :disabled="dis"
         type="text"
         list="projetList"
+        :placeholder="placeHolder"
         @focus="listIsActive = true"
         @blur="listIsActive = false"
-        :placeholder="placeHolder"
       />
       <img
         v-if="selectedProject"
-        @mousedown="clearState"
         src="/img/cancel.svg"
         alt=""
+        @mousedown="clearState"
       />
     </div>
-    <div v-if="dataToRender" v-show="listIsActive"  class="project_list_holder">
+    <div v-if="dataToRender" v-show="listIsActive" class="project_list_holder">
       <ul class="project_list">
         <li v-if="filterProject.length === 0" class="project_item">
- <p class="p__holder">Попробуйте ввести другое условие поиска</p>
+          <p class="p__holder">Попробуйте ввести другое условие поиска</p>
         </li>
         <li
-        v-else
           v-for="(project, index) in filterProject"
+          v-else
           :key="index"
           class="project_item"
           @mousedown="chooseProject(index)"
         >
-          <p class="p__holder">{{project}}</p>
+          <p class="p__holder">{{ project }}</p>
         </li>
       </ul>
     </div>
@@ -40,37 +40,30 @@
 </template>
 
 <script>
-import {
-  toRefs,
-  ref,
-  computed,
-  nextTick
-} from 'vue'
+import { toRefs, ref, computed, nextTick } from 'vue'
 import { useStore } from 'vuex'
 export default {
   props: {
-    dis:{
+    dis: {
       type: Boolean,
-      default: ()=> false
+      default: () => false,
     },
     dataToRender: {
       type: Array,
-      default: ()=> [1, 2],
+      default: () => [1, 2],
     },
-    placeHolder:{
+    placeHolder: {
       type: String,
-      default: "Введите номер проекта"
-    }
+      default: 'Введите номер проекта',
+    },
   },
-//   emits: ["inputProjectEvent", "chooseProjectNumber"],
+  emits: ['inputProjectEvent', 'chooseProjectNumber'],
   setup(props, { emit }) {
     const store = useStore()
-    const {
-      dataToRender
-    } = toRefs(props)
+    const { dataToRender } = toRefs(props)
     const selectedProject = ref('')
     const listIsActive = ref(false)
-    const clearState = () =>{
+    const clearState = () => {
       selectedProject.value = ''
       emit('chooseProjectNumber', '')
     }
@@ -81,24 +74,24 @@ export default {
       listIsActive.value = false
     }
     const filterProject = computed(() => {
-        return dataToRender.value.filter((el) =>
-          el.toLowerCase().includes(selectedProject.value.toLowerCase())
-        );
+      return dataToRender.value.filter((el) =>
+        el.toLowerCase().includes(selectedProject.value.toLowerCase())
+      )
     })
     return {
       listIsActive,
       selectedProject,
       filterProject,
       chooseProject,
-      clearState
+      clearState,
     }
   },
 }
 </script>
 
 <style lang="css" scoped>
-.p__holder{
-   white-space: pre-wrap;
+.p__holder {
+  white-space: pre-wrap;
   word-wrap: break-word;
   /* font-size: calc(14px); */
   /* min-height: inherit; */
@@ -204,8 +197,8 @@ ul {
 .project_item:hover {
   background-color: rgba(55, 158, 255, 0.342);
 }
-.clear__state{
-  height: 30px; 
+.clear__state {
+  height: 30px;
   margin-left: 10px;
 }
 </style>

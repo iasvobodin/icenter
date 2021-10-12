@@ -1,78 +1,71 @@
-import {h} from 'vue'
+import { h } from 'vue'
 
 export default {
-    render() {
-  
-  switch (this.dataRender._field) {
-    case 'select':
-      return h(
-        'select', {
+  render() {
+    switch (this.dataRender._field) {
+      case 'select':
+        return h(
+          'select',
+          {
+            required: this.required,
+            value: this.modelValue[this.dataRender.name],
+            onInput: ($event) => this.addVmodel($event, this.dataRender.name), // this.$emit('update:modelValue', {...this.modelValue, [this.dataRender.name] : $event.target.value}),
+          },
+          this.dataRender.value.map((item) => {
+            return h('option', item)
+          })
+        )
+      case 'textarea':
+        return h('textarea', {
           required: this.required,
           value: this.modelValue[this.dataRender.name],
-          onInput: $event => this.addVmodel($event, this.dataRender.name) // this.$emit('update:modelValue', {...this.modelValue, [this.dataRender.name] : $event.target.value}),
-        }, this.dataRender.value.map((item) => {
-          return h('option', item)
+          onInput: ($event) => this.addVmodel($event, this.dataRender.name),
         })
-      )
-    case 'textarea':
-      return h(
-        'textarea', {
-          required: this.required,
-          value: this.modelValue[this.dataRender.name],
-          onInput: $event => this.addVmodel($event, this.dataRender.name)
-        }
-      )
-    case 'checkbox':
-      return h(
-        'input', {
+      case 'checkbox':
+        return h('input', {
           type: 'checkbox',
           required: this.required,
           value: this.modelValue[this.dataRender.name],
-          onInput: $event => this.addVmodel($event, this.dataRender.name)
-        }
-      )
-    case 'number':
-      return h(
-        'input', {
+          onInput: ($event) => this.addVmodel($event, this.dataRender.name),
+        })
+      case 'number':
+        return h('input', {
           type: 'number',
           required: this.required,
           value: this.modelValue[this.dataRender.name],
-          onInput: $event => this.addVmodel($event, this.dataRender.name)
-        }
-      )
+          onInput: ($event) => this.addVmodel($event, this.dataRender.name),
+        })
       case 'text':
-        return h(
-          'input', {
-            type: 'text',
-            required: this.required,
-            value: this.modelValue[this.dataRender.name],
-            onInput: $event => this.addVmodel($event, this.dataRender.name)
-          }
-        )
-  }
+        return h('input', {
+          type: 'text',
+          required: this.required,
+          value: this.modelValue[this.dataRender.name],
+          onInput: ($event) => this.addVmodel($event, this.dataRender.name),
+        })
+    }
+  },
+  methods: {
+    addVmodel($event, key) {
+      // console.log($event.target.value);
+      this.$emit('update:modelValue', {
+        ...this.modelValue,
+        [key]: $event.target.value,
+      })
     },
-    methods: {
-      addVmodel($event,key) {
-        // console.log($event.target.value);
-                this.$emit('update:modelValue', {
-            ...this.modelValue,
-            [key]: $event.target.value,
-          })
-      }
+  },
+  props: {
+    modelValue: {
+      type: Object,
+      required: true,
     },
-    props: {
-      modelValue: {
-        type: Object,
-        required: true
-      },
-      dataRender: {
-        type: Object,
-        required: true
-      },
-      required:{
-        type: Boolean,
-        default: true
-      }
+    dataRender: {
+      type: Object,
+      required: true,
     },
-    emits: ['update:modelValue'],
-  }
+    required: {
+      type: Boolean,
+      default: true,
+    },
+  },
+  emits: ['update:modelValue'],
+}

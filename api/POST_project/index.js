@@ -1,7 +1,7 @@
-module.exports = async function(context, req) {
-  context.log(context.req.body);
+module.exports = async function (context, req) {
+  context.log(context.req.body)
 
-  context.bindings.projectOut = context.req.body;
+  context.bindings.projectOut = context.req.body
   // {
   //   id: context.req.body.id,
   //   status: context.req.body.status,
@@ -11,6 +11,6 @@ module.exports = async function(context, req) {
   // };
   context.res = {
     // status: 200, /* Defaults to 200 */
-    body: "responseMessage"
-  };
-};
+    body: 'responseMessage',
+  }
+}

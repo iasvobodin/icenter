@@ -1,6 +1,9 @@
 <template>
   <h1>Текущие ошибки по шкафам</h1>
-  <p>В данном разделе Вы можете посмотреть ошибки добавленные сборщиками и инженерами по тестированию.</p>
+  <p>
+    В данном разделе Вы можете посмотреть ошибки добавленные сборщиками и
+    инженерами по тестированию.
+  </p>
   <br />
   <br />
   <!-- <div class="selectStatus">
@@ -12,15 +15,38 @@
   </div> -->
   <!-- <h3 class="search__title">Поиск</h3> -->
   <label for="search">Поиск: </label>
-    <input id="search" v-model="state.search" class="choose" type="text" placeholder="WO или номер проекта">
-    <br><br>
+  <input
+    id="search"
+    v-model="state.search"
+    class="choose"
+    type="text"
+    placeholder="WO или номер проекта"
+  />
+  <br /><br />
   <div v-if="state.errors" class="errors__holder">
-    <div v-for="(value, key, index) in filter" :key="index" class="item__card"
-      @click="$router.push(`/errors/${value.id}`)">
-      <div v-for="(v, k, i) in value.info" :key="i" :class="{error__item__desc : k ==='Описание'}" class="error__item">
-        <h3 :class="{ error__item__vertical__title: k === 'Описание' }" class="error__item__title">{{ k }}:</h3>
-        <p :class="{ error__item__vertical__title: k === 'Описание' }" class="error__item__desc">
-          {{ v?.includes('@')? v.split('@')[0].replace('.', ' ') : v }}
+    <div
+      v-for="(value, key, index) in filter"
+      :key="index"
+      class="item__card"
+      @click="$router.push(`/errors/${value.id}`)"
+    >
+      <div
+        v-for="(v, k, i) in value.info"
+        :key="i"
+        :class="{ error__item__desc: k === 'Описание' }"
+        class="error__item"
+      >
+        <h3
+          :class="{ error__item__vertical__title: k === 'Описание' }"
+          class="error__item__title"
+        >
+          {{ k }}:
+        </h3>
+        <p
+          :class="{ error__item__vertical__title: k === 'Описание' }"
+          class="error__item__desc"
+        >
+          {{ v?.includes('@') ? v.split('@')[0].replace('.', ' ') : v }}
         </p>
       </div>
     </div>
@@ -28,72 +54,73 @@
   <!-- <div v-if="errorMessage">{{ errorMessage }}</div> -->
   <div v-if="state.fetchStatus" class="loading" />
   <div class="button__holder">
-    <img class="info" src="/img/information.svg" alt="Справка" @click="$router.push('/errors/info')">
-    <img class="add__button" src="/img/add.svg" alt="Добавить новую ошибку"
-      @click="$router.push('/errors/addnewerror')">
+    <img
+      class="info"
+      src="/img/information.svg"
+      alt="Справка"
+      @click="$router.push('/errors/info')"
+    />
+    <img
+      class="add__button"
+      src="/img/add.svg"
+      alt="Добавить новую ошибку"
+      @click="$router.push('/errors/addnewerror')"
+    />
   </div>
-
 </template>
 
 <script setup>
 import errorPhotos from '@/components/errorPhotos.vue'
-  import {
-    reactive,
-    computed,
-    watch,
-    ref
-  } from 'vue'
-  import { useFetch } from '@/hooks/fetch'
-  import { onBeforeRouteLeave, onBeforeRouteUpdate } from 'vue-router'
-  // export default {
+import { reactive, computed, watch, ref } from 'vue'
+import { useFetch } from '@/hooks/fetch'
+import { onBeforeRouteLeave, onBeforeRouteUpdate } from 'vue-router'
+// export default {
 
-  //   setup() {
-      const state = reactive({
-        errors: null,
-        phList:[],
-        // resErrors: null,
-        fetchStatus: null,
-        // errorMessage: "",
-      })
-      const selectedStatus = ref("open")
-      const getErrors = async () => {
-        const {
-          request,
-          response
-        } = useFetch(`/api/errors`)
-        state.errors = response
-        await request()
-      }
-      
+//   setup() {
+const state = reactive({
+  errors: null,
+  phList: [],
+  // resErrors: null,
+  fetchStatus: null,
+  // errorMessage: "",
+})
+const selectedStatus = ref('open')
+const getErrors = async () => {
+  const { request, response } = useFetch(`/api/errors`)
+  state.errors = response
+  await request()
+}
 
+getErrors()
+watch(selectedStatus, () => getErrors())
 
-      getErrors()
-      watch(selectedStatus, () => getErrors())
-
-    onBeforeRouteUpdate(async (to, from) => {
-      if (from.contains('error')) {
-        alert('a')
-      }
-    })
-    onBeforeRouteLeave( (to, from) => {
-      console.log(to, 'onBeforeRouteLeave');
-      console.log(from, 'onBeforeRouteLeave');
-    })
-    const filter = computed(()=> {
-      return state.search ? 
-      state.errors.filter(e => [e?.info.wo, e?.info['Проект']].some(s => s && s.toLowerCase().includes(state.search.toLowerCase()))) :
-      state.errors
-    })
-      // return {
-      //   selectedStatus,
-      //   ...toRefs(state),
-      // }
-  //   },
-  // };
+onBeforeRouteUpdate(async (to, from) => {
+  if (from.contains('error')) {
+    alert('a')
+  }
+})
+onBeforeRouteLeave((to, from) => {
+  console.log(to, 'onBeforeRouteLeave')
+  console.log(from, 'onBeforeRouteLeave')
+})
+const filter = computed(() => {
+  return state.search
+    ? state.errors.filter((e) =>
+        [e?.info.wo, e?.info['Проект']].some(
+          (s) => s && s.toLowerCase().includes(state.search.toLowerCase())
+        )
+      )
+    : state.errors
+})
+// return {
+//   selectedStatus,
+//   ...toRefs(state),
+// }
+//   },
+// };
 </script>
 
 <style lang="css" scoped>
-
 /* .info{
   position: fixed;
   bottom: 20px;
@@ -102,7 +129,7 @@ import errorPhotos from '@/components/errorPhotos.vue'
   height: 40px;
   cursor: pointer;
 } */
-.search__title{
+.search__title {
   width: auto;
 }
 input {
@@ -116,7 +143,7 @@ input {
   margin: auto;
   padding: 0px;
 }
-.button__holder{
+.button__holder {
   display: grid;
   grid-auto-flow: column;
   column-gap: 20px;
@@ -131,7 +158,7 @@ input {
   padding: 10px;
   border-radius: 10px;
 }
-.button__holder>img{
+.button__holder > img {
   place-self: center;
   width: 100%;
   height: 100%;

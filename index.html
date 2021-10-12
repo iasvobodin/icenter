@@ -3,9 +3,9 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" href="/favicon.ico" />
-    <link rel="manifest" href="/manifest.webmanifest">
-    <meta name="theme-color" content="#004481"/>
-    <link rel="apple-touch-icon" href="/img/logo192.png">
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="theme-color" content="#004481" />
+    <link rel="apple-touch-icon" href="/img/logo192.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Icenter74</title>
   </head>
@@ -13,17 +13,18 @@
     <div id="app"></div>
     <script type="module" src="/src/main.ts"></script>
     <script>
-          if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js')
-    .then(registration => {
-      console.log('Service Worker is registered', registration);
-    })
-    .catch(err => {
-      console.error('Registration failed:', err);
-    });
-  });
-}
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker
+            .register('/sw.js')
+            .then((registration) => {
+              console.log('Service Worker is registered', registration)
+            })
+            .catch((err) => {
+              console.error('Registration failed:', err)
+            })
+        })
+      }
     </script>
   </body>
 </html>

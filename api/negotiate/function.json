@@ -5,10 +5,7 @@
       "type": "httpTrigger",
       "direction": "in",
       "name": "req",
-      "methods": [
-        "get",
-        "post"
-      ]
+      "methods": ["get", "post"]
     },
     {
       "type": "http",
@@ -21,7 +18,6 @@
       "hubName": "icenter",
       "direction": "in",
       "connectionStringSetting": "AzureSignalRConnectionString"
-
-  }
+    }
   ]
 }

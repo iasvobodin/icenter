@@ -32,10 +32,7 @@
                 </tr>
               </thead>
               <tbody>
-                <tr
-                  v-for="(cabinet, k3, i3) in value.cabinets"
-                  :key="i3"
-                >
+                <tr v-for="(cabinet, k3, i3) in value.cabinets" :key="i3">
                   <td v-for="(val, k, i2) in cabinet" :key="i2">
                     {{ val }}
                   </td>
@@ -55,19 +52,19 @@ export default {
   data() {
     return {
       projectList: null,
-      status: "open",
-    };
+      status: 'open',
+    }
   },
   async mounted() {
     try {
       this.projectList = await (
         await fetch(`/api/project/${this.status}`)
-      ).json();
+      ).json()
     } catch (error) {
-      console.log(error);
+      console.log(error)
     }
   },
-};
+}
 </script>
 
 <style lang="css" scoped>

@@ -1,24 +1,22 @@
-module.exports = async function(context, req, projects, updateProject) {
-  
+module.exports = async function (context, req, projects, updateProject) {
   if (req.query.updateProject) {
     context.bindings.updateProject = req.rawBody
     return
   }
   if (projects.length === 0) {
     context.res = {
-    status: 404
-    };
+      status: 404,
+    }
     return
   }
   if (projects.length > 0 && req.query.project) {
-    const currentProject = projects.find(e => e.id === req.query.project )
+    const currentProject = projects.find((e) => e.id === req.query.project)
     context.res = {
-      body: currentProject
-    };
+      body: currentProject,
+    }
     return
   }
-    context.res = {
-      body: projects
-    };
-  };
-  
+  context.res = {
+    body: projects,
+  }
+}

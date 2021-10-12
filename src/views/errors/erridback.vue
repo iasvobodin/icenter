@@ -8,8 +8,12 @@
       <section class="information">
         <info-render :info-data="error.info" />
       </section>
-      <section v-for="(val, key, index) in error.body" :key="index" class="eror__body">
-        <div v-if="!key.startsWith('_')&&Object.values(val)[1]">
+      <section
+        v-for="(val, key, index) in error.body"
+        :key="index"
+        class="eror__body"
+      >
+        <div v-if="!key.startsWith('_') && Object.values(val)[1]">
           <!-- {{key}} -->
           <div v-if="!returnRender(key, val)">
             <h2>{{ key }}</h2>
@@ -19,20 +23,30 @@
       </section>
       <section class="mod__error__body">
         <form id="errorData" @submit.prevent="updateErorData">
-          <div v-for="(value, key, index) in $store.state.template?.error[
+          <div
+            v-for="(value, key, index) in $store.state.template?.error[
               error.type
-            ]" :key="index">
+            ]"
+            :key="index"
+          >
             <div v-if="returnRender(key, value)">
               <h3>Статус ошибки: {{ key }}</h3>
-              <conditional-render v-model="error.body[key]" :data-render="value"
-                :required="!$store.state.user.info.userRoles.includes('admin')" />
+              <conditional-render
+                v-model="error.body[key]"
+                :data-render="value"
+                :required="!$store.state.user.info.userRoles.includes('admin')"
+              />
             </div>
           </div>
         </form>
       </section>
       <h3 v-if="error.photos[0]">Фотографии</h3>
-      <error-photos :change-photos="changeInfo" :current-photos="error.photos" @delete-blob="setPH"
-        @resized-blob="errorPhotosBlob($event)" />
+      <error-photos
+        :change-photos="changeInfo"
+        :current-photos="error.photos"
+        @delete-blob="setPH"
+        @resized-blob="errorPhotosBlob($event)"
+      />
     </div>
     <div v-else class="loading" />
     <p v-if="errorIsNotDef">{{ errorIsNotDef }}</p>
@@ -40,18 +54,19 @@
   <br />
   <br />
   <div class="button__block">
-    <button v-if="
-        error &&
-        !changeInfo &&
-        error.info.Добавил === $store.state.user.info.userDetails || 
+    <button
+      v-if="
+        (error &&
+          !changeInfo &&
+          error.info.Добавил === $store.state.user.info.userDetails) ||
         $store.state.user.info.userRoles.includes('admin')
-      " @click="changeData">
-      {{!changeInfo? 'Редактировать':'Отмена'}}
+      "
+      @click="changeData"
+    >
+      {{ !changeInfo ? 'Редактировать' : 'Отмена' }}
     </button>
-    <button @click="deleteError" v-if="changeInfo">Удалить</button>
-    <button v-if="changeInfo" type="submit" form="errorData">
-      Сохранить
-    </button>
+    <button v-if="changeInfo" @click="deleteError">Удалить</button>
+    <button v-if="changeInfo" type="submit" form="errorData">Сохранить</button>
   </div>
 
   <!-- <img crossorigin="anonymous" src="https://icaenter.blob.core.windows.net/errors-photo/21-01-04-12-30-23.jpg" alt="11"> -->
@@ -59,8 +74,8 @@
 
 <script>
 import errorPhotos from '@/components/errorPhotos.vue'
-import conditionalRender from "@/components/conditionalRender.vue";
-import infoRender from "@/components/infoRender.vue";
+import conditionalRender from '@/components/conditionalRender.vue'
+import infoRender from '@/components/infoRender.vue'
 export default {
   components: {
     errorPhotos,
@@ -82,41 +97,44 @@ export default {
       errorIsNotDef: null,
       errorTemplate: null,
       test: null,
-      deletMethods: []
-    };
+      deletMethods: [],
+    }
   },
 
   async created() {
-    this.error = await this.getCurrentError();
-    this.error.body = this.error.body[this.error.body.length - 1];
+    this.error = await this.getCurrentError()
+    this.error.body = this.error.body[this.error.body.length - 1]
   },
   methods: {
     errorPhotosBlob(e) {
       this.compressBlob = e
       addEventListener('beforeunload', (event) => {
         // Отмените событие, как указано в стандарте.
-        event.preventDefault();
+        event.preventDefault()
         // Chrome требует установки возвратного значения.
-        event.returnValue = 'aaa';
-      });
+        event.returnValue = 'aaa'
+      })
     },
     async deleteError() {
       const delErr = {
-        method: "POST", // или 'PUT'
+        method: 'POST', // или 'PUT'
         body: JSON.stringify({
           id: this.error.id,
           status: this.error.status,
           info: {
-            wo: this.error.info.wo
+            wo: this.error.info.wo,
           },
-          ttl: 1
+          ttl: 1,
         }),
       }
-      await fetch("/api/POST_openError", delErr)
-      await fetch("/api/POST_error", delErr);
-      this.error.photos.length > 0 && await Promise.all(this.error.photos.map(async e => {
-        await fetch(`/api/blob?fileName=${e}&delblob=true`)
-      }))
+      await fetch('/api/POST_openError', delErr)
+      await fetch('/api/POST_error', delErr)
+      this.error.photos.length > 0 &&
+        (await Promise.all(
+          this.error.photos.map(async (e) => {
+            await fetch(`/api/blob?fileName=${e}&delblob=true`)
+          })
+        ))
       this.$router.push('/errors')
     },
     setPH(e) {
@@ -134,7 +152,7 @@ export default {
     //   this.$refs.fileInput.click()
     // },
     // checkFile() {
-    //   // this.fileInput = document.getElementById('imageFile') 
+    //   // this.fileInput = document.getElementById('imageFile')
     //   this.files = Object.values(this.$refs.fileInput.files)
     //   addEventListener("beforeunload", this.beforeUnloadListener, {
     //     capture: true
@@ -146,162 +164,175 @@ export default {
     // },
     // eslint-disable-next-line no-unused-vars
     returnRender(key) {
-      if (this.changeInfo && this.$store.state.user.info.userRoles.includes('admin')) {
+      if (
+        this.changeInfo &&
+        this.$store.state.user.info.userRoles.includes('admin')
+      ) {
         return true
       }
       if (this.changeInfo && this.error.status === 'confirmed') {
-        if (key === "Открыто") {
-          return false;
+        if (key === 'Открыто') {
+          return false
         }
-        if (key === "Принято") {
-          return false;
+        if (key === 'Принято') {
+          return false
         }
-        if (key === "Устранено") {
-          return true;
+        if (key === 'Устранено') {
+          return true
         }
       }
-      if (this.changeInfo && this.$store.state.user.info.userDetails.toLowerCase() === this.error.info.Добавил) {
-        if (key === "Открыто") {
-          return true;
+      if (
+        this.changeInfo &&
+        this.$store.state.user.info.userDetails.toLowerCase() ===
+          this.error.info.Добавил
+      ) {
+        if (key === 'Открыто') {
+          return true
         }
-        if (key === "Принято") {
-          return false;
+        if (key === 'Принято') {
+          return false
         }
-        if (key === "Устранено") {
-          return false;
+        if (key === 'Устранено') {
+          return false
         }
       }
     },
     changeData() {
-      this.changeInfo = !this.changeInfo;
+      this.changeInfo = !this.changeInfo
     },
     async updateErorData() {
       //GET CURRENT ITEM FROM DB
-      const err = await this.getCurrentError();
+      const err = await this.getCurrentError()
       const photos = this.error.photos
       // OBJECT FOR NEW UPDATET ERROR
       const updateErorBody = {
         ...err,
-        status: Object.values(this.error.body.Устранено)[0] ?
-          "closed" : Object.values(this.error.body.Принято)[0] ?
-          "confirmed" : "open",
+        status: Object.values(this.error.body.Устранено)[0]
+          ? 'closed'
+          : Object.values(this.error.body.Принято)[0]
+          ? 'confirmed'
+          : 'open',
         body: [
-          ...err.body, //CURRENT BODY + 
+          ...err.body, //CURRENT BODY +
           {
             ...this.error.body, //CHANGED BODY
-            _changed: JSON.parse(localStorage.getItem("user")).info.userDetails.toLowerCase(),
+            _changed: JSON.parse(
+              localStorage.getItem('user')
+            ).info.userDetails.toLowerCase(),
             _time: `${Date.now()}`,
           },
         ],
-        photos
-      };
+        photos,
+      }
       // OBJECT FOR OPEN ERROR
       const openError = {
         id: this.error.id,
         info: {
           ...this.error.info,
-          Описание: this.error.body.Открыто["Описание"],
+          Описание: this.error.body.Открыто['Описание'],
         },
-        type: "error",
+        type: 'error',
         status: updateErorBody.status,
         // ttl: 6000,
-      };
+      }
       // DELETE OPEN ERROR IF STATUS IS CLOSED
       if (
         err.status != updateErorBody.status ||
-        updateErorBody.status === "closed"
+        updateErorBody.status === 'closed'
       ) {
         // console.log("comparestatus");
-        await fetch("/api/POST_openError", {
-          method: "POST", // или 'PUT'
+        await fetch('/api/POST_openError', {
+          method: 'POST', // или 'PUT'
           body: JSON.stringify({
             id: err.id,
             status: err.status,
-            ttl: 1
+            ttl: 1,
           }),
-        });
+        })
       }
-    
+
       try {
         const formData = new FormData()
         this.compressBlob.map((e, i) => {
-          const imageName = `${err.id}__${this.$store.state.user.info.userDetails.toLowerCase()}__${Date.now() + i}.jpg`
+          const imageName = `${
+            err.id
+          }__${this.$store.state.user.info.userDetails.toLowerCase()}__${
+            Date.now() + i
+          }.jpg`
           photos.push(imageName)
           // debugger
           // console.log(photos, i);
-          formData.set(`photo${i+1}`, e, imageName)
+          formData.set(`photo${i + 1}`, e, imageName)
         })
-         // UPLOAD PHOTOS
-        await fetch(
-          '/api/blob?test=true', {
-            method: 'POST',
-            body: formData,
-          },
-        )
+        // UPLOAD PHOTOS
+        await fetch('/api/blob?test=true', {
+          method: 'POST',
+          body: formData,
+        })
         // DELETE PHOTOS FROM AZURE STORAGE
-       this.deletMethods.del && await Promise.all(this.deletMethods?.del.map(async e => {
-          await fetch(e)
-        }))
+        this.deletMethods.del &&
+          (await Promise.all(
+            this.deletMethods?.del.map(async (e) => {
+              await fetch(e)
+            })
+          ))
         // UPDATE ERROR IN ICENTERDB
-        console.log(updateErorBody);
+        console.log(updateErorBody)
         // debugger
-        await fetch("/api/POST_error", {
-          method: "POST", // или 'PUT'
+        await fetch('/api/POST_error', {
+          method: 'POST', // или 'PUT'
           body: JSON.stringify({
-            ...updateErorBody
+            ...updateErorBody,
           }),
-        });
+        })
 
-
-        if (updateErorBody.status === "closed") {
-          return;
+        if (updateErorBody.status === 'closed') {
+          return
         } //IF STATUS CLOSED SKIP THIS STEP
-        await fetch("/api/POST_openError", {
-          method: "POST",
+        await fetch('/api/POST_openError', {
+          method: 'POST',
           body: JSON.stringify({
-            ...openError
+            ...openError,
           }),
-        });
-
-
+        })
       } finally {
-        this.error = await this.getCurrentError();
-        this.changeInfo = !this.changeInfo;
+        this.error = await this.getCurrentError()
+        this.changeInfo = !this.changeInfo
         this.error.photos = photos
-        removeEventListener("beforeunload", (event) => {
+        removeEventListener('beforeunload', (event) => {
           // Отмените событие, как указано в стандарте.
-          event.preventDefault();
+          event.preventDefault()
           // Chrome требует установки возвратного значения.
-          event.returnValue = '';
-        });
+          event.returnValue = ''
+        })
       }
     },
     async getCurrentError() {
       try {
         const responsError = await fetch(
           `/api/errors/${this.$route.params.errorId}`
-        );
-        const error = await responsError.json();
+        )
+        const error = await responsError.json()
         if (!responsError.ok) {
-          this.errorIsNotDef = "Данной ошибки не существует";
-          console.log("Данной ошибки не существует");
+          this.errorIsNotDef = 'Данной ошибки не существует'
+          console.log('Данной ошибки не существует')
         }
 
-        return error;
+        return error
       } catch (error) {
-        this.errorIsNotDef = "Данной ошибки не существует";
-        console.log("errors is not def", error);
+        this.errorIsNotDef = 'Данной ошибки не существует'
+        console.log('errors is not def', error)
       }
     },
   },
-};
+}
 </script>
 
 <style lang="css" scoped>
-.add__photo{
-width: 100px;
- place-self: center;
- cursor: pointer;
+.add__photo {
+  width: 100px;
+  place-self: center;
+  cursor: pointer;
 }
 
 .custom-file-input:hover::before {
@@ -311,7 +342,7 @@ width: 100px;
   background: -webkit-linear-gradient(top, #e3e3e3, #f9f9f9);
   background-image: url('/img/add__image.svg');
 }
-.back__image{
+.back__image {
   position: fixed;
   top: 10px;
   right: 80px;
@@ -320,7 +351,7 @@ width: 100px;
   border-radius: 4px;
   cursor: pointer;
 }
-.delete__image{
+.delete__image {
   top: -30px;
   width: 20px;
   height: 20px;

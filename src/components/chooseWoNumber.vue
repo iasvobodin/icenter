@@ -76,7 +76,7 @@ export default {
           (el) =>
             (el.wo && el.wo.includes(this.wo)) ||
             (el['cab name'] &&
-              el['cab name'].toLowerCase().includes(this.wo.toLowerCase())),
+              el['cab name'].toLowerCase().includes(this.wo.toLowerCase()))
         )
       } else {
         return this.cabinetList
@@ -87,9 +87,9 @@ export default {
     checkedCabinetsNames() {
       this.$emit('checkedWo', this.checkedCabinetsNames)
     },
-    wo(){
-        this.checkedCabinetsNames = []
-        // this.checkBoxAll = false
+    wo() {
+      this.checkedCabinetsNames = []
+      // this.checkBoxAll = false
     },
     multipleCheck() {
       this.checkedCabinetsNames = []

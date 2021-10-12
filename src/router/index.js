@@ -1,138 +1,138 @@
-import { createRouter, createWebHistory } from "vue-router";
-import store from '@/store/index.ts'
+import { createRouter, createWebHistory } from 'vue-router'
+import store from '@/store/index.js'
 const routes = [
   {
-    path: "/",
-    name: "Home",
-    component: () => import("@/views/Home.vue"),
+    path: '/',
+    name: 'Home',
+    component: () => import('@/views/Home.vue'),
   },
   {
-    path: "/User",
-    name: "User",
-    component:()=>  import("@/views/User.vue"),
+    path: '/User',
+    name: 'User',
+    component: () => import('@/views/User.vue'),
   },
   {
     path: '/login',
     name: 'login',
-    component:()=>  import("@/views/login.vue"),
+    component: () => import('@/views/login.vue'),
   },
   {
     path: '/role',
     name: 'role',
-    component:()=>  import("@/views/role.vue"),
+    component: () => import('@/views/role.vue'),
   },
   {
-    path: "/admin",
-    component: ()=> import("@/views/admin/index.vue"),
+    path: '/admin',
+    component: () => import('@/views/admin/index.vue'),
     children: [
       {
-        path: "profile",
-        component: ()=>  import("@/views/admin/UserProfile.vue"),
+        path: 'profile',
+        component: () => import('@/views/admin/UserProfile.vue'),
       },
       {
-        path: "addproject",
-        component: ()=>  import("@/views/admin/addProject.vue"),
+        path: 'addproject',
+        component: () => import('@/views/admin/addProject.vue'),
       },
       {
-        path: "reports",
-        component: ()=>  import("@/views/admin/reports.vue"),
+        path: 'reports',
+        component: () => import('@/views/admin/reports.vue'),
       },
       {
-        path: "addcabtime",
-        component: ()=>  import("@/views/admin/addCabTime.vue"),
+        path: 'addcabtime',
+        component: () => import('@/views/admin/addCabTime.vue'),
       },
     ],
   },
   {
-    path: "/errors",
-    component: ()=>  import("@/views/errors/errors.vue"),
+    path: '/errors',
+    component: () => import('@/views/errors/errors.vue'),
   },
   {
-    path: "/errors/:errorId",
-    component: ()=>  import("@/views/errors/_errorId.vue"),
+    path: '/errors/:errorId',
+    component: () => import('@/views/errors/_errorId.vue'),
   },
   {
-    path: "/errors/addNewError",
-    component: ()=>  import("@/views/errors/addNewError.vue"),
+    path: '/errors/addNewError',
+    component: () => import('@/views/errors/addNewError.vue'),
   },
   {
-    path: "/errors/info",
-    component: ()=>  import("@/views/errors/info.vue"),
+    path: '/errors/info',
+    component: () => import('@/views/errors/info.vue'),
   },
   {
-    path: "/tasks",
-    component: ()=>  import("@/views/tasks/tasks.vue"),
+    path: '/tasks',
+    component: () => import('@/views/tasks/tasks.vue'),
   },
   {
-    path: "/tasks/:taskId",
-    component: ()=>  import("@/views/tasks/_taskId.vue"),
+    path: '/tasks/:taskId',
+    component: () => import('@/views/tasks/_taskId.vue'),
   },
   {
-    path: "/cabinets",
-    component: ()=>  import("@/views/cabinets/cabinets.vue"),
+    path: '/cabinets',
+    component: () => import('@/views/cabinets/cabinets.vue'),
   },
   {
-    path: "/cabinets/:cabinetId",
-    component: ()=>  import("@/views/cabinets/_cabinetId.vue"),
+    path: '/cabinets/:cabinetId',
+    component: () => import('@/views/cabinets/_cabinetId.vue'),
   },
   {
-    path: "/cabtimes",
-    component: ()=>  import("@/views/cabtimes/cabtimes.vue"),
+    path: '/cabtimes',
+    component: () => import('@/views/cabtimes/cabtimes.vue'),
   },
   {
-    path: "/cabtimes/:cabtimeId",
-    component: ()=>  import("@/views/cabtimes/_cabtimeId.vue"),
+    path: '/cabtimes/:cabtimeId',
+    component: () => import('@/views/cabtimes/_cabtimeId.vue'),
   },
   {
-    path: "/cabtimes/addNewCabtime",
-    component: ()=>  import("@/views/cabtimes/addNewCabtime.vue"),
+    path: '/cabtimes/addNewCabtime',
+    component: () => import('@/views/cabtimes/addNewCabtime.vue'),
   },
   {
-    path: "/projects",
-    component: ()=>  import("@/views/projects/projects.vue"),
-//     async beforeEnter(to, from, next) {
-//   try {
-//     var hasPermission = await store.dispatch("auth/hasPermission");
-//     if (hasPermission) {
-//       next()
-//     }
-//   } catch (e) {
-//     next({
-//       name: "login", // back to safety route //
-//       query: { redirectFrom: to.fullPath }
-//     })
-//   }
-// }
+    path: '/projects',
+    component: () => import('@/views/projects/projects.vue'),
+    //     async beforeEnter(to, from, next) {
+    //   try {
+    //     var hasPermission = await store.dispatch("auth/hasPermission");
+    //     if (hasPermission) {
+    //       next()
+    //     }
+    //   } catch (e) {
+    //     next({
+    //       name: "login", // back to safety route //
+    //       query: { redirectFrom: to.fullPath }
+    //     })
+    //   }
+    // }
   },
   {
-    path: "/projects/addNewProject",
-    component: ()=>  import("@/views/projects/addNewProject.vue"),
+    path: '/projects/addNewProject',
+    component: () => import('@/views/projects/addNewProject.vue'),
   },
   {
-    path: "/projects/:projectId",
-    component: ()=>  import("@/views/projects/_projectId.vue"),
+    path: '/projects/:projectId',
+    component: () => import('@/views/projects/_projectId.vue'),
   },
   {
-    path: "/admin",
-    name: "admin",
-    component: ()=>  import("@/views/admin/index.vue"),
+    path: '/admin',
+    name: 'admin',
+    component: () => import('@/views/admin/index.vue'),
   },
-];
+]
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes,
-});
+})
 // router.beforeEach((to, from) => {
 //   if (to.path === '/login' || to.path === '/role') return true
 //   // if (to.path === '/login')  return true
 // })
 
-
 const createName = (clientPrincipal) => {
   if (clientPrincipal.identityProvider === 'aad') {
     const splitName = clientPrincipal.userDetails.split('@')[0].split('.')
-    const name = splitName[0][0].toUpperCase() + '.' + splitName[1][0].toUpperCase() + '.'
+    const name =
+      splitName[0][0].toUpperCase() + '.' + splitName[1][0].toUpperCase() + '.'
     return name
   }
   return clientPrincipal.userDetails.split('@')[0]
@@ -140,56 +140,58 @@ const createName = (clientPrincipal) => {
 
 const CHECK_auth = async () => {
   try {
-    const responseUserAuth = await fetch("/.auth/me");
+    const responseUserAuth = await fetch('/.auth/me')
     if (responseUserAuth.ok) {
-      const user = await responseUserAuth.json();
-      const {
-        clientPrincipal
-      } = user
+      const user = await responseUserAuth.json()
+      const { clientPrincipal } = user
       //CREATE OBJECT FOR SERVER
       if (clientPrincipal) {
-      const userRes = {
-        id: clientPrincipal.userId,
-        type: "info",
-        info: clientPrincipal,
-        body: {
-          name: createName(clientPrincipal)
-        },
+        const userRes = {
+          id: clientPrincipal.userId,
+          type: 'info',
+          info: clientPrincipal,
+          body: {
+            name: createName(clientPrincipal),
+          },
+        }
+        console.log(userRes, 'this return from CHEC_auth, if true')
+        return userRes
       }
-      console.log(userRes, 'this return from CHEC_auth, if true');
-      return userRes
-      }
-
     }
     return false
   } catch (error) {
-    console.log(error, 'CHECK AUTH ERROR');
+    console.log(error, 'CHECK AUTH ERROR')
     return false
   }
 }
 const commitUser = (user) => {
-  window.localStorage.setItem("user", JSON.stringify(user));
-  store.commit("setUserAuth", JSON.stringify(user));
+  window.localStorage.setItem('user', JSON.stringify(user))
+  store.commit('setUserAuth', JSON.stringify(user))
 }
 const CHECK_userDB = async (user) => {
   try {
-    const registerUserRes = await fetch(`/api/user/${user.info.userId}?getRegisterUser=true`)
+    const registerUserRes = await fetch(
+      `/api/user/${user.info.userId}?getRegisterUser=true`
+    )
     //   console.log(responseUserAuth,'responseUserAuth');
     if (registerUserRes.ok) {
       user = await registerUserRes.json()
-      user&&commitUser(user)
-    } 
+      user && commitUser(user)
+    }
   } catch (error) {
-    console.log(error, "from check user in db");
+    console.log(error, 'from check user in db')
     try {
       const options = {
-        method: "POST", // или 'PUT'
-        body: JSON.stringify(user)
+        method: 'POST', // или 'PUT'
+        body: JSON.stringify(user),
       }
-      await fetch(`/api/user/${user.info.userId}?postRegisterUser=true`, options)
+      await fetch(
+        `/api/user/${user.info.userId}?postRegisterUser=true`,
+        options
+      )
       commitUser(user)
     } catch (error) {
-      console.log(error, "error from register user in db");
+      console.log(error, 'error from register user in db')
     }
   }
 }
@@ -197,39 +199,39 @@ const CHECK_userDB = async (user) => {
 router.beforeEach(async (to, from) => {
   if (to.path === '/login' || to.path === '/role') return true
 
-    !store.state.template && await store.dispatch('GET_template')
+  !store.state.template && (await store.dispatch('GET_template'))
 
-  if (
-    import.meta.env.MODE === 'development') {
+  if (import.meta.env.MODE === 'development') {
     const user = {
-      "id": "9c0c1980f5904d10b43e552d2b7c4041",
-      "type": "info",
-      "info": {
-        "identityProvider": "aad",
-        "userId": "9c0c1980f5904d10b43e552d2b7c4041",
-        "userDetails": "ivan.svobodin@emerson.com",
-        "userRoles": ["admin", "anonymous", "icenter", "authenticated"]
+      id: '9c0c1980f5904d10b43e552d2b7c4041',
+      type: 'info',
+      info: {
+        identityProvider: 'aad',
+        userId: '9c0c1980f5904d10b43e552d2b7c4041',
+        userDetails: 'ivan.svobodin@emerson.com',
+        userRoles: ['admin', 'anonymous', 'icenter', 'authenticated'],
       },
-      "body": {
-        "name": "I.S."
+      body: {
+        name: 'I.S.',
       },
     }
     commitUser(user)
     return true
   } else {
     //CHECK USER GLOBAL
-    const user = window.localStorage.getItem("user") // type string
-    
+    const user = window.localStorage.getItem('user') // type string
+
     if (user) {
       const userParse = JSON.parse(user) // type object
-      if (!userParse.info.userRoles.includes('icenter')) { //CHECK ROLE
+      if (!userParse.info.userRoles.includes('icenter')) {
+        //CHECK ROLE
         return '/role'
       } else {
         CHECK_userDB(userParse)
         return true
       }
     } else {
-     const userCheck = await CHECK_auth()
+      const userCheck = await CHECK_auth()
       if (userCheck) {
         //CHECK ROLE
         if (!userCheck.info.userRoles.includes('icenter')) {
@@ -267,4 +269,4 @@ router.beforeEach(async (to, from) => {
   // }
 })
 
-export default router;
+export default router

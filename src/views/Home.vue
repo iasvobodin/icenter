@@ -6,8 +6,8 @@
 </template>
 
 <script>
-import chooseCabinet from "@/components/chooseCabinet.vue";
-import setError from "@/components/setError.vue";
+import chooseCabinet from '@/components/chooseCabinet.vue'
+import setError from '@/components/setError.vue'
 export default {
   components: {
     // eslint-disable-next-line vue/no-unused-components
@@ -20,5 +20,5 @@ export default {
 
   //   return {}; // anything returned here will be available for the rest of the component
   // }
-};
+}
 </script>

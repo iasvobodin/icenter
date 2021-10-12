@@ -6,16 +6,13 @@
       "direction": "in",
       "name": "req",
       "route": "templates/{partitionKeyValue}/{id}",
-      "methods": [
-        "get",
-        "post"
-      ]
+      "methods": ["get", "post"]
     },
     {
       "type": "http",
       "name": "res",
       "direction": "out"
-  },
+    },
     {
       "type": "cosmosDB",
       "direction": "in",
@@ -26,6 +23,5 @@
       "Id": "{id}",
       "PartitionKey": "{partitionKeyValue}"
     }
-
   ]
 }

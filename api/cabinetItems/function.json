@@ -6,10 +6,7 @@
       "direction": "in",
       "name": "req",
       "route": "cabinetItems",
-      "methods": [
-        "get",
-        "post"
-      ]
+      "methods": ["get", "post"]
     },
     {
       "type": "http",

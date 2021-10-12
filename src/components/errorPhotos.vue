@@ -1,114 +1,145 @@
 <template>
   <div>
-    <input id="imageFile" ref="fileInput" multiple type="file" accept="image/*" @input="checkFile" v-show="false" />
+    <input
+      v-show="false"
+      id="imageFile"
+      ref="fileInput"
+      multiple
+      type="file"
+      accept="image/*"
+      @input="checkFile"
+    />
     <div class="photo__gallery">
       <div v-for="(url, i) in currentPhotos" :key="i" class="photo__holder">
         <a :href="`${linkPhoto}${url}`">
           <img class="canvas__el" :src="`${linkPhoto}thumb__${url}`" alt="" />
         </a>
-        <img v-if="changePhotos" class="delete__icon" src="/img/delete.svg" alt="" @click="deleteBlob(url,i)">
+        <img
+          v-if="changePhotos"
+          class="delete__icon"
+          src="/img/delete.svg"
+          alt=""
+          @click="deleteBlob(url, i)"
+        />
       </div>
       <div v-for="(url, i) in files.blobUrl" :key="i" class="photo__holder">
-        <img v-if="changePhotos" class="canvas__el" :src="url" alt="ph">
-        <img v-if="changePhotos" class="delete__icon" src="/img/delete.svg" alt="" @click="deletePhoto(i)">
+        <img v-if="changePhotos" class="canvas__el" :src="url" alt="ph" />
+        <img
+          v-if="changePhotos"
+          class="delete__icon"
+          src="/img/delete.svg"
+          alt=""
+          @click="deletePhoto(i)"
+        />
       </div>
-      <img v-if="changePhotos" class="add__photo" src="/img/add__image.svg" alt="" @click="firedFileInput">
+      <img
+        v-if="changePhotos"
+        class="add__photo"
+        src="/img/add__image.svg"
+        alt=""
+        @click="firedFileInput"
+      />
     </div>
   </div>
 </template>
 
 <script>
-import * as imageConversion from 'image-conversion';
+import * as imageConversion from 'image-conversion'
 export default {
-    emits: ['deleteBlob', 'resizedBlob'],
-    props: {
-        currentPhotos: {
-            type: Array,
-            default: () => []
-        },
-        changePhotos:{
-          type: Boolean,
-          default: () => false
-        }
+  props: {
+    currentPhotos: {
+      type: Array,
+      default: () => [],
     },
-    created() {
-        this.copyPhotos = this.currentPhotos;
+    changePhotos: {
+      type: Boolean,
+      default: () => false,
     },
-    data() {
-        return {
-            copyPhotos: [],
-            deletMethods: [],
-            linkPhoto: 'https://icaenter.blob.core.windows.net/errors-photo/',
-            files: {
-                f: [],
-                compressBlob: [],
-                blobUrl: []
-            },
-        }
+  },
+  emits: ['deleteBlob', 'resizedBlob'],
+  data() {
+    return {
+      copyPhotos: [],
+      deletMethods: [],
+      linkPhoto: 'https://icaenter.blob.core.windows.net/errors-photo/',
+      files: {
+        f: [],
+        compressBlob: [],
+        blobUrl: [],
+      },
+    }
+  },
+  created() {
+    this.copyPhotos = this.currentPhotos
+  },
+  methods: {
+    deleteBlob(el, i) {
+      this.deletMethods.push(
+        `/api/blob?fileName=${el}&delblob=true`,
+        `/api/blob?fileName=thumb__${el}&delblob=true`
+      )
+      this.$emit('deleteBlob', { del: this.deletMethods, index: i })
     },
-    methods: {
-        deleteBlob(el, i) {
-            this.deletMethods.push(`/api/blob?fileName=${el}&delblob=true`, `/api/blob?fileName=thumb__${el}&delblob=true`)
-            this.$emit('deleteBlob', {del:this.deletMethods, index: i})
-        },
-        deletePhoto(i) {
-            this.files.f.splice(i, 1)
-            URL.revokeObjectURL(this.files.blobUrl[i])
-            this.files.compressBlob.splice(i, 1)
-            this.files.blobUrl.splice(i, 1)
-            this.$emit('resizedBlob', this.files.compressBlob)
-        },
-        firedFileInput() {
-            this.$refs.fileInput.click()
-        },
-        async checkFile() {
-            const view = async (f, i) => {
-                this.files.blobUrl[i] = '/img/Eclipse.gif'
-                const compressBlob = await imageConversion.compressAccurately(f, {
-                    size: 500,
-                    accuracy: 0.9, //The compressed image size is 100kb
-                    type: "image/jpeg",
-                })
-                this.files.compressBlob[i] = compressBlob
-                const newBlobUrl = URL.createObjectURL(compressBlob);
-                this.files.blobUrl[i] = newBlobUrl
-            }
-            await Promise.all(Object.values(this.$refs.fileInput.files).map(async f => {
-                if (!this.files.f.some(file => f.name === file.name)) {
-                    this.files.f.push(f)
-                    await view(f, this.files.f.length - 1)
-                }
-            }))
-            this.$emit('resizedBlob', this.files.compressBlob)
-        },
+    deletePhoto(i) {
+      this.files.f.splice(i, 1)
+      URL.revokeObjectURL(this.files.blobUrl[i])
+      this.files.compressBlob.splice(i, 1)
+      this.files.blobUrl.splice(i, 1)
+      this.$emit('resizedBlob', this.files.compressBlob)
     },
+    firedFileInput() {
+      this.$refs.fileInput.click()
+    },
+    async checkFile() {
+      const view = async (f, i) => {
+        this.files.blobUrl[i] = '/img/Eclipse.gif'
+        const compressBlob = await imageConversion.compressAccurately(f, {
+          size: 500,
+          accuracy: 0.9, //The compressed image size is 100kb
+          type: 'image/jpeg',
+        })
+        this.files.compressBlob[i] = compressBlob
+        const newBlobUrl = URL.createObjectURL(compressBlob)
+        this.files.blobUrl[i] = newBlobUrl
+      }
+      await Promise.all(
+        Object.values(this.$refs.fileInput.files).map(async (f) => {
+          if (!this.files.f.some((file) => f.name === file.name)) {
+            this.files.f.push(f)
+            await view(f, this.files.f.length - 1)
+          }
+        })
+      )
+      this.$emit('resizedBlob', this.files.compressBlob)
+    },
+  },
 }
 </script>
 
 <style lang="css" scoped>
-.canvas__holder{
+.canvas__holder {
   width: inherit;
   height: inherit;
 }
-.add__photo{
+.add__photo {
   width: 100px;
   height: 100px;
   place-self: center;
   cursor: pointer;
 }
-.canvas__el{
+.canvas__el {
   width: 100%;
   height: 100%;
   object-fit: cover;
   object-position: center;
 }
-.photo__gallery{
+.photo__gallery {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   row-gap: 1vh;
   column-gap: 1vh;
 }
-.photo__holder{
+.photo__holder {
   position: relative;
   width: 150px;
   height: 150px;
@@ -116,7 +147,7 @@ export default {
   border-radius: 4px;
   place-self: center;
 }
-.delete__icon{
+.delete__icon {
   position: absolute;
   top: 5px;
   right: 5px;

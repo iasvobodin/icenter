@@ -44,11 +44,11 @@
 </template>
 
 <script>
-import chooseProjectNumber from "@/components/chooseProjectNumber.vue";
-import chooseWoNumber from "@/components/chooseWoNumber.vue";
-import cabinetTemplate from "@/components/cabinetTemplate.vue";
-import chooseWo from "@/components/chooseWO.vue";
-import projectList from "@/components/projectList.vue";
+import chooseProjectNumber from '@/components/chooseProjectNumber.vue'
+import chooseWoNumber from '@/components/chooseWoNumber.vue'
+import cabinetTemplate from '@/components/cabinetTemplate.vue'
+import chooseWo from '@/components/chooseWO.vue'
+import projectList from '@/components/projectList.vue'
 export default {
   components: {
     cabinetTemplate,
@@ -61,55 +61,55 @@ export default {
     chooseWoNumber,
   },
   setup() {
-    return {};
+    return {}
   },
   data() {
     return {
       projectData: null,
       fetchProject: null,
       projectInformation: null,
-      projectStatus: "open",
+      projectStatus: 'open',
       woState: false,
-      cabinet: "",
-    };
+      cabinet: '',
+    }
   },
   watch: {
     projectStatus(oldv, newv) {
-      if (newv === "closed") {
-        this.fetchProjectList();
+      if (newv === 'closed') {
+        this.fetchProjectList()
       }
-      this.projectData = null;
+      this.projectData = null
       // this.choose();
     },
   },
   methods: {
     chooseCabinet(e) {
-      this.cabinet = e;
-      this.$store.commit("SETcabinetInfo", e);
-      this.woState = true;
+      this.cabinet = e
+      this.$store.commit('SETcabinetInfo', e)
+      this.woState = true
     },
     choose($event) {
       if (!$event) {
-        this.projectInformation = false;
-        return;
+        this.projectInformation = false
+        return
       }
       this.projectInformation = Object.values(this.fetchProject).filter(
         (e) => e.id === $event
-      )[0];
-      console.log(this.projectInformation, "this.projectInformation");
-      this.$store.commit("SETprojectInfo", this.projectInformation);
+      )[0]
+      console.log(this.projectInformation, 'this.projectInformation')
+      this.$store.commit('SETprojectInfo', this.projectInformation)
     },
     async fetchProjectList() {
       if (!this.projectData) {
         this.fetchProject = await (
           await fetch(`/api/project/${this.projectStatus}`)
-        ).json();
-        this.projectData = this.fetchProject.map((el) => el.id);
+        ).json()
+        this.projectData = this.fetchProject.map((el) => el.id)
         // this.projectData = this.fetchProject.map(el => el.id);
       }
     },
   },
-};
+}
 </script>
 
 <style lang="css" scoped>

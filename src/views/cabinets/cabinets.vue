@@ -2,42 +2,67 @@
   <div class="scaner">
     <h1>Шкафы</h1>
     <div class="qr__holder">
-      <input v-model="state.search" class="choose" type="text" placeholder="wo или название шкафа">
-      <img class="qr__icon" src="/img/qr-code.svg" alt="" @click="changeView = !changeView">
+      <input
+        v-model="state.search"
+        class="choose"
+        type="text"
+        placeholder="wo или название шкафа"
+      />
+      <img
+        class="qr__icon"
+        src="/img/qr-code.svg"
+        alt=""
+        @click="changeView = !changeView"
+      />
     </div>
     <div v-show="!changeView" class="scanner__holder">
-      <img class="frame" src="/img/scanner.svg" alt="">
-      <video ref="streamVideo" class="video__stream" playsinline="true" autoplay="true"></video>
-      <canvas v-show="false" id="canvas" ref="vCanvas" height="auto" width="100%"></canvas>
+      <img class="frame" src="/img/scanner.svg" alt="" />
+      <video
+        ref="streamVideo"
+        class="video__stream"
+        playsinline="true"
+        autoplay="true"
+      ></video>
+      <canvas
+        v-show="false"
+        id="canvas"
+        ref="vCanvas"
+        height="auto"
+        width="100%"
+      ></canvas>
     </div>
-    <br>
-    <div v-for="(val, key, index) in state.actualRojects" v-show="state.groupCabinets(val).length != 0" :key="index">
-      <h2 class="group__items" >Проект {{val}}</h2>
-      <br>
-      <div  class="errors__holder">
-      <div v-for="(v, k, i) in state.groupCabinets(val)" :key="i" class="error__card__holder">
-        <div class="item__card" @click="$router.push(`/cabinets/${v.wo}`)">
-          WO {{v.wo  }}
-          <br>
-          {{v['cab name']}} <br>
+    <br />
+    <div
+      v-for="(val, key, index) in state.actualRojects"
+      v-show="state.groupCabinets(val).length != 0"
+      :key="index"
+    >
+      <h2 class="group__items">Проект {{ val }}</h2>
+      <br />
+      <div class="errors__holder">
+        <div
+          v-for="(v, k, i) in state.groupCabinets(val)"
+          :key="i"
+          class="error__card__holder"
+        >
+          <div class="item__card" @click="$router.push(`/cabinets/${v.wo}`)">
+            WO {{ v.wo }}
+            <br />
+            {{ v['cab name'] }} <br />
+          </div>
         </div>
- </div>
       </div>
-      <br>
+      <br />
       <!-- <hr> -->
-      <br>
+      <br />
     </div>
   </div>
-
-
 </template>
 <script setup>
-import {useStore} from 'vuex'
-import {
-  useFetch
-} from '@/hooks/fetch'
-import chooseProjectNumber from "@/components/chooseProjectNumber.vue";
-import jsQR from "jsqr";
+import { useStore } from 'vuex'
+import { useFetch } from '@/hooks/fetch'
+import chooseProjectNumber from '@/components/chooseProjectNumber.vue'
+import jsQR from 'jsqr'
 import {
   reactive,
   ref,
@@ -45,11 +70,9 @@ import {
   toRefs,
   computed,
   onUnmounted,
-  watch
-} from 'vue';
-import {
-  useRouter
-} from 'vue-router'
+  watch,
+} from 'vue'
+import { useRouter } from 'vue-router'
 // export default {
 //     components: {
 //     // chooseProjectNumber,
@@ -69,7 +92,7 @@ const state = reactive({
   filter: null,
   groupCabinets: null,
   actualRojects: null,
-  search: ""
+  search: '',
 })
 watch(qr, (newValue, oldValue) => {
   router.push(`/cabinets/${newValue}`)
@@ -86,72 +109,86 @@ const routeToCabinet = (wo, val) => {
   //   ...curretCabinet
   //   }
   //   store.commit('SETcurrentProject',payload)
-    // console.log(payload);
+  // console.log(payload);
   // console.log(state.projects.find(c => c.id === val));
 }
 
 const getCabinets = async () => {
-  const {
-    request,
-    response
-  } = useFetch('/api/projects?status=open')
+  const { request, response } = useFetch('/api/projects?status=open')
   await request()
-  state.projects = response.value.filter(pr => ['01', '02', '03', '04'].some(s => pr.info.extends['status project'].includes(s)))
-  state.actualRojects = state.projects.map(p => p.id)
-  state.cabinets = state.projects.map(c => c.cabinets.map(cc => {
-    return {
-      ...cc,
-      project: c.id
-    }
-  })).flat()
-  state.groupCabinets = project => filter.value.filter(c => c.project === project)
+  state.projects = response.value.filter((pr) =>
+    ['01', '02', '03', '04'].some((s) =>
+      pr.info.extends['status project'].includes(s)
+    )
+  )
+  state.actualRojects = state.projects.map((p) => p.id)
+  state.cabinets = state.projects
+    .map((c) =>
+      c.cabinets.map((cc) => {
+        return {
+          ...cc,
+          project: c.id,
+        }
+      })
+    )
+    .flat()
+  state.groupCabinets = (project) =>
+    filter.value.filter((c) => c.project === project)
 }
 getCabinets()
 const filter = computed(() => {
-  return state.search ?
-    state.cabinets.filter(e => [e?.wo, e?. ['cab name']].some(s => s && s.toLowerCase().includes(state.search.toLowerCase()))) :
-    state.cabinets
+  return state.search
+    ? state.cabinets.filter((e) =>
+        [e?.wo, e?.['cab name']].some(
+          (s) => s && s.toLowerCase().includes(state.search.toLowerCase())
+        )
+      )
+    : state.cabinets
 })
 onUnmounted(() => {
-  clearInterval(tick.value);
+  clearInterval(tick.value)
   vCanvas.value = null
   stream.value = null
 })
 onMounted(async () => {
   // const canvasElement = document.getElementById("canvas");
-  const canvas = vCanvas.value.getContext("2d");
+  const canvas = vCanvas.value.getContext('2d')
 
   try {
     stream.value = await navigator.mediaDevices.getUserMedia({
       audio: false,
       video: {
-        facingMode: "environment",
+        facingMode: 'environment',
         width: {
-          "min": 640,
-          "max": 1024
+          min: 640,
+          max: 1024,
         },
         height: {
-          "min": 480,
-          "max": 768
-        }
-      }
+          min: 480,
+          max: 768,
+        },
+      },
     })
   } catch (err) {
-    console.log(err.name + ": " + err.message);
+    console.log(err.name + ': ' + err.message)
   }
-
 
   const video = streamVideo.value
   video.srcObject = stream.value
   tick.value = setInterval(() => {
     if (video.readyState === video.HAVE_ENOUGH_DATA) {
-      vCanvas.value.height = video.videoHeight;
-      vCanvas.value.width = video.videoWidth;
-      canvas.drawImage(video, 0, 0, vCanvas.value.width, vCanvas.value.height);
-      const imageData = canvas.getImageData(0, 0, vCanvas.value.width, vCanvas.value.height);
+      vCanvas.value.height = video.videoHeight
+      vCanvas.value.width = video.videoWidth
+      canvas.drawImage(video, 0, 0, vCanvas.value.width, vCanvas.value.height)
+      const imageData = canvas.getImageData(
+        0,
+        0,
+        vCanvas.value.width,
+        vCanvas.value.height
+      )
       const code = jsQR(imageData.data, imageData.width, imageData.height, {
-        inversionAttempts: "dontInvert",
-      });
+        inversionAttempts: 'dontInvert',
+      })
       code && (qr.value = code.data)
     }
   }, 500)
@@ -170,7 +207,7 @@ onMounted(async () => {
 </script>
 
 <style lang="css" scoped>
-.project__number{
+.project__number {
   position: sticky;
   top: 50px;
   background-color: white;
@@ -210,18 +247,17 @@ input {
 
 .error__card__holder {
   place-self: center;
-
 }
-.qr__holder{
-    height: 40px;
-    display: grid;
-    grid-auto-flow: column;
-    column-gap: 10px;
-    margin-top: 1vh;
-    margin-bottom: 1vh;
-    justify-content: center;
+.qr__holder {
+  height: 40px;
+  display: grid;
+  grid-auto-flow: column;
+  column-gap: 10px;
+  margin-top: 1vh;
+  margin-bottom: 1vh;
+  justify-content: center;
 }
-.qr__icon{
+.qr__icon {
   width: 30px;
   height: 30px;
   cursor: pointer;
@@ -229,25 +265,25 @@ input {
   align-self: start;
   margin-top: 5px;
 }
-.choose{
+.choose {
   margin: 0;
   /* align-self: end; */
   justify-self: end;
   align-self: center;
 }
-.frame{
+.frame {
   position: absolute;
   width: min(500px, 95vw);
   height: min(500px, 95vw);
   color: #ff5100;
 }
-.video__stream{
+.video__stream {
   width: 100%;
   height: 100%;
   object-fit: cover;
   object-position: center;
 }
-.scanner__holder{
+.scanner__holder {
   border-radius: 5px;
   overflow: hidden;
   width: min(500px, 95vw);
@@ -255,7 +291,7 @@ input {
   margin: auto;
   position: relative;
 }
-#canvas{
+#canvas {
   display: block;
   width: min(600px, 95vw);
   margin: auto;

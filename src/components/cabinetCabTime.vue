@@ -1,31 +1,46 @@
 <template>
-    <div>
-        <!-- <h1>BETTA VERSION</h1> -->
-        <cab-time-view v-if="computedItems" :input-data="computedItems" :change-data="state.changeCabTime"/>
-        <!-- {{cabtimes}} -->
-        <router-link to="/cabtimes/addnewcabtime">
-            <img class="add__button" src="/img/add.svg" alt="Добавить новый CabTime">
-        </router-link>
-        <br>
-        <br>
-        <button v-if="computedItems" @click="state.changeCabTime = !state.changeCabTime">Change</button>
-                <br>
-        <br>
-    </div>
+  <div>
+    <!-- <h1>BETTA VERSION</h1> -->
+    <cab-time-view
+      v-if="computedItems"
+      :input-data="computedItems"
+      :change-data="state.changeCabTime"
+    />
+    <!-- {{cabtimes}} -->
+    <router-link to="/cabtimes/addnewcabtime">
+      <img
+        class="add__button"
+        src="/img/add.svg"
+        alt="Добавить новый CabTime"
+      />
+    </router-link>
+    <br />
+    <br />
+    <button
+      v-if="computedItems"
+      @click="state.changeCabTime = !state.changeCabTime"
+    >
+      Change
+    </button>
+    <br />
+    <br />
+  </div>
 </template>
 
 <script setup>
 import CabTimeView from '@/components/CabTimeView.vue'
 // import {reactive} from 'vue'
 import { useFetch } from '@/hooks/fetch'
-import {useStore} from 'vuex'
-import {computed, reactive} from 'vue'
+import { useStore } from 'vuex'
+import { computed, reactive } from 'vue'
 const store = useStore()
 const state = reactive({
-  cabTime : null,
+  cabTime: null,
   changeCabTime: false,
 })
-const computedItems = computed(()=> store.state.cabinetItems.filter(e => e.type === 'cabtime')[0])
+const computedItems = computed(
+  () => store.state.cabinetItems.filter((e) => e.type === 'cabtime')[0]
+)
 // const cabtimes = computedItems.value.filter(e => e.type === 'cabtime')
 // const getCabTime = async () => {
 //       const {
@@ -41,7 +56,7 @@ const computedItems = computed(()=> store.state.cabinetItems.filter(e => e.type 
 </script>
 
 <style lang="css" scoped>
-.add__button{
+.add__button {
   position: fixed;
   bottom: 20px;
   right: 20px;

@@ -21,19 +21,19 @@
       <div class="error__item">
         <h3 class="error__item__title">Проект</h3>
         <p class="error__item__desc">
-          {{ value["project number"] }}
+          {{ value['project number'] }}
         </p>
       </div>
       <div class="error__item">
         <h3 class="error__item__title">Шкаф</h3>
         <p class="error__item__desc">
-          {{ value["cab name"] }}
+          {{ value['cab name'] }}
         </p>
       </div>
       <div class="error__item__vertical">
         <h3 class="error__item__vertical__title">Описание</h3>
         <p class="error__item__vertical__desc">
-          {{ value["description"] }}
+          {{ value['description'] }}
         </p>
       </div>
     </div>
@@ -49,53 +49,53 @@
     </tr>
     <tbody>
       <tr
-        @click="chosseError(value.id)"
         v-for="(value, key, index) in errors"
         :key="index"
+        @click="chosseError(value.id)"
       >
         <td>{{ value.status }}</td>
-        <td>{{ value["project number"] }}</td>
-        <td>{{ value["cab name"] }}</td>
-        <td>{{ value["description"] }}</td>
+        <td>{{ value['project number'] }}</td>
+        <td>{{ value['cab name'] }}</td>
+        <td>{{ value['description'] }}</td>
       </tr>
     </tbody>
   </table>
 </template>
 
 <script>
-import { ref } from "vue";
-import { useStore } from "vuex";
+import { ref } from 'vue'
+import { useStore } from 'vuex'
 export default {
-  methods: {
-    chosseError(e) {
-      this.$router.push(`/errors/${e}`);
-    },
-  },
   async setup() {
-    const errors = ref(null);
-    const store = useStore();
+    const errors = ref(null)
+    const store = useStore()
     console.log(
-      window.localStorage.getItem("userDetails"),
-      "window.localStorage.getItem;"
-    );
-    !window.localStorage.getItem("userDetails") &&
-      (await store.dispatch("GET_auth"));
+      window.localStorage.getItem('userDetails'),
+      'window.localStorage.getItem;'
+    )
+    !window.localStorage.getItem('userDetails') &&
+      (await store.dispatch('GET_auth'))
     try {
       const responsErrors = await fetch(
-        `/api/user/${window.localStorage.getItem("userDetails")}`
-      );
+        `/api/user/${window.localStorage.getItem('userDetails')}`
+      )
       // try {
-      errors.value = await responsErrors.json();
+      errors.value = await responsErrors.json()
       // } catch (error) {
       // console.error("this.errors.json", error);
       // }
     } catch (error) {
-      console.log("errors is not def", error);
+      console.log('errors is not def', error)
     }
 
-    return { errors };
+    return { errors }
   },
-};
+  methods: {
+    chosseError(e) {
+      this.$router.push(`/errors/${e}`)
+    },
+  },
+}
 </script>
 
 <style lang="css">

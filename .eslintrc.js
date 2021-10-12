@@ -19,17 +19,18 @@ module.exports = {
   env: {
     node: true,
   },
+  parser: 'vue-eslint-parser',
   extends: [
     'plugin:vue/vue3-recommended',
     'eslint:recommended',
     'prettier',
     // 'prettier/vue',
-    '@vue/typescript',
+    // '@vue/typescript',
   ],
   plugins: ['vue'],
-    rules: {
-    "no-console": process.env.NODE_ENV === "production" ? "warn" : "off",
-    "no-debugger": process.env.NODE_ENV === "production" ? "warn" : "off",
-    "no-unused-vars": process.env.NODE_ENV === "production" ? "warn" : "off"
+  rules: {
+    'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
+    'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
+    'no-unused-vars': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
   },
 }

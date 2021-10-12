@@ -1,22 +1,18 @@
-const multipart = require("parse-multipart");
-const sharp = require("sharp");
-const {
-  BlobServiceClient
-} = require("@azure/storage-blob");
+const multipart = require('parse-multipart')
+const sharp = require('sharp')
+const { BlobServiceClient } = require('@azure/storage-blob')
 
 module.exports = async function (context, req) {
-
-
   const AZURE_STORAGE_CONNECTION_STRING =
-    process.env.MyStorageConnectionAppSetting;
+    process.env.MyStorageConnectionAppSetting
 
   // Create the BlobServiceClient object which will be used to create a container client
   const blobServiceClient = BlobServiceClient.fromConnectionString(
     AZURE_STORAGE_CONNECTION_STRING
-  );
+  )
 
   // Get a reference to a container
-  const containerClient = blobServiceClient.getContainerClient("errors-photo");
+  const containerClient = blobServiceClient.getContainerClient('errors-photo')
   if (req.query.list) {
     // let i = 1;
     const list = []
@@ -25,35 +21,33 @@ module.exports = async function (context, req) {
     }
     context.res = {
       body: list,
-    };
+    }
     return
   }
 
   if (req.query.test) {
-    const bodyBuffer = Buffer.from(req.body);
-    const boundary = multipart.getBoundary(req.headers["content-type"]);
-    const parts = multipart.Parse(bodyBuffer, boundary);
+    const bodyBuffer = Buffer.from(req.body)
+    const boundary = multipart.getBoundary(req.headers['content-type'])
+    const parts = multipart.Parse(bodyBuffer, boundary)
 
-
-
-    parts.forEach(e => {
-      const originBlob = containerClient.getBlockBlobClient(e.filename);
-      const thumbBlob = containerClient.getBlockBlobClient("thumb__" + e.filename);
-      originBlob.upload(
-        e.data,
-        e.data.length, {
-          blobHTTPHeaders: {
-            blobContentType: e.type,
-          },
-        }
-      );
+    parts.forEach((e) => {
+      const originBlob = containerClient.getBlockBlobClient(e.filename)
+      const thumbBlob = containerClient.getBlockBlobClient(
+        'thumb__' + e.filename
+      )
+      originBlob.upload(e.data, e.data.length, {
+        blobHTTPHeaders: {
+          blobContentType: e.type,
+        },
+      })
 
       sharp(e.data)
         .resize({
           width: 100,
           height: null,
         })
-        .toBuffer({
+        .toBuffer(
+          {
             resolveWithObject: true,
           },
           async (_, data) => {
@@ -61,31 +55,25 @@ module.exports = async function (context, req) {
               blobHTTPHeaders: {
                 blobContentType: parts[0].type,
               },
-            });
+            })
           }
-        );
+        )
 
-      context.log(
-        "Blob was uploaded successfully. requestId: ",
-      );
+      context.log('Blob was uploaded successfully. requestId: ')
     })
     context.res = {
       // status defaults to 200 */
-      body: "ok",
-    };
+      body: 'ok',
+    }
     return
   }
 
   const uploadDataBlockBlobClient = containerClient.getBlockBlobClient(
-    "thumb__" + req.query.fileName
-  );
-  const blockBlobClient = containerClient.getBlockBlobClient(
-    req.query.fileName
-  );
-
+    'thumb__' + req.query.fileName
+  )
+  const blockBlobClient = containerClient.getBlockBlobClient(req.query.fileName)
 
   if (req.query.delblob) {
-
     blockBlobClient.deleteIfExists()
     uploadDataBlockBlobClient.deleteIfExists()
     return
@@ -112,8 +100,6 @@ module.exports = async function (context, req) {
   //       });
   //     }
   //   );
-
-
 
   // sharp(parts[0].data)
   //   // .resize({
@@ -146,11 +132,9 @@ module.exports = async function (context, req) {
   //   uploadBlobResponse.requestId
   // );
 
-
-
   context.res = {
     // status defaults to 200 */
-    body: "ok",
-  };
+    body: 'ok',
+  }
   // context.done();
-};
+}

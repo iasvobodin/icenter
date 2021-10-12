@@ -6,16 +6,13 @@
       "direction": "in",
       "name": "req",
       "route": "cabinetList",
-      "methods": [
-        "get",
-        "post"
-      ]
+      "methods": ["get", "post"]
     },
     {
       "type": "http",
       "name": "res",
       "direction": "out"
-  },
+    },
     {
       "type": "cosmosDB",
       "direction": "in",

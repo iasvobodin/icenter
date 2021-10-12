@@ -11,7 +11,9 @@ export type UsableProject = Promise<{ projetList: Ref<Projects[] | undefined> }>
 
 export async function useProjects(): UsableProject {
   const loading = ref(false)
-  const { request, response: projetList } = useFetch<Projects[]>("/api/cabinetList?mergeProjects=true")
+  const { request, response: projetList } = useFetch<Projects[]>(
+    '/api/cabinetList?mergeProjects=true'
+  )
   if (!loading.value) {
     await request()
     loading.value = true

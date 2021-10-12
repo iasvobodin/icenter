@@ -6,10 +6,7 @@
       "direction": "in",
       "name": "req",
       "route": "user/{id}",
-      "methods": [
-        "get",
-        "post"
-      ]
+      "methods": ["get", "post"]
     },
     {
       "type": "http",
@@ -44,4 +41,3 @@
     }
   ]
 }
-

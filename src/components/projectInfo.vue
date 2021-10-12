@@ -33,7 +33,7 @@
         >
           Номер WO должен быть заполнен
         </span>
-        <span>Name :{{ value["cab name"] }}</span>
+        <span>Name :{{ value['cab name'] }}</span>
       </div>
     </div>
     <button @click="changeInfo = !changeInfo">Редактировать</button>
@@ -43,17 +43,10 @@
 
 <script>
 export default {
-  data() {
-    return {
-      message: {},
-      changeInfo: false,
-      fetchTemplate: null,
-    };
-  },
   props: {
     projectNumber: {
       type: String,
-      default: () => "",
+      default: () => '',
     },
     project: {
       type: Object,
@@ -64,32 +57,15 @@ export default {
       default: () => [],
     },
   },
-  methods: {
-    async postProject() {
-      const cab = this.cabinets.map((el) => {
-        return {
-          wo: el.wo,
-          cabName: el["cab name"],
-          cabTime: {},
-          dimensions: "",
-          documentation: "",
-          weight: "",
-          hardwareEngineer: "",
-        };
-      });
-      await fetch("/api/POST_project", {
-        method: "POST", // или 'PUT'
-        body: JSON.stringify({
-          id: this.projectNumber,
-          status: "open",
-          info: this.message,
-          cabinets: cab,
-        }),
-      });
-    },
+  data() {
+    return {
+      message: {},
+      changeInfo: false,
+      fetchTemplate: null,
+    }
   },
   async mounted() {
-    this.message = this.project;
+    this.message = this.project
     // try {
     //   this.fetchTemplate = await (
     //     await fetch("/api/templates/project/projectTemplate")
@@ -98,7 +74,31 @@ export default {
     //   console.log(error);
     // }
   },
-};
+  methods: {
+    async postProject() {
+      const cab = this.cabinets.map((el) => {
+        return {
+          wo: el.wo,
+          cabName: el['cab name'],
+          cabTime: {},
+          dimensions: '',
+          documentation: '',
+          weight: '',
+          hardwareEngineer: '',
+        }
+      })
+      await fetch('/api/POST_project', {
+        method: 'POST', // или 'PUT'
+        body: JSON.stringify({
+          id: this.projectNumber,
+          status: 'open',
+          info: this.message,
+          cabinets: cab,
+        }),
+      })
+    },
+  },
+}
 </script>
 
 <style lang="css" scoped>

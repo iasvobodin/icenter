@@ -5,13 +5,13 @@
       <div class="cabinet__info__item">
         <h4>Номер проекта:</h4>
         <p>
-          {{ $store.state.projectInfo["project number"] }}
+          {{ $store.state.projectInfo['project number'] }}
         </p>
       </div>
       <div class="cabinet__info__item">
         <h4>Название проекта:</h4>
         <p>
-          {{ $store.state.projectInfo["project name"] }}
+          {{ $store.state.projectInfo['project name'] }}
         </p>
       </div>
       <div class="cabinet__info__item">
@@ -23,7 +23,7 @@
       <div class="cabinet__info__item">
         <h4>Название шкафа:</h4>
         <p>
-          {{ $store.state.projectInfo["cab name"] }}
+          {{ $store.state.projectInfo['cab name'] }}
         </p>
       </div>
     </div>
@@ -41,7 +41,7 @@
 </template>
 
 <script>
-import setError from "@/components/setError.vue";
+import setError from '@/components/setError.vue'
 export default {
   components: {
     setError,
@@ -49,27 +49,27 @@ export default {
   props: {
     projectNumber: {
       type: String,
-      default: "t",
+      default: 't',
     },
     projectName: {
       type: String,
-      default: "t",
+      default: 't',
     },
     cabinetWo: {
       type: String,
-      default: "t",
+      default: 't',
     },
     cabinetName: {
       type: String,
-      default: "t",
+      default: 't',
     },
   },
   data() {
     return {
       error: false,
-    };
+    }
   },
-};
+}
 </script>
 
 <style lang="css" scoped>

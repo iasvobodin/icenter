@@ -1,32 +1,60 @@
 <template>
   <div v-if="$store.state.template">
     <form id="postError" name="postError" @submit.prevent="postError">
-      <div v-if="$store.state.user.info.userRoles.includes('admin')" class="error__item">
+      <div
+        v-if="$store.state.user.info.userRoles.includes('admin')"
+        class="error__item"
+      >
         <h4 class="error__item__title">Выберете роль</h4>
-        <select v-model="role" form="postError" class="change__status error__item__desc">
+        <select
+          v-model="role"
+          form="postError"
+          class="change__status error__item__desc"
+        >
           <option selected value="f_error">Сборщик</option>
           <option value="t_error">Тестировщик</option>
         </select>
       </div>
-      <div v-for="(value, key, index) in $store.state.template.error[role]" :key="index">
+      <div
+        v-for="(value, key, index) in $store.state.template.error[role]"
+        :key="index"
+      >
         <section v-if="returnRender(key)">
           <h3>Статус ошибки: {{ key }}</h3>
           <!-- <conditional-render v-model="errorBody[key]" form-id="postError" :data-render="value" /> -->
-          <div v-for="(v, k, i) in value" :key="i" class="error__item" :class="{ error__item__desc: k === 'Описание'}">
-            <h4 :class="{ error__item__vertical__title: k === 'Описание' }" class="error__item__title">{{ k }}</h4>
+          <div
+            v-for="(v, k, i) in value"
+            :key="i"
+            class="error__item"
+            :class="{ error__item__desc: k === 'Описание' }"
+          >
+            <h4
+              :class="{ error__item__vertical__title: k === 'Описание' }"
+              class="error__item__title"
+            >
+              {{ k }}
+            </h4>
             <render-inputs v-model="errorBody[key]" :data-render="v" />
           </div>
           <div v-if="errorBody[key] && errorBody[key]['Ответственный']">
             <div class="error__item">
               <h4 class="error__item__title">
-                {{ errorBody[key]["Ответственный"] }}
+                {{ errorBody[key]['Ответственный'] }}
               </h4>
-              <select v-model="errorBody[key]['Ошибку допустил']" required :name="key"
-                :value="errorBody[key]['Ошибку допустил']" class="error__item__desc">
-                <option v-for="(value, key, index) in $store.state.template[
-           errorBody[key]['Ответственный']
-          ]" :key="index">
-                  {{ value }}
+              <select
+                v-model="errorBody[key]['Ошибку допустил']"
+                required
+                :name="key"
+                :value="errorBody[key]['Ошибку допустил']"
+                class="error__item__desc"
+              >
+                <option
+                  v-for="(value2, key2, index2) in $store.state.template[
+                    errorBody[key2]['Ответственный']
+                  ]"
+                  :key="index2"
+                >
+                  {{ value2 }}
                 </option>
               </select>
             </div>
@@ -34,27 +62,39 @@
         </section>
       </div>
       <br />
-      <error-photos :change-photos="true" @resized-blob="files.compressBlob = $event" />
-      <br>
+      <error-photos
+        :change-photos="true"
+        @resized-blob="files.compressBlob = $event"
+      />
       <br />
-      <br>
-      <input :disabled="$store.state.loader" class="add__button" type="submit" value="Добавить ошибку" />
+      <br />
+      <br />
+      <input
+        :disabled="$store.state.loader"
+        class="add__button"
+        type="submit"
+        value="Добавить ошибку"
+      />
     </form>
-    <br>
+    <br />
     <button @click="statusConfirmed = !statusConfirmed">
       Изменить статус на "Принято"
-    </button> <br> <br>
+    </button>
+    <br />
+    <br />
     <button v-if="statusConfirmed" @click="statusClosed = !statusClosed">
       Изменить статус на "Устранено"
-    </button> <br> <br>
+    </button>
+    <br />
+    <br />
   </div>
 </template>
 
 <script>
-import conditionalRender from '@/components/conditionalRender.vue'
+// import conditionalRender from '@/components/conditionalRender.vue'
 import errorPhotos from '@/components/errorPhotos.vue'
 import renderInputs from '@/components/renderInputs.js'
-import * as imageConversion from 'image-conversion';
+import * as imageConversion from 'image-conversion'
 export default {
   //   Vue.directive("child", {
   // 	bind(el, binding, vnode) {
@@ -65,13 +105,15 @@ export default {
     child: {
       // определение директивы
       mounted(el, binding, vnode) {
-        binding.value.classList.add("canvas__el");
-        el.appendChild(binding.value);
-      }
-    }
+        binding.value.classList.add('canvas__el')
+        el.appendChild(binding.value)
+      },
+    },
   },
   components: {
-    conditionalRender,errorPhotos,renderInputs,
+    // conditionalRender,
+    errorPhotos,
+    renderInputs,
   },
   data() {
     return {
@@ -83,13 +125,13 @@ export default {
       files: {
         f: [],
         compressBlob: [],
-        blobUrl: []
+        blobUrl: [],
       },
       errorTemplate: null,
       errorBody: {
         Открыто: {},
         Принято: {},
-        Устранено: {}
+        Устранено: {},
       },
       error: {},
       photo: null,
@@ -118,12 +160,11 @@ export default {
         const compressBlob = await imageConversion.compressAccurately(f, {
           size: 500,
           accuracy: 0.9, //The compressed image size is 100kb
-          type: "image/jpeg",
+          type: 'image/jpeg',
         })
         this.files.compressBlob[i] = compressBlob
-        const newBlobUrl = URL.createObjectURL(compressBlob);
+        const newBlobUrl = URL.createObjectURL(compressBlob)
         this.files.blobUrl[i] = newBlobUrl
-
 
         // ON A FEATURE
 
@@ -134,21 +175,21 @@ export default {
         // canvas.style.objectFit = 'cover'
         // canvas.style.objectPosition = 'center' //, ...canvas.style}
       }
-      Object.values(this.$refs.fileInput.files).forEach(f => {
-        console.log(f);
-        if (!this.files.f.some(file => f.name === file.name)) {
+      Object.values(this.$refs.fileInput.files).forEach((f) => {
+        console.log(f)
+        if (!this.files.f.some((file) => f.name === file.name)) {
           this.files.f.push(f)
           view(f, this.files.f.length - 1)
         }
       })
 
-      addEventListener("beforeunload", this.beforeUnloadListener, {
-        capture: true
-      });
+      addEventListener('beforeunload', this.beforeUnloadListener, {
+        capture: true,
+      })
     },
     beforeUnloadListener(event) {
-      event.preventDefault();
-      return event.returnValue = "Are you sure you want to exit?";
+      event.preventDefault()
+      return (event.returnValue = 'Are you sure you want to exit?')
     },
     returnRender(key) {
       if (key === 'Открыто') {
@@ -162,8 +203,7 @@ export default {
       }
     },
     async postError(e) {
-
-      this.$store.commit("changeLoader", true)
+      this.$store.commit('changeLoader', true)
 
       const id = 'error__' + Date.now()
       const link = 'https://icaenter.blob.core.windows.net/errors-photo/'
@@ -179,14 +219,18 @@ export default {
         },
         photos: [],
         type: this.role,
-        status: Object.values(this.errorBody.Устранено)[0] ?
-          'closed' : Object.values(this.errorBody.Принято)[0] ?
-          'confirmed' : 'open',
-        body: [{
-          ...this.errorBody,
-          _changed: this.$store.state.user.info.userDetails.toLowerCase(),
-          _time: `${Date.now()}`,
-        }],
+        status: Object.values(this.errorBody.Устранено)[0]
+          ? 'closed'
+          : Object.values(this.errorBody.Принято)[0]
+          ? 'confirmed'
+          : 'open',
+        body: [
+          {
+            ...this.errorBody,
+            _changed: this.$store.state.user.info.userDetails.toLowerCase(),
+            _time: `${Date.now()}`,
+          },
+        ],
       }
       const openError = {
         id,
@@ -200,46 +244,45 @@ export default {
       try {
         const formData = new FormData()
         this.files.compressBlob.map((e, i) => {
-          const imageName = `${id}__${this.$store.state.user.info.userDetails.toLowerCase()}__${i+1}.jpg`
+          const imageName = `${id}__${this.$store.state.user.info.userDetails.toLowerCase()}__${
+            i + 1
+          }.jpg`
           error.photos.push(imageName)
-          formData.set(`photo${i+1}`, e, imageName)
+          formData.set(`photo${i + 1}`, e, imageName)
         })
         // console.log(formData);
-        await fetch(
-          '/api/blob?test=true', {
-            method: 'POST',
-            body: formData,
-            // keepalive: true,
-          },
-        )
+        await fetch('/api/blob?test=true', {
+          method: 'POST',
+          body: formData,
+          // keepalive: true,
+        })
         await fetch('/api/POST_error', {
           method: 'POST', // или 'PUT'
           body: JSON.stringify({
-            ...error
+            ...error,
           }),
         })
-         if (error.status !== "closed") {
-           await fetch('/api/POST_openError', {
-             method: 'POST', // или 'PUT'
-             body: JSON.stringify({
-               ...openError
-             }),
-           })
-         }
-
+        if (error.status !== 'closed') {
+          await fetch('/api/POST_openError', {
+            method: 'POST', // или 'PUT'
+            body: JSON.stringify({
+              ...openError,
+            }),
+          })
+        }
       } finally {
         e.target.reset()
-        removeEventListener("beforeunload", this.beforeUnloadListener, {
-          capture: true
-        });
+        removeEventListener('beforeunload', this.beforeUnloadListener, {
+          capture: true,
+        })
         this.errorBody = {
           Открыто: {},
           Принято: {},
-          Устранено: {}
+          Устранено: {},
         }
         this.files.f = []
         this.$router.push('/errors')
-        this.$store.commit("changeLoader", false)
+        this.$store.commit('changeLoader', false)
       }
       // await fetch(
       //   `/api/blob?folder=${this.error.id}&fileName=${this.error.id}`,
@@ -265,31 +308,30 @@ export default {
 }
 </script>
 
-
 <style lang="css" scoped>
-.canvas__holder{
+.canvas__holder {
   width: inherit;
   height: inherit;
 }
-.add__photo{
+.add__photo {
   width: 100px;
   height: 100px;
   place-self: center;
   cursor: pointer;
 }
-.canvas__el{
+.canvas__el {
   width: 100%;
   height: 100%;
   object-fit: cover;
   object-position: center;
 }
-.photo__gallery{
+.photo__gallery {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   row-gap: 1vh;
   column-gap: 1vh;
 }
-.photo__holder{
+.photo__holder {
   position: relative;
   width: 150px;
   height: 150px;
@@ -297,7 +339,7 @@ export default {
   border-radius: 4px;
   place-self: center;
 }
-.delete__icon{
+.delete__icon {
   position: absolute;
   top: 5px;
   right: 5px;
@@ -345,14 +387,14 @@ form {
   text-align: center;
   margin: 5px;
 }
-input[type='submit']{
+input[type='submit'] {
   border: 1px solid green;
   background-color: rgba(0, 207, 0, 0.205);
 }
-input[type='number']{
+input[type='number'] {
   height: 30px;
 }
-input[type='submit']:hover{
+input[type='submit']:hover {
   background-color: rgb(0, 83, 0);
   color: white;
 }

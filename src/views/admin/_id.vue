@@ -7,24 +7,24 @@
 </template>
 
 <script>
-import { useRoute } from "vue-router";
-import Navigation from "@/components/adminNavigation.vue";
+import { useRoute } from 'vue-router'
+import Navigation from '@/components/adminNavigation.vue'
 export default {
   components: {
     Navigation,
   },
   setup() {
-    const route = useRoute();
-    console.log(route);
+    const route = useRoute()
+    console.log(route)
     // this.$watch(
     //   () => this.$route.params,
     //   (toParams, previousParams) => {
     //     // react to route changes...
     //   }
     // );
-    return {};
+    return {}
   },
-};
+}
 </script>
 
 <style lang="css" scoped>

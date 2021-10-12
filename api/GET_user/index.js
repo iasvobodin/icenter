@@ -4,13 +4,13 @@ module.exports = async function (context, req, user) {
       context.res = {
         status: 200,
         body: user[0],
-      };
+      }
     } else {
       context.res = {
         status: 201,
-      };
+      }
     }
-   
+
     return
   }
 
@@ -18,8 +18,8 @@ module.exports = async function (context, req, user) {
     context.res = {
       status: 200,
       body: req.body,
-    };
-    return (context.bindings.userPost = req.body);
+    }
+    return (context.bindings.userPost = req.body)
     // return
   }
 
@@ -27,9 +27,9 @@ module.exports = async function (context, req, user) {
     context.res = {
       status: 200,
       body: context.bindings.userErors,
-    };
-    return;
-  } 
+    }
+    return
+  }
   // else {
   //   context.res = {
   //     status: 404,
@@ -40,13 +40,13 @@ module.exports = async function (context, req, user) {
     context.res = {
       status: 404,
       // body: user[0],
-    };
-    return (context.bindings.userPost = req.body);
+    }
+    return (context.bindings.userPost = req.body)
   } else {
     context.res = {
       status: 200,
       body: user[0],
-    };
+    }
     // return
     // return (context.bindings.userPost = req.body);
   }
@@ -61,5 +61,4 @@ module.exports = async function (context, req, user) {
   //     body: user[0],
   //   };
   // }
-
-};
+}

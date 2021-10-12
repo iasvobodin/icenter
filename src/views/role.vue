@@ -1,26 +1,25 @@
 <template>
-    <h1>Access is denied</h1>
-    <button @click="clearUser">Log out</button>
+  <h1>Access is denied</h1>
+  <button @click="clearUser">Log out</button>
 </template>
 
 <script>
-    export default {
-          methods: {
+export default {
+  methods: {
     clearUser() {
-      window.localStorage.removeItem("user")
-      if (
-        import.meta.env.MODE === 'development') {
-          this.$router.push('/login')
-        } else{
-          window.location.href = '/.auth/logout?post_logout_redirect_uri=/login'
-        }
-    }
+      window.localStorage.removeItem('user')
+      if (import.meta.env.MODE === 'development') {
+        this.$router.push('/login')
+      } else {
+        window.location.href = '/.auth/logout?post_logout_redirect_uri=/login'
+      }
+    },
   },
-    }
+}
 </script>
 
 <style lang="css" scoped>
-h1{
-    color: red;
+h1 {
+  color: red;
 }
 </style>
