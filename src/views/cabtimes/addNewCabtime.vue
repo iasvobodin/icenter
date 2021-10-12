@@ -49,6 +49,7 @@
                 
                 rows="1"
                 @input="calculateLogic($event, value._id, 'name')"
+                :value="value.name"
               ></textarea> <div class="close" @click="deleteRow(value._id)">&#10060;</div>
                 </div>
               <p v-else>{{ value.name }}</p>
@@ -58,6 +59,7 @@
                 class="cabtime__input"
                 min="0"
                 type="number"
+                :value="value.value"
                 @input="calculateLogic($event, value._id, 'value')"
               />
             </td>
@@ -67,6 +69,7 @@
                 class="cabtime__input"
                 min="0"
                 type="number"
+                :value="value._const"
                 @input="calculateLogic($event, value._id, '_const')"
               />
               <p v-else>{{ value._const }}</p>
