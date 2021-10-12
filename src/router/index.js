@@ -123,10 +123,10 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes,
 });
-router.beforeEach((to, from) => {
-  if (to.path === '/login' || to.path === '/role') return true
-  // if (to.path === '/login')  return true
-})
+// router.beforeEach((to, from) => {
+//   if (to.path === '/login' || to.path === '/role') return true
+//   // if (to.path === '/login')  return true
+// })
 
 
 const createName = (clientPrincipal) => {
@@ -147,6 +147,7 @@ const CHECK_auth = async () => {
         clientPrincipal
       } = user
       //CREATE OBJECT FOR SERVER
+      if (clientPrincipal) {
       const userRes = {
         id: clientPrincipal.userId,
         type: "info",
@@ -157,6 +158,8 @@ const CHECK_auth = async () => {
       }
       console.log(userRes, 'this return from CHEC_auth, if true');
       return userRes
+      }
+
     }
     return false
   } catch (error) {
@@ -193,7 +196,7 @@ const CHECK_userDB = async (user) => {
 }
 
 router.beforeEach(async (to, from) => {
-  
+  if (to.path === '/login' || to.path === '/role') return true
 
     !store.state.template && await store.dispatch('GET_template')
 
