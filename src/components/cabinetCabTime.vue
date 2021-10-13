@@ -17,7 +17,7 @@
     <br />
     <br />
     <button
-      v-if="computedItems"
+      v-if="computedItems&&$store.state.user.info.userRoles.includes('admin')"
       @click="state.changeCabTime = !state.changeCabTime"
     >
       Change

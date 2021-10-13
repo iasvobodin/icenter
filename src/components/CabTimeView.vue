@@ -29,8 +29,9 @@
             <td>{{ value._id }}</td>
             <td class="cabtime__name">
               <textarea
-                v-if="value.new"
+                v-if="value.new&&changeData"
                 rows="1"
+                :value="value.name"
                 @input="calculateLogic($event, value._id, 'name')"
               ></textarea>
               <p v-else>{{ value.name }}</p>
@@ -48,10 +49,11 @@
             </td>
             <td>
               <input
-                v-if="value.new"
+                v-if="value.new&&changeData"
                 class="cabtime__input"
                 min="0"
                 type="number"
+                :value="value._const"
                 @input="calculateLogic($event, value._id, '_const')"
               />
               <p v-else>{{ value._const }}</p>
@@ -216,7 +218,7 @@ const projectInfoState = computed(() => store.state.projectInfo)
 
 const calculateLogic = ($event, key, val) => {
   let arr, coef
-  switch (key) {
+    switch (key) {
     case '1.3':
       arr = ['2.3', '2.4']
       coef = 1
@@ -234,23 +236,23 @@ const calculateLogic = ($event, key, val) => {
       coef = 1
       break
     case '5.4':
-      arr = ['5.5', '6.2']
+      arr = ['5.5', '6.1']
       coef = 1
       break
     case '5.7':
-      arr = ['5.8', '6.3']
+      arr = ['5.8', '6.2']
       coef = 2
       break
     case '7.1':
-      arr = ['7.2', '6.4']
+      arr = ['7.2', '6.3']
       coef = 2
       break
     case '7.3':
-      arr = ['7.4', '6.7']
+      arr = ['7.4', '6.4']
       coef = 2
       break
     case '7.6':
-      arr = ['7.8', '6.8']
+      arr = ['7.8', '6.5']
       coef = 2
       break
     default:
@@ -312,7 +314,7 @@ const cabtimeResult = computed(() => {
     ),
   }
 })
-const groupBy = (t) => state.ctv3?.body.filter((g) => g._type === t)
+const groupBy = (t) => state.ctv3?.body.filter((g) => g._type === t).sort((a, b) => a._id.split('.')[1] - b._id.split('.')[1])
 
 const fetchProjectList = async () => {
   if (!state.projectData) {
