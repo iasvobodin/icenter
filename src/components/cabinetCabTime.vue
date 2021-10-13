@@ -43,9 +43,11 @@ const state = reactive({
   changeCabTime: false,
 })
 const route = useRoute()
-const computedItems = computed(() =>store.state.cabinetItems.filter((e) => e.type === 'cabtime')[0])
-// let ct;
-const em = e => state.cabTime = e
+
+const computedItems = computed(
+  () => store.state.cabinetItems.filter((e) => e.type === 'cabtime')[0]
+)
+const em = (e) => (state.cabTime = e)
 
 const postCabTime = async () => {
   const { request } = useFetch('/api/POST_error', {

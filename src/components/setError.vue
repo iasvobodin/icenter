@@ -77,7 +77,7 @@
       />
     </form>
     <br />
-    <button @click="statusConfirmed = !statusConfirmed">
+    <button v-if="$store.state.user.info.userRoles.includes('admin')" @click="statusConfirmed = !statusConfirmed">
       Изменить статус на "Принято"
     </button>
     <br />

@@ -1,10 +1,12 @@
 <template>
-  <div>
+  <div class="components__holder">
     <cab-time-view
       v-if="state.cabTime"
       :input-data="state.cabTime"
       :change-data="state.changeCabTime"
     />
+    <br />
+    <br />
   </div>
 </template>
 
@@ -33,4 +35,8 @@ const getCabTime = async () => {
 getCabTime()
 </script>
 
-<style lang="css" scoped></style>
+<style lang="css" scoped>
+.components__holder {
+  margin-bottom: 2vw;
+}
+</style>

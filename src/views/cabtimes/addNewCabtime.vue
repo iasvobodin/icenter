@@ -113,7 +113,7 @@ const postCabTime = async () => {
   const { request } = useFetch('/api/POST_error', {
     method: 'POST', // или 'PUT'
     body: JSON.stringify({
-      ...state.ctv3
+      ...state.ctv3,
     }),
   })
   await request()
