@@ -1,13 +1,5 @@
 <template>
   <section v-if="state.ctv3.groupByType">
-    <h3>
-      Номер проекта {{ inputData.info['Проект'] }}
-      <span v-if="changeData" style="cursor: pointer" @click="clearstate"
-        >&#10060;</span
-      >
-    </h3>
-    <h3>Номер WO {{ inputData.info['wo'] }}</h3>
-
     <div v-for="(t, i) in state.ctv3.groupByType" :key="i">
       <table>
         <colgroup>
@@ -28,12 +20,14 @@
           <tr v-for="(value, index) in groupBy(t.type)" :key="index">
             <td>{{ value._id }}</td>
             <td class="cabtime__name">
-              <textarea
-                v-if="value.new&&changeData"
-                rows="1"
-                :value="value.name"
-                @input="calculateLogic($event, value._id, 'name')"
-              ></textarea>
+              <div v-if="value.new && changeData" class="textarea">
+                <textarea
+                  rows="1"
+                  :value="value.name"
+                  @input="calculateLogic($event, value._id, 'name')"
+                ></textarea>
+                <div class="close" @click="deleteRow(value._id)">&#10060;</div>
+              </div>
               <p v-else>{{ value.name }}</p>
             </td>
             <td>
@@ -49,7 +43,7 @@
             </td>
             <td>
               <input
-                v-if="value.new&&changeData"
+                v-if="value.new && changeData"
                 class="cabtime__input"
                 min="0"
                 type="number"
@@ -144,11 +138,11 @@ const store = useStore()
 const router = useRouter()
 
 // MAYBE I HAVE TO DELETE THIS
-router.afterEach((to, from) => {
-  if (from.fullPath === '/cabtimes') {
-    store.commit('SETcurrentProject', null)
-  }
-})
+// router.afterEach((to, from) => {
+//   if (from.fullPath === '/cabtimes') {
+//     store.commit('SETcurrentProject', null)
+//   }
+// })
 
 // eslint-disable-next-line no-undef
 const props = defineProps({
@@ -160,52 +154,60 @@ const props = defineProps({
     type: Boolean,
     default: () => false,
   },
-  // templateData: {
-  //     type: Object,
-  //     required: true
-  // },
+  templateData: {
+    type: Object,
+    required: true,
+  },
 })
-
+// eslint-disable-next-line no-undef
+const emit = defineEmits(['final'])
 const state = reactive({
-  adminCoef: '12',
-  documents: '240',
-  type: null,
-  cabtimeCopy: null,
-  fetchProject: null,
+  // adminCoef: '12',
+  // documents: '240',
+  // type: null,
+  // cabtimeCopy: null,
+  // fetchProject: null,
   projectInformation: null,
-  projectData: null,
-  cabinet: '',
-  cabtimetype: null,
-  ctg: null,
+  // projectData: null,
+  // cabinet: '',
+  // cabtimetype: null,
+  // ctg: null,
   ctv3: null,
 })
 // DEEP COPY OBJECT
 // const { inputData } = props
 const { inputData, changeData } = toRefs(props)
 
-  // const someId = computed(()=>  inputData&&inputData.value.body.map(e => e._id))
-
-  // console.log(inputData.value.body);
-  const mergeObject = (templateObj, cabTimeObj) => {
-  const bodyResult = [...cabTimeObj.body, ...templateObj.body.filter(e => !cabTimeObj.body.some(s => s._id === e._id))] 
-  const groupByTypeResult = [...cabTimeObj.groupByType, ...templateObj.groupByType.filter(e => !cabTimeObj.groupByType.some(s => s.type === e.type))].sort((a, b) => a._id - b._id)
-  return {...cabTimeObj, body: bodyResult, groupByType: groupByTypeResult}
-  }
+const mergeObject = (templateObj, cabTimeObj) => {
+  const bodyResult = [
+    ...cabTimeObj.body,
+    ...templateObj.body.filter(
+      (e) => !cabTimeObj.body.some((s) => s._id === e._id)
+    ),
+  ]
+  const groupByTypeResult = [
+    ...cabTimeObj.groupByType,
+    ...templateObj.groupByType.filter(
+      (e) => !cabTimeObj.groupByType.some((s) => s.type === e.type)
+    ),
+  ].sort((a, b) => a._id - b._id)
+  return { ...cabTimeObj, body: bodyResult, groupByType: groupByTypeResult }
+}
 
 watchEffect(() => {
   const copy = JSON.parse(JSON.stringify(store.state.template.CabTimeV3))
   props.changeData
     ? (state.ctv3 = mergeObject(copy, inputData.value))
-    //  (state.ctv3 = {
-    //     // ...JSON.parse(JSON.stringify(store.state.template.CabTimeV3)),
-    //     ...inputData.value,
-    //     body: mergeObject(),
-    //     groupByType: [
-    //       ...copy.groupByType,
-    //       ...inputData.value.groupByType,
-    //     ],
-    //   })
-    : (state.ctv3 = inputData.value)
+    : //  (state.ctv3 = {
+      //     // ...JSON.parse(JSON.stringify(store.state.template.CabTimeV3)),
+      //     ...inputData.value,
+      //     body: mergeObject(),
+      //     groupByType: [
+      //       ...copy.groupByType,
+      //       ...inputData.value.groupByType,
+      //     ],
+      //   })
+      (state.ctv3 = inputData.value)
 })
 
 // state.ctv3 = JSON.parse(JSON.stringify(store.state.template.CabTimeV3))
@@ -218,7 +220,7 @@ const projectInfoState = computed(() => store.state.projectInfo)
 
 const calculateLogic = ($event, key, val) => {
   let arr, coef
-    switch (key) {
+  switch (key) {
     case '1.3':
       arr = ['2.3', '2.4']
       coef = 1
@@ -278,15 +280,23 @@ const calculateLogic = ($event, key, val) => {
         return m.result ? (acc += +m.result) : acc
       }, 0))
   })
+
+  const cabTimeToEmit = {
+    id: `cabtime__${projectInfoState.value.wo}`,
+    info: {
+      Проект: projectInfoState.value['project number'],
+      Шкаф: projectInfoState.value['cab name'],
+      wo: projectInfoState.value.wo.toString(),
+    },
+    type: 'cabtime',
+    ...state.ctv3,
+    groupByType: state.ctv3.groupByType.filter((e) => e.total),
+    body: state.ctv3.body.filter((e) => e.value),
+    result: cabtimeResult.value,
+  }
+  emit('final', cabTimeToEmit)
 }
-// eslint-disable-next-line vue/no-side-effects-in-computed-properties
-// const summByType = computed(() => state.ctv3.body ? state.ctv3.body.push(store.state.template.CabTime.reduce((acc, el) => acc.add(el._type), new Set())) : 0)
-//  t =>  state.ctv3.body&&state.ctv3.body.reduce((acc,f) => f._type === t&&(acc +=f.result),0);
-// const result = (a, b) => Math.ceil(a * b)
 
-// const CabTimeGroup = computed(()=> state.ctv3.groupByType)
-
-// const getType = computed(() => store.state.template && store.state.template.CabTime.reduce((acc, el) => acc.add(el._type), new Set()))
 const finalResult = computed(() =>
   state.ctv3.groupByType.reduce(
     (acc, e) => (e.type === 'Тестирование и Поверка' ? acc : (acc += e.total)),
@@ -302,29 +312,34 @@ const cabtimeResult = computed(() => {
     ),
     admin: Math.round(
       Math.round(
-        (+finalResult.value * +state.adminCoef) / 100 + +state.documents
+        (+finalResult.value * +state.ctv3.control.adminCoef) / 100 +
+          +state.ctv3.control.documents
       ) / 60
     ),
     final: Math.round(
       (+finalResult.value +
         Math.round(
-          (+finalResult.value * +state.adminCoef) / 100 + +state.documents
+          (+finalResult.value * +state.ctv3.control.adminCoef) / 100 +
+            +state.ctv3.control.documents
         )) /
         60
     ),
   }
 })
-const groupBy = (t) => state.ctv3?.body.filter((g) => g._type === t).sort((a, b) => a._id.split('.')[1] - b._id.split('.')[1])
+const groupBy = (t) =>
+  state.ctv3?.body
+    .filter((g) => g._type === t)
+    .sort((a, b) => a._id.split('.')[1] - b._id.split('.')[1])
 
-const fetchProjectList = async () => {
-  if (!state.projectData) {
-    // debugger
-    state.fetchProject = await (await fetch(`/api/projects?status=open`)).json()
-    state.projectData = state.fetchProject.map((el) => el.id)
-    // this.projectData = this.fetchProject.map(el => el.id);
-  }
-}
-fetchProjectList()
+// const fetchProjectList = async () => {
+//   if (!state.projectData) {
+//     // debugger
+//     state.fetchProject = await (await fetch(`/api/projects?status=open`)).json()
+//     state.projectData = state.fetchProject.map((el) => el.id)
+//     // this.projectData = this.fetchProject.map(el => el.id);
+//   }
+// }
+// fetchProjectList()
 const chooseCabinet = (e) => {
   // state.cabinet = e.split('   ')[0];
   store.commit('SETcabinetInfo', e)
@@ -395,28 +410,12 @@ const clearstate = () => {
   state.projectInformation = null
   state.ctv3 = JSON.parse(JSON.stringify(store.state.template.CabTimeV3))
 }
-
-//         return {
-//             CabTimeGroup,
-//             projectInfoState,
-//             clearstate,
-//             cabtimeResult,
-//             addNewRow,
-//             // getType,
-//             groupBy,
-//             postCabTime,
-//             fetchProjectList,
-//             // result,
-//             calculateLogic,
-//             choose, // filterByGroup,
-//             cabtimeVal,
-//             chooseCabinet,
-//             finalResult,
-//             // summByType,
-//             ...toRefs(state)
-//         }
-//     }
-// }
+const deleteRow = (id) => {
+  const currentArrow = state.ctv3.body.find((e) => e._id === id)
+  const index = state.ctv3.body.indexOf(currentArrow)
+  console.log(index)
+  state.ctv3.body.splice(index, 1)
+}
 </script>
 
 <style lang="css" scoped>
@@ -463,5 +462,14 @@ tbody tr:nth-child(odd) {
 }
 tbody tr:hover {
   background: rgba(255, 166, 0, 0.1);
+}
+.textarea {
+  display: grid;
+  grid-template-columns: 1fr 24px;
+  grid-auto-flow: column;
+}
+.close {
+  cursor: pointer;
+  place-self: center;
 }
 </style>
