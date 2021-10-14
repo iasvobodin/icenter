@@ -55,14 +55,29 @@ const routes = [
   {
     path: '/errors/:errorId',
     component: () => import('@/views/errors/_errorId.vue'),
+     beforeEnter: async (to, from) => {
+      !store.state.template && (await store.dispatch('GET_template'))
+      // reject the navigation
+      return true
+    },
   },
   {
     path: '/errors/addNewError',
+     beforeEnter: async (to, from) => {
+      !store.state.template && (await store.dispatch('GET_template'))
+      // reject the navigation
+      return true
+    },
     component: () => import('@/views/errors/addNewError.vue'),
   },
   {
     path: '/errors/info',
     component: () => import('@/views/errors/info.vue'),
+     beforeEnter: async (to, from) => {
+      !store.state.template && (await store.dispatch('GET_template'))
+      // reject the navigation
+      return true
+    },
   },
   {
     path: '/tasks',
@@ -79,6 +94,11 @@ const routes = [
   {
     path: '/cabinets/:cabinetId',
     component: () => import('@/views/cabinets/_cabinetId.vue'),
+    beforeEnter: async (to, from) => {
+      !store.state.template && (await store.dispatch('GET_template'))
+      // reject the navigation
+      return true
+    },
   },
   {
     path: '/cabtimes',
@@ -92,10 +112,20 @@ const routes = [
   {
     path: '/cabtimes/:cabtimeId',
     component: () => import('@/views/cabtimes/_cabtimeId.vue'),
+     beforeEnter: async (to, from) => {
+      !store.state.template && (await store.dispatch('GET_template'))
+      // reject the navigation
+      return true
+    },
   },
   {
     path: '/cabtimes/addNewCabtime',
     component: () => import('@/views/cabtimes/addNewCabtime.vue'),
+     beforeEnter: async (to, from) => {
+      !store.state.template && (await store.dispatch('GET_template'))
+      // reject the navigation
+      return true
+    },
   },
   {
     path: '/projects',
@@ -122,10 +152,20 @@ const routes = [
   {
     path: '/projects/addNewProject',
     component: () => import('@/views/projects/addNewProject.vue'),
+     beforeEnter: async (to, from) => {
+      !store.state.template && (await store.dispatch('GET_template'))
+      // reject the navigation
+      return true
+    },
   },
   {
     path: '/projects/:projectId',
     component: () => import('@/views/projects/_projectId.vue'),
+     beforeEnter: async (to, from) => {
+      !store.state.template && (await store.dispatch('GET_template'))
+      // reject the navigation
+      return true
+    },
   },
   {
     path: '/admin',

@@ -10,7 +10,7 @@
           <col span="1" style="width: 5%" />
         </colgroup>
         <tbody>
-          <tr style="border: solid 2px orange">
+          <tr class="head">
             <th>№</th>
             <th>{{ t.type }}</th>
             <th>Кол-во</th>
@@ -66,7 +66,7 @@
         <col span="1" style="width: 50%" />
       </colgroup>
       <tbody>
-        <tr style="border: solid 2px orange">
+        <tr class="head">
           <th>Подготовка чертежей в минутах</th>
           <th>Коэффициент на администрирвание в %</th>
         </tr>
@@ -103,7 +103,7 @@
         <col span="1" style="width: 25%" />
       </colgroup>
       <tbody>
-        <tr style="border: solid 2px orange">
+        <tr class="head">
           <th>Сборка</th>
           <th>Тестирование + Поверка</th>
           <th>Администрирвание</th>
@@ -430,7 +430,7 @@ const deleteRow = (id) => {
   width: 30px;
   height: 30px;
   cursor: pointer;
-  margin-top: 5px;
+  margin: 6px;
   font-size: 30px;
   line-height: 1;
 }
@@ -449,19 +449,36 @@ table {
   margin-top: 2vh;
   border-collapse: collapse;
   border-radius: 5px;
+  /* overflow: hidden; */
+  box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+  padding: 2vw;
   width: min(95vw, 800px);
+  /* border-collapse: separate;
+        border-spacing: 0; */
+}
+th{
+
 }
 td,
 th {
-  border: 1px solid #999;
+  box-shadow: rgba(0, 0, 0, 0.15) 2.4px 2.4px 3.2px;
+  box-shadow: rgba(0, 0, 0, 0.18) 0px 2px 4px;
+  box-shadow: rgba(9, 30, 66, 0.25) 0px 1px 1px, rgba(9, 30, 66, 0.13) 0px 0px 1px 1px;
+  box-shadow: rgba(17, 17, 26, 0.1) 0px 1px 0px;
+  /* border: 1px solid #999; */
+  
   padding: 0.5rem;
   font-size: 12px;
 }
 tbody tr:nth-child(odd) {
-  background: #eee;
+  /* box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px; */
+  background: #ececec
 }
 tbody tr:hover {
-  background: rgba(255, 166, 0, 0.1);
+  /* background: rgba(255, 166, 0, 0.1); */
+  border-radius: 3px;
+  box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
+  box-shadow: rgba(14, 30, 37, 0.12) 0px 2px 4px 0px, rgba(14, 30, 37, 0.32) 0px 2px 16px 0px;
 }
 .textarea {
   display: grid;
@@ -471,5 +488,17 @@ tbody tr:hover {
 .close {
   cursor: pointer;
   place-self: center;
+}
+    /* table tr th:first-child, table tr th:last-child{
+    border-top:solid 1px      #bbb;} */
+.head{
+  border-bottom: solid 1px orange;
+  background: white;
+  /* box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
+  box-shadow: rgba(0, 0, 0, 0.45) 0px 25px 20px -20px; */
+  border-radius: 3px;
+  height: 40px;
+    position: sticky;
+    top: 50px;
 }
 </style>
