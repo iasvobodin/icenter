@@ -3,6 +3,7 @@
     <!-- <h1>BETTA VERSION</h1> -->
     <cab-time-view
       v-if="computedItems"
+      :task-edit="state.taskEdit"
       :input-data="computedItems"
       :change-data="state.changeCabTime"
       :template-data="
@@ -41,6 +42,7 @@ const store = useStore()
 const state = reactive({
   cabTime: null,
   changeCabTime: false,
+  taskEdit:false
 })
 const route = useRoute()
 

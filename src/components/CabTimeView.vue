@@ -5,16 +5,18 @@
         <colgroup>
           <col span="1" style="width: 5%" />
           <col span="1" style="width: 70%" />
-          <col span="1" style="width: 10%" />
-          <col span="1" style="width: 10%" />
+          <col v-if="!taskEdit" span="1" style="width: 10%" />
+          <col v-if="!taskEdit" span="1" style="width: 10%" />
+          <col v-if="taskEdit" span="1" style="width: 20%" />
           <col span="1" style="width: 5%" />
         </colgroup>
         <tbody>
           <tr class="head">
             <th>№</th>
             <th>{{ t.type }}</th>
-            <th>Кол-во</th>
-            <th>Const</th>
+            <th v-if="!taskEdit">Кол-во</th>
+            <th v-if="!taskEdit">Const</th>
+             <th v-if="taskEdit">Статус</th>
             <th>{{ state.ctv3.groupByType[i].total }}</th>
           </tr>
           <tr v-for="(value, index) in groupBy(t.type)" :key="index">
@@ -30,7 +32,7 @@
               </div>
               <p v-else>{{ value.name }}</p>
             </td>
-            <td>
+            <td v-if="!taskEdit">
               <input
                 v-if="changeData"
                 class="cabtime__input"
@@ -41,7 +43,7 @@
               />
               <p v-else>{{ value.value }}</p>
             </td>
-            <td>
+            <td v-if="!taskEdit">
               <input
                 v-if="value.new && changeData"
                 class="cabtime__input"
@@ -52,6 +54,11 @@
               />
               <p v-else>{{ value._const }}</p>
             </td>
+            <td v-if="taskEdit"> 
+          <label> Открыто <input type="radio" :name="`${index}o`" :id="`${index}one`"></label>  <br>
+          <label> Частично <input type="radio" :name="`${index}o`" :id="`${index}two`"></label>   <br>
+          <label> Выполнено <input type="radio" :name="`${index}o`" :id="`${index}thr`"></label>  
+            </td>
             <td>{{ value.result }}</td>
           </tr>
           <div v-if="changeData" class="add__row" @click="addNewRow(t.type)">
@@ -60,7 +67,7 @@
         </tbody>
       </table>
     </div>
-    <table>
+    <table v-if="changeData">
       <colgroup>
         <col span="1" style="width: 50%" />
         <col span="1" style="width: 50%" />
@@ -154,6 +161,10 @@ const props = defineProps({
     type: Boolean,
     default: () => false,
   },
+  taskEdit: {
+    type: Boolean,
+    default: () => false,
+  },
   templateData: {
     type: Object,
     required: true,
@@ -176,7 +187,7 @@ const state = reactive({
 })
 // DEEP COPY OBJECT
 // const { inputData } = props
-const { inputData, changeData } = toRefs(props)
+const { inputData, changeData, templateData, taskEdit } = toRefs(props)
 
 const mergeObject = (templateObj, cabTimeObj) => {
   const bodyResult = [
@@ -500,5 +511,10 @@ tbody tr:hover {
   height: 40px;
     position: sticky;
     top: 50px;
+}
+label{
+  width: inherit;
+  text-align: start;
+  /* display: in; */
 }
 </style>
