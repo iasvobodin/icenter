@@ -238,7 +238,8 @@ router.beforeEach(async (to, from) => {
         //CHECK ROLE
         return '/role'
       } else {
-        CHECK_userDB(userParse)
+        commitUser(userParse)
+        // CHECK_userDB(userParse)
         return true
       }
     } else {
