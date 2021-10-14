@@ -46,6 +46,11 @@ const routes = [
   {
     path: '/errors',
     component: () => import('@/views/errors/errors.vue'),
+    beforeEnter: async (to, from) => {
+      !store.state.template && (await store.dispatch('GET_template'))
+      // reject the navigation
+      return true
+    },
   },
   {
     path: '/errors/:errorId',
@@ -78,6 +83,11 @@ const routes = [
   {
     path: '/cabtimes',
     component: () => import('@/views/cabtimes/cabtimes.vue'),
+    beforeEnter: async (to, from) => {
+      !store.state.template && (await store.dispatch('GET_template'))
+      // reject the navigation
+      return true
+    },
   },
   {
     path: '/cabtimes/:cabtimeId',
@@ -90,6 +100,11 @@ const routes = [
   {
     path: '/projects',
     component: () => import('@/views/projects/projects.vue'),
+    beforeEnter: async (to, from) => {
+      !store.state.template && (await store.dispatch('GET_template'))
+      // reject the navigation
+      return true
+    },
     //     async beforeEnter(to, from, next) {
     //   try {
     //     var hasPermission = await store.dispatch("auth/hasPermission");
@@ -123,10 +138,6 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes,
 })
-// router.beforeEach((to, from) => {
-//   if (to.path === '/login' || to.path === '/role') return true
-//   // if (to.path === '/login')  return true
-// })
 
 const createName = (clientPrincipal) => {
   if (clientPrincipal.identityProvider === 'aad') {
@@ -199,7 +210,7 @@ const CHECK_userDB = async (user) => {
 router.beforeEach(async (to, from) => {
   if (to.path === '/login' || to.path === '/role') return true
 
-  !store.state.template && (await store.dispatch('GET_template'))
+  // !store.state.template && (await store.dispatch('GET_template'))
 
   if (import.meta.env.MODE === 'development') {
     const user = {

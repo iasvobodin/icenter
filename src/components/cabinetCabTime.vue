@@ -10,7 +10,7 @@
       "
       @final="em($event)"
     />
-    <router-link to="/cabtimes/addnewcabtime">
+    <router-link v-if="!computedItems && $store.state.user.info.userRoles.includes('admin')" to="/cabtimes/addnewcabtime">
       <img
         class="add__button"
         src="/img/add.svg"
