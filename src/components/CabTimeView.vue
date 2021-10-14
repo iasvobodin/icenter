@@ -3,12 +3,11 @@
     <div v-for="(t, i) in state.ctv3.groupByType" :key="i">
       <table>
         <colgroup>
-          <col span="1" style="width: 5%" />
-          <col span="1" style="width: 70%" />
-          <col v-if="!taskEdit" span="1" style="width: 10%" />
-          <col v-if="!taskEdit" span="1" style="width: 10%" />
-          <col v-if="taskEdit" span="1" style="width: 20%" />
-          <col span="1" style="width: 5%" />
+          <col span="1" class="collgroup1"  />
+          <col span="1" class="collgroup2"  />
+          <col span="1" class="collgroup3"  />
+          <col span="1" class="collgroup4"  />
+          <col span="1" class="collgroup5" />
         </colgroup>
         <tbody>
           <tr class="head">
@@ -16,7 +15,8 @@
             <th>{{ t.type }}</th>
             <th v-if="!taskEdit">Кол-во</th>
             <th v-if="!taskEdit">Const</th>
-             <th v-if="taskEdit">Статус</th>
+            <th class="vertical" v-if="taskEdit">Завершено</th>
+            <th class="vertical" v-if="taskEdit">Частично</th>
             <th>{{ state.ctv3.groupByType[i].total }}</th>
           </tr>
           <tr v-for="(value, index) in groupBy(t.type)" :key="index">
@@ -54,12 +54,36 @@
               />
               <p v-else>{{ value._const }}</p>
             </td>
-            <td v-if="taskEdit"> 
-          <label> Открыто <input type="radio" :name="`${index}o`" :id="`${index}one`"></label>  <br>
-          <label> Частично <input type="radio" :name="`${index}o`" :id="`${index}two`"></label>   <br>
-          <label> Выполнено <input type="radio" :name="`${index}o`" :id="`${index}thr`"></label>  
+            <td v-if="taskEdit">
+              <!-- <label> Открыто <input type="radio" :name="`${index}o`" :id="`${index}one`"></label>  <br> -->
+              <!-- <label> Частично <input type="radio" :name="`${index}o`" :id="`${index}two`"></label>   <br><br> -->
+              <label
+                ><input
+                  type="radio"
+                  :name="`${index}${i}o`"
+                  :id="`${value._id}thr`"
+              /></label>
             </td>
-            <td>{{ value.result }}</td>
+            <td v-if="taskEdit">
+              <!-- <label> Открыто <input type="radio" :name="`${index}o`" :id="`${index}one`"></label>  <br> -->
+              <label
+                ><input
+                  type="radio"
+                  :name="`${index}${i}o`"
+                  :id="`${value._id}two`"
+              /></label>
+              <!-- <label> Завершено <input type="radio" :name="`${index}o`" :id="`${index}thr`"></label>   -->
+            </td>
+            <td v-if="taskEdit">
+              <!-- <label> Открыто <input type="radio" :name="`${index}o`" :id="`${index}one`"></label>  <br> -->
+              <input
+                class="cabtime__input"
+                type="number"
+                :value="+value.result"
+              />
+              <!-- <label> Завершено <input type="radio" :name="`${index}o`" :id="`${index}thr`"></label>   -->
+            </td>
+            <td v-if="!taskEdit">{{ value.result }}</td>
           </tr>
           <div v-if="changeData" class="add__row" @click="addNewRow(t.type)">
             +
@@ -461,35 +485,37 @@ table {
   border-collapse: collapse;
   border-radius: 5px;
   /* overflow: hidden; */
-  box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+  box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px,
+    rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
   padding: 2vw;
   width: min(95vw, 800px);
   /* border-collapse: separate;
         border-spacing: 0; */
 }
-th{
-
+th {
 }
 td,
 th {
   box-shadow: rgba(0, 0, 0, 0.15) 2.4px 2.4px 3.2px;
   box-shadow: rgba(0, 0, 0, 0.18) 0px 2px 4px;
-  box-shadow: rgba(9, 30, 66, 0.25) 0px 1px 1px, rgba(9, 30, 66, 0.13) 0px 0px 1px 1px;
+  box-shadow: rgba(9, 30, 66, 0.25) 0px 1px 1px,
+    rgba(9, 30, 66, 0.13) 0px 0px 1px 1px;
   box-shadow: rgba(17, 17, 26, 0.1) 0px 1px 0px;
   /* border: 1px solid #999; */
-  
+
   padding: 0.5rem;
   font-size: 12px;
 }
 tbody tr:nth-child(odd) {
   /* box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px; */
-  background: #ececec
+  background: #ececec;
 }
 tbody tr:hover {
   /* background: rgba(255, 166, 0, 0.1); */
   border-radius: 3px;
   box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
-  box-shadow: rgba(14, 30, 37, 0.12) 0px 2px 4px 0px, rgba(14, 30, 37, 0.32) 0px 2px 16px 0px;
+  box-shadow: rgba(14, 30, 37, 0.12) 0px 2px 4px 0px,
+    rgba(14, 30, 37, 0.32) 0px 2px 16px 0px;
 }
 .textarea {
   display: grid;
@@ -500,21 +526,61 @@ tbody tr:hover {
   cursor: pointer;
   place-self: center;
 }
-    /* table tr th:first-child, table tr th:last-child{
+/* table tr th:first-child, table tr th:last-child{
     border-top:solid 1px      #bbb;} */
-.head{
+.head {
   border-bottom: solid 1px orange;
   background: white;
   /* box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
   box-shadow: rgba(0, 0, 0, 0.45) 0px 25px 20px -20px; */
   border-radius: 3px;
   height: 40px;
-    position: sticky;
-    top: 50px;
+  position: sticky;
+  top: 50px;
 }
-label{
+label {
   width: inherit;
   text-align: start;
   /* display: in; */
+}
+input[type='radio'] {
+  margin: 0;
+}
+.collgroup1 {
+  width: 5%;
+}
+.collgroup2 {
+  width: 65%;
+}
+.collgroup3 {
+  width: 10%;
+}
+.collgroup4 {
+  width: 10%;
+}
+.collgroup5 {
+  width: 10%;
+}
+
+@media only screen and (max-width: 600px) {
+  .vertical {
+    writing-mode: tb-rl;
+    transform: rotate(-180deg);
+  }
+  .collgroup2 {
+  width: 50%;
+}
+.collgroup3 {
+  width: 5%;
+}
+.collgroup4 {
+  width: 5%;
+}
+.collgroup5 {
+  width: 17%;
+}
+.head {
+  height: 100px;
+}
 }
 </style>

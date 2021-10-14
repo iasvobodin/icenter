@@ -11,7 +11,12 @@
       "
       @final="em($event)"
     />
-    <router-link v-if="!computedItems && $store.state.user.info.userRoles.includes('admin')" to="/cabtimes/addnewcabtime">
+    <router-link
+      v-if="
+        !computedItems && $store.state.user.info.userRoles.includes('admin')
+      "
+      to="/cabtimes/addnewcabtime"
+    >
       <img
         class="add__button"
         src="/img/add.svg"
@@ -27,6 +32,11 @@
       {{ state.changeCabTime ? 'Cancel' : 'Change' }}
     </button>
     <button v-if="state.changeCabTime" @click="postCabTime">Save</button>
+        <button
+      v-if="$store.state.user.info.userRoles.includes('admin')"
+      @click="state.taskEdit = !state.taskEdit"
+    >TestTask
+    </button>
     <br />
     <br />
   </div>
@@ -42,7 +52,7 @@ const store = useStore()
 const state = reactive({
   cabTime: null,
   changeCabTime: false,
-  taskEdit:false
+  taskEdit: false,
 })
 const route = useRoute()
 
