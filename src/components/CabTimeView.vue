@@ -1,6 +1,6 @@
 <template>
   <section v-if="state.ctv3.groupByType">
-    <div v-for="(t, i) in state.ctv3.groupByType" :key="i">
+    <div class="table__wrapper" v-for="(t, i) in state.ctv3.groupByType" :key="i">
       <table>
         <colgroup>
           <col span="1" class="collgroup1"  />
@@ -30,7 +30,8 @@
                 ></textarea>
                 <div class="close" @click="deleteRow(value._id)">&#10060;</div>
               </div>
-              <p v-else>{{ value.name }}</p>
+              <div></div>
+              <p >{{ value.name }}</p>
             </td>
             <td v-if="!taskEdit">
               <input
@@ -454,11 +455,6 @@ const deleteRow = (id) => {
 </script>
 
 <style lang="css" scoped>
-.administration {
-  display: grid;
-  grid-auto-flow: column;
-  grid-template-columns: 1fr 1fr;
-}
 .add__row {
   border: 1px solid orange;
   border-radius: 50%;
@@ -566,6 +562,7 @@ input[type='radio'] {
   .vertical {
     writing-mode: tb-rl;
     transform: rotate(-180deg);
+    min-height: 90px;
   }
   .collgroup2 {
   width: 50%;
@@ -580,7 +577,12 @@ input[type='radio'] {
   width: 17%;
 }
 .head {
-  height: 100px;
+  display: none;
+  /* height: 100px; */
+}
+.table__wrapper:first-child .head{
+  /* background-color: red; */
+  display:table-row;
 }
 }
 </style>

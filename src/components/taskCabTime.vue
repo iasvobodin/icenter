@@ -1,0 +1,174 @@
+<template>
+    <div>
+      <table>
+        <colgroup>
+          <col span="1" class="collgroup1"  />
+          <col span="1" class="collgroup2"  />
+          <col span="1" class="collgroup3"  />
+          <col span="1" class="collgroup4"  />
+          <col span="1" class="collgroup5" />
+        </colgroup>
+        <thead class="head">
+ <tr >
+            <th rowspan="2">№</th>
+            <th rowspan="2">task</th>
+            <th colspan="2">Выполнено</th>
+            <th rowspan="2">result</th>
+          </tr>
+        <tr >
+            <th class="vertical">Частично</th>
+            <th class="vertical">Полностью</th>
+          </tr>
+        </thead>
+        <tbody>
+         
+          <tr v-for="(value, index) in inputData.body" :key="index">
+            <td>{{ value._id }}</td>
+            <td>{{value.name}}</td>
+            <!-- <td >{{ value.value }}</td>
+            <td >{{ value._const }}</td> -->
+            <td >
+              <label
+                ><input
+                  type="radio"
+                  :name="`${index}o`"
+                  :id="`${value._id}thr`"
+              /></label>
+            </td>
+            <td >
+              <label
+                ><input
+                  type="radio"
+                  :name="`${index}o`"
+                  :id="`${value._id}two`"
+              /></label>
+            </td>
+            <td >              <input
+                class="cabtime__input"
+                type="number"
+                :value="+value.result"
+              /></td>
+            <!-- <td>
+
+            </td>
+            <td >{{ value.result }}</td> -->
+          </tr>
+        </tbody>
+      </table>
+    </div>
+</template>
+
+<script setup>
+import { toRefs } from "@vue/reactivity"
+
+// eslint-disable-next-line no-undef
+const props = defineProps({
+  inputData: {
+    type: Object,
+    required: true,
+  },
+//   changeData: {
+//     type: Boolean,
+//     default: () => false,
+//   },
+  taskEdit: {
+    type: Boolean,
+    default: () => false,
+  },
+//   templateData: {
+//     type: Object,
+//     required: true,
+//   },
+})
+const { inputData, changeData, templateData, taskEdit } = toRefs(props)
+</script>
+
+<style lang="css" scoped>
+
+
+.cabtime__input {
+  width: min(100%, 60px);
+}
+thead tr th{
+    white-space: pre-wrap;
+  word-wrap: break-word;
+}
+table {
+  margin: auto;
+  margin-top: 2vh;
+  border-collapse: collapse;
+  border-radius: 5px;
+  /* overflow: hidden; */
+  box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px,
+    rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+  padding: 2vw;
+  width: min(95vw, 800px);
+}
+
+td,
+th {
+  box-shadow: rgba(0, 0, 0, 0.15) 2.4px 2.4px 3.2px;
+  box-shadow: rgba(0, 0, 0, 0.18) 0px 2px 4px;
+  box-shadow: rgba(9, 30, 66, 0.25) 0px 1px 1px,
+    rgba(9, 30, 66, 0.13) 0px 0px 1px 1px;
+  box-shadow: rgba(17, 17, 26, 0.1) 0px 1px 0px;
+
+  padding: 3px;
+  font-size: 12px;
+}
+
+tbody tr:nth-child(odd) {
+  background: #ececec;
+}
+/* tbody tr:hover {
+  border-radius: 3px;
+  box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
+  box-shadow: rgba(14, 30, 37, 0.12) 0px 2px 4px 0px,
+    rgba(14, 30, 37, 0.32) 0px 2px 16px 0px;
+} */
+.head {
+  border-bottom: solid 1px orange;
+  background: white;
+  border-radius: 3px;
+  height: 40px;
+  position: sticky;
+  top: 50px;
+}
+label {
+  width: inherit;
+  text-align: start;
+  /* display: in; */
+}
+input[type='radio'] {
+  margin: 0;
+}
+.collgroup1 {
+  width: 5%;
+}
+.collgroup2 {
+  width: 65%;
+}
+.collgroup3 {
+  width: 30px;
+}
+.collgroup4 {
+  width: 30px;
+}
+.collgroup5 {
+  width: 10%;
+}
+
+@media only screen and (max-width: 600px) {
+    .vertical{
+    max-width: 40px;
+    padding: 2px;
+}
+  /* .vertical {
+    writing-mode: tb-rl;
+    transform: rotate(-180deg);
+    min-height: 110px;
+  } */
+  
+} 
+
+</style>

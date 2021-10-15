@@ -1,5 +1,8 @@
 <template>
   <div class="components__holder">
+    <div>
+      <h1 @click="$router.push(`/cabinets/${$route.params.cabtimeId}`)">WO {{ $route.params.cabtimeId }}</h1>
+    </div>
     <cab-time-view
       v-if="state.cabTime"
       :input-data="state.cabTime"
@@ -38,5 +41,8 @@ getCabTime()
 <style lang="css" scoped>
 .components__holder {
   margin-bottom: 2vw;
+}
+h1{
+  cursor: pointer;
 }
 </style>

@@ -177,7 +177,7 @@ export default {
             await fetch(`/api/blob?fileName=${e}&delblob=true`)
           })
         ))
-      this.$router.push('/errors')
+      this.$router.back()
     },
     setPH(e) {
       this.deletMethods = e.del
@@ -450,7 +450,8 @@ h3 {
   box-sizing: border-box;
 }
 h1 {
-  margin: 10px;
+  padding: 10px;
+  font-size: 30px;
 }
 h2 {
   margin: 7px;
@@ -505,4 +506,7 @@ h2 {
   padding: 5px;
   text-align: start;
 } */
+.button__block{
+  padding-bottom: 2vh;
+}
 </style>

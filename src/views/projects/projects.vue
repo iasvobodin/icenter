@@ -119,8 +119,6 @@
             <h2 class="project__number">{{ value.id }}</h2>
           </td>
           <td v-for="(v, k) in extendTemplate" :key="k">
-            <!-- <conditional-render v-model="projects[key].info.extends" :only-field="false"
-              :data-render="{[k]:extendTemplate[k]}" :required="false" /> -->
             <render-inputs
               v-model="projects[key].info.extends"
               :data-render="extendTemplate[k]"

@@ -68,6 +68,7 @@ const condition = (a) => {
 .cabinets__category {
   min-width: 20%;
   cursor: pointer;
+  margin-bottom: 10px;
 }
 .tab-button.active {
   background: #0066ff1f;
