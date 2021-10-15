@@ -268,6 +268,7 @@ export default {
       })
     }
     return {
+      extendTemplate,
       updateChangedProjects,
       getIndex,
       sortBy,

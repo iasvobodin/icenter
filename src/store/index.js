@@ -47,6 +47,8 @@ export default createStore({
       state.template = payload
     },
     extendTemplate(state, payload) {
+      console.log(payload,'!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
+      state.template = {}
       state.template.template = payload
     },
     SETprojectNumber(state, payload) {
