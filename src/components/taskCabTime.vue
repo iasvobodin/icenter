@@ -142,6 +142,9 @@ label {
 input[type='radio'] {
   margin: 0;
 }
+tbody tr{
+    margin-bottom: 10px;
+}
 .collgroup1 {
   width: 5%;
 }
@@ -149,10 +152,10 @@ input[type='radio'] {
   width: 65%;
 }
 .collgroup3 {
-  width: 30px;
+  width: 10%;
 }
 .collgroup4 {
-  width: 30px;
+  width: 10%;
 }
 .collgroup5 {
   width: 10%;
@@ -162,6 +165,9 @@ input[type='radio'] {
     .vertical{
     max-width: 40px;
     padding: 2px;
+}
+.collgroup2 {
+  width: 55%;
 }
   /* .vertical {
     writing-mode: tb-rl;
