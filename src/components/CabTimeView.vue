@@ -411,7 +411,7 @@ const postCabTime = async () => {
     //     ...state.ctv3.body.filter(e => e.value),
     // }
   }
-  await fetch('/api/POST_error', {
+  await fetch('/api/post_item', {
     method: 'POST', // или 'PUT'
     body: JSON.stringify({
       ...cabTime,

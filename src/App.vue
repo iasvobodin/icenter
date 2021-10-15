@@ -173,7 +173,7 @@ body {
   background: var(--bg);
 }
 #view {
-  /* min-height: calc(100vh - 50px); */
+  min-height: calc(100vh - 50px);
 }
 textarea,
 select,
@@ -253,6 +253,10 @@ h5,
 h6 {
   font-family: 'Roboto Slab', serif;
   font-weight: normal;
+}
+h1{
+      margin: 0;
+    padding: 2vh;
 }
 .item__card {
   background-color: white;

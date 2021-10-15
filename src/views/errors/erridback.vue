@@ -128,7 +128,7 @@ export default {
         }),
       }
       await fetch('/api/POST_openError', delErr)
-      await fetch('/api/POST_error', delErr)
+      await fetch('/api/post_item', delErr)
       this.error.photos.length > 0 &&
         (await Promise.all(
           this.error.photos.map(async (e) => {
@@ -279,7 +279,7 @@ export default {
         // UPDATE ERROR IN ICENTERDB
         console.log(updateErorBody)
         // debugger
-        await fetch('/api/POST_error', {
+        await fetch('/api/post_item', {
           method: 'POST', // или 'PUT'
           body: JSON.stringify({
             ...updateErorBody,

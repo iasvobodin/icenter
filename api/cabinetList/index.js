@@ -40,7 +40,8 @@ module.exports = async function (context, req, legendStat, projects) {
   }
 
   if (req.query.updateWO) {
-    const newWO = transformData.find((e) => e.id === req.query.project).cabinets
+    const newWO = transformData.find((e) => e.id === req.query.project)
+    context.log(typeof newWO, newWO)
     context.res = {
       body: newWO,
     }

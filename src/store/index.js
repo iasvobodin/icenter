@@ -46,7 +46,9 @@ export default createStore({
     setTemplate(state, payload) {
       state.template = payload
     },
-
+    extendTemplate(state, payload) {
+      state.template.template = payload
+    },
     SETprojectNumber(state, payload) {
       state.selectedProjectNumber = payload
       console.log(
@@ -118,6 +120,23 @@ export default createStore({
         commit('changeLoader', false)
       } catch (error) {
         console.log(error, 'GETTEMPLATEERROR')
+      }
+    },
+    async extendProject({ commit, state }) {
+      console.log('GET projectExtend')
+
+      !state.loader && commit('changeLoader', true)
+
+      try {
+        const resposeTemplate = await fetch(
+          '/api/templates/extendProject/ver1'
+        )
+        const { projectTemplate } = await resposeTemplate.json()
+        console.log(projectTemplate, 'projectTemplate');
+        commit('extendTemplate', projectTemplate)
+        commit('changeLoader', false)
+      } catch (error) {
+        console.log(error, 'GETprojectExtendERROR')
       }
     },
     async checkUser({ commit, state }) {

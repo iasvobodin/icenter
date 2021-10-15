@@ -259,7 +259,7 @@ export default {
           body: formData,
           // keepalive: true,
         })
-        await fetch('/api/POST_error', {
+        await fetch('/api/post_item', {
           method: 'POST', // или 'PUT'
           body: JSON.stringify({
             ...error,

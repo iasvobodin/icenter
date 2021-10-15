@@ -1,4 +1,6 @@
 <template>
+<div class="wrapper">
+
   <h1 class="project__header">Номер проекта {{ $route.params.projectId }}</h1>
   <main v-if="project" class="project">
     <section class="project__info">
@@ -42,7 +44,7 @@
       <choose-wo-number
         v-if="updateWOFlag"
         :multiple-permission="false"
-        :cabinet-list="newWO"
+        :cabinet-list="newWO.cabinets"
         @checked-wo="($event) => (project.cabinets = $event)"
       />
     </section>
@@ -65,10 +67,10 @@
     >
       Перевести в закрытые
     </button>
-    <button v-if="changeData" @click="updateWO">Обновить WO</button>
+    <button v-if="changeData" @click="updateWO">Обновить данные</button>
     <button
       v-if="$store.state.user.info.userRoles.includes('admin')"
-      @click="generatedQR = true"
+      @click="generatedQR = !generatedQR"
     >
       Сгенерировать QR
     </button>
@@ -82,6 +84,7 @@
       :generate-data="value"
     />
   </section>
+</div>
 </template>
 
 <script>
@@ -132,7 +135,9 @@ export default {
       )
       if (!state.newWO) {
         await request()
+        // const {cabinets} = JSON.parse(response) 
         state.newWO = response
+        state.project.info.base = response.value.info
       }
       state.updateWOFlag = !state.updateWOFlag
     }
@@ -211,6 +216,10 @@ export default {
   border-right: 1px solid black;
   padding-right: 1vw;
 } */
+.wrapper{
+  position: relative;
+  min-height: inherit;
+}
 table {
   margin-top: 2vh;
   border-collapse: collapse;
@@ -247,7 +256,8 @@ tbody tr:hover {
   background-color: lime;
 }
 .project__controls {
-  /* position: absolute; */
+  position: absolute;
+  width: 100%;
   bottom: 0;
 }
 .holder {
@@ -259,7 +269,9 @@ tbody tr:hover {
 /* .holder:last-child {
   border: 0px;
 } */
-
+  .qrs{
+     padding-bottom: 20vh;
+   }
 @media print {
   .page {
     width: 29.7cm;
@@ -279,8 +291,6 @@ tbody tr:hover {
     display: none;
     opacity: 0;
   }
-  /* .qrs{
-     height: 100vh;
-   } */
+
 }
 </style>

@@ -102,7 +102,7 @@
       <tr style="border: solid 2px orange">
         <th>№</th>
         <th
-          v-for="(vv, kk) in $store.state.template.template.extend"
+          v-for="(vv, kk) in extendTemplate"
           :key="kk"
           @click="sortBy(kk, 'extends')"
         >
@@ -118,12 +118,12 @@
           <td>
             <h2 class="project__number">{{ value.id }}</h2>
           </td>
-          <td v-for="(v, k) in $store.state.template.template.extend" :key="k">
+          <td v-for="(v, k) in extendTemplate" :key="k">
             <!-- <conditional-render v-model="projects[key].info.extends" :only-field="false"
-              :data-render="{[k]:$store.state.template.template.extend[k]}" :required="false" /> -->
+              :data-render="{[k]:extendTemplate[k]}" :required="false" /> -->
             <render-inputs
               v-model="projects[key].info.extends"
-              :data-render="$store.state.template.template.extend[k]"
+              :data-render="extendTemplate[k]"
             />
           </td>
         </tr>
@@ -154,6 +154,7 @@
 import { reactive, toRefs, watch, computed, ref } from 'vue'
 import { useFetch } from '@/hooks/fetch'
 import infoRender from '@/components/infoRender.vue'
+import{useStore} from 'vuex'
 // import conditionalRender from '@/components/conditionalRender.vue'
 import renderInputs from '@/components/renderInputs.js'
 export default {
@@ -187,6 +188,9 @@ export default {
           )
         : state.errors
     })
+    const store = useStore()
+    // store.dispatch('extendProject')
+    const extendTemplate = computed(()=> store.state.template.template.extend)
     const groupProjects = (status) =>
       filterProjects.value &&
       filterProjects.value.filter(

@@ -131,7 +131,7 @@ const routes = [
     path: '/projects',
     component: () => import('@/views/projects/projects.vue'),
     beforeEnter: async (to, from) => {
-      !store.state.template && (await store.dispatch('GET_template'))
+      !store.state.template && (await store.dispatch('extendProject'))
       // reject the navigation
       return true
     },

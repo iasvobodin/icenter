@@ -110,7 +110,7 @@ const postCabTime = async () => {
   //   groupByType: state.ctv3.groupByType.filter((e) => e.total),
   //   body: state.ctv3.body.filter((e) => e.value),
   // }
-  const { request } = useFetch('/api/POST_error', {
+  const { request } = useFetch('/api/post_item', {
     method: 'POST', // или 'PUT'
     body: JSON.stringify({
       ...state.ctv3,

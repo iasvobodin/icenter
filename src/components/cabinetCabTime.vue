@@ -62,7 +62,7 @@ const computedItems = computed(
 const em = (e) => (state.cabTime = e)
 
 const postCabTime = async () => {
-  const { request } = useFetch('/api/POST_error', {
+  const { request } = useFetch('/api/post_item', {
     method: 'POST', // или 'PUT'
     body: JSON.stringify({
       ...state.cabTime,
