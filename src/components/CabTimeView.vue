@@ -576,13 +576,11 @@ input[type='radio'] {
 .collgroup5 {
   width: 17%;
 }
-.head {
+/* .head {
   display: none;
-  /* height: 100px; */
 }
 .table__wrapper:first-child .head{
-  /* background-color: red; */
   display:table-row;
-}
+} */
 }
 </style>

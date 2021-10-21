@@ -50,7 +50,7 @@
               >
                 <option
                   v-for="(value2, key2, index2) in $store.state.template[
-                    errorBody[key2]['Ответственный']
+                    errorBody[key]['Ответственный']
                   ]"
                   :key="index2"
                 >
