@@ -194,4 +194,7 @@ form {
   text-align: center;
   margin: 5px;
 }
+img{
+  cursor: pointer;
+}
 </style>
