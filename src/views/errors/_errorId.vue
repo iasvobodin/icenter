@@ -96,10 +96,10 @@
   <div class="button__block">
     <button
       v-if="
-        (error &&
+        error &&
           !changeInfo &&
-          error.info.Добавил === $store.state.user.info.userDetails) ||
-        $store.state.user.info.userRoles.includes('admin')
+          (error.info.Добавил === $store.state.user.info.userDetails ||
+        $store.state.user.info.userRoles.includes('admin'))
       "
       @click="changeData"
     >
