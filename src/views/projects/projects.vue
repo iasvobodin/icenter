@@ -46,7 +46,7 @@
           v-for="(value, key, index) in groupProjects(status)"
           :key="index"
           class="error__card__holder"
-          @click="!selectedStatus && $router.push(`/projects/${value.id}`)"
+          @click="!selectedStatus ? $router.push(`/projects/${value.id}`) : $router.push(`/projects/${value.id}?status=closed`)"
         >
           <div class="item__card" :class="{ closed__card: selectedStatus }">
             <div class="double">

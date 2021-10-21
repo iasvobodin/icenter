@@ -115,7 +115,7 @@ export default {
     })
     const getProject = async () => {
       const { request, response } = useFetch(
-        `/api/projects?status=open&project=${route.params.projectId}`
+        `/api/projects?status=${route.query.status?'closed':'open'}&project=${route.params.projectId}`
       )
       if (!state.project) {
         await request()

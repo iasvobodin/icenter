@@ -126,6 +126,7 @@ export default {
   height: 100px;
   place-self: center;
   cursor: pointer;
+  padding: 1vh;
 }
 .canvas__el {
   width: 100%;

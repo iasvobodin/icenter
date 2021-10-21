@@ -9,7 +9,6 @@
         @choose-project-number="choose"
       />
       <div v-if="state.projectInformation">
-        <br />
         <choose-project-number
           place-holder="Введите номер WO"
           :data-to-render="

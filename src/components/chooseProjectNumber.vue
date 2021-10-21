@@ -129,7 +129,7 @@ ul {
   border-radius: 5px;
 }
 .choose__project__holder {
-  margin: auto;
+  margin: 1vh auto;
   width: min(95vw - 50px, 400px);
 }
 input {

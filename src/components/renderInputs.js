@@ -5,8 +5,7 @@ export default {
     switch (this.dataRender._field) {
       case 'select':
         return h(
-          'select',
-          {
+          'select',{
             required: this.required,
             value: this.modelValue[this.dataRender.name],
             onInput: ($event) => this.addVmodel($event, this.dataRender.name), // this.$emit('update:modelValue', {...this.modelValue, [this.dataRender.name] : $event.target.value}),
@@ -20,6 +19,7 @@ export default {
           required: this.required,
           value: this.modelValue[this.dataRender.name],
           onInput: ($event) => this.addVmodel($event, this.dataRender.name),
+          rows:5
         })
       case 'checkbox':
         return h('input', {
