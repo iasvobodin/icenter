@@ -105,7 +105,7 @@
     >
       {{ !changeInfo ? 'Редактировать' : 'Отмена' }}
     </button>
-    <button v-if="changeInfo" @click="deleteError">Удалить</button>
+    <button v-if="changeInfo&&$store.state.user.info.userRoles.includes('admin')" @click="deleteError">Удалить</button>
     <button v-if="changeInfo" type="submit" form="errorData">Сохранить</button>
   </div>
 
