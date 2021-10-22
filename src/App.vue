@@ -174,6 +174,7 @@ body {
 }
 #view {
   min-height: calc(100vh - 50px);
+  padding-bottom: 75px;
 }
 textarea,
 select,
