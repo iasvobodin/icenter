@@ -1,9 +1,6 @@
 <template>
   <div class="components__holder">
-    <task-cab-time
-      v-if="state.cabTime"
-      :input-data="state.cabTime"
-    />
+    <task-cab-time v-if="state.cabTime" :input-data="state.cabTime" />
     <br />
     <br />
   </div>
@@ -38,8 +35,7 @@ getCabTime()
 .components__holder {
   margin-bottom: 2vw;
 }
-h1{
+h1 {
   cursor: pointer;
 }
 </style>
-

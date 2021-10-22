@@ -177,9 +177,9 @@ onMounted(async () => {
   video.srcObject = stream.value
 
   // if (!changeView.value) {
-    
+
   tick.value = setInterval(() => {
-    if (video.readyState === video.HAVE_ENOUGH_DATA &&!changeView.value) {
+    if (video.readyState === video.HAVE_ENOUGH_DATA && !changeView.value) {
       vCanvas.value.height = video.videoHeight
       vCanvas.value.width = video.videoWidth
       canvas.drawImage(video, 0, 0, vCanvas.value.width, vCanvas.value.height)
@@ -196,7 +196,6 @@ onMounted(async () => {
     }
   }, 500)
   // }
-
 })
 
 //     return {

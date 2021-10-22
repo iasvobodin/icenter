@@ -129,11 +129,9 @@ export default createStore({
       !state.loader && commit('changeLoader', true)
 
       try {
-        const resposeTemplate = await fetch(
-          '/api/templates/extendProject/ver1'
-        )
+        const resposeTemplate = await fetch('/api/templates/extendProject/ver1')
         const { projectTemplate } = await resposeTemplate.json()
-        console.log(projectTemplate, 'projectTemplate');
+        console.log(projectTemplate, 'projectTemplate')
         commit('extendTemplate', projectTemplate)
         commit('changeLoader', false)
       } catch (error) {

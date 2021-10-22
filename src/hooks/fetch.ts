@@ -16,13 +16,16 @@ export function useFetch<T>(
     store.commit('changeLoader', true)
     try {
       const res = await fetch(url, options)
-      console.log(res)
+      // console.log(res)
 
       if (res.ok) {
         response.value = await res.json()
       }
+      if (res.status === 404) {
+        throw new Error('404')
+      }
     } catch (error) {
-      console.log(error)
+      console.log(error, 'eops')
     } finally {
       store.commit('changeLoader', false)
     }

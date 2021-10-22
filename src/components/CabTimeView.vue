@@ -1,22 +1,24 @@
 <template>
   <section v-if="state.ctv3.groupByType">
-    <div class="table__wrapper" v-for="(t, i) in state.ctv3.groupByType" :key="i">
+    <div
+      class="table__wrapper"
+      v-for="(t, i) in state.ctv3.groupByType"
+      :key="i"
+    >
       <table>
         <colgroup>
-          <col span="1" class="collgroup1"  />
-          <col span="1" class="collgroup2"  />
-          <col span="1" class="collgroup3"  />
-          <col span="1" class="collgroup4"  />
+          <col span="1" class="collgroup1" />
+          <col span="1" class="collgroup2" />
+          <col span="1" class="collgroup3" />
+          <col span="1" class="collgroup4" />
           <col span="1" class="collgroup5" />
         </colgroup>
         <tbody>
           <tr class="head">
             <th>№</th>
             <th>{{ t.type }}</th>
-            <th v-if="!taskEdit">Кол-во</th>
-            <th v-if="!taskEdit">Const</th>
-            <th class="vertical" v-if="taskEdit">Завершено</th>
-            <th class="vertical" v-if="taskEdit">Частично</th>
+            <th>Кол-во</th>
+            <th>Const</th>
             <th>{{ state.ctv3.groupByType[i].total }}</th>
           </tr>
           <tr v-for="(value, index) in groupBy(t.type)" :key="index">
@@ -30,10 +32,11 @@
                 ></textarea>
                 <div class="close" @click="deleteRow(value._id)">&#10060;</div>
               </div>
-              <div></div>
-              <p >{{ value.name }}</p>
+              <div v-else>
+                <p>{{ value.name }}</p>
+              </div>
             </td>
-            <td v-if="!taskEdit">
+            <td>
               <input
                 v-if="changeData"
                 class="cabtime__input"
@@ -44,7 +47,7 @@
               />
               <p v-else>{{ value.value }}</p>
             </td>
-            <td v-if="!taskEdit">
+            <td>
               <input
                 v-if="value.new && changeData"
                 class="cabtime__input"
@@ -55,36 +58,7 @@
               />
               <p v-else>{{ value._const }}</p>
             </td>
-            <td v-if="taskEdit">
-              <!-- <label> Открыто <input type="radio" :name="`${index}o`" :id="`${index}one`"></label>  <br> -->
-              <!-- <label> Частично <input type="radio" :name="`${index}o`" :id="`${index}two`"></label>   <br><br> -->
-              <label
-                ><input
-                  type="radio"
-                  :name="`${index}${i}o`"
-                  :id="`${value._id}thr`"
-              /></label>
-            </td>
-            <td v-if="taskEdit">
-              <!-- <label> Открыто <input type="radio" :name="`${index}o`" :id="`${index}one`"></label>  <br> -->
-              <label
-                ><input
-                  type="radio"
-                  :name="`${index}${i}o`"
-                  :id="`${value._id}two`"
-              /></label>
-              <!-- <label> Завершено <input type="radio" :name="`${index}o`" :id="`${index}thr`"></label>   -->
-            </td>
-            <td v-if="taskEdit">
-              <!-- <label> Открыто <input type="radio" :name="`${index}o`" :id="`${index}one`"></label>  <br> -->
-              <input
-                class="cabtime__input"
-                type="number"
-                :value="+value.result"
-              />
-              <!-- <label> Завершено <input type="radio" :name="`${index}o`" :id="`${index}thr`"></label>   -->
-            </td>
-            <td v-if="!taskEdit">{{ value.result }}</td>
+            <td>{{ value.result }}</td>
           </tr>
           <div v-if="changeData" class="add__row" @click="addNewRow(t.type)">
             +
@@ -149,9 +123,19 @@
       </tbody>
     </table>
   </section>
+  <error-photos
+    :change-photos="changeData"
+    container="cabtime-photo"
+    :current-photos="inputData.photos"
+    @resized-blob="addPhotos($event)"
+    @delete-blob="delPhotos($event)"
+  />
+  <!-- 
+        @resized-blob="errorPhotosBlob($event)" -->
 </template>
 
 <script setup>
+import errorPhotos from '@/components/errorPhotos.vue'
 import conditionalRender from '@/components/conditionalRender.vue'
 import chooseWoNumber from '@/components/chooseWoNumber.vue'
 import chooseProjectNumber from '@/components/chooseProjectNumber.vue'
@@ -165,6 +149,7 @@ import {
   onMounted,
   watchEffect,
 } from 'vue'
+import { useFetch } from '@/hooks/fetch'
 
 const store = useStore()
 const router = useRouter()
@@ -198,16 +183,8 @@ const props = defineProps({
 // eslint-disable-next-line no-undef
 const emit = defineEmits(['final'])
 const state = reactive({
-  // adminCoef: '12',
-  // documents: '240',
-  // type: null,
-  // cabtimeCopy: null,
-  // fetchProject: null,
+  blobFiles: null,
   projectInformation: null,
-  // projectData: null,
-  // cabinet: '',
-  // cabtimetype: null,
-  // ctg: null,
   ctv3: null,
 })
 // DEEP COPY OBJECT
@@ -245,7 +222,8 @@ watchEffect(() => {
       //   })
       (state.ctv3 = inputData.value)
 })
-
+!state.ctv3.blobFiles&&(state.ctv3.blobFiles = [])
+!state.ctv3.photos&&(state.ctv3.photos = [])
 // state.ctv3 = JSON.parse(JSON.stringify(store.state.template.CabTimeV3))
 const inputDataComputed = computed(() =>
   props.changeData
@@ -317,6 +295,10 @@ const calculateLogic = ($event, key, val) => {
       }, 0))
   })
 
+  updateEmit()
+}
+
+const updateEmit = () => {
   const cabTimeToEmit = {
     id: `cabtime__${projectInfoState.value.wo}`,
     info: {
@@ -332,7 +314,26 @@ const calculateLogic = ($event, key, val) => {
   }
   emit('final', cabTimeToEmit)
 }
+const addPhotos = (e) => {
+state.ctv3.blobFiles = e
+!state.ctv3.photos&&(state.ctv3.photos = [])
+  state.ctv3.blobFiles.map((e, i) => {
+    const imageName = `cabtime__${projectInfoState.value.wo}__${store.state.user.info.userDetails.toLowerCase()}__${
+      Date.now() + i
+    }.jpg`
 
+    state.ctv3.photos.push(imageName)
+updateEmit()
+    // formData.set(`photo${i + 1}`, e, imageName)
+  })
+}
+const delPhotos = async (e) => {
+  state.ctv3.delPH = e
+  state.ctv3?.photos.splice(e.index, 1)
+  state.ctv3?.blobFiles.splice(e.index, 1)
+  updateEmit()
+
+}
 const finalResult = computed(() =>
   state.ctv3.groupByType.reduce(
     (acc, e) => (e.type === 'Тестирование и Поверка' ? acc : (acc += e.total)),
@@ -367,15 +368,6 @@ const groupBy = (t) =>
     .filter((g) => g._type === t)
     .sort((a, b) => a._id.split('.')[1] - b._id.split('.')[1])
 
-// const fetchProjectList = async () => {
-//   if (!state.projectData) {
-//     // debugger
-//     state.fetchProject = await (await fetch(`/api/projects?status=open`)).json()
-//     state.projectData = state.fetchProject.map((el) => el.id)
-//     // this.projectData = this.fetchProject.map(el => el.id);
-//   }
-// }
-// fetchProjectList()
 const chooseCabinet = (e) => {
   // state.cabinet = e.split('   ')[0];
   store.commit('SETcabinetInfo', e)
@@ -405,23 +397,39 @@ const postCabTime = async () => {
     ...state.ctv3,
     body: { ...state.ctv3.body.filter((e) => e.value) },
     result: cabtimeResult.value,
-    // adminCoef: state.adminCoef,
-    // documents: state.documents,
-    // cabtimeResult: cabtimeResult.value,
-    // body: {
-    //     ...state.ctv3.body.filter(e => e.value),
-    // }
   }
+  await photo()
   await fetch('/api/post_item', {
     method: 'POST', // или 'PUT'
     body: JSON.stringify({
       ...cabTime,
     }),
   })
-  // state.ctv3 = JSON.parse(JSON.stringify(store.state.template.CabTimeV3))
   router.back()
-  // console.log(route.params.cabtimeId);
 }
+
+const photo = async () => {
+  const formData = new FormData()
+  state.blobFiles.map((e, i) => {
+    const imageName = `${
+      state.ctv3.id
+    }__${store.state.user.info.userDetails.toLowerCase()}__${
+      Date.now() + i
+    }.jpg`
+
+    state.ctv3.photos.push(imageName)
+
+    formData.set(`photo${i + 1}`, e, imageName)
+  })
+  // UPLOAD PHOTOS
+  const options = {
+    method: 'POST',
+    body: formData,
+  }
+  const {request, response} = useFetch('/api/blob?container=cabtime-photo&test=true', options )
+  await request()
+}
+
 const addNewRow = (e) => {
   //filter by type
   const ff = state.ctv3.body.filter((g) => g._type === e)
@@ -449,9 +457,11 @@ const clearstate = () => {
 const deleteRow = (id) => {
   const currentArrow = state.ctv3.body.find((e) => e._id === id)
   const index = state.ctv3.body.indexOf(currentArrow)
-  console.log(index)
   state.ctv3.body.splice(index, 1)
+  updateEmit()
 }
+
+
 </script>
 
 <style lang="css" scoped>
@@ -565,18 +575,18 @@ input[type='radio'] {
     min-height: 90px;
   }
   .collgroup2 {
-  width: 50%;
-}
-.collgroup3 {
-  width: 5%;
-}
-.collgroup4 {
-  width: 5%;
-}
-.collgroup5 {
-  width: 17%;
-}
-/* .head {
+    width: 50%;
+  }
+  .collgroup3 {
+    width: 5%;
+  }
+  .collgroup4 {
+    width: 5%;
+  }
+  .collgroup5 {
+    width: 17%;
+  }
+  /* .head {
   display: none;
 }
 .table__wrapper:first-child .head{

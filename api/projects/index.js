@@ -17,13 +17,13 @@ module.exports = async function (context, req, projects, updateProject) {
     return
   }
 
-  
-  const sanitize = projects.map( el => {
-    const objE = Object.entries(el).filter(entries => !entries[0].startsWith('_'))
+  const sanitize = projects.map((el) => {
+    const objE = Object.entries(el).filter(
+      (entries) => !entries[0].startsWith('_')
+    )
     const objF = Object.fromEntries(objE)
     return objF
   })
-
 
   context.res = {
     body: sanitize,

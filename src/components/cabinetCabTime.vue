@@ -32,10 +32,11 @@
       {{ state.changeCabTime ? 'Cancel' : 'Change' }}
     </button>
     <button v-if="state.changeCabTime" @click="postCabTime">Save</button>
-        <button
+    <button
       v-if="$store.state.user.info.userRoles.includes('admin')"
       @click="state.taskEdit = !state.taskEdit"
-    >TestTask
+    >
+      TestTask
     </button>
     <br />
     <br />

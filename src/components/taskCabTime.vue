@@ -1,65 +1,60 @@
 <template>
-    <div>
-      <table>
-        <colgroup>
-          <col span="1" class="collgroup1"  />
-          <col span="1" class="collgroup2"  />
-          <col span="1" class="collgroup3"  />
-          <col span="1" class="collgroup4"  />
-          <col span="1" class="collgroup5" />
-        </colgroup>
-        <thead class="head">
- <tr >
-            <th rowspan="2">№</th>
-            <th rowspan="2">task</th>
-            <th colspan="2">Выполнено</th>
-            <th rowspan="2">result</th>
-          </tr>
-        <tr >
-            <th class="vertical">Частично</th>
-            <th class="vertical">Полностью</th>
-          </tr>
-        </thead>
-        <tbody>
-         
-          <tr v-for="(value, index) in inputData.body" :key="index">
-            <td>{{ value._id }}</td>
-            <td>{{value.name}}</td>
-            <!-- <td >{{ value.value }}</td>
+  <div>
+    <table>
+      <colgroup>
+        <col span="1" class="collgroup1" />
+        <col span="1" class="collgroup2" />
+        <col span="1" class="collgroup3" />
+        <col span="1" class="collgroup4" />
+        <col span="1" class="collgroup5" />
+      </colgroup>
+      <thead class="head">
+        <tr>
+          <th rowspan="2">№</th>
+          <th rowspan="2">task</th>
+          <th colspan="2">Выполнено</th>
+          <th rowspan="2">result</th>
+        </tr>
+        <tr>
+          <th class="vertical">Частично</th>
+          <th class="vertical">Полностью</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="(value, index) in inputData.body" :key="index">
+          <td>{{ value._id }}</td>
+          <td>{{ value.name }}</td>
+          <!-- <td >{{ value.value }}</td>
             <td >{{ value._const }}</td> -->
-            <td >
-              <label
-                ><input
-                  type="radio"
-                  :name="`${index}o`"
-                  :id="`${value._id}thr`"
-              /></label>
-            </td>
-            <td >
-              <label
-                ><input
-                  type="radio"
-                  :name="`${index}o`"
-                  :id="`${value._id}two`"
-              /></label>
-            </td>
-            <td >              <input
-                class="cabtime__input"
-                type="number"
-                :value="+value.result"
-              /></td>
-            <!-- <td>
+          <td>
+            <label
+              ><input type="radio" :name="`${index}o`" :id="`${value._id}thr`"
+            /></label>
+          </td>
+          <td>
+            <label
+              ><input type="radio" :name="`${index}o`" :id="`${value._id}two`"
+            /></label>
+          </td>
+          <td>
+            <input
+              class="cabtime__input"
+              type="number"
+              :value="+value.result"
+            />
+          </td>
+          <!-- <td>
 
             </td>
             <td >{{ value.result }}</td> -->
-          </tr>
-        </tbody>
-      </table>
-    </div>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </template>
 
 <script setup>
-import { toRefs } from "@vue/reactivity"
+import { toRefs } from '@vue/reactivity'
 
 // eslint-disable-next-line no-undef
 const props = defineProps({
@@ -67,30 +62,28 @@ const props = defineProps({
     type: Object,
     required: true,
   },
-//   changeData: {
-//     type: Boolean,
-//     default: () => false,
-//   },
+  //   changeData: {
+  //     type: Boolean,
+  //     default: () => false,
+  //   },
   taskEdit: {
     type: Boolean,
     default: () => false,
   },
-//   templateData: {
-//     type: Object,
-//     required: true,
-//   },
+  //   templateData: {
+  //     type: Object,
+  //     required: true,
+  //   },
 })
 const { inputData, changeData, templateData, taskEdit } = toRefs(props)
 </script>
 
 <style lang="css" scoped>
-
-
 .cabtime__input {
   width: min(100%, 60px);
 }
-thead tr th{
-    white-space: pre-wrap;
+thead tr th {
+  white-space: pre-wrap;
   word-wrap: break-word;
 }
 table {
@@ -142,8 +135,8 @@ label {
 input[type='radio'] {
   margin: 0;
 }
-tbody tr{
-    margin-bottom: 10px;
+tbody tr {
+  margin-bottom: 10px;
 }
 .collgroup1 {
   width: 5%;
@@ -162,19 +155,17 @@ tbody tr{
 }
 
 @media only screen and (max-width: 600px) {
-    .vertical{
+  .vertical {
     max-width: 40px;
     padding: 2px;
-}
-.collgroup2 {
-  width: 55%;
-}
+  }
+  .collgroup2 {
+    width: 55%;
+  }
   /* .vertical {
     writing-mode: tb-rl;
     transform: rotate(-180deg);
     min-height: 110px;
   } */
-  
-} 
-
+}
 </style>

@@ -83,6 +83,7 @@
       <h3 v-if="error.photos[0]">Фотографии</h3>
       <error-photos
         :change-photos="changeInfo"
+        container="errors-photo"
         :current-photos="error.photos"
         @delete-blob="setPH"
         @resized-blob="errorPhotosBlob($event)"
@@ -97,15 +98,20 @@
     <button
       v-if="
         error &&
-          !changeInfo &&
-          (error.info.Добавил === $store.state.user.info.userDetails ||
-        $store.state.user.info.userRoles.includes('admin'))
+        !changeInfo &&
+        (error.info.Добавил === $store.state.user.info.userDetails ||
+          $store.state.user.info.userRoles.includes('admin'))
       "
       @click="changeData"
     >
       {{ !changeInfo ? 'Редактировать' : 'Отмена' }}
     </button>
-    <button v-if="changeInfo&&$store.state.user.info.userRoles.includes('admin')" @click="deleteError">Удалить</button>
+    <button
+      v-if="changeInfo && $store.state.user.info.userRoles.includes('admin')"
+      @click="deleteError"
+    >
+      Удалить
+    </button>
     <button v-if="changeInfo" type="submit" form="errorData">Сохранить</button>
   </div>
 
@@ -128,7 +134,7 @@ export default {
     return {
       compressBlob: [],
       files: [],
-      linkPhoto: 'https://icaenter.blob.core.windows.net/errors-photo/',
+      // linkPhoto: 'https://icaenter.blob.core.windows.net/errors-photo/',
       showPhotos: false,
       statusConfirmed: false,
       statusClosed: false,
@@ -174,7 +180,9 @@ export default {
       this.error.photos.length > 0 &&
         (await Promise.all(
           this.error.photos.map(async (e) => {
-            await fetch(`/api/blob?fileName=${e}&delblob=true`)
+            await fetch(
+              `/api/blob?container=errors-photo&fileName=${e}&delblob=true`
+            )
           })
         ))
       this.$router.back()
@@ -184,27 +192,7 @@ export default {
       this.error.photos.splice(e.index, 1)
       // this.error.photos = e.actual
     },
-    // resizedBlob(e){
-    //   console.log(e,"!!!!!!!!!!!!!!!!!!!!!!");
-    // },
-    // deleteFromBase(e){
-    //   console.log(e);
-    // },
-    // firedFileInput(){
-    //   this.$refs.fileInput.click()
-    // },
-    // checkFile() {
-    //   // this.fileInput = document.getElementById('imageFile')
-    //   this.files = Object.values(this.$refs.fileInput.files)
-    //   addEventListener("beforeunload", this.beforeUnloadListener, {
-    //     capture: true
-    //   });
-    // },
-    // deleteBlob(el, i) {
-    //   this.error.photos.splice(i, 1)
-    //   this.deletMethods.push(`/api/blob?fileName=${el}&delblob=true`, `/api/blob?fileName=thumb__${el}&delblob=true`)
-    // },
-    // eslint-disable-next-line no-unused-vars
+
     returnRender(key) {
       if (
         this.changeInfo &&
@@ -301,23 +289,23 @@ export default {
           }__${this.$store.state.user.info.userDetails.toLowerCase()}__${
             Date.now() + i
           }.jpg`
+
           photos.push(imageName)
-          // debugger
-          // console.log(photos, i);
+
           formData.set(`photo${i + 1}`, e, imageName)
         })
         // UPLOAD PHOTOS
-        await fetch('/api/blob?test=true', {
+        await fetch('/api/blob?container=errors-photo&test=true', {
           method: 'POST',
           body: formData,
         })
         // DELETE PHOTOS FROM AZURE STORAGE
-        this.deletMethods.del &&
-          (await Promise.all(
-            this.deletMethods?.del.map(async (e) => {
-              await fetch(e)
-            })
-          ))
+
+        await Promise.all(
+          this.deletMethods?.del.map(async (e) => {
+            await fetch(e)
+          })
+        )
         // UPDATE ERROR IN ICENTERDB
         console.log(updateErorBody)
         // debugger
@@ -506,7 +494,7 @@ h2 {
   padding: 5px;
   text-align: start;
 } */
-.button__block{
+.button__block {
   padding-bottom: 2vh;
 }
 </style>

@@ -3,13 +3,18 @@
     <div
       class="cabinet__info__item"
       :class="{
-        error__item__desc: k.includes('Описание') || k.includes('Specific') || k.includes('Comments'),
+        error__item__desc:
+          k.includes('Описание') ||
+          k.includes('Specific') ||
+          k.includes('Comments'),
       }"
     >
       <h3
         :class="{
           error__item__vertical__title:
-            k.includes('Описание') || k.includes('Specific') || k.includes('Comments'),
+            k.includes('Описание') ||
+            k.includes('Specific') ||
+            k.includes('Comments'),
         }"
         class="info__item__title"
       >
@@ -18,8 +23,8 @@
       <p
         :class="{
           error__item__vertical__title:
-            k.includes('Описание') || k.includes('Specific') ,
-            left__allign: k.includes('Comments')
+            k.includes('Описание') || k.includes('Specific'),
+          left__allign: k.includes('Comments'),
         }"
         class="error__item__desc"
       >
@@ -101,7 +106,7 @@ export default {
   white-space: pre-wrap;
   word-wrap: break-word;
 }
-.left__allign{
+.left__allign {
   text-align: start;
   font-size: 14px;
 }

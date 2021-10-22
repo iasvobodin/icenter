@@ -255,9 +255,9 @@ h6 {
   font-family: 'Roboto Slab', serif;
   font-weight: normal;
 }
-h1{
-      margin: 0;
-    padding: 2vh;
+h1 {
+  margin: 0;
+  padding: 2vh;
 }
 .item__card {
   background-color: white;

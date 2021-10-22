@@ -32,14 +32,15 @@ const dd = async () => {
   // this.error.photos.length > 0 &&
   await Promise.all(
     state.delphotos.map(async (e) => {
-      await fetch(`/api/blob?fileName=${e}&delblob=true`)
+      await fetch(`/api/blob?container=errors-photo&fileName=${e}&delblob=true`)
     })
   )
 }
 
 const getphotoList = async () => {
-  const { request: photoListreq, response: phList } =
-    useFetch(`/api/blob?list=true`)
+  const { request: photoListreq, response: phList } = useFetch(
+    `/api/blob?container=errors-photo&list=true`
+  )
   state.phList = phList
   await photoListreq()
 }

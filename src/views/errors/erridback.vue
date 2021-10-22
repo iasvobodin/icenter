@@ -132,7 +132,9 @@ export default {
       this.error.photos.length > 0 &&
         (await Promise.all(
           this.error.photos.map(async (e) => {
-            await fetch(`/api/blob?fileName=${e}&delblob=true`)
+            await fetch(
+              `/api/blob?container=errors-photo&fileName=${e}&delblob=true`
+            )
           })
         ))
       this.$router.push('/errors')
@@ -160,7 +162,7 @@ export default {
     // },
     // deleteBlob(el, i) {
     //   this.error.photos.splice(i, 1)
-    //   this.deletMethods.push(`/api/blob?fileName=${el}&delblob=true`, `/api/blob?fileName=thumb__${el}&delblob=true`)
+    //   this.deletMethods.push(`/api/blob?container=errors-photo&fileName=${el}&delblob=true`, `/api/blob?container=errors-photo&fileName=thumb__${el}&delblob=true`)
     // },
     // eslint-disable-next-line no-unused-vars
     returnRender(key) {
@@ -265,7 +267,7 @@ export default {
           formData.set(`photo${i + 1}`, e, imageName)
         })
         // UPLOAD PHOTOS
-        await fetch('/api/blob?test=true', {
+        await fetch('/api/blob?container=errors-photo&test=true', {
           method: 'POST',
           body: formData,
         })

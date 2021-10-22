@@ -12,7 +12,10 @@ module.exports = async function (context, req) {
   )
 
   // Get a reference to a container
-  const containerClient = blobServiceClient.getContainerClient('errors-photo')
+  const containerClient = blobServiceClient.getContainerClient(
+    req.query.container
+  )
+
   if (req.query.list) {
     // let i = 1;
     const list = []
@@ -68,69 +71,18 @@ module.exports = async function (context, req) {
     return
   }
 
-  const uploadDataBlockBlobClient = containerClient.getBlockBlobClient(
-    'thumb__' + req.query.fileName
-  )
-  const blockBlobClient = containerClient.getBlockBlobClient(req.query.fileName)
-
   if (req.query.delblob) {
+    const uploadDataBlockBlobClient = containerClient.getBlockBlobClient(
+      'thumb__' + req.query.fileName
+    )
+    const blockBlobClient = containerClient.getBlockBlobClient(
+      req.query.fileName
+    )
+
     blockBlobClient.deleteIfExists()
     uploadDataBlockBlobClient.deleteIfExists()
     return
   }
-
-  // var bodyBuffer = Buffer.from(req.body);
-  // var boundary = multipart.getBoundary(req.headers["content-type"]);
-  // var parts = multipart.Parse(bodyBuffer, boundary);
-
-  // sharp(parts[0].data)
-  //   .resize({
-  //     width: 100,
-  //     height: null,
-  //   })
-  //   .toBuffer({
-  //       resolveWithObject: true,
-  //     },
-  //     // eslint-disable-next-line no-unused-vars
-  //     async (err, data, info) => {
-  //       await uploadDataBlockBlobClient.uploadData(data.buffer, {
-  //         blobHTTPHeaders: {
-  //           blobContentType: parts[0].type,
-  //         },
-  //       });
-  //     }
-  //   );
-
-  // sharp(parts[0].data)
-  //   // .resize({
-  //   //   width: 1920,
-  //   //   height: null,
-  //   // })
-  //   .toBuffer({
-  //       resolveWithObject: true,
-  //     },
-  //     // eslint-disable-next-line no-unused-vars
-  //     async (err, data, info) => {
-  //       await blockBlobClient.uploadData(data.buffer, {
-  //         blobHTTPHeaders: {
-  //           blobContentType: parts[0].type,
-  //         },
-  //       });
-  //     }
-  //   );
-
-  // const uploadBlobResponse = await blockBlobClient.upload(
-  //   parts[0].data,
-  //   parts[0].data.length, {
-  //     blobHTTPHeaders: {
-  //       blobContentType: parts[0].type,
-  //     },
-  //   }
-  // );
-  // context.log(
-  //   "Blob was uploaded successfully. requestId: ",
-  //   uploadBlobResponse.requestId
-  // );
 
   context.res = {
     // status defaults to 200 */

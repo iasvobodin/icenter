@@ -64,6 +64,7 @@
       <br />
       <error-photos
         :change-photos="true"
+        container="errors-photo"
         @resized-blob="files.compressBlob = $event"
       />
       <br />
@@ -247,14 +248,19 @@ export default {
       try {
         const formData = new FormData()
         this.files.compressBlob.map((e, i) => {
+          // const imageName = `${id}__${this.$store.state.user.info.userDetails.toLowerCase()}__${
+          //   i + 1
+          // }.jpg`
+
           const imageName = `${id}__${this.$store.state.user.info.userDetails.toLowerCase()}__${
-            i + 1
+            Date.now() + i
           }.jpg`
+
           error.photos.push(imageName)
           formData.set(`photo${i + 1}`, e, imageName)
         })
         // console.log(formData);
-        await fetch('/api/blob?test=true', {
+        await fetch('/api/blob?container=errors-photo&test=true', {
           method: 'POST',
           body: formData,
           // keepalive: true,
@@ -288,7 +294,7 @@ export default {
         this.$store.commit('changeLoader', false)
       }
       // await fetch(
-      //   `/api/blob?folder=${this.error.id}&fileName=${this.error.id}`,
+      //   `/api/blob?container=errors-photo&folder=${this.error.id}&fileName=${this.error.id}`,
       //   {
       //     method: "POST",
       //     body: formData,

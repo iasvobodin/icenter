@@ -46,7 +46,11 @@
           v-for="(value, key, index) in groupProjects(status)"
           :key="index"
           class="error__card__holder"
-          @click="!selectedStatus ? $router.push(`/projects/${value.id}`) : $router.push(`/projects/${value.id}?status=closed`)"
+          @click="
+            !selectedStatus
+              ? $router.push(`/projects/${value.id}`)
+              : $router.push(`/projects/${value.id}?status=closed`)
+          "
         >
           <div class="item__card" :class="{ closed__card: selectedStatus }">
             <div class="double">
@@ -152,7 +156,7 @@
 import { reactive, toRefs, watch, computed, ref } from 'vue'
 import { useFetch } from '@/hooks/fetch'
 import infoRender from '@/components/infoRender.vue'
-import{useStore} from 'vuex'
+import { useStore } from 'vuex'
 // import conditionalRender from '@/components/conditionalRender.vue'
 import renderInputs from '@/components/renderInputs.js'
 export default {
@@ -188,7 +192,7 @@ export default {
     })
     const store = useStore()
     // store.dispatch('extendProject')
-    const extendTemplate = computed(()=> store.state.template.template.extend)
+    const extendTemplate = computed(() => store.state.template.template.extend)
     const groupProjects = (status) =>
       filterProjects.value &&
       filterProjects.value.filter(

@@ -1,90 +1,89 @@
 <template>
-<div class="wrapper">
-
-  <h1 class="project__header">Номер проекта {{ $route.params.projectId }}</h1>
-  <main v-if="project" class="project">
-    <section class="project__info">
-      <h3>Основная информация</h3>
-      <info-render :info-data="project.info.base" />
-    </section>
-    <section class="project__extends">
-      <h3>Дополнительные сведения</h3>
-      <info-render v-if="!changeData" :info-data="project.info.extends" />
-      <conditional-render
-        v-else
-        v-model="project.info.extends"
-        :data-render="$store.state.template.template.extend"
-        :required="!$store.state.user.info.userRoles.includes('admin')"
-      />
-    </section>
-    <section class="project__cabinets">
-      <h3>Шкафы</h3>
-      <table v-if="!updateWOFlag">
-        <tr style="border: solid 2px orange">
-          <th>WO</th>
-          <th>Наименование</th>
-        </tr>
-        <tbody>
-          <tr
-            v-for="(value, i) in project.cabinets"
-            :key="i"
-            @click="$router.push(`/cabinets/${value.wo}`)"
-          >
-            <td>{{ value.wo }}</td>
-            <td class="tg-0lax">{{ value['cab name'] }}</td>
+  <div class="wrapper">
+    <h1 class="project__header">Номер проекта {{ $route.params.projectId }}</h1>
+    <main v-if="project" class="project">
+      <section class="project__info">
+        <h3>Основная информация</h3>
+        <info-render :info-data="project.info.base" />
+      </section>
+      <section class="project__extends">
+        <h3>Дополнительные сведения</h3>
+        <info-render v-if="!changeData" :info-data="project.info.extends" />
+        <conditional-render
+          v-else
+          v-model="project.info.extends"
+          :data-render="$store.state.template.template.extend"
+          :required="!$store.state.user.info.userRoles.includes('admin')"
+        />
+      </section>
+      <section class="project__cabinets">
+        <h3>Шкафы</h3>
+        <table v-if="!updateWOFlag">
+          <tr style="border: solid 2px orange">
+            <th>WO</th>
+            <th>Наименование</th>
           </tr>
-        </tbody>
-      </table>
-      <!-- <div v-if="!updateWOFlag" class="project__cabinets__info">
+          <tbody>
+            <tr
+              v-for="(value, i) in project.cabinets"
+              :key="i"
+              @click="$router.push(`/cabinets/${value.wo}`)"
+            >
+              <td>{{ value.wo }}</td>
+              <td class="tg-0lax">{{ value['cab name'] }}</td>
+            </tr>
+          </tbody>
+        </table>
+        <!-- <div v-if="!updateWOFlag" class="project__cabinets__info">
         <div v-for="(cab, i) in project.cabinets" :key="i" class="holder" @click="$router.push(`/cabinets/${cab.wo}`)">
           <p>{{cab['cab name']}} {{cab.wo}}</p>
           
         </div>
       </div> -->
-      <choose-wo-number
-        v-if="updateWOFlag"
-        :multiple-permission="false"
-        :cabinet-list="newWO.cabinets"
-        @checked-wo="($event) => (project.cabinets = $event)"
+        <choose-wo-number
+          v-if="updateWOFlag"
+          :multiple-permission="false"
+          :cabinet-list="newWO.cabinets"
+          @checked-wo="($event) => (project.cabinets = $event)"
+        />
+      </section>
+    </main>
+    <section class="project__controls">
+      <br />
+      <button
+        v-if="!changeData && $store.state.user.info.userRoles.includes('admin')"
+        @click="changeData = !changeData"
+      >
+        Редактировать
+      </button>
+      <button v-else @click="updateProject">Сохранить</button>
+      <button
+        v-if="
+          project?.info.extends['status project'] ===
+          '10-Отгружено Заказчику/Shipped to Customer'
+        "
+        @click="closeProject"
+      >
+        Перевести в закрытые
+      </button>
+      <button v-if="changeData" @click="updateWO">Обновить данные</button>
+      <button
+        v-if="$store.state.user.info.userRoles.includes('admin')"
+        @click="generatedQR = !generatedQR"
+      >
+        Сгенерировать QR
+      </button>
+      <br />
+      <br />
+    </section>
+    <section v-if="generatedQR" class="qrs">
+      <generate-qr-code
+        v-for="(value, i) in project.cabinets"
+        :key="i"
+        :generate-data="value"
       />
     </section>
-  </main>
-  <section class="project__controls">
-    <br />
-    <button
-      v-if="!changeData && $store.state.user.info.userRoles.includes('admin')"
-      @click="changeData = !changeData"
-    >
-      Редактировать
-    </button>
-    <button v-else @click="updateProject">Сохранить</button>
-    <button
-      v-if="
-        project?.info.extends['status project'] ===
-        '10-Отгружено Заказчику/Shipped to Customer'
-      "
-      @click="closeProject"
-    >
-      Перевести в закрытые
-    </button>
-    <button v-if="changeData" @click="updateWO">Обновить данные</button>
-    <button
-      v-if="$store.state.user.info.userRoles.includes('admin')"
-      @click="generatedQR = !generatedQR"
-    >
-      Сгенерировать QR
-    </button>
-    <br />
-    <br />
-  </section>
-  <section v-if="generatedQR" class="qrs">
-    <generate-qr-code
-      v-for="(value, i) in project.cabinets"
-      :key="i"
-      :generate-data="value"
-    />
-  </section>
-</div>
+  </div>
 </template>
 
 <script>
@@ -115,7 +114,9 @@ export default {
     })
     const getProject = async () => {
       const { request, response } = useFetch(
-        `/api/projects?status=${route.query.status?'closed':'open'}&project=${route.params.projectId}`
+        `/api/projects?status=${
+          route.query.status ? 'closed' : 'open'
+        }&project=${route.params.projectId}`
       )
       if (!state.project) {
         await request()
@@ -135,7 +136,7 @@ export default {
       )
       if (!state.newWO) {
         await request()
-        // const {cabinets} = JSON.parse(response) 
+        // const {cabinets} = JSON.parse(response)
         state.newWO = response
         state.project.info.base = response.value.info
       }
@@ -216,7 +217,7 @@ export default {
   border-right: 1px solid black;
   padding-right: 1vw;
 } */
-.wrapper{
+.wrapper {
   position: relative;
   min-height: inherit;
 }
@@ -269,9 +270,9 @@ tbody tr:hover {
 /* .holder:last-child {
   border: 0px;
 } */
-  .qrs{
-     padding-bottom: 20vh;
-   }
+.qrs {
+  padding-bottom: 20vh;
+}
 @media print {
   .page {
     width: 29.7cm;
@@ -291,6 +292,5 @@ tbody tr:hover {
     display: none;
     opacity: 0;
   }
-
 }
 </style>

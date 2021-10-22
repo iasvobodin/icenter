@@ -9,9 +9,11 @@ module.exports = async function (context, req, data) {
   // const set = [...new Set([...project])];
 
   // const sanitize = data.map( el => {
-    const objE = Object.entries(data).filter(entries => !entries[0].startsWith('_'))
-    const objF = Object.fromEntries(objE)
-    // return objF
+  const objE = Object.entries(data).filter(
+    (entries) => !entries[0].startsWith('_')
+  )
+  const objF = Object.fromEntries(objE)
+  // return objF
   // })
 
   context.res = {

@@ -11,20 +11,16 @@
     />
     <div class="photo__gallery">
       <div v-for="(url, i) in currentPhotos" :key="i" class="photo__holder">
-        <a :href="`${state.linkPhoto}${url}`">
-          <img
-            class="canvas__el"
-            :src="`${state.linkPhoto}thumb__${url}`"
-            alt=""
-          />
+        <a :href="`${state.storage}${container}/${url}`">
+          <img class="canvas__el" :src="`${state.storage}${container}/thumb__${url}`" alt="" />
         </a>
-        <img
+        <div
           v-if="changePhotos"
           class="delete__icon"
-          src="/img/delete.svg"
-          alt=""
           @click="deleteBlob(url, i)"
-        />
+        >
+          &#10060;
+        </div>
       </div>
       <div
         v-for="(url, i) in state.files.blobUrl"
@@ -32,13 +28,9 @@
         class="photo__holder"
       >
         <img v-if="changePhotos" class="canvas__el" :src="url" alt="ph" />
-        <img
-          v-if="changePhotos"
-          class="delete__icon"
-          src="/img/delete.svg"
-          alt=""
-          @click="deletePhoto(i)"
-        />
+        <div v-if="changePhotos" class="delete__icon" @click="deletePhoto(i)">
+          &#10060;
+        </div>
       </div>
       <img
         v-if="changePhotos"
@@ -64,17 +56,21 @@ const props = defineProps({
     type: Boolean,
     default: () => false,
   },
+  container: {
+    type: String,
+    required: true,
+  },
 })
 const emit = defineEmits(['deleteBlob', 'resizedBlob'])
 
-const { currentPhotos, changePhotos } = toRefs(props)
+const { currentPhotos, changePhotos, container } = toRefs(props)
 
 const fileInput = ref(null)
 
 const state = reactive({
   copyPhotos: [],
   deletMethods: [],
-  linkPhoto: 'https://icaenter.blob.core.windows.net/errors-photo/',
+  storage: 'https://icaenter.blob.core.windows.net/',
   files: {
     f: [],
     compressBlob: [],
@@ -86,8 +82,8 @@ state.copyPhotos = currentPhotos
 
 const deleteBlob = (el, i) => {
   state.deletMethods.push(
-    `/api/blob?fileName=${el}&delblob=true`,
-    `/api/blob?fileName=thumb__${el}&delblob=true`
+    `/api/blob?container=errors-photo&fileName=${el}&delblob=true`,
+    `/api/blob?container=errors-photo&fileName=thumb__${el}&delblob=true`
   )
   emit('deleteBlob', { del: state.deletMethods, index: i })
 }
@@ -105,7 +101,7 @@ const checkFile = async () => {
   const view = async (f, i) => {
     state.files.blobUrl[i] = '/img/Eclipse.gif'
     const compressBlob = await imageConversion.compressAccurately(f, {
-      size: 500,
+      size: 450,
       accuracy: 0.9, //The compressed image size is 100kb
       type: 'image/jpeg',
     })
@@ -123,7 +119,6 @@ const checkFile = async () => {
   )
   emit('resizedBlob', state.files.compressBlob)
 }
-
 </script>
 
 <style lang="css" scoped>

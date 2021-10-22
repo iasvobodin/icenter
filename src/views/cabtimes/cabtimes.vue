@@ -48,13 +48,9 @@
     </div>
   </div>
   <!-- <div v-if="errorMessage">{{ errorMessage }}</div> -->
-<router-link to="/cabtimes/addnewcabtime">
-      <img
-        class="add__button"
-        src="/img/add.svg"
-        alt="Добавить новый CabTime"
-      />
-    </router-link>
+  <router-link to="/cabtimes/addnewcabtime">
+    <img class="add__button" src="/img/add.svg" alt="Добавить новый CabTime" />
+  </router-link>
 </template>
 
 <script setup>
@@ -230,5 +226,3 @@ input {
   cursor: pointer;
 }
 </style>
-
-

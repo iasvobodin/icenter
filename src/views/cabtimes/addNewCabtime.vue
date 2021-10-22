@@ -98,18 +98,8 @@ const em = (e) => {
   state.ctv3 = e
 }
 const postCabTime = async () => {
-  // const cabTime = {
-  //   id: `cabtime__${projectInfoState.value.wo}`,
-  //   info: {
-  //     Проект: projectInfoState.value['project number'],
-  //     Шкаф: projectInfoState.value['cab name'],
-  //     wo: projectInfoState.value.wo.toString(),
-  //   },
-  //   type: 'cabtime',
-  //   ...state.ctv3,
-  //   groupByType: state.ctv3.groupByType.filter((e) => e.total),
-  //   body: state.ctv3.body.filter((e) => e.value),
-  // }
+  await photo()
+
   const { request } = useFetch('/api/post_item', {
     method: 'POST', // или 'PUT'
     body: JSON.stringify({
@@ -118,6 +108,17 @@ const postCabTime = async () => {
   })
   await request()
   router.back()
+}
+const photo = async () => {
+  const formData = new FormData()
+  state.ctv3.blobFiles.map((e, i) => formData.set(`photo${i + 1}`, e, state.ctv3.photos[i]))
+  // UPLOAD PHOTOS
+  const {request, response} = useFetch('/api/blob?container=cabtime-photo&test=true', {
+    method: 'POST',
+    body: formData,
+  })
+  await request()
+  state.ctv3.blobFiles = null
 }
 
 const clearstate = () => {
