@@ -11,8 +11,12 @@
     />
     <div class="photo__gallery">
       <div v-for="(url, i) in currentPhotos" :key="i" class="photo__holder">
-        <a :href="`${linkPhoto}${url}`">
-          <img class="canvas__el" :src="`${linkPhoto}thumb__${url}`" alt="" />
+        <a :href="`${state.linkPhoto}${url}`">
+          <img
+            class="canvas__el"
+            :src="`${state.linkPhoto}thumb__${url}`"
+            alt=""
+          />
         </a>
         <img
           v-if="changePhotos"
@@ -22,7 +26,11 @@
           @click="deleteBlob(url, i)"
         />
       </div>
-      <div v-for="(url, i) in files.blobUrl" :key="i" class="photo__holder">
+      <div
+        v-for="(url, i) in state.files.blobUrl"
+        :key="i"
+        class="photo__holder"
+      >
         <img v-if="changePhotos" class="canvas__el" :src="url" alt="ph" />
         <img
           v-if="changePhotos"
@@ -43,77 +51,79 @@
   </div>
 </template>
 
-<script>
+<script setup>
+import { reactive, ref, toRefs } from '@vue/reactivity'
 import * as imageConversion from 'image-conversion'
-export default {
-  props: {
-    currentPhotos: {
-      type: Array,
-      default: () => [],
-    },
-    changePhotos: {
-      type: Boolean,
-      default: () => false,
-    },
+
+const props = defineProps({
+  currentPhotos: {
+    type: Array,
+    default: () => [],
   },
-  emits: ['deleteBlob', 'resizedBlob'],
-  data() {
-    return {
-      copyPhotos: [],
-      deletMethods: [],
-      linkPhoto: 'https://icaenter.blob.core.windows.net/errors-photo/',
-      files: {
-        f: [],
-        compressBlob: [],
-        blobUrl: [],
-      },
-    }
+  changePhotos: {
+    type: Boolean,
+    default: () => false,
   },
-  created() {
-    this.copyPhotos = this.currentPhotos
+})
+const emit = defineEmits(['deleteBlob', 'resizedBlob'])
+
+const { currentPhotos, changePhotos } = toRefs(props)
+
+const fileInput = ref(null)
+
+const state = reactive({
+  copyPhotos: [],
+  deletMethods: [],
+  linkPhoto: 'https://icaenter.blob.core.windows.net/errors-photo/',
+  files: {
+    f: [],
+    compressBlob: [],
+    blobUrl: [],
   },
-  methods: {
-    deleteBlob(el, i) {
-      this.deletMethods.push(
-        `/api/blob?fileName=${el}&delblob=true`,
-        `/api/blob?fileName=thumb__${el}&delblob=true`
-      )
-      this.$emit('deleteBlob', { del: this.deletMethods, index: i })
-    },
-    deletePhoto(i) {
-      this.files.f.splice(i, 1)
-      URL.revokeObjectURL(this.files.blobUrl[i])
-      this.files.compressBlob.splice(i, 1)
-      this.files.blobUrl.splice(i, 1)
-      this.$emit('resizedBlob', this.files.compressBlob)
-    },
-    firedFileInput() {
-      this.$refs.fileInput.click()
-    },
-    async checkFile() {
-      const view = async (f, i) => {
-        this.files.blobUrl[i] = '/img/Eclipse.gif'
-        const compressBlob = await imageConversion.compressAccurately(f, {
-          size: 500,
-          accuracy: 0.9, //The compressed image size is 100kb
-          type: 'image/jpeg',
-        })
-        this.files.compressBlob[i] = compressBlob
-        const newBlobUrl = URL.createObjectURL(compressBlob)
-        this.files.blobUrl[i] = newBlobUrl
-      }
-      await Promise.all(
-        Object.values(this.$refs.fileInput.files).map(async (f) => {
-          if (!this.files.f.some((file) => f.name === file.name)) {
-            this.files.f.push(f)
-            await view(f, this.files.f.length - 1)
-          }
-        })
-      )
-      this.$emit('resizedBlob', this.files.compressBlob)
-    },
-  },
+})
+
+state.copyPhotos = currentPhotos
+
+const deleteBlob = (el, i) => {
+  state.deletMethods.push(
+    `/api/blob?fileName=${el}&delblob=true`,
+    `/api/blob?fileName=thumb__${el}&delblob=true`
+  )
+  emit('deleteBlob', { del: state.deletMethods, index: i })
 }
+const deletePhoto = (i) => {
+  state.files.f.splice(i, 1)
+  URL.revokeObjectURL(state.files.blobUrl[i])
+  state.files.compressBlob.splice(i, 1)
+  state.files.blobUrl.splice(i, 1)
+  emit('resizedBlob', state.files.compressBlob)
+}
+const firedFileInput = () => {
+  fileInput.value.click()
+}
+const checkFile = async () => {
+  const view = async (f, i) => {
+    state.files.blobUrl[i] = '/img/Eclipse.gif'
+    const compressBlob = await imageConversion.compressAccurately(f, {
+      size: 500,
+      accuracy: 0.9, //The compressed image size is 100kb
+      type: 'image/jpeg',
+    })
+    state.files.compressBlob[i] = compressBlob
+    const newBlobUrl = URL.createObjectURL(compressBlob)
+    state.files.blobUrl[i] = newBlobUrl
+  }
+  await Promise.all(
+    Object.values(fileInput.value.files).map(async (f) => {
+      if (!state.files.f.some((file) => f.name === file.name)) {
+        state.files.f.push(f)
+        await view(f, state.files.f.length - 1)
+      }
+    })
+  )
+  emit('resizedBlob', state.files.compressBlob)
+}
+
 </script>
 
 <style lang="css" scoped>
@@ -195,7 +205,7 @@ form {
   text-align: center;
   margin: 5px;
 }
-img{
+img {
   cursor: pointer;
 }
 </style>
