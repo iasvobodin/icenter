@@ -111,12 +111,17 @@ const postCabTime = async () => {
 }
 const photo = async () => {
   const formData = new FormData()
-  state.ctv3.blobFiles.map((e, i) => formData.set(`photo${i + 1}`, e, state.ctv3.photos[i]))
+  state.ctv3.blobFiles.map((e, i) =>
+    formData.set(`photo${i + 1}`, e, state.ctv3.photos[i])
+  )
   // UPLOAD PHOTOS
-  const {request, response} = useFetch('/api/blob?container=cabtime-photo&test=true', {
-    method: 'POST',
-    body: formData,
-  })
+  const { request, response } = useFetch(
+    '/api/blob?container=cabtime-photo&test=true',
+    {
+      method: 'POST',
+      body: formData,
+    }
+  )
   await request()
   state.ctv3.blobFiles = null
 }

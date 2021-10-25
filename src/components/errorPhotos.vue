@@ -12,12 +12,16 @@
     <div class="photo__gallery">
       <div v-for="(url, i) in currentPhotos" :key="i" class="photo__holder">
         <a :href="`${state.storage}${container}/${url}`">
-          <img class="canvas__el" :src="`${state.storage}${container}/thumb__${url}`" alt="" />
+          <img
+            class="canvas__el"
+            :src="`${state.storage}${container}/thumb__${url}`"
+            alt=""
+          />
         </a>
         <div
           v-if="changePhotos"
           class="delete__icon"
-          @click="deleteBlob(url, i)"
+          @click="deleteCurrentPhoto(url, i)"
         >
           &#10060;
         </div>
@@ -46,7 +50,8 @@
 <script setup>
 import { reactive, ref, toRefs } from '@vue/reactivity'
 import * as imageConversion from 'image-conversion'
-
+import { useStore } from 'vuex'
+const store = useStore()
 const props = defineProps({
   currentPhotos: {
     type: Array,
@@ -68,7 +73,7 @@ const { currentPhotos, changePhotos, container } = toRefs(props)
 const fileInput = ref(null)
 
 const state = reactive({
-  copyPhotos: [],
+  // copyPhotos: [],
   deletMethods: [],
   storage: 'https://icaenter.blob.core.windows.net/',
   files: {
@@ -78,15 +83,19 @@ const state = reactive({
   },
 })
 
-state.copyPhotos = currentPhotos
-
-const deleteBlob = (el, i) => {
-  state.deletMethods.push(
-    `/api/blob?container=errors-photo&fileName=${el}&delblob=true`,
-    `/api/blob?container=errors-photo&fileName=thumb__${el}&delblob=true`
+// state.copyPhotos = currentPhotos
+const deletMethods = []
+const deleteCurrentPhoto = (el, i) => {
+  deletMethods.push(
+    `/api/blob?container=${props.container}&fileName=${el}&delblob=true`,
+    `/api/blob?container=${props.container}&fileName=thumb__${el}&delblob=true`
   )
-  emit('deleteBlob', { del: state.deletMethods, index: i })
+  //DELETE PROPS !!!  IMPLICIT BEHAVIOR
+  props.currentPhotos.splice(i, 1)
+
+  emit('deleteBlob', deletMethods)
 }
+
 const deletePhoto = (i) => {
   state.files.f.splice(i, 1)
   URL.revokeObjectURL(state.files.blobUrl[i])
@@ -100,11 +109,13 @@ const firedFileInput = () => {
 const checkFile = async () => {
   const view = async (f, i) => {
     state.files.blobUrl[i] = '/img/Eclipse.gif'
+
     const compressBlob = await imageConversion.compressAccurately(f, {
       size: 450,
       accuracy: 0.9, //The compressed image size is 100kb
       type: 'image/jpeg',
     })
+    // store.commit('setBlobFiles', compressBlob )
     state.files.compressBlob[i] = compressBlob
     const newBlobUrl = URL.createObjectURL(compressBlob)
     state.files.blobUrl[i] = newBlobUrl

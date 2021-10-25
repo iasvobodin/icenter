@@ -222,8 +222,8 @@ watchEffect(() => {
       //   })
       (state.ctv3 = inputData.value)
 })
-!state.ctv3.blobFiles&&(state.ctv3.blobFiles = [])
-!state.ctv3.photos&&(state.ctv3.photos = [])
+!state.ctv3.blobFiles && (state.ctv3.blobFiles = [])
+!state.ctv3.photos && (state.ctv3.photos = [])
 // state.ctv3 = JSON.parse(JSON.stringify(store.state.template.CabTimeV3))
 const inputDataComputed = computed(() =>
   props.changeData
@@ -315,24 +315,12 @@ const updateEmit = () => {
   emit('final', cabTimeToEmit)
 }
 const addPhotos = (e) => {
-state.ctv3.blobFiles = e
-!state.ctv3.photos&&(state.ctv3.photos = [])
-  state.ctv3.blobFiles.map((e, i) => {
-    const imageName = `cabtime__${projectInfoState.value.wo}__${store.state.user.info.userDetails.toLowerCase()}__${
-      Date.now() + i
-    }.jpg`
-
-    state.ctv3.photos.push(imageName)
-updateEmit()
-    // formData.set(`photo${i + 1}`, e, imageName)
-  })
-}
-const delPhotos = async (e) => {
-  state.ctv3.delPH = e
-  state.ctv3?.photos.splice(e.index, 1)
-  state.ctv3?.blobFiles.splice(e.index, 1)
+  state.ctv3.blobFiles = e
   updateEmit()
-
+}
+const delPhotos = (e) => {
+  state.ctv3.delPH = e
+  updateEmit()
 }
 const finalResult = computed(() =>
   state.ctv3.groupByType.reduce(
@@ -426,7 +414,10 @@ const photo = async () => {
     method: 'POST',
     body: formData,
   }
-  const {request, response} = useFetch('/api/blob?container=cabtime-photo&test=true', options )
+  const { request, response } = useFetch(
+    '/api/blob?container=cabtime-photo&test=true',
+    options
+  )
   await request()
 }
 
@@ -460,8 +451,6 @@ const deleteRow = (id) => {
   state.ctv3.body.splice(index, 1)
   updateEmit()
 }
-
-
 </script>
 
 <style lang="css" scoped>

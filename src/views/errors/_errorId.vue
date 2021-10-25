@@ -188,8 +188,8 @@ export default {
       this.$router.back()
     },
     setPH(e) {
-      this.deletMethods = e.del
-      this.error.photos.splice(e.index, 1)
+      this.deletMethods = e
+      // this.error.photos.splice(e.index, 1)
       // this.error.photos = e.actual
     },
 
@@ -302,7 +302,7 @@ export default {
         // DELETE PHOTOS FROM AZURE STORAGE
 
         await Promise.all(
-          this.deletMethods?.del.map(async (e) => {
+          this.deletMethods?.map(async (e) => {
             await fetch(e)
           })
         )

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <delete-photos/>
+    <delete-photos />
   </div>
 </template>
 

@@ -67,10 +67,10 @@ const getCabTime = async () => {
     `/api/errors/cabtime__${route.params.cabtimeId}`
   )
   try {
-    const ct = await request()
+    await request()
     state.cabTime = response
   } catch (error) {
-    console.log('ops')
+    console.log('cant get cabTime request')
   }
   // state.errors = response
   // state.projects = JSON.parse(JSON.stringify(state.errors))
@@ -82,12 +82,51 @@ getCabTime()
 // )
 const em = (e) => (state.cabTime = e)
 
+const photosFromEmit = []
+
+const photo = async () => {
+  if (state.cabTime.blobFiles?.length > 0) {
+    // !state.cabTime.photos && (state.cabTime.photos = [])
+    const formData = new FormData()
+    state.cabTime.blobFiles?.forEach((e, i) => {
+      const unic = Date.now()
+      const imageName = `${
+        state.cabTime.id
+      }__${store.state.user.info.userDetails.toLowerCase()}__${unic + i}.jpg`
+
+      // state.cabTime.photos
+      photosFromEmit.push(imageName)
+
+      formData.set(`photo${unic + i}`, e, imageName)
+    })
+
+    // UPLOAD PHOTOS
+    const { request, response } = useFetch(
+      '/api/blob?container=cabtime-photo&test=true',
+      {
+        method: 'POST',
+        body: formData,
+      }
+    )
+    await request()
+  }
+}
+
 const postCabTime = async () => {
-        await Promise.all(
-          state.cabTime.delPH?.del.map(async (e) => {
-            await fetch(e)
-          })
-        )
+  if (state.cabTime.delPH?.length > 0) {
+    await Promise.all(
+      state.cabTime.delPH.map(async (e) => {
+        await fetch(e)
+      })
+    )
+  }
+
+  await photo()
+
+  state.cabTime.photos = [...state.cabTime.photos, ...photosFromEmit]
+  state.cabTime.delPH = null
+  state.cabTime.blobFiles = null
+
   const { request } = useFetch('/api/post_item', {
     method: 'POST', // или 'PUT'
     body: JSON.stringify({
@@ -95,19 +134,23 @@ const postCabTime = async () => {
     }),
   })
   await request()
-  await store.dispatch('getCabinetsInfo', route.params.cabinetId)
-  await store.dispatch('GET_cabinetItems', route.params.cabinetId)
+
+  state.cabTime.photos = null
+
+  await getCabTime()
+  await store.dispatch('getCabinetsInfo', route.params.cabtimeId)
+  await store.dispatch('GET_cabinetItems', route.params.cabtimeId)
   state.changeCabTime = !state.changeCabTime
 }
 const deleteCabTime = async () => {
-      state.cabTime.photos.length > 0 &&
-        (await Promise.all(
-          state.cabTime.photos.map(async (e) => {
-            await fetch(
-              `/api/blob?container=cabtime-photo&fileName=${e}&delblob=true`
-            )
-          })
-        ))
+  state.cabTime.photos?.length > 0 &&
+    (await Promise.all(
+      state.cabTime.photos.map(async (e) => {
+        await fetch(
+          `/api/blob?container=cabtime-photo&fileName=${e}&delblob=true`
+        )
+      })
+    ))
 
   const { request } = useFetch('/api/post_item', {
     method: 'POST', // или 'PUT'
