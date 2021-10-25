@@ -334,20 +334,6 @@ export default {
   object-fit: cover;
   object-position: center;
 }
-.photo__gallery {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  row-gap: 1vh;
-  column-gap: 1vh;
-}
-.photo__holder {
-  position: relative;
-  width: 150px;
-  height: 150px;
-  overflow: hidden;
-  border-radius: 4px;
-  place-self: center;
-}
 .delete__icon {
   position: absolute;
   top: 5px;

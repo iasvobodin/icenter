@@ -189,8 +189,6 @@ export default {
     },
     setPH(e) {
       this.deletMethods = e
-      // this.error.photos.splice(e.index, 1)
-      // this.error.photos = e.actual
     },
 
     returnRender(key) {

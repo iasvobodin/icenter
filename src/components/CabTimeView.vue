@@ -123,6 +123,8 @@
       </tbody>
     </table>
   </section>
+  <div class="error-photos">
+
   <error-photos
     :change-photos="changeData"
     container="cabtime-photo"
@@ -130,6 +132,8 @@
     @resized-blob="addPhotos($event)"
     @delete-blob="delPhotos($event)"
   />
+  </div>
+
   <!-- 
         @resized-blob="errorPhotosBlob($event)" -->
 </template>
@@ -581,5 +585,9 @@ input[type='radio'] {
 .table__wrapper:first-child .head{
   display:table-row;
 } */
+}
+.error-photos{
+  margin: 2vh auto;
+  width: min(800px, 95vw);
 }
 </style>
