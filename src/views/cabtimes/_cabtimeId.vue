@@ -155,7 +155,7 @@ const deleteCabTime = async () => {
   const { request } = useFetch('/api/post_item', {
     method: 'POST', // или 'PUT'
     body: JSON.stringify({
-      ttl: 1,
+      ttl: 10,
       ...state.cabTime,
     }),
   })

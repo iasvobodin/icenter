@@ -66,7 +66,7 @@ const connect = async () => {
       navigator.serviceWorker.getRegistration().then((reg) => {
         // console.log(reg);
         const options = {
-          body: `${this.$store.state?.user.info.userDetails} updated the project.`,
+          body: `${store.state?.user.info.userDetails} updated the project.`,
           vibrate: [100, 50, 100],
           actions: [
             {
