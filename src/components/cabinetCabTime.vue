@@ -27,17 +27,17 @@
     <br />
     <button
       v-if="computedItems && $store.state.user.info.userRoles.includes('admin')"
-      @click="state.changeCabTime = !state.changeCabTime"
+      @click="$router.push(`/cabtimes/${$route.params.cabinetId}`)"
     >
-      {{ state.changeCabTime ? 'Cancel' : 'Change' }}
+      Редактировать
     </button>
     <button v-if="state.changeCabTime" @click="postCabTime">Save</button>
-    <button
+    <!-- <button
       v-if="$store.state.user.info.userRoles.includes('admin')"
       @click="state.taskEdit = !state.taskEdit"
     >
       TestTask
-    </button>
+    </button> -->
     <br />
     <br />
   </div>
