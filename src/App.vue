@@ -4,6 +4,11 @@
     <router-view />
   </div>
   <loader />
+
+  <input v-model="state.mess" type="text" name="" id=""><br><button @click="sendmessage">sendmessage</button>
+  <div :key="index" v-for="(message, index) in state.messages" >
+    <p>{{message}}</p>
+  </div>
 </template>
 
 <script setup>
@@ -12,13 +17,19 @@ import appHeader from '@/components/header.vue'
 import * as signalR from '@microsoft/signalr'
 import { useRoute, onBeforeRouteUpdate } from 'vue-router'
 import { useStore } from 'vuex'
-import { ref, computed, onBeforeMount } from 'vue'
+import { ref, computed, onBeforeMount, reactive } from 'vue'
 
 const store = useStore()
 const route = useRoute()
 
 const match = () =>
   route.path.includes('role') || route.path.includes('login') ? false : true
+
+const state = reactive({
+  messages : [],
+  mess : ""
+})
+
 
 const getNotificationPermission = () => {
   if (!('Notification' in window)) {
@@ -33,19 +44,7 @@ const getNotificationPermission = () => {
 getNotificationPermission()
 
 const connect = async () => {
-  // const opt = import.meta.env.MODE === 'development' ? {
-  //       headers: {
-  //         'x-ms-client-principal-name': 'Ivan.Svobodin@emerson.com',
-  //         'x-ms-client-principal-id': '9c0c1980f5904d10b43e552d2b7c4041',
-  //       },
-  // }:{};
 
-
-  // if (import.meta.env.MODE === 'development') {
-    // let negotiateRes;
-    // console.log(store.state?.user.info.userId,'store.state?.user.info.userId');
-
-console.log(import.meta.env.MODE);
       let negotiateRes;
     try {
 
@@ -71,7 +70,7 @@ console.log(import.meta.env.MODE);
     console.log('SignalR connection disconnected')
     setTimeout(() => connect(), 2000)
   })
-
+connection.on('newMessage', onNewMessage(message));
   connection.on('updated', (updatedStock) => {
     // NEED TO UPDATE IDB!!!
     //DISPATCH STORE
@@ -113,7 +112,15 @@ console.log(import.meta.env.MODE);
   })
 }
 
-connect()
+import.meta.env.MODE !== 'development'&&connect()
+
+const onNewMessage = message => state.messages.push(message)
+const sendmessage = async () => {
+  fetch('/api/getUserHeader',{
+    method: 'post',
+    body: state.mess
+  })
+}
 // const ttemp = ref(null)
 // onBeforeRouteUpdate(async ( to, from, next) => {
 //   console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");

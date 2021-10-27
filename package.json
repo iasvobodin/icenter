@@ -12,6 +12,7 @@
   "dependencies": {
     "@microsoft/signalr": "^5.0.10",
     "@papb/json-excel": "^2.0.2",
+    "axios": "^0.24.0",
     "idb": "^6.1.4",
     "image-conversion": "^2.1.1",
     "jsqr": "^1.4.0",
