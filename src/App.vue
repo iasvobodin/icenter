@@ -5,7 +5,7 @@
   </div>
   <loader />
 
-  <input v-model="state.mess" type="text" name="" id=""><br><button @click="sendmessage">sendmessage</button>
+  <input v-model="state.mess" type="text" name="" id=""><br><br><button @click="sendmessage">sendmessage</button><br><br>
   <div :key="index" v-for="(message, index) in state.messages" >
     <p>{{message}}</p>
   </div>
@@ -70,7 +70,7 @@ const connect = async () => {
     console.log('SignalR connection disconnected')
     setTimeout(() => connect(), 2000)
   })
-connection.on('newMessage', onNewMessage(message));
+connection.on('newMessage', (message) => state.messages.push(message));
   connection.on('updated', (updatedStock) => {
     // NEED TO UPDATE IDB!!!
     //DISPATCH STORE
@@ -112,7 +112,8 @@ connection.on('newMessage', onNewMessage(message));
   })
 }
 
-import.meta.env.MODE !== 'development'&&connect()
+// import.meta.env.MODE !== 'development'&&
+connect()
 
 const onNewMessage = message => state.messages.push(message)
 const sendmessage = async () => {
