@@ -33,24 +33,29 @@ const getNotificationPermission = () => {
 getNotificationPermission()
 
 const connect = async () => {
-  const opt = import.meta.env.MODE === 'development' ? {
-        headers: {
-          'x-ms-client-principal-name': 'Ivan.Svobodin@emerson.com',
-          'x-ms-client-principal-id': '9c0c1980f5904d10b43e552d2b7c4041',
-        },
-  }:{};
+  // const opt = import.meta.env.MODE === 'development' ? {
+  //       headers: {
+  //         'x-ms-client-principal-name': 'Ivan.Svobodin@emerson.com',
+  //         'x-ms-client-principal-id': '9c0c1980f5904d10b43e552d2b7c4041',
+  //       },
+  // }:{};
 
 
   // if (import.meta.env.MODE === 'development') {
-    let negotiateRes;
+    // let negotiateRes;
+    // console.log(store.state?.user.info.userId,'store.state?.user.info.userId');
+
+console.log(import.meta.env.MODE);
+      let negotiateRes;
     try {
-      const negotiate = await fetch('/api/negotiate')
+
+      const negotiate = await fetch(`/api/negotiate`)
       if (negotiate.ok) {
-        negotiateRes = await negotiate.json()
+       negotiateRes = await negotiate.json()
         console.log(negotiateRes, 'negGGGGGGGGGGGGGG')
       }
     } catch (e) {
-      throw new Error(e)
+      throw new Error(e,'error in connection signalR')
     }
   // }
 
@@ -60,6 +65,7 @@ const connect = async () => {
     })
     .configureLogging(signalR.LogLevel.Information)
     .build()
+      // debugger
   console.log(connection, 'connection!!!!!!!!!!!!!')
   connection.onclose(() => {
     console.log('SignalR connection disconnected')
