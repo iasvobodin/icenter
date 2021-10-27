@@ -124,14 +124,13 @@
     </table>
   </section>
   <div class="error-photos">
-
-  <error-photos
-    :change-photos="changeData"
-    container="cabtime-photo"
-    :current-photos="inputData.photos"
-    @resized-blob="addPhotos($event)"
-    @delete-blob="delPhotos($event)"
-  />
+    <error-photos
+      :change-photos="changeData"
+      container="cabtime-photo"
+      :current-photos="inputData.photos"
+      @resized-blob="addPhotos($event)"
+      @delete-blob="delPhotos($event)"
+    />
   </div>
 
   <!-- 
@@ -586,7 +585,7 @@ input[type='radio'] {
   display:table-row;
 } */
 }
-.error-photos{
+.error-photos {
   margin: 2vh auto;
   width: min(800px, 95vw);
 }

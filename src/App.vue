@@ -33,16 +33,26 @@ const getNotificationPermission = () => {
 getNotificationPermission()
 
 const connect = async () => {
-  let negotiateRes
-  try {
-    const negotiate = await fetch('/api/negotiate')
-    if (negotiate.ok) {
-      negotiateRes = await negotiate.json()
-      console.log(negotiateRes, 'negGGGGGGGGGGGGGG')
+  const opt = import.meta.env.MODE === 'development' ? {
+        headers: {
+          'x-ms-client-principal-name': 'Ivan.Svobodin@emerson.com',
+          'x-ms-client-principal-id': '9c0c1980f5904d10b43e552d2b7c4041',
+        },
+  }:{};
+
+
+  // if (import.meta.env.MODE === 'development') {
+    let negotiateRes;
+    try {
+      const negotiate = await fetch('/api/negotiate', opt)
+      if (negotiate.ok) {
+        negotiateRes = await negotiate.json()
+        console.log(negotiateRes, 'negGGGGGGGGGGGGGG')
+      }
+    } catch (e) {
+      throw new Error(e)
     }
-  } catch (e) {
-    throw new Error(e)
-  }
+  // }
 
   const connection = new signalR.HubConnectionBuilder()
     .withUrl('/api', {
@@ -97,7 +107,7 @@ const connect = async () => {
   })
 }
 
-connect()
+!import.meta.env.MODE === 'development'&&connect()
 // const ttemp = ref(null)
 // onBeforeRouteUpdate(async ( to, from, next) => {
 //   console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
