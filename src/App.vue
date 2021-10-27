@@ -44,7 +44,7 @@ const connect = async () => {
   // if (import.meta.env.MODE === 'development') {
     let negotiateRes;
     try {
-      const negotiate = await fetch('/api/negotiate', opt)
+      const negotiate = await fetch('/api/negotiate')
       if (negotiate.ok) {
         negotiateRes = await negotiate.json()
         console.log(negotiateRes, 'negGGGGGGGGGGGGGG')
@@ -107,7 +107,7 @@ const connect = async () => {
   })
 }
 
-!import.meta.env.MODE === 'development'&&connect()
+connect()
 // const ttemp = ref(null)
 // onBeforeRouteUpdate(async ( to, from, next) => {
 //   console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
