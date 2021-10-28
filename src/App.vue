@@ -1,6 +1,6 @@
 <template>
   <div id="view">
-    <div class="gap"></div>
+    <!-- <div class="gap"></div> -->
     <router-view />
   </div>
   <app-header v-if="match()" />
@@ -199,9 +199,9 @@ body {
   background: var(--bg);
 }
 #view {
-  min-height: calc(100vh - 50px);
+  /* min-height: calc(100vh - 50px); */
   padding-bottom: 75px;
-  margin-top: 50px;
+  padding-top: 50px;
 }
 textarea,
 select,
