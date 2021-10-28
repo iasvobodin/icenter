@@ -26,7 +26,7 @@
     <h3>Номер WO {{ projectInfoState['wo'] }}</h3>
 
     <cab-time-view
-      :input-data="JSON.parse(JSON.stringify(state.cabTime))"
+      :input-data="JSON.parse(JSON.stringify(state.cabTime ? state.cabTime : store.state.template.CabTimeV3 ))"
       :change-data="true"
       :template-data="
         JSON.parse(JSON.stringify(store.state.template.CabTimeV3))
