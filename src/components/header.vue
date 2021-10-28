@@ -34,14 +34,14 @@ a {
 }
 
 .app__header {
-  position: sticky;
+  position: fixed;
   top: 0px;
   height: 50px;
   width: 100%;
   background-color: #004481;
   box-shadow: inset 0px 2px 3px 0px rgb(0 0 0 / 40%),
     0px 1px 2px 0px rgb(255 255 255 / 20%);
-  z-index: 3;
+  /* z-index: 3; */
   /* position: fixed;
     top: 0px; */
   /* position: absolute;

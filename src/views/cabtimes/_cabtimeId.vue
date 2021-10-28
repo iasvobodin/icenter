@@ -1,6 +1,11 @@
 <template>
   <div>
     <!-- <h1>BETTA VERSION</h1> -->
+    <teleport to="body">
+      <confirm-popup @closed="popupClosed" @confirm="popupConfirmed" :opened='state.popupOpened'>
+        <h3>Удалить cabTime?</h3>
+      </confirm-popup>
+    </teleport>
     <div>
       <h1 @click="$router.push(`/cabinets/${$route.params.cabtimeId}`)">
         WO {{ $route.params.cabtimeId }}
@@ -37,7 +42,7 @@
       {{ state.changeCabTime ? 'Cancel' : 'Change' }}
     </button>
     <button v-if="state.changeCabTime" @click="postCabTime">Save</button>
-    <button v-if="state.changeCabTime" @click="deleteCabTime">Delete</button>
+    <button v-if="state.changeCabTime" @click="state.popupOpened = true">Delete</button>
     <br />
     <br />
   </div>
@@ -45,18 +50,21 @@
 
 <script setup>
 import CabTimeView from '@/components/CabTimeView.vue'
+import confirmPopup from '@/components/modal/cunfirmPopup.vue'
 import { useFetch } from '@/hooks/fetch'
 import { useStore } from 'vuex'
-import { computed, reactive } from 'vue'
+import { computed, onMounted, reactive, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 const store = useStore()
 const state = reactive({
+  popupOpened: false,
   cabTime: null,
   changeCabTime: false,
   taskEdit: false,
 })
 const route = useRoute()
 const router = useRouter()
+
 const setState = async () => {
   await store.dispatch('getCabinetsInfo', route.params.cabtimeId)
   await store.dispatch('GET_cabinetItems', route.params.cabtimeId)
@@ -161,6 +169,14 @@ const deleteCabTime = async () => {
   })
   await request()
   router.back()
+}
+const popupClosed = () => {
+  state.popupOpened = false
+}
+const popupConfirmed = async () => {
+ await deleteCabTime()
+ state.popupOpened = false
+  // state.popupOpened = false
 }
 </script>
 

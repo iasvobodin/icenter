@@ -1,14 +1,19 @@
 <template>
-  <app-header v-if="match()" />
   <div id="view">
+    <div class="gap"></div>
     <router-view />
   </div>
+  <app-header v-if="match()" />
   <loader />
 
-  <input v-model="state.mess" type="text" name="" id=""><br><br><button @click="sendmessage">sendmessage</button><br><br>
-  <div :key="index" v-for="(message, index) in state.messages" >
-    <p>{{message}}</p>
-  </div>
+  <!-- <input v-model="state.mess" type="text" name="" id="" /><br /><br /><button
+    @click="sendmessage"
+  >
+    sendmessage</button
+  ><br /><br />
+  <div :key="index" v-for="(message, index) in state.messages">
+    <p>{{ message }}</p>
+  </div> -->
 </template>
 
 <script setup>
@@ -26,10 +31,9 @@ const match = () =>
   route.path.includes('role') || route.path.includes('login') ? false : true
 
 const state = reactive({
-  messages : [],
-  mess : ""
+  messages: [],
+  mess: '',
 })
-
 
 const getNotificationPermission = () => {
   if (!('Notification' in window)) {
@@ -44,18 +48,16 @@ const getNotificationPermission = () => {
 getNotificationPermission()
 
 const connect = async () => {
-
-      let negotiateRes;
-    try {
-
-      const negotiate = await fetch(`/api/negotiate`)
-      if (negotiate.ok) {
-       negotiateRes = await negotiate.json()
-        console.log(negotiateRes, 'negGGGGGGGGGGGGGG')
-      }
-    } catch (e) {
-      throw new Error(e,'error in connection signalR')
+  let negotiateRes
+  try {
+    const negotiate = await fetch(`/api/negotiate`)
+    if (negotiate.ok) {
+      negotiateRes = await negotiate.json()
+      console.log(negotiateRes, 'negGGGGGGGGGGGGGG')
     }
+  } catch (e) {
+    throw new Error(e, 'error in connection signalR')
+  }
   // }
 
   const connection = new signalR.HubConnectionBuilder()
@@ -64,13 +66,13 @@ const connect = async () => {
     })
     .configureLogging(signalR.LogLevel.Information)
     .build()
-      // debugger
+  // debugger
   console.log(connection, 'connection!!!!!!!!!!!!!')
   connection.onclose(() => {
     console.log('SignalR connection disconnected')
     setTimeout(() => connect(), 2000)
   })
-connection.on('newMessage', (message) => state.messages.push(message));
+  connection.on('newMessage', (message) => state.messages.push(message))
   connection.on('updated', (updatedStock) => {
     // NEED TO UPDATE IDB!!!
     //DISPATCH STORE
@@ -115,11 +117,11 @@ connection.on('newMessage', (message) => state.messages.push(message));
 // import.meta.env.MODE !== 'development'&&
 connect()
 
-const onNewMessage = message => state.messages.push(message)
+const onNewMessage = (message) => state.messages.push(message)
 const sendmessage = async () => {
-  fetch('/api/getUserHeader',{
+  fetch('/api/getUserHeader', {
     method: 'post',
-    body: state.mess
+    body: state.mess,
   })
 }
 // const ttemp = ref(null)
@@ -199,6 +201,7 @@ body {
 #view {
   min-height: calc(100vh - 50px);
   padding-bottom: 75px;
+  margin-top: 50px;
 }
 textarea,
 select,
@@ -258,6 +261,7 @@ textarea {
   border-radius: 4px;
 }
 #app {
+  position: relative;
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -304,7 +308,7 @@ h1 {
   top: 50px;
   width: 100%;
   min-height: 50px;
-  z-index: 2;
+  /* z-index: 2; */
   background-color: #ffffff;
   /* color: black; */
   margin: 1.5vh auto;
@@ -316,5 +320,8 @@ h1 {
   /* padding: 0.01vh; */
   /* font-size: min(20px 5vw ); */
   /* transform: translateY(-50%); */
+}
+.gap {
+  height: 50px;
 }
 </style>
