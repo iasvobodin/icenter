@@ -257,7 +257,7 @@ tbody tr:hover {
   background-color: lime;
 }
 .project__controls {
-  position: absolute;
+  /* position: absolute; */
   width: 100%;
   bottom: 0;
 }
