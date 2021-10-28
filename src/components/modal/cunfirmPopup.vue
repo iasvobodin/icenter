@@ -14,7 +14,8 @@
 </template>
 
 <script setup>
-import { toRefs } from "@vue/reactivity"
+import { toRefs } from '@vue/reactivity'
+import { onBeforeUnmount, onMounted } from '@vue/runtime-core'
 
 const props = defineProps({
   opened: {
@@ -22,17 +23,26 @@ const props = defineProps({
     default: () => false,
   },
 })
-const emit = defineEmits({
-confirm: null,
-closed: null
-}) 
-const { opened } = toRefs(props)
-const confirm = () =>{
-        emit('confirm' , false)
+const hendleKeyDown = (e) => {
+  props.opened && e.key === 'Escape' && closed()
 }
-const closed = () =>{
-    // opened.value = false
-    emit('closed')
+onMounted(() => {
+  document.addEventListener('keydown', hendleKeyDown)
+})
+onBeforeUnmount(() => {
+  document.removeEventListener('keydown', hendleKeyDown)
+})
+const emit = defineEmits({
+  confirm: null,
+  closed: null,
+})
+const { opened } = toRefs(props)
+const confirm = () => {
+  emit('confirm', false)
+}
+const closed = () => {
+  // opened.value = false
+  emit('closed')
 }
 </script>
 

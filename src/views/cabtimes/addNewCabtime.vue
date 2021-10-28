@@ -26,7 +26,7 @@
     <h3>Номер WO {{ projectInfoState['wo'] }}</h3>
 
     <cab-time-view
-      :input-data="JSON.parse(JSON.stringify(store.state.template.CabTimeV3))"
+      :input-data="JSON.parse(JSON.stringify(state.cabTime))"
       :change-data="true"
       :template-data="
         JSON.parse(JSON.stringify(store.state.template.CabTimeV3))
@@ -52,9 +52,9 @@ import { reactive, toRefs, computed, nextTick, onMounted } from 'vue'
 
 const store = useStore()
 const router = useRouter()
-router.afterEach((to, from) => {
+
+router.beforeEach((to, from) => {
   if (from.fullPath === '/cabtimes') {
-    console.log(from, 'frooooom')
     store.commit('SETcurrentProject', null)
   }
 })
@@ -70,9 +70,24 @@ const state = reactive({
   cabtimetype: null,
   ctg: null,
   ctv3: null,
+  cabTime:null
 })
-
+const getCabTime = async (wo) => {
+  const { request, response } = useFetch(
+    `/api/errors/cabtime__${wo}`
+  )
+  try {
+    await request()
+    state.cabTime = response
+  } catch (error) {
+    console.log('cant get cabTime request')
+  }
+  // state.errors = response
+  // state.projects = JSON.parse(JSON.stringify(state.errors))
+}
 const projectInfoState = computed(() => store.state.projectInfo)
+
+
 
 const fetchProjectList = async () => {
   if (!state.projectData) {
@@ -81,7 +96,9 @@ const fetchProjectList = async () => {
   }
 }
 fetchProjectList()
-const chooseCabinet = (e) => {
+const chooseCabinet = async (e) => {
+ const wo = e.split('   ')[0];
+ await getCabTime(wo)
   store.commit('SETcabinetInfo', e)
 }
 const choose = ($event) => {

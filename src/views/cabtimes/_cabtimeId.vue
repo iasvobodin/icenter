@@ -2,7 +2,11 @@
   <div>
     <!-- <h1>BETTA VERSION</h1> -->
     <teleport to="body">
-      <confirm-popup @closed="popupClosed" @confirm="popupConfirmed" :opened='state.popupOpened'>
+      <confirm-popup
+        @closed="popupClosed"
+        @confirm="popupConfirmed"
+        :opened="state.popupOpened"
+      >
         <h3>Удалить cabTime?</h3>
       </confirm-popup>
     </teleport>
@@ -42,7 +46,9 @@
       {{ state.changeCabTime ? 'Cancel' : 'Change' }}
     </button>
     <button v-if="state.changeCabTime" @click="postCabTime">Save</button>
-    <button v-if="state.changeCabTime" @click="state.popupOpened = true">Delete</button>
+    <button v-if="state.changeCabTime" @click="state.popupOpened = true">
+      Delete
+    </button>
     <br />
     <br />
   </div>
@@ -174,8 +180,8 @@ const popupClosed = () => {
   state.popupOpened = false
 }
 const popupConfirmed = async () => {
- await deleteCabTime()
- state.popupOpened = false
+  await deleteCabTime()
+  state.popupOpened = false
   // state.popupOpened = false
 }
 </script>
@@ -188,5 +194,8 @@ const popupConfirmed = async () => {
   width: 40px;
   height: 40px;
   cursor: pointer;
+}
+button{
+  margin-bottom: 2vh;
 }
 </style>
