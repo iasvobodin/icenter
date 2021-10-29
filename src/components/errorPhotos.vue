@@ -121,6 +121,7 @@ const view = async (f, i) => {
   state.files.compressBlob[i] = compressBlob
   const newBlobUrl = URL.createObjectURL(compressBlob)
   state.files.blobUrl[i] = newBlobUrl
+  emit('resizedBlob', state.files.compressBlob)
 }
 
 const checkFile = async () => {
@@ -132,8 +133,22 @@ const checkFile = async () => {
       }
     })
   )
-  emit('resizedBlob', state.files.compressBlob)
+  // emit('resizedBlob', state.files.compressBlob)
 }
+
+// const checkFileFromBufer = async () => {
+//   // await Promise.all(
+//     // Object.values(fileInput.value.files).map(async (f) => {
+//     //   if (!state.files.f.some((file) => f.name === file.name)) {
+//       await view(f, state.files.f.length - 1)
+//         state.files.f.push(f)
+//       // }
+//     // }
+//     // )
+//   // )
+//   emit('resizedBlob', state.files.compressBlob)
+// }
+
 onMounted(() => {
   const retrieveImageFromClipboardAsBlob = (pasteEvent, callback) => {
     const items = pasteEvent.clipboardData.items
@@ -144,9 +159,7 @@ onMounted(() => {
       // Retrieve image on clipboard as blob
       const blob = items[i].getAsFile()
 
-      if (typeof callback === 'function') {
         callback(blob, state.files.blobUrl.length)
-      }
     }
   }
 
@@ -155,7 +168,6 @@ onMounted(() => {
     (e) => {
       // Handle the event
       retrieveImageFromClipboardAsBlob(e, view)
-      checkFile()
     },
     false
   )

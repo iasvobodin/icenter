@@ -236,7 +236,8 @@ const inputDataComputed = computed(() =>
 const projectInfoState = computed(() => store.state.projectInfo)
 
 const calculateLogic = ($event, key, val) => {
-  let arr, coef
+  console.log($event, key, val);
+  let arr, coef, arr2, coef2
   switch (key) {
     case '1.3':
       arr = ['2.3', '2.4']
@@ -271,6 +272,12 @@ const calculateLogic = ($event, key, val) => {
       coef = 2
       break
     case '7.6':
+      arr = ['7.7']
+      coef = 1
+      arr2 = ['7.8', '6.5']
+      coef2 = 2
+      break
+    case '7.7':
       arr = ['7.8', '6.5']
       coef = 2
       break
@@ -282,6 +289,13 @@ const calculateLogic = ($event, key, val) => {
       arr.forEach((el) => {
         if (e._id === el) {
           e[val] = $event.target.value * coef
+          e.result = Math.round(e.value * e._const)
+        }
+      })
+          arr2 &&
+      arr2.forEach((el) => {
+        if (e._id === el) {
+          e[val] = $event.target.value * coef2
           e.result = Math.round(e.value * e._const)
         }
       })
@@ -425,8 +439,9 @@ const photo = async () => {
 }
 
 const addNewRow = (e) => {
+  console.log(e);
   //filter by type
-  const ff = state.ctv3.body.filter((g) => g._type === e)
+  const ff = state.ctv3.body.filter((g) => g._type === e).sort((a, b) => a._id.split('.')[1] - b._id.split('.')[1])
   //take last and create array by dot
   const id = ff[ff.length - 1]._id.split('.')
   // increese the last element and joy

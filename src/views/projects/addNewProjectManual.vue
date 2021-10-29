@@ -1,6 +1,6 @@
 <template>
   <form class="project__info project__holder" @submit.prevent="postProject">
-    <h1>Добавление проекта вручную</h1><br>
+    <h1>Adding a project manually</h1><br>
     <div
       class="error__item"
       v-for="(v, k, i) in $store.state.template.template.extendManual"
@@ -72,7 +72,7 @@ const postProject = async () => {
             "Shipping date": selected.extend['Shipping date']
         }
     },
-      cabinets: selected.cabinets,
+      cabinets: selected.cabinets.filter(f => f.wo),
     }),
   })
   await request()
