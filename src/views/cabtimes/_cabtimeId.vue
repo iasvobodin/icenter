@@ -184,6 +184,10 @@ const popupConfirmed = async () => {
   state.popupOpened = false
   // state.popupOpened = false
 }
+onMounted(()=> {
+
+
+})
 </script>
 
 <style lang="css" scoped>
