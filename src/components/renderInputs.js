@@ -35,6 +35,8 @@ export default {
           required: this.required,
           value: this.modelValue[this.dataRender.name],
           onInput: ($event) => this.addVmodel($event, this.dataRender.name),
+          min: this.dataRender.min,
+          max: this.dataRender.max,
         })
       case 'text':
         return h('input', {

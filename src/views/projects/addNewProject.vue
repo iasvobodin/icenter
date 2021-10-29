@@ -1,5 +1,7 @@
 <template>
   <div class="project__holder">
+    <br>
+    <button @click="$router.push('/projects/addnewprojectManual')">Добавить проект вручную</button>
     <div class="project">
       <br />
       <p v-if="projectList && projectList.lastUpdate">
@@ -13,8 +15,6 @@
         @choose-project-number="choose"
       />
       <div v-if="selectedProject">
-        <!-- <div v-if="woList.length != 0"></div>
-        <div v-else>Данного проекта нет в базе LegendStats.</div> -->
         <h3>Информация по проекту</h3>
         <form class="project__info" @submit.prevent="postProject">
           <div v-if="!$store.state.template" class="fetchHolder">Load</div>
@@ -45,7 +45,7 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import chooseProjectNumber from '@/components/chooseProjectNumber.vue'
 import chooseWoNumber from '@/components/chooseWoNumber.vue'
 import conditionalRender from '@/components/conditionalRender.vue'
@@ -54,67 +54,67 @@ import { useProjects } from '@/hooks/projectlsit'
 import { useRouter } from 'vue-router'
 import { ref, reactive } from '@vue/runtime-core'
 // import projectInfo from './projectInfo.vue';
-export default {
-  components: {
-    chooseProjectNumber,
-    chooseWoNumber,
-    conditionalRender,
-  },
-  setup() {
-    const router = useRouter()
-    const projectList = ref(null)
-    const selectedProject = ref(null)
-    const fetchProjectList = async () => {
-      projectList.value = (await useProjects()).projetList.value
-    }
-    fetchProjectList()
-
-    const selected = reactive({
-      extend: {},
-      cabinets: [],
-    })
-
-    function formatDate(date) {
-      return `${date.getDate()}/0${date.getMonth() + 1}/${date.getFullYear()}`
-    }
-
-    const woList = ref(null)
-
-    async function choose(e) {
-      selectedProject.value = projectList.value.data.find((p) => p['id'] === e)
-    }
-    const postProject = async () => {
-      const { request, response } = useFetch('/api/POST_project', {
-        method: 'POST', // или 'PUT'
-        body: JSON.stringify({
-          id: selectedProject.value.id.includes('.')
-            ? selectedProject.value.id.replace('.', ',')
-            : selectedProject.value.id,
-          status: 'open',
-          info: {
-            base: selectedProject.value.info,
-            extends: selected.extend,
-          },
-          cabinets: selected.cabinets,
-        }),
-      })
-      await request()
-      selected.extend = {}
-      selected.cabinets = []
-      router.push('/projects')
-    }
-
-    return {
-      postProject,
-      projectList,
-      choose,
-      woList,
-      formatDate,
-      selected,
-      selectedProject,
-    }
-  },
+// export default {
+//   components: {
+//     chooseProjectNumber,
+//     chooseWoNumber,
+//     conditionalRender,
+//   },
+//   setup() {
+const router = useRouter()
+const projectList = ref(null)
+const selectedProject = ref(null)
+const fetchProjectList = async () => {
+  projectList.value = (await useProjects()).projetList.value
 }
+fetchProjectList()
+
+const selected = reactive({
+  extend: {},
+  cabinets: [],
+})
+
+function formatDate(date) {
+  return `${date.getDate()}/0${date.getMonth() + 1}/${date.getFullYear()}`
+}
+
+const woList = ref(null)
+
+async function choose(e) {
+  selectedProject.value = projectList.value.data.find((p) => p['id'] === e)
+}
+const postProject = async () => {
+  const { request, response } = useFetch('/api/POST_project', {
+    method: 'POST', // или 'PUT'
+    body: JSON.stringify({
+      id: selectedProject.value.id.includes('.')
+        ? selectedProject.value.id.replace('.', ',')
+        : selectedProject.value.id,
+      status: 'open',
+      info: {
+        base: selectedProject.value.info,
+        extends: selected.extend,
+      },
+      cabinets: selected.cabinets,
+    }),
+  })
+  await request()
+  selected.extend = {}
+  selected.cabinets = []
+  router.push('/projects')
+}
+
+//   return {
+//     postProject,
+//     projectList,
+//     choose,
+//     woList,
+//     formatDate,
+//     selected,
+//     selectedProject,
+//   }
+// },
+// }
 </script>
 
 <style lang="css" scoped>

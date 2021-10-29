@@ -184,10 +184,7 @@ const popupConfirmed = async () => {
   state.popupOpened = false
   // state.popupOpened = false
 }
-onMounted(()=> {
-
-
-})
+onMounted(() => {})
 </script>
 
 <style lang="css" scoped>
@@ -199,7 +196,7 @@ onMounted(()=> {
   height: 40px;
   cursor: pointer;
 }
-button{
+button {
   margin-bottom: 2vh;
 }
 </style>

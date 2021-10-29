@@ -159,6 +159,15 @@ const routes = [
     },
   },
   {
+    path: '/projects/addNewProjectManual',
+    component: () => import('@/views/projects/addNewProjectManual.vue'),
+    beforeEnter: async (to, from) => {
+      !store.state.template && (await store.dispatch('GET_template'))
+      // reject the navigation
+      return true
+    },
+  },
+  {
     path: '/projects/:projectId',
     component: () => import('@/views/projects/_projectId.vue'),
     beforeEnter: async (to, from) => {

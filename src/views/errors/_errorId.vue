@@ -80,7 +80,6 @@
           </div>
         </form>
       </section>
-      <h3 v-if="error.photos[0]">Фотографии</h3>
       <error-photos
         :change-photos="changeInfo"
         container="errors-photo"

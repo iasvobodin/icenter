@@ -26,7 +26,13 @@
     <h3>Номер WO {{ projectInfoState['wo'] }}</h3>
 
     <cab-time-view
-      :input-data="JSON.parse(JSON.stringify(state.cabTime ? state.cabTime : store.state.template.CabTimeV3 ))"
+      :input-data="
+        JSON.parse(
+          JSON.stringify(
+            state.cabTime ? state.cabTime : store.state.template.CabTimeV3
+          )
+        )
+      "
       :change-data="true"
       :template-data="
         JSON.parse(JSON.stringify(store.state.template.CabTimeV3))
@@ -70,12 +76,10 @@ const state = reactive({
   cabtimetype: null,
   ctg: null,
   ctv3: null,
-  cabTime:null
+  cabTime: null,
 })
 const getCabTime = async (wo) => {
-  const { request, response } = useFetch(
-    `/api/errors/cabtime__${wo}`
-  )
+  const { request, response } = useFetch(`/api/errors/cabtime__${wo}`)
   try {
     await request()
     state.cabTime = response
@@ -87,8 +91,6 @@ const getCabTime = async (wo) => {
 }
 const projectInfoState = computed(() => store.state.projectInfo)
 
-
-
 const fetchProjectList = async () => {
   if (!state.projectData) {
     state.fetchProject = await (await fetch(`/api/projects?status=open`)).json()
@@ -97,8 +99,8 @@ const fetchProjectList = async () => {
 }
 fetchProjectList()
 const chooseCabinet = async (e) => {
- const wo = e.split('   ')[0];
- await getCabTime(wo)
+  const wo = e.split('   ')[0]
+  await getCabTime(wo)
   store.commit('SETcabinetInfo', e)
 }
 const choose = ($event) => {
