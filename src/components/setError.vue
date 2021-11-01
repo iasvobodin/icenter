@@ -1,6 +1,6 @@
 <template>
   <div v-if="$store.state.template">
-    <form id="postError" name="postError" @submit.prevent="postError">
+    <form id="postError" name="postError" @submit.prevent="saveChanges = true">
       <div
         v-if="$store.state.user.info.userRoles.includes('admin')"
         class="error__item"
@@ -62,11 +62,18 @@
         </section>
       </div>
       <br />
-      <item-photo-uploader
+            <item-photo-uploader
+      :change-photos="true"
+      container="errors-photo"
+      :object-id="id"
+      :saveChangesPhoto="saveChanges"
+      @uploadChanges="mainEmitFromPhotos"
+    />
+      <!-- <item-photo-uploader
         :change-photos="true"
         container="errors-photo"
         @resized-blob="files.compressBlob = $event"
-      />
+      /> -->
       <br />
       <br />
       <br />
@@ -121,6 +128,8 @@ export default {
   },
   data() {
     return {
+      id : 'error__' + Date.now(),
+      saveChanges: false,
       canvas: null,
       filesBlobSRC: [],
       imageToUpload: [],
@@ -149,6 +158,10 @@ export default {
   },
   mounted() {},
   methods: {
+    async mainEmitFromPhotos (e) {
+this.error.photos = await e
+this.postError()
+    },
     deletePhoto(i) {
       this.files.f.splice(i, 1)
       URL.revokeObjectURL(this.files.blobUrl[i])
@@ -209,11 +222,11 @@ export default {
     async postError(e) {
       this.$store.commit('changeLoader', true)
 
-      const id = 'error__' + Date.now()
-      const link = 'https://icaenter.blob.core.windows.net/errors-photo/'
+      // const id = 'error__' + Date.now()
+      // const link = 'https://icaenter.blob.core.windows.net/errors-photo/'
       //create global object in db
       const error = {
-        id,
+        id: this.id,
         info: {
           Проект: this.$store.state.projectInfo['project number'],
           Шкаф: this.$store.state.projectInfo['cab name'],
@@ -221,7 +234,7 @@ export default {
           Добавил: this.$store.state.user.info.userDetails.toLowerCase(),
           Мастер: this.$store.state.projectInfo['senior fitter'].toLowerCase(),
         },
-        photos: [],
+        photos: this.error.photos,
         type: this.role,
         status: Object.values(this.errorBody.Устранено)[0]
           ? 'closed'
@@ -237,7 +250,7 @@ export default {
         ],
       }
       const openError = {
-        id,
+        id: this.id,
         info: {
           ...error.info,
           Описание: this.errorBody.Открыто['Описание'],
@@ -246,25 +259,25 @@ export default {
         status: error.status,
       }
       try {
-        const formData = new FormData()
-        this.files.compressBlob.map((e, i) => {
-          // const imageName = `${id}__${this.$store.state.user.info.userDetails.toLowerCase()}__${
-          //   i + 1
-          // }.jpg`
+        // const formData = new FormData()
+        // this.files.compressBlob.map((e, i) => {
+        //   // const imageName = `${id}__${this.$store.state.user.info.userDetails.toLowerCase()}__${
+        //   //   i + 1
+        //   // }.jpg`
 
-          const imageName = `${id}__${this.$store.state.user.info.userDetails.toLowerCase()}__${
-            Date.now() + i
-          }.jpg`
+        //   const imageName = `${id}__${this.$store.state.user.info.userDetails.toLowerCase()}__${
+        //     Date.now() + i
+        //   }.jpg`
 
-          error.photos.push(imageName)
-          formData.set(`photo${i + 1}`, e, imageName)
-        })
-        // console.log(formData);
-        await fetch('/api/blob?container=errors-photo&test=true', {
-          method: 'POST',
-          body: formData,
-          // keepalive: true,
-        })
+        //   error.photos.push(imageName)
+        //   formData.set(`photo${i + 1}`, e, imageName)
+        // })
+        // // console.log(formData);
+        // await fetch('/api/blob?container=errors-photo&test=true', {
+        //   method: 'POST',
+        //   body: formData,
+        //   // keepalive: true,
+        // })
         await fetch('/api/post_item', {
           method: 'POST', // или 'PUT'
           body: JSON.stringify({
@@ -280,7 +293,7 @@ export default {
           })
         }
       } finally {
-        e.target.reset()
+        // e.target.reset()
         removeEventListener('beforeunload', this.beforeUnloadListener, {
           capture: true,
         })

@@ -167,8 +167,8 @@ const uploadChanges = async () => {
   if (photosForDelete.length > 0) {
     await Promise.all(
       photosForDelete.map(async (e) => {
-        const { request, response } = useFetch(e)
-        await request()
+        const { request : deletePhoto } = useFetch(e)
+        await deletePhoto()
       })
     )
   }

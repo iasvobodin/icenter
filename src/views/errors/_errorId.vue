@@ -22,7 +22,7 @@
         </div>
       </section>
       <section class="mod__error__body">
-        <form id="errorData" @submit.prevent="updateErorData">
+        <form id="errorData" @submit.prevent="saveChanges = true">
           <div
             v-for="(value, key, index) in $store.state.template?.error[
               error.type
@@ -81,12 +81,21 @@
         </form>
       </section>
       <item-photo-uploader
+      v-if="error"
+      :change-photos="changeInfo"
+      container="errors-photo"
+      :current-photos="error.photos"
+      :object-id="error.id"
+      :saveChangesPhoto="saveChanges"
+      @uploadChanges="mainEmitFromPhotos"
+    />
+      <!-- <item-photo-uploader
         :change-photos="changeInfo"
         container="errors-photo"
         :current-photos="error.photos"
         @delete-blob="setPH"
         @resized-blob="errorPhotosBlob($event)"
-      />
+      /> -->
     </div>
     <div v-else class="loading" />
     <p v-if="errorIsNotDef">{{ errorIsNotDef }}</p>
@@ -133,6 +142,7 @@ export default {
     return {
       compressBlob: [],
       files: [],
+      saveChanges: false,
       // linkPhoto: 'https://icaenter.blob.core.windows.net/errors-photo/',
       showPhotos: false,
       statusConfirmed: false,
@@ -153,15 +163,19 @@ export default {
     this.error.body = this.error.body[this.error.body.length - 1]
   },
   methods: {
-    errorPhotosBlob(e) {
-      this.compressBlob = e
-      addEventListener('beforeunload', (event) => {
-        // Отмените событие, как указано в стандарте.
-        event.preventDefault()
-        // Chrome требует установки возвратного значения.
-        event.returnValue = 'aaa'
-      })
+    async mainEmitFromPhotos(e) {
+this.error.photos = await e
+this.updateErorData()
     },
+    // errorPhotosBlob(e) {
+    //   this.compressBlob = e
+    //   // addEventListener('beforeunload', (event) => {
+    //   //   // Отмените событие, как указано в стандарте.
+    //   //   event.preventDefault()
+    //   //   // Chrome требует установки возвратного значения.
+    //   //   event.returnValue = 'aaa'
+    //   // })
+    // },
     async deleteError() {
       const delErr = {
         method: 'POST', // или 'PUT'
@@ -279,32 +293,32 @@ export default {
       }
 
       try {
-        const formData = new FormData()
-        this.compressBlob.map((e, i) => {
-          const imageName = `${
-            err.id
-          }__${this.$store.state.user.info.userDetails.toLowerCase()}__${
-            Date.now() + i
-          }.jpg`
+        // const formData = new FormData()
+        // this.compressBlob.map((e, i) => {
+        //   const imageName = `${
+        //     err.id
+        //   }__${this.$store.state.user.info.userDetails.toLowerCase()}__${
+        //     Date.now() + i
+        //   }.jpg`
 
-          photos.push(imageName)
+        //   photos.push(imageName)
 
-          formData.set(`photo${i + 1}`, e, imageName)
-        })
-        // UPLOAD PHOTOS
-        await fetch('/api/blob?container=errors-photo&test=true', {
-          method: 'POST',
-          body: formData,
-        })
-        // DELETE PHOTOS FROM AZURE STORAGE
+        //   formData.set(`photo${i + 1}`, e, imageName)
+        // })
+        // // UPLOAD PHOTOS
+        // await fetch('/api/blob?container=errors-photo&test=true', {
+        //   method: 'POST',
+        //   body: formData,
+        // })
+        // // DELETE PHOTOS FROM AZURE STORAGE
 
-        await Promise.all(
-          this.deletMethods?.map(async (e) => {
-            await fetch(e)
-          })
-        )
+        // await Promise.all(
+        //   this.deletMethods?.map(async (e) => {
+        //     await fetch(e)
+        //   })
+        // )
         // UPDATE ERROR IN ICENTERDB
-        console.log(updateErorBody)
+        // console.log(updateErorBody)
         // debugger
         await fetch('/api/post_item', {
           method: 'POST', // или 'PUT'
@@ -326,13 +340,13 @@ export default {
         this.error = await this.getCurrentError()
         this.error.body = this.error.body[this.error.body.length - 1]
         this.changeInfo = !this.changeInfo
-        this.error.photos = photos
-        removeEventListener('beforeunload', (event) => {
-          // Отмените событие, как указано в стандарте.
-          event.preventDefault()
-          // Chrome требует установки возвратного значения.
-          event.returnValue = ''
-        })
+        // this.error.photos = photos
+        // removeEventListener('beforeunload', (event) => {
+        //   // Отмените событие, как указано в стандарте.
+        //   event.preventDefault()
+        //   // Chrome требует установки возвратного значения.
+        //   event.returnValue = ''
+        // })
       }
     },
     async getCurrentError() {

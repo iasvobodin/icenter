@@ -21,7 +21,10 @@
       </h2>
 
       <h2>Название шкафа {{ pInfo['cab name'] }}</h2>
-      <h2 class="wo__clicked" @click="$router.push(`/cabinets/${$route.params.cabtimeId}`)">
+      <h2
+        class="wo__clicked"
+        @click="$router.push(`/cabinets/${$route.params.cabtimeId}`)"
+      >
         WO {{ $route.params.cabtimeId }}
       </h2>
     </div>
@@ -205,7 +208,7 @@ const popupConfirmed = async () => {
 </script>
 
 <style lang="css" scoped>
-h2{
+h2 {
   margin: 1vh auto;
 }
 .add__button {
@@ -219,10 +222,10 @@ h2{
 button {
   margin-bottom: 2vh;
 }
-.wo__clicked{
+.wo__clicked {
   cursor: pointer;
 }
-.wo__clicked:hover{
+.wo__clicked:hover {
   color: blueviolet;
 }
 </style>
