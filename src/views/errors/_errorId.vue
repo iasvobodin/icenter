@@ -80,7 +80,7 @@
           </div>
         </form>
       </section>
-      <error-photos
+      <item-photo-uploader
         :change-photos="changeInfo"
         container="errors-photo"
         :current-photos="error.photos"
@@ -118,13 +118,13 @@
 </template>
 
 <script>
-import errorPhotos from '@/components/errorPhotos.vue'
+import itemPhotoUploader from '@/components/itemPhotoUploader.vue'
 import conditionalRender from '@/components/conditionalRender.vue'
 import infoRender from '@/components/infoRender.vue'
 import renderInputs from '@/components/renderInputs.js'
 export default {
   components: {
-    errorPhotos,
+    itemPhotoUploader,
     // conditionalRender,
     renderInputs,
     infoRender,

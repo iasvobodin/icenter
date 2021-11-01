@@ -62,7 +62,7 @@
         </section>
       </div>
       <br />
-      <error-photos
+      <item-photo-uploader
         :change-photos="true"
         container="errors-photo"
         @resized-blob="files.compressBlob = $event"
@@ -96,7 +96,7 @@
 
 <script>
 // import conditionalRender from '@/components/conditionalRender.vue'
-import errorPhotos from '@/components/errorPhotos.vue'
+import itemPhotoUploader from '@/components/itemPhotoUploader.vue'
 import renderInputs from '@/components/renderInputs.js'
 import * as imageConversion from 'image-conversion'
 export default {
@@ -116,7 +116,7 @@ export default {
   },
   components: {
     // conditionalRender,
-    errorPhotos,
+    itemPhotoUploader,
     renderInputs,
   },
   data() {

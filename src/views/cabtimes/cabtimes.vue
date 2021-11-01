@@ -54,7 +54,7 @@
 </template>
 
 <script setup>
-import errorPhotos from '@/components/errorPhotos.vue'
+import itemPhotoUploader from '@/components/itemPhotoUploader.vue'
 import { reactive, computed, watch, ref } from 'vue'
 import { useFetch } from '@/hooks/fetch'
 import { onBeforeRouteLeave, onBeforeRouteUpdate } from 'vue-router'

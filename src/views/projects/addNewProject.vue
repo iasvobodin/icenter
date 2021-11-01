@@ -1,7 +1,9 @@
 <template>
   <div class="project__holder">
-    <br>
-    <button @click="$router.push('/projects/addnewprojectManual')">Добавить проект вручную</button>
+    <br />
+    <button @click="$router.push('/projects/addnewprojectManual')">
+      Добавить проект вручную
+    </button>
     <div class="project">
       <br />
       <p v-if="projectList && projectList.lastUpdate">

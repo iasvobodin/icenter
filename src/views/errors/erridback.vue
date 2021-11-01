@@ -41,7 +41,7 @@
         </form>
       </section>
       <h3 v-if="error.photos[0]">Фотографии</h3>
-      <error-photos
+      <item-photo-uploader
         :change-photos="changeInfo"
         :current-photos="error.photos"
         @delete-blob="setPH"
@@ -73,12 +73,12 @@
 </template>
 
 <script>
-import errorPhotos from '@/components/errorPhotos.vue'
+import itemPhotoUploader from '@/components/itemPhotoUploader.vue'
 import conditionalRender from '@/components/conditionalRender.vue'
 import infoRender from '@/components/infoRender.vue'
 export default {
   components: {
-    errorPhotos,
+    itemPhotoUploader,
     conditionalRender,
     infoRender,
   },

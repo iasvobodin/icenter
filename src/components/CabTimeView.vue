@@ -124,13 +124,13 @@
     </table>
   </section>
   <div class="error-photos">
-    <error-photos
+    <!-- <error-photos
       :change-photos="changeData"
       container="cabtime-photo"
       :current-photos="inputData.photos"
       @resized-blob="addPhotos($event)"
       @delete-blob="delPhotos($event)"
-    />
+    /> -->
   </div>
 
   <!-- 
@@ -138,7 +138,7 @@
 </template>
 
 <script setup>
-import errorPhotos from '@/components/errorPhotos.vue'
+import itemPhotoUploader from '@/components/itemPhotoUploader.vue'
 import conditionalRender from '@/components/conditionalRender.vue'
 import chooseWoNumber from '@/components/chooseWoNumber.vue'
 import chooseProjectNumber from '@/components/chooseProjectNumber.vue'
@@ -236,7 +236,7 @@ const inputDataComputed = computed(() =>
 const projectInfoState = computed(() => store.state.projectInfo)
 
 const calculateLogic = ($event, key, val) => {
-  console.log($event, key, val);
+  console.log($event, key, val)
   let arr, coef, arr2, coef2
   switch (key) {
     case '1.3':
@@ -292,7 +292,7 @@ const calculateLogic = ($event, key, val) => {
           e.result = Math.round(e.value * e._const)
         }
       })
-          arr2 &&
+    arr2 &&
       arr2.forEach((el) => {
         if (e._id === el) {
           e[val] = $event.target.value * coef2
@@ -439,9 +439,11 @@ const photo = async () => {
 }
 
 const addNewRow = (e) => {
-  console.log(e);
+  console.log(e)
   //filter by type
-  const ff = state.ctv3.body.filter((g) => g._type === e).sort((a, b) => a._id.split('.')[1] - b._id.split('.')[1])
+  const ff = state.ctv3.body
+    .filter((g) => g._type === e)
+    .sort((a, b) => a._id.split('.')[1] - b._id.split('.')[1])
   //take last and create array by dot
   const id = ff[ff.length - 1]._id.split('.')
   // increese the last element and joy

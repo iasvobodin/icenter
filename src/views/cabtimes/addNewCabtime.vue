@@ -39,14 +39,24 @@
       "
       @final="em($event)"
     />
+    <item-photo-uploader
+      :change-photos="true"
+      container="cabtime-photo"
+      :object-id="`cabtime__${projectInfoState.wo}`"
+      :saveChangesPhoto="state.saveChanges"
+      @uploadChanges="mainEmitFromPhotos"
+    />
   </section>
   <br />
-  <button v-if="projectInfoState?.wo" @click="postCabTime">SEND</button>
+  <button v-if="projectInfoState?.wo" @click="state.saveChanges = true">
+    SEND
+  </button>
   <br />
   <br />
 </template>
 
 <script setup>
+import itemPhotoUploader from '@/components/itemPhotoUploader.vue'
 import { useFetch } from '@/hooks/fetch'
 import CabTimeView from '@/components/CabTimeView.vue'
 import conditionalRender from '@/components/conditionalRender.vue'
@@ -60,6 +70,7 @@ const store = useStore()
 const router = useRouter()
 
 router.beforeEach((to, from) => {
+  console.log(from.fullPath)
   if (from.fullPath === '/cabtimes') {
     store.commit('SETcurrentProject', null)
   }
@@ -77,6 +88,7 @@ const state = reactive({
   ctg: null,
   ctv3: null,
   cabTime: null,
+  saveChanges: false,
 })
 const getCabTime = async (wo) => {
   const { request, response } = useFetch(`/api/errors/cabtime__${wo}`)
@@ -116,8 +128,14 @@ const choose = ($event) => {
 const em = (e) => {
   state.ctv3 = e
 }
+
+const mainEmitFromPhotos = async (e) => {
+  state.ctv3.photos = await e
+  await postCabTime()
+  router.back()
+}
 const postCabTime = async () => {
-  await photo()
+  // await photo()
 
   const { request } = useFetch('/api/post_item', {
     method: 'POST', // или 'PUT'
@@ -126,7 +144,7 @@ const postCabTime = async () => {
     }),
   })
   await request()
-  router.back()
+  // router.back()
 }
 const photo = async () => {
   const formData = new FormData()

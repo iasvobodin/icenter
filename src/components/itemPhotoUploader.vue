@@ -8,7 +8,7 @@
       multiple
       type="file"
       accept="image/*"
-      @input="checkFile"
+      @input="checkIfFileExist"
     />
     <div class="photo__gallery">
       <div v-for="(url, i) in currentPhotos" :key="i" class="photo__holder">
@@ -27,11 +27,7 @@
           &#10060;
         </div>
       </div>
-      <div
-        v-for="(url, i) in state.files.blobUrl"
-        :key="i"
-        class="photo__holder"
-      >
+      <div v-for="(url, i) in state.blobLink" :key="i" class="photo__holder">
         <img v-if="changePhotos" class="canvas__el" :src="url" alt="ph" />
         <div v-if="changePhotos" class="delete__icon" @click="deletePhoto(i)">
           &#10060;
@@ -49,8 +45,9 @@
 </template>
 
 <script setup>
+import { useFetch } from '@/hooks/fetch'
 import { reactive, ref, toRefs } from '@vue/reactivity'
-import { onMounted } from '@vue/runtime-core'
+import { onBeforeUnmount, onMounted, watch } from '@vue/runtime-core'
 import * as imageConversion from 'image-conversion'
 import { useStore } from 'vuex'
 const store = useStore()
@@ -67,107 +64,181 @@ const props = defineProps({
     type: String,
     required: true,
   },
+  objectId: {
+    type: String,
+    required: true,
+  },
+  saveChangesPhoto: {
+    type: Boolean,
+    required: true,
+    default: () => false,
+  },
 })
-const emit = defineEmits(['deleteBlob', 'resizedBlob'])
+const emit = defineEmits({
+  deleteBlob: null,
+  resizedBlob: null,
+  uploadChanges: null,
+})
 
-const { currentPhotos, changePhotos, container } = toRefs(props)
+const { currentPhotos, changePhotos, container, saveChangesPhoto, objectId } =
+  toRefs(props)
 
 const fileInput = ref(null)
 
 const state = reactive({
-  // copyPhotos: [],
-  deletMethods: [],
+  emitPhotos: [],
+  photosForDelete: [],
+  blobLink: [],
   storage: 'https://icaenter.blob.core.windows.net/',
   files: {
-    f: [],
+    fileInputUnic: [],
     compressBlob: [],
-    blobUrl: [],
   },
 })
 
-// state.copyPhotos = currentPhotos
-const deletMethods = []
+const firedFileInput = () => {
+  fileInput.value.click()
+}
+
+const photosForDelete = []
+
 const deleteCurrentPhoto = (el, i) => {
-  deletMethods.push(
+  photosForDelete.push(
     `/api/blob?container=${props.container}&fileName=${el}&delblob=true`,
     `/api/blob?container=${props.container}&fileName=thumb__${el}&delblob=true`
   )
   //DELETE PROPS !!!  IMPLICIT BEHAVIOR
   props.currentPhotos.splice(i, 1)
 
-  emit('deleteBlob', deletMethods)
+  // emit('deleteBlob', photosForDelete)
 }
 
 const deletePhoto = (i) => {
-  state.files.f.splice(i, 1)
-  URL.revokeObjectURL(state.files.blobUrl[i])
+  state.files.fileInputUnic.splice(i, 1)
   state.files.compressBlob.splice(i, 1)
-  state.files.blobUrl.splice(i, 1)
-  emit('resizedBlob', state.files.compressBlob)
-}
-const firedFileInput = () => {
-  fileInput.value.click()
+  URL.revokeObjectURL(state.blobLink[i])
+  state.blobLink.splice(i, 1)
+  //emit('resizedBlob', state.files.compressBlob)
 }
 
-const view = async (f, i) => {
-  state.files.blobUrl[i] = '/img/Eclipse.gif'
+const compressPhoto = async (f, i) => {
+  //SET PLACEHOLDER BY INDEX
+  state.blobLink[i] = '/img/Eclipse.gif'
 
   const compressBlob = await imageConversion.compressAccurately(f, {
     size: 450,
     accuracy: 0.9, //The compressed image size is 100kb
     type: 'image/jpeg',
   })
-  // store.commit('setBlobFiles', compressBlob )
-  state.files.compressBlob[i] = compressBlob
-  const newBlobUrl = URL.createObjectURL(compressBlob)
-  state.files.blobUrl[i] = newBlobUrl
-  emit('resizedBlob', state.files.compressBlob)
-}
 
-const checkFile = async () => {
-  await Promise.all(
-    Object.values(fileInput.value.files).map(async (f) => {
-      if (!state.files.f.some((file) => f.name === file.name)) {
-        state.files.f.push(f)
-        await view(f, state.files.f.length - 1)
-      }
-    })
-  )
+  state.files.compressBlob[i] = compressBlob
+
+  state.blobLink[i] = URL.createObjectURL(compressBlob)
+
   // emit('resizedBlob', state.files.compressBlob)
 }
 
-// const checkFileFromBufer = async () => {
+const checkIfFileExist = async () => {
+  await Promise.all(
+    Object.values(fileInput.value.files).map(async (f) => {
+      if (!state.files.fileInputUnic.some((file) => f.name === file.name)) {
+        state.files.fileInputUnic.push(f)
+        await compressPhoto(f, state.files.fileInputUnic.length - 1)
+      }
+    })
+  )
+}
+
+const uploadChanges = async () => {
+  const formData = new FormData()
+  const unicId = Date.now()
+
+  // UPLOAD PHOTOS
+  const options = {
+    method: 'POST',
+    body: formData,
+  }
+  const { request, response } = useFetch(
+    `/api/blob?container=${props.container}&test=true`,
+    options
+  )
+
+  //DELETE PHOTOS
+  if (photosForDelete.length > 0) {
+    await Promise.all(
+      photosForDelete.map(async (e) => {
+        const { request, response } = useFetch(e)
+        await request()
+      })
+    )
+  }
+
+  if (state.files.compressBlob.length > 0) {
+    state.files.compressBlob.map((e, i) => {
+      const imageName = `${
+        props.objectId
+      }__${store.state.user.info.userDetails.toLowerCase()}__${unicId + i}.jpg`
+
+      state.emitPhotos.push(imageName)
+
+      URL.revokeObjectURL(state.blobLink[i])
+      state.blobLink.splice(i, 1)
+
+      formData.set(`photo${unicId + i}`, e, imageName)
+    })
+    await request()
+  }
+
+  return [...props.currentPhotos, ...state.emitPhotos]
+}
+
+watch(saveChangesPhoto, (newV, oldV) => {
+  if (newV === true) {
+    emit('uploadChanges', uploadChanges())
+  }
+})
+
+// const checkIfFileExistFromBufer = async () => {
 //   // await Promise.all(
 //     // Object.values(fileInput.value.files).map(async (f) => {
-//     //   if (!state.files.f.some((file) => f.name === file.name)) {
-//       await view(f, state.files.f.length - 1)
-//         state.files.f.push(f)
+//     //   if (!state.files.fileInputUnic.some((file) => f.name === file.name)) {
+//       await compressPhoto(f, state.files.fileInputUnic.length - 1)
+//         state.files.fileInputUnic.push(f)
 //       // }
 //     // }
 //     // )
 //   // )
 //   emit('resizedBlob', state.files.compressBlob)
 // }
+const retrieveImageFromClipboardAsBlob = (pasteEvent, callback) => {
+  const items = pasteEvent.clipboardData.items
+
+  for (var i = 0; i < items.length; i++) {
+    // Skip content if not image
+    if (items[i].type.indexOf('image') === -1) continue
+    // Retrieve image on clipboard as blob
+    const blob = items[i].getAsFile()
+
+    callback(blob, state.blobLink.length)
+  }
+}
 
 onMounted(() => {
-  const retrieveImageFromClipboardAsBlob = (pasteEvent, callback) => {
-    const items = pasteEvent.clipboardData.items
-
-    for (var i = 0; i < items.length; i++) {
-      // Skip content if not image
-      if (items[i].type.indexOf('image') === -1) continue
-      // Retrieve image on clipboard as blob
-      const blob = items[i].getAsFile()
-
-        callback(blob, state.files.blobUrl.length)
-    }
-  }
-
   window.addEventListener(
     'paste',
     (e) => {
       // Handle the event
-      retrieveImageFromClipboardAsBlob(e, view)
+      retrieveImageFromClipboardAsBlob(e, compressPhoto)
+    },
+    false
+  )
+})
+onBeforeUnmount(() => {
+  window.removeEventListener(
+    'paste',
+    (e) => {
+      // Handle the event
+      retrieveImageFromClipboardAsBlob(e, compressPhoto)
     },
     false
   )
