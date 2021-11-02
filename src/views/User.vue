@@ -49,7 +49,7 @@ const state = reactive({
 // methods: {
 const getUserTask = async () => {
   const { request, response } = useFetch(
-    `/api/GET_userTasks?user=${store.state.user.info.userDetails}`
+    `/api/GET_userTasks?user=${store.state.user.info.userDetails.toLowerCase()}`
   )
   await request()
   state.userTask = response.value[0]
