@@ -17,8 +17,8 @@
     <!-- <p class="info">{{$store.state.user}}</p> -->
     <br />
     <button v-if="localUser" @click="clearUser">Log out</button><br> <br>
-    <h2 style="cursor: pointer" v-if="state.userTask" @click="$router.push(`/tasks/${state.userTask[0].id}`)">
-      {{ state.userTask[0].id }}
+    <h2 v-if="state.userTask" style="cursor: pointer" @click="$router.push(`/tasks/${state.userTask.id}`)">
+      {{ state.userTask.id }}
       </h2>
   </div>
 </template>
@@ -52,7 +52,7 @@ const getUserTask = async () => {
     `/api/GET_userTasks?user=${store.state.user.info.userDetails}`
   )
   await request()
-  state.userTask = response
+  state.userTask = response.value[0]
 }
 getUserTask()
 const saveColor = async () => {

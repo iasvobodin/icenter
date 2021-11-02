@@ -11,7 +11,7 @@
       <thead class="head">
         <tr>
           <th rowspan="2">№</th>
-          <th rowspan="2">task</th>
+          <th rowspan="2">Задача</th>
           <th colspan="2">Выполнено</th>
           <!-- <th rowspan="2">result</th> -->
         </tr>
@@ -21,17 +21,17 @@
         </tr>
       </thead>
       <tbody>
-        <tr :class="{partical: value.status === 'partical', complite: value.status === 'complite' }" v-for="(value, index) in inputData.body" :key="index">
+        <tr v-for="(value, index) in inputData.body" :key="index" :class="{partical: value.status === 'partical', complite: value.status === 'complite' }">
           <td>{{ value._id }}</td>
           <td class="desc">{{ value.name }}</td>
           <td >
             <label>
-              <input  @input="changeStatus($event, value._id, 'partical')" :id="`${value._id}thr`" type="radio" :name="`${index}o`" />
+              <input  :id="`${value._id}thr`" type="radio" :name="`${index}o`" @input="changeStatus($event, value._id, 'partical')" />
             </label>
           </td>
           <td>
             <label>
-              <input @input="changeStatus($event, value._id, 'complite')" :id="`${value._id}two`" type="radio" :name="`${index}o`" />
+              <input :id="`${value._id}two`" type="radio" :name="`${index}o`" @input="changeStatus($event, value._id, 'complite')" />
             </label>
           </td>
           <!-- <td>
