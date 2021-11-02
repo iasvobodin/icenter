@@ -139,6 +139,7 @@ input[type='radio'] {
   margin: 0;
 }
 tbody tr {
+
   margin-bottom: 10px;
 }
 .collgroup1 {
@@ -172,6 +173,10 @@ table tbody .complite {
   .collgroup2 {
     width: 55%;
   }
+  tbody tr {
+  height: 45px;
+  margin-bottom: 10px;
+}
   /* .vertical {
     writing-mode: tb-rl;
     transform: rotate(-180deg);
