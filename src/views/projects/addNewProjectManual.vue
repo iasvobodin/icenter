@@ -3,28 +3,28 @@
     <h1>Adding a project manually</h1>
     <br />
     <div
-      class="error__item"
       v-for="(v, k, i) in $store.state.template.template.extendManual"
       :key="i"
+      class="error__item"
     >
       <h4>
         {{ k }}
       </h4>
       <render-inputs
-        :required="true"
         v-model.lazy="selected.extend"
+        :required="true"
         :data-render="v"
       />
     </div>
 
     <div class="cabinets">
       <br /><br />
-      <div :key="i" v-for="(item, i) in selected.cabinets">
-        wo <input required v-model="selected.cabinets[i].wo" type="text" /> cab
+      <div v-for="(item, i) in selected.cabinets" :key="i">
+        wo <input v-model="selected.cabinets[i].wo" required type="text" /> cab
         name
         <input
-          required
           v-model="selected.cabinets[i]['cab name']"
+          required
           type="text"
         /><br /><br />
       </div>

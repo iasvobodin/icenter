@@ -1,9 +1,9 @@
 <template>
   <section v-if="state.ctv3.groupByType">
     <div
-      class="table__wrapper"
       v-for="(t, i) in state.ctv3.groupByType"
       :key="i"
+      class="table__wrapper"
     >
       <table>
         <colgroup>

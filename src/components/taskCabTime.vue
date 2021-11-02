@@ -28,12 +28,12 @@
             <td >{{ value._const }}</td> -->
           <td>
             <label
-              ><input type="radio" :name="`${index}o`" :id="`${value._id}thr`"
+              ><input :id="`${value._id}thr`" type="radio" :name="`${index}o`"
             /></label>
           </td>
           <td>
             <label
-              ><input type="radio" :name="`${index}o`" :id="`${value._id}two`"
+              ><input :id="`${value._id}two`" type="radio" :name="`${index}o`"
             /></label>
           </td>
           <td>

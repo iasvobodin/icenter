@@ -3,9 +3,9 @@
     <!-- <h1>BETTA VERSION</h1> -->
     <teleport to="body">
       <confirm-popup
+        :opened="state.popupOpened"
         @closed="popupClosed"
         @confirm="popupConfirmed"
-        :opened="state.popupOpened"
       >
         <h3>Удалить cabTime?</h3>
       </confirm-popup>
@@ -44,7 +44,7 @@
       container="cabtime-photo"
       :current-photos="state.cabTime.photos"
       :object-id="state.cabTime.id"
-      :saveChangesPhoto="state.saveChanges"
+      :save-changes-photo="state.saveChanges"
       @uploadChanges="mainEmitFromPhotos"
     />
     <!-- @resized-blob="addPhotos($event)"

@@ -112,8 +112,8 @@ export default {
 
       const arrArr = []
       computedItems.value.map((e, i) => {
-        if (e.type === 't_error') {
-        }
+        // if (e.type === 't_error') {
+        // }
         arrArr.push([
           i + 1,
           // e.body.Открыто.Описание,

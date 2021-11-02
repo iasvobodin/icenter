@@ -1,13 +1,13 @@
 <template>
   <div v-if="opened" role="dialog" class="popup">
-    <div @click="closed" class="overlay" role="button" tabindex="0" />
+    <div class="overlay" role="button" tabindex="0" @click="closed" />
     <div class="dialog">
       <div class="header">
         <slot></slot>
       </div>
       <div class="buttons">
-        <button @click="closed" class="cancel">Отмена</button>
-        <button @click="confirm" class="confirm">Да</button>
+        <button class="cancel" @click="closed">Отмена</button>
+        <button class="confirm" @click="confirm">Да</button>
       </div>
     </div>
   </div>

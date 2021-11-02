@@ -66,7 +66,7 @@
         :change-photos="true"
         container="errors-photo"
         :object-id="id"
-        :saveChangesPhoto="saveChanges"
+        :save-changes-photo="saveChanges"
         @uploadChanges="mainEmitFromPhotos"
       />
       <br />

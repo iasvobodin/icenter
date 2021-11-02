@@ -43,7 +43,7 @@
       :change-photos="true"
       container="cabtime-photo"
       :object-id="`cabtime__${projectInfoState.wo}`"
-      :saveChangesPhoto="state.saveChanges"
+      :save-changes-photo="state.saveChanges"
       @uploadChanges="mainEmitFromPhotos"
     />
   </section>

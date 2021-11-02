@@ -86,7 +86,7 @@
         container="errors-photo"
         :current-photos="error.photos"
         :object-id="error.id"
-        :saveChangesPhoto="saveChanges"
+        :save-changes-photo="saveChanges"
         @uploadChanges="mainEmitFromPhotos"
       />
     </div>
