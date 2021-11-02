@@ -16,7 +16,10 @@
 
     <!-- <p class="info">{{$store.state.user}}</p> -->
     <br />
-    <button v-if="localUser" @click="clearUser">Log out</button>
+    <button v-if="localUser" @click="clearUser">Log out</button><br> <br>
+    <h2 style="cursor: pointer" v-if="state.userTask" @click="$router.push(`/tasks/${state.userTask[0].id}`)">
+      {{ state.userTask[0].id }}
+      </h2>
   </div>
 </template>
 
@@ -27,11 +30,16 @@ import { useStore } from 'vuex'
 // } from '@/hooks/fetch'
 import { computed, reactive, onMounted, watch, ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import { useFetch } from '@/hooks/fetch'
 const router = useRouter()
 const store = useStore()
 const localUser = ref(false)
 const color = ref('')
 const colorChanged = ref(true)
+
+const state = reactive({
+  userTask: null,
+})
 // export default {
 // data() {
 //   return {
@@ -39,6 +47,14 @@ const colorChanged = ref(true)
 //   }
 // },
 // methods: {
+const getUserTask = async () => {
+  const { request, response } = useFetch(
+    `/api/GET_userTasks?user=${store.state.user.info.userDetails}`
+  )
+  await request()
+  state.userTask = response
+}
+getUserTask()
 const saveColor = async () => {
   const updateUser = JSON.parse(JSON.stringify(store.state.user))
   updateUser.body.bg = color.value

@@ -6,14 +6,14 @@
         <col span="1" class="collgroup2" />
         <col span="1" class="collgroup3" />
         <col span="1" class="collgroup4" />
-        <col span="1" class="collgroup5" />
+        <!-- <col span="1" class="collgroup5" /> -->
       </colgroup>
       <thead class="head">
         <tr>
           <th rowspan="2">№</th>
           <th rowspan="2">task</th>
           <th colspan="2">Выполнено</th>
-          <th rowspan="2">result</th>
+          <!-- <th rowspan="2">result</th> -->
         </tr>
         <tr>
           <th class="vertical">Частично</th>
@@ -21,32 +21,26 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(value, index) in inputData.body" :key="index">
+        <tr :class="{partical: value.status === 'partical', complite: value.status === 'complite' }" v-for="(value, index) in inputData.body" :key="index">
           <td>{{ value._id }}</td>
-          <td>{{ value.name }}</td>
-          <!-- <td >{{ value.value }}</td>
-            <td >{{ value._const }}</td> -->
-          <td>
-            <label
-              ><input :id="`${value._id}thr`" type="radio" :name="`${index}o`"
-            /></label>
+          <td class="desc">{{ value.name }}</td>
+          <td >
+            <label>
+              <input  @input="changeStatus($event, value._id, 'partical')" :id="`${value._id}thr`" type="radio" :name="`${index}o`" />
+            </label>
           </td>
           <td>
-            <label
-              ><input :id="`${value._id}two`" type="radio" :name="`${index}o`"
-            /></label>
+            <label>
+              <input @input="changeStatus($event, value._id, 'complite')" :id="`${value._id}two`" type="radio" :name="`${index}o`" />
+            </label>
           </td>
-          <td>
+          <!-- <td>
             <input
               class="cabtime__input"
               type="number"
               :value="+value.result"
             />
-          </td>
-          <!-- <td>
-
-            </td>
-            <td >{{ value.result }}</td> -->
+          </td> -->
         </tr>
       </tbody>
     </table>
@@ -76,9 +70,13 @@ const props = defineProps({
   //   },
 })
 const { inputData, changeData, templateData, taskEdit } = toRefs(props)
+const changeStatus = (e,id, val) => {
+  inputData.value.body.find(e => e._id === id).status = val
+}
 </script>
 
 <style lang="css" scoped>
+
 .cabtime__input {
   width: min(100%, 60px);
 }
@@ -111,7 +109,12 @@ th {
 }
 
 tbody tr:nth-child(odd) {
-  background: #ececec;
+  background: #ececec5d;
+}
+.desc{
+  text-align: start;
+  padding-left: 1ch;
+
 }
 /* tbody tr:hover {
   border-radius: 3px;
@@ -152,6 +155,13 @@ tbody tr {
 }
 .collgroup5 {
   width: 10%;
+}
+
+table tbody .partical {
+  background: rgba(255, 166, 0, 0.356);
+}
+table tbody .complite {
+  background: rgba(0, 255, 0, 0.356);
 }
 
 @media only screen and (max-width: 600px) {
