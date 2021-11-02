@@ -141,27 +141,28 @@ const postCabTime = async () => {
     method: 'POST', // или 'PUT'
     body: JSON.stringify({
       ...state.ctv3,
+      body: state.ctv3.body.filter((e) => e.value),
     }),
   })
   await request()
   // router.back()
 }
-const photo = async () => {
-  const formData = new FormData()
-  state.ctv3.blobFiles.map((e, i) =>
-    formData.set(`photo${i + 1}`, e, state.ctv3.photos[i])
-  )
-  // UPLOAD PHOTOS
-  const { request, response } = useFetch(
-    '/api/blob?container=cabtime-photo&test=true',
-    {
-      method: 'POST',
-      body: formData,
-    }
-  )
-  await request()
-  state.ctv3.blobFiles = null
-}
+// const photo = async () => {
+//   const formData = new FormData()
+//   state.ctv3.blobFiles.map((e, i) =>
+//     formData.set(`photo${i + 1}`, e, state.ctv3.photos[i])
+//   )
+//   // UPLOAD PHOTOS
+//   const { request, response } = useFetch(
+//     '/api/blob?container=cabtime-photo&test=true',
+//     {
+//       method: 'POST',
+//       body: formData,
+//     }
+//   )
+//   await request()
+//   state.ctv3.blobFiles = null
+// }
 
 const clearstate = () => {
   store.commit('SETcurrentProject', {})

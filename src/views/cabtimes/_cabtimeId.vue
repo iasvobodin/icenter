@@ -128,46 +128,46 @@ getCabTime()
 // )
 const em = (e) => (state.cabTime = e)
 
-const photosFromEmit = []
+// const photosFromEmit = []
 
-const photo = async () => {
-  if (state.cabTime.blobFiles?.length > 0) {
-    // !state.cabTime.photos && (state.cabTime.photos = [])
-    const formData = new FormData()
-    state.cabTime.blobFiles?.forEach((e, i) => {
-      const unic = Date.now()
-      const imageName = `${
-        state.cabTime.id
-      }__${store.state.user.info.userDetails.toLowerCase()}__${unic + i}.jpg`
+// const photo = async () => {
+//   if (state.cabTime.blobFiles?.length > 0) {
+//     // !state.cabTime.photos && (state.cabTime.photos = [])
+//     const formData = new FormData()
+//     state.cabTime.blobFiles?.forEach((e, i) => {
+//       const unic = Date.now()
+//       const imageName = `${
+//         state.cabTime.id
+//       }__${store.state.user.info.userDetails.toLowerCase()}__${unic + i}.jpg`
 
-      // state.cabTime.photos
-      photosFromEmit.push(imageName)
+//       // state.cabTime.photos
+//       photosFromEmit.push(imageName)
 
-      formData.set(`photo${unic + i}`, e, imageName)
-    })
+//       formData.set(`photo${unic + i}`, e, imageName)
+//     })
 
-    // UPLOAD PHOTOS
-    const { request, response } = useFetch(
-      '/api/blob?container=cabtime-photo&test=true',
-      {
-        method: 'POST',
-        body: formData,
-      }
-    )
-    await request()
-  }
-}
+//     // UPLOAD PHOTOS
+//     const { request, response } = useFetch(
+//       '/api/blob?container=cabtime-photo&test=true',
+//       {
+//         method: 'POST',
+//         body: formData,
+//       }
+//     )
+//     await request()
+//   }
+// }
 const mainEmitFromPhotos = async (e) => {
   state.cabTime.photos = await e
-
-  postAfterEmit()
+  postCabtime()
 }
 
-const postAfterEmit = async () => {
+const postCabtime = async () => {
   const { request } = useFetch('/api/post_item', {
     method: 'POST', // или 'PUT'
     body: JSON.stringify({
       ...state.cabTime,
+      body: state.cabTime.body.filter((e) => e.value),
     }),
   })
   await request()
@@ -187,14 +187,14 @@ const deleteCabTime = async () => {
       })
     ))
 
-  const { request } = useFetch('/api/post_item', {
+  const { request: deleteCabTimeReq } = useFetch('/api/post_item', {
     method: 'POST', // или 'PUT'
     body: JSON.stringify({
       ttl: 10,
       ...state.cabTime,
     }),
   })
-  await request()
+  await deleteCabTimeReq()
   router.back()
 }
 const popupClosed = () => {

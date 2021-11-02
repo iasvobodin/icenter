@@ -46,11 +46,11 @@ const routes = [
   {
     path: '/errors',
     component: () => import('@/views/errors/errors.vue'),
-    beforeEnter: async (to, from) => {
-      !store.state.template && (await store.dispatch('GET_template'))
-      // reject the navigation
-      return true
-    },
+    // beforeEnter: async (to, from) => {
+    //   !store.state.template && (await store.dispatch('GET_template'))
+    //   // reject the navigation
+    //   return true
+    // },
   },
   {
     path: '/errors/:errorId',

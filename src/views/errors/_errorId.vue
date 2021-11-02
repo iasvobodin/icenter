@@ -81,21 +81,14 @@
         </form>
       </section>
       <item-photo-uploader
-      v-if="error"
-      :change-photos="changeInfo"
-      container="errors-photo"
-      :current-photos="error.photos"
-      :object-id="error.id"
-      :saveChangesPhoto="saveChanges"
-      @uploadChanges="mainEmitFromPhotos"
-    />
-      <!-- <item-photo-uploader
+        v-if="error"
         :change-photos="changeInfo"
         container="errors-photo"
         :current-photos="error.photos"
-        @delete-blob="setPH"
-        @resized-blob="errorPhotosBlob($event)"
-      /> -->
+        :object-id="error.id"
+        :saveChangesPhoto="saveChanges"
+        @uploadChanges="mainEmitFromPhotos"
+      />
     </div>
     <div v-else class="loading" />
     <p v-if="errorIsNotDef">{{ errorIsNotDef }}</p>
@@ -134,27 +127,15 @@ import renderInputs from '@/components/renderInputs.js'
 export default {
   components: {
     itemPhotoUploader,
-    // conditionalRender,
     renderInputs,
     infoRender,
   },
   data() {
     return {
-      compressBlob: [],
-      files: [],
       saveChanges: false,
-      // linkPhoto: 'https://icaenter.blob.core.windows.net/errors-photo/',
-      showPhotos: false,
-      statusConfirmed: false,
-      statusClosed: false,
-      closeError: null,
-      dataModel: null,
       changeInfo: false,
       error: null,
       errorIsNotDef: null,
-      errorTemplate: null,
-      test: null,
-      deletMethods: [],
     }
   },
 
@@ -164,31 +145,23 @@ export default {
   },
   methods: {
     async mainEmitFromPhotos(e) {
-this.error.photos = await e
-this.updateErorData()
+      this.error.photos = await e
+      this.updateErorData()
     },
-    // errorPhotosBlob(e) {
-    //   this.compressBlob = e
-    //   // addEventListener('beforeunload', (event) => {
-    //   //   // Отмените событие, как указано в стандарте.
-    //   //   event.preventDefault()
-    //   //   // Chrome требует установки возвратного значения.
-    //   //   event.returnValue = 'aaa'
-    //   // })
-    // },
     async deleteError() {
       const delErr = {
         method: 'POST', // или 'PUT'
         body: JSON.stringify({
           id: this.error.id,
           status: this.error.status,
+          type: this.error.type,
           info: {
             wo: this.error.info.wo,
           },
-          ttl: 1,
+          ttl: 10,
         }),
       }
-      await fetch('/api/POST_openError', delErr)
+      // await fetch('/api/POST_openError', delErr)
       await fetch('/api/post_item', delErr)
       this.error.photos.length > 0 &&
         (await Promise.all(
@@ -200,9 +173,6 @@ this.updateErorData()
         ))
       this.$router.back()
     },
-    setPH(e) {
-      this.deletMethods = e
-    },
 
     returnRender(key) {
       if (
@@ -211,7 +181,7 @@ this.updateErorData()
       ) {
         return true
       }
-      if (this.changeInfo && this.error.status === 'confirmed') {
+      if (this.changeInfo && this.error.info.status === 'confirmed') {
         if (key === 'Открыто') {
           return false
         }
@@ -248,11 +218,14 @@ this.updateErorData()
       // OBJECT FOR NEW UPDATET ERROR
       const updateErorBody = {
         ...err,
-        status: Object.values(this.error.body.Устранено)[0]
-          ? 'closed'
-          : Object.values(this.error.body.Принято)[0]
-          ? 'confirmed'
-          : 'open',
+        info: {
+          ...err.info,
+          status: Object.values(this.error.body.Устранено)[0]
+            ? 'closed'
+            : Object.values(this.error.body.Принято)[0]
+            ? 'confirmed'
+            : 'open',
+        },
         body: [
           ...err.body, //CURRENT BODY +
           {
@@ -265,88 +238,17 @@ this.updateErorData()
         ],
         photos,
       }
-      // OBJECT FOR OPEN ERROR
-      const openError = {
-        id: this.error.id,
-        info: {
-          ...this.error.info,
-          Описание: this.error.body.Открыто['Описание'],
-        },
-        type: 'error',
-        status: updateErorBody.status,
-        // ttl: 6000,
-      }
-      // DELETE OPEN ERROR IF STATUS IS CLOSED
-      if (
-        (err.status != updateErorBody.status) === 'closed' ||
-        updateErorBody.status
-      ) {
-        // console.log("comparestatus");
-        await fetch('/api/POST_openError', {
-          method: 'POST', // или 'PUT'
-          body: JSON.stringify({
-            id: err.id,
-            status: err.status,
-            ttl: 1,
-          }),
-        })
-      }
-
       try {
-        // const formData = new FormData()
-        // this.compressBlob.map((e, i) => {
-        //   const imageName = `${
-        //     err.id
-        //   }__${this.$store.state.user.info.userDetails.toLowerCase()}__${
-        //     Date.now() + i
-        //   }.jpg`
-
-        //   photos.push(imageName)
-
-        //   formData.set(`photo${i + 1}`, e, imageName)
-        // })
-        // // UPLOAD PHOTOS
-        // await fetch('/api/blob?container=errors-photo&test=true', {
-        //   method: 'POST',
-        //   body: formData,
-        // })
-        // // DELETE PHOTOS FROM AZURE STORAGE
-
-        // await Promise.all(
-        //   this.deletMethods?.map(async (e) => {
-        //     await fetch(e)
-        //   })
-        // )
-        // UPDATE ERROR IN ICENTERDB
-        // console.log(updateErorBody)
-        // debugger
         await fetch('/api/post_item', {
           method: 'POST', // или 'PUT'
           body: JSON.stringify({
             ...updateErorBody,
           }),
         })
-
-        if (updateErorBody.status === 'closed') {
-          return
-        } //IF STATUS CLOSED SKIP THIS STEP
-        await fetch('/api/POST_openError', {
-          method: 'POST',
-          body: JSON.stringify({
-            ...openError,
-          }),
-        })
       } finally {
         this.error = await this.getCurrentError()
         this.error.body = this.error.body[this.error.body.length - 1]
         this.changeInfo = !this.changeInfo
-        // this.error.photos = photos
-        // removeEventListener('beforeunload', (event) => {
-        //   // Отмените событие, как указано в стандарте.
-        //   event.preventDefault()
-        //   // Chrome требует установки возвратного значения.
-        //   event.returnValue = ''
-        // })
       }
     },
     async getCurrentError() {

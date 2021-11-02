@@ -135,6 +135,15 @@ const compressPhoto = async (f, i) => {
 
   state.blobLink[i] = URL.createObjectURL(compressBlob)
 
+  //     // ON A FEATURE
+
+  //     // const img = await imageConversion.urltoImage(newBlobUrl)
+  //     // const canvas = await imageConversion.imagetoCanvas(img)
+  //     // canvas.style.width = '100%'
+  //     // canvas.style.height = '100%'
+  //     // canvas.style.objectFit = 'cover'
+  //     // canvas.style.objectPosition = 'center' //, ...canvas.style}
+
   // emit('resizedBlob', state.files.compressBlob)
 }
 
@@ -167,7 +176,7 @@ const uploadChanges = async () => {
   if (photosForDelete.length > 0) {
     await Promise.all(
       photosForDelete.map(async (e) => {
-        const { request : deletePhoto } = useFetch(e)
+        const { request: deletePhoto } = useFetch(e)
         await deletePhoto()
       })
     )

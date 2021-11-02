@@ -211,32 +211,23 @@ const mergeObject = (templateObj, cabTimeObj) => {
 }
 
 watchEffect(() => {
-  const copy = JSON.parse(JSON.stringify(store.state.template.CabTimeV3))
+  // const copy = JSON.parse(JSON.stringify(store.state.template.CabTimeV3))
   props.changeData
-    ? (state.ctv3 = mergeObject(copy, inputData.value))
-    : //  (state.ctv3 = {
-      //     // ...JSON.parse(JSON.stringify(store.state.template.CabTimeV3)),
-      //     ...inputData.value,
-      //     body: mergeObject(),
-      //     groupByType: [
-      //       ...copy.groupByType,
-      //       ...inputData.value.groupByType,
-      //     ],
-      //   })
-      (state.ctv3 = inputData.value)
+    ? (state.ctv3 = mergeObject(templateData.value, inputData.value))
+    : (state.ctv3 = inputData.value)
 })
-!state.ctv3.blobFiles && (state.ctv3.blobFiles = [])
-!state.ctv3.photos && (state.ctv3.photos = [])
+// !state.ctv3.blobFiles && (state.ctv3.blobFiles = [])
+// !state.ctv3.photos && (state.ctv3.photos = [])
 // state.ctv3 = JSON.parse(JSON.stringify(store.state.template.CabTimeV3))
 const inputDataComputed = computed(() =>
   props.changeData
-    ? JSON.parse(JSON.stringify(store.state.template.CabTimeV3))
+    ? mergeObject(templateData.value, inputData.value)
     : inputData.value
 )
 const projectInfoState = computed(() => store.state.projectInfo)
 
 const calculateLogic = ($event, key, val) => {
-  console.log($event, key, val)
+  // console.log($event, key, val)
   let arr, coef, arr2, coef2
   switch (key) {
     case '1.3':
@@ -300,6 +291,7 @@ const calculateLogic = ($event, key, val) => {
         }
       })
     if (e._id === key) {
+      console.log('tada', e._id, key)
       e[val] = $event.target.value
       e.result = Math.round(e.value * e._const)
     }
@@ -326,19 +318,19 @@ const updateEmit = () => {
     type: 'cabtime',
     ...state.ctv3,
     groupByType: state.ctv3.groupByType.filter((e) => e.total),
-    body: state.ctv3.body.filter((e) => e.value),
+    // body: state.ctv3.body.filter((e) => e.value),
     result: cabtimeResult.value,
   }
   emit('final', cabTimeToEmit)
 }
-const addPhotos = (e) => {
-  state.ctv3.blobFiles = e
-  updateEmit()
-}
-const delPhotos = (e) => {
-  state.ctv3.delPH = e
-  updateEmit()
-}
+// const addPhotos = (e) => {
+//   state.ctv3.blobFiles = e
+//   updateEmit()
+// }
+// const delPhotos = (e) => {
+//   state.ctv3.delPH = e
+//   updateEmit()
+// }
 const finalResult = computed(() =>
   state.ctv3.groupByType.reduce(
     (acc, e) => (e.type === 'Тестирование и Поверка' ? acc : (acc += e.total)),
@@ -390,53 +382,53 @@ const choose = ($event) => {
   store.commit('SETprojectInfo', state.projectInformation)
 }
 
-const postCabTime = async () => {
-  const cabTime = {
-    id: `cabtime__${projectInfoState.value.wo}`,
-    info: {
-      Проект: projectInfoState.value['project number'],
-      Шкаф: projectInfoState.value['cab name'],
-      wo: projectInfoState.value.wo.toString(),
-    },
-    type: 'cabtime',
-    ...state.ctv3,
-    body: { ...state.ctv3.body.filter((e) => e.value) },
-    result: cabtimeResult.value,
-  }
-  await photo()
-  await fetch('/api/post_item', {
-    method: 'POST', // или 'PUT'
-    body: JSON.stringify({
-      ...cabTime,
-    }),
-  })
-  router.back()
-}
+// const postCabTime = async () => {
+//   const cabTime = {
+//     id: `cabtime__${projectInfoState.value.wo}`,
+//     info: {
+//       Проект: projectInfoState.value['project number'],
+//       Шкаф: projectInfoState.value['cab name'],
+//       wo: projectInfoState.value.wo.toString(),
+//     },
+//     type: 'cabtime',
+//     ...state.ctv3,
+//     body: { ...state.ctv3.body.filter((e) => e.value) },
+//     result: cabtimeResult.value,
+//   }
+//   await photo()
+//   await fetch('/api/post_item', {
+//     method: 'POST', // или 'PUT'
+//     body: JSON.stringify({
+//       ...cabTime,
+//     }),
+//   })
+//   router.back()
+// }
 
-const photo = async () => {
-  const formData = new FormData()
-  state.blobFiles.map((e, i) => {
-    const imageName = `${
-      state.ctv3.id
-    }__${store.state.user.info.userDetails.toLowerCase()}__${
-      Date.now() + i
-    }.jpg`
+// const photo = async () => {
+//   const formData = new FormData()
+//   state.blobFiles.map((e, i) => {
+//     const imageName = `${
+//       state.ctv3.id
+//     }__${store.state.user.info.userDetails.toLowerCase()}__${
+//       Date.now() + i
+//     }.jpg`
 
-    state.ctv3.photos.push(imageName)
+//     state.ctv3.photos.push(imageName)
 
-    formData.set(`photo${i + 1}`, e, imageName)
-  })
-  // UPLOAD PHOTOS
-  const options = {
-    method: 'POST',
-    body: formData,
-  }
-  const { request, response } = useFetch(
-    '/api/blob?container=cabtime-photo&test=true',
-    options
-  )
-  await request()
-}
+//     formData.set(`photo${i + 1}`, e, imageName)
+//   })
+//   // UPLOAD PHOTOS
+//   const options = {
+//     method: 'POST',
+//     body: formData,
+//   }
+//   const { request, response } = useFetch(
+//     '/api/blob?container=cabtime-photo&test=true',
+//     options
+//   )
+//   await request()
+// }
 
 const addNewRow = (e) => {
   console.log(e)
