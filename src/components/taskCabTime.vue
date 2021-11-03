@@ -21,18 +21,20 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(value, index) in inputData.body" :key="index" :class="{partical: value.status === 'partical', complite: value.status === 'complite' }">
+        <tr v-for="(value, index) in inputData.body" :key="index" :class="{partially: value.status === 'partially', done: value.status === 'done' }">
           <td>{{ value._id }}</td>
           <td class="desc">{{ value.name }}</td>
           <td >
-            <label>
-              <input  :id="`${value._id}thr`" type="radio" :name="`${index}o`" @input="changeStatus($event, value._id, 'partical')" />
-            </label>
+            <input @input="changeStatus($event, value._id, 'partially')" :checked="value.status ==='partially'" type="checkbox" name="" id="">
+            <!-- <label>
+              <input  :id="`${value._id}thr`" type="radio" :name="`${index}o`" @input="changeStatus($event, value._id, 'partially')" />
+            </label> -->
           </td>
           <td>
-            <label>
-              <input :id="`${value._id}two`" type="radio" :name="`${index}o`" @input="changeStatus($event, value._id, 'complite')" />
-            </label>
+            <input @input="changeStatus($event, value._id, 'done')" :checked="value.status ==='done'" type="checkbox" name="" id="">
+            <!-- <label>
+              <input :id="`${value._id}two`" type="radio" :name="`${index}o`" @input="changeStatus($event, value._id, 'done')" />
+            </label> -->
           </td>
           <!-- <td>
             <input
@@ -70,8 +72,14 @@ const props = defineProps({
   //   },
 })
 const { inputData, changeData, templateData, taskEdit } = toRefs(props)
-const changeStatus = (e,id, val) => {
-  inputData.value.body.find(e => e._id === id).status = val
+const changeStatus = (ev, id, val) => {
+ const item = inputData.value.body.find(e => e._id === id)//.status = val
+
+   if (ev.target.checked) {
+    item.status = val
+ } else{
+   item.status = 'open'
+ } 
 }
 </script>
 
@@ -158,11 +166,11 @@ tbody tr {
   width: 10%;
 }
 
-table tbody .partical {
-  background: rgba(255, 166, 0, 0.356);
+table tbody .partially {
+  background: hsl(252deg 100% 95%);
 }
-table tbody .complite {
-  background: rgba(0, 255, 0, 0.356);
+table tbody .done {
+  background: hsl(120deg 100% 95%);
 }
 
 @media only screen and (max-width: 600px) {
@@ -174,7 +182,7 @@ table tbody .complite {
     width: 55%;
   }
   tbody tr {
-  height: 45px;
+  height: 50px;
   margin-bottom: 10px;
 }
   /* .vertical {

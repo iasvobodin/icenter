@@ -1,9 +1,11 @@
 <template>
   <div>testPromise{{ props.testFlag }}</div>
+  <input @input="changeStatus($event, 'done')" :checked="item.status ==='done'" type="checkbox" name="" id="">
+  <input @input="changeStatus($event, 'partially')" :checked="item.status === 'partially'" type="checkbox" name="" id="">
 </template>
 
 <script setup>
-import { toRefs, watch } from '@vue/runtime-core'
+import { reactive, toRefs, watch } from '@vue/runtime-core'
 
 const props = defineProps({
   testFlag: {
@@ -15,8 +17,19 @@ const emit = defineEmits({
   promise: null,
 })
 
-// const {testFlag} = toRefs(props)
-
+const item = reactive({
+  status: "open",
+  checked: false
+})
+const changeStatus = (e,s) => {
+  // item.checked = e.target.checked
+  if (e.target.checked) {
+    item.status = s
+ } else{
+   item.status = 'open'
+ } 
+  console.log(e);
+  }
 watch(
   () => props.testFlag,
   (newV, oldV) => {
