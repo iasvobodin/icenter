@@ -4,45 +4,64 @@
       <colgroup>
         <col span="1" class="collgroup1" />
         <col span="1" class="collgroup2" />
-        <col span="1" class="collgroup3" />
-        <col span="1" class="collgroup4" />
-        <!-- <col span="1" class="collgroup5" /> -->
+        <col v-if="statusMark" span="1" class="collgroup3" />
+        <col v-if="statusMark" span="1" class="collgroup4" />
+        <col v-if="!statusMark" span="1" class="collgroup5" />
       </colgroup>
       <thead class="head">
         <tr>
           <th rowspan="2">№</th>
           <th rowspan="2">Задача</th>
-          <th colspan="2">Выполнено</th>
-          <!-- <th rowspan="2">result</th> -->
+          <th v-if="statusMark" colspan="2">Выполнено</th>
+          <th v-if="!statusMark" rowspan="1">Результат</th>
         </tr>
-        <tr>
+        <tr v-if="statusMark">
           <th class="vertical">Частично</th>
           <th class="vertical">Полностью</th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(value, index) in inputData.body" :key="index" :class="{partially: value.status === 'partially', done: value.status === 'done' }">
+        <tr
+          v-for="(value, index) in inputData.body"
+          :key="index"
+          :class="{
+            partially: value.status === 'partially',
+            done: value.status === 'done',
+          }"
+        >
           <td>{{ value._id }}</td>
           <td class="desc">{{ value.name }}</td>
-          <td >
-            <input @input="changeStatus($event, value._id, 'partially')" :checked="value.status ==='partially'" type="checkbox" name="" id="">
+          <td v-if="statusMark">
+            <input
+              @input="changeStatus($event, value._id, 'partially')"
+              :checked="value.status === 'partially'"
+              type="checkbox"
+              name=""
+              id=""
+            />
             <!-- <label>
               <input  :id="`${value._id}thr`" type="radio" :name="`${index}o`" @input="changeStatus($event, value._id, 'partially')" />
             </label> -->
           </td>
-          <td>
-            <input @input="changeStatus($event, value._id, 'done')" :checked="value.status ==='done'" type="checkbox" name="" id="">
+          <td v-if="statusMark">
+            <input
+              @input="changeStatus($event, value._id, 'done')"
+              :checked="value.status === 'done'"
+              type="checkbox"
+              name=""
+              id=""
+            />
             <!-- <label>
               <input :id="`${value._id}two`" type="radio" :name="`${index}o`" @input="changeStatus($event, value._id, 'done')" />
             </label> -->
           </td>
-          <!-- <td>
+          <td v-if="!statusMark">
             <input
               class="cabtime__input"
               type="number"
               :value="+value.result"
             />
-          </td> -->
+          </td>
         </tr>
       </tbody>
     </table>
@@ -51,6 +70,7 @@
 
 <script setup>
 import { toRefs } from '@vue/reactivity'
+import { watchEffect } from '@vue/runtime-core'
 
 // eslint-disable-next-line no-undef
 const props = defineProps({
@@ -62,29 +82,43 @@ const props = defineProps({
   //     type: Boolean,
   //     default: () => false,
   //   },
-  taskEdit: {
+  statusMark: {
     type: Boolean,
-    default: () => false,
+    default: () => true,
   },
   //   templateData: {
   //     type: Object,
   //     required: true,
   //   },
 })
-const { inputData, changeData, templateData, taskEdit } = toRefs(props)
-const changeStatus = (ev, id, val) => {
- const item = inputData.value.body.find(e => e._id === id)//.status = val
+const emit = defineEmits({
+  cabtimeWithStatus: null,
+})
+const { inputData, changeData, templateData, statusMark } = toRefs(props)
 
-   if (ev.target.checked) {
-    item.status = val
- } else{
-   item.status = 'open'
- } 
+inputData.value.body
+  .sort((a, b) => a._id.split('.')[1] - b._id.split('.')[1])
+  .sort((a, b) => a._id.split('.')[0] - b._id.split('.')[0])
+watchEffect(()=>{
+!statusMark.value &&
+  inputData.value.body.sort((a, b) => {
+    const x = a.status.toLowerCase()
+    const y = b.status.toLowerCase()
+    return x < y ? -1 : x > y ? 1 : 0
+  })
+})
+
+const changeStatus = (ev, id, val) => {
+  const item = inputData.value.body.find((e) => e._id === id)
+  ev.target.checked ? (item.status = val) : (item.status = 'open')
+  emit(
+    'cabtimeWithStatus',
+    inputData.value.body.filter((f) => f.status && f.status !== 'open')
+  )
 }
 </script>
 
 <style lang="css" scoped>
-
 .cabtime__input {
   width: min(100%, 60px);
 }
@@ -119,10 +153,9 @@ th {
 tbody tr:nth-child(odd) {
   background: #ececec5d;
 }
-.desc{
+.desc {
   text-align: start;
   padding-left: 1ch;
-
 }
 /* tbody tr:hover {
   border-radius: 3px;
@@ -147,7 +180,6 @@ input[type='radio'] {
   margin: 0;
 }
 tbody tr {
-
   margin-bottom: 10px;
 }
 .collgroup1 {
@@ -182,9 +214,9 @@ table tbody .done {
     width: 55%;
   }
   tbody tr {
-  height: 50px;
-  margin-bottom: 10px;
-}
+    height: 50px;
+    margin-bottom: 10px;
+  }
   /* .vertical {
     writing-mode: tb-rl;
     transform: rotate(-180deg);

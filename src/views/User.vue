@@ -16,10 +16,15 @@
 
     <!-- <p class="info">{{$store.state.user}}</p> -->
     <br />
-    <button v-if="localUser" @click="clearUser">Log out</button><br> <br>
-    <h2 v-if="state.userTask" style="cursor: pointer" @click="$router.push(`/tasks/${state.userTask.id}`)">
+    <button v-if="localUser" @click="clearUser">Log out</button><br />
+    <br />
+    <h2
+      v-if="state.userTask"
+      style="cursor: pointer"
+      @click="$router.push(`/tasks/${state.userTask.id}`)"
+    >
       {{ state.userTask.id }}
-      </h2>
+    </h2>
   </div>
 </template>
 

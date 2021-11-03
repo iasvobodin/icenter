@@ -10,10 +10,30 @@
       </h3>
       <h3>Время работы: {{ time }}</h3>
     </div>
-
-    <task-cab-time v-if="state.cabTime" :input-data="state.cabTime" />
+ <button>Завершить работу</button>
+ <br />
+    <br /> <br />
+    <br />
+ <h3>Выбор задач</h3>
+ <p>Выберите задачи которые полностью или частично выполнены</p>
+    <task-cab-time
+      @cabtime-with-status="state.ctStatus = $event"
+      v-if="state.cabTime"
+      :input-data="state.cabTime"
+    />
     <br />
     <br />
+    <button>Следующий шаг</button>
+     <br />
+    <br /> <br />
+    <br />
+ <h3>Время выполнения</h3>
+ <p>Время по отмеченным задачам расчитывается автоматически, проверьте столбец результат, и внесите корректировки, если это необходимо. <br> Итоговое время по задачам должно соответсвоть затраченному времени.</p>
+    <task-cab-time
+      :status-mark="false"
+      v-if="state.ctStatus"
+      :input-data="{ body: state.ctStatus }"
+    />
   </div>
 </template>
 
@@ -32,6 +52,7 @@ const state = reactive({
   task: null,
   passedTime: null,
   pps: null,
+  ctStatus: null,
 })
 
 const getTask = async () => {
