@@ -4,13 +4,15 @@
       <h2>Информация</h2>
       <info-render :info-data="state.task.info" />
     </div>
-    <div v-if="state.task">
+    <div v-if="state.task&&!state.timeToCalc">
       <h3>
         Время старта : {{ formatDate(new Date(state.task.body.timeStart)) }}
       </h3>
-      <h3>Время работы: {{ time }}</h3>
+      <h3 v-if="!state.timeToCalc">Время работы: {{ time }}</h3>
+ <button @click="state.timeToCalc = state.passedTime">Завершить работу</button>
     </div>
- <button>Завершить работу</button>
+      
+
  <br />
     <br /> <br />
     <br />
@@ -18,17 +20,19 @@
  <p>Выберите задачи которые полностью или частично выполнены</p>
     <task-cab-time
       @cabtime-with-status="state.ctStatus = $event"
-      v-if="state.cabTime"
+      v-if="state.cabTime&&state.timeToCalc"
       :input-data="state.cabTime"
     />
     <br />
     <br />
-    <button>Следующий шаг</button>
+    <button>Далее</button>
      <br />
     <br /> <br />
     <br />
  <h3>Время выполнения</h3>
- <p>Время по отмеченным задачам расчитывается автоматически, проверьте столбец результат, и внесите корректировки, если это необходимо. <br> Итоговое время по задачам должно соответсвоть затраченному времени.</p>
+ <p>Время по отмеченным задачам расчитывается автоматически, проверьте столбец результат, и внесите корректировки, если это необходимо. 
+   <br> Итоговое время по задачам в кабтайме, должно соответсвоть общему времени выполнения.</p>
+   <h3 v-if="state.timeToCalc">Затраченное время: {{ Math.floor(state.timeToCalc/60000) }} минут</h3>
     <task-cab-time
       :status-mark="false"
       v-if="state.ctStatus"
@@ -51,6 +55,7 @@ const state = reactive({
   changeCabTime: false,
   task: null,
   passedTime: null,
+  timeToCalc: null,
   pps: null,
   ctStatus: null,
 })

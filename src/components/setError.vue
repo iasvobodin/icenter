@@ -1,6 +1,6 @@
 <template>
   <div v-if="$store.state.template">
-    <form id="postError" name="postError" @submit.prevent="saveChanges = true">
+    <form id="postError" name="postError" @submit.prevent="postForm">
       <div
         v-if="$store.state.user.info.userRoles.includes('admin')"
         class="error__item"
@@ -123,6 +123,13 @@ export default {
     }
   },
   methods: {
+    async postForm(e) {
+      const ff =  new FormData(e.target)
+      // const ff = serializeForm(e.target)
+      console.log(Array.from(ff.entries()))
+      console.log(e);
+      // saveChanges = true
+    },
     async mainEmitFromPhotos(e) {
       this.error.photos = await e
       this.postError()

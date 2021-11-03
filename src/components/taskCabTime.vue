@@ -13,7 +13,7 @@
           <th rowspan="2">№</th>
           <th rowspan="2">Задача</th>
           <th v-if="statusMark" colspan="2">Выполнено</th>
-          <th v-if="!statusMark" rowspan="1">Результат</th>
+          <th v-if="!statusMark" rowspan="1">Автоматически расчитанное время</th>
         </tr>
         <tr v-if="statusMark">
           <th class="vertical">Частично</th>
