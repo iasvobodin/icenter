@@ -124,11 +124,11 @@ export default {
   },
   methods: {
     async postForm(e) {
-      const ff =  new FormData(e.target)
-      // const ff = serializeForm(e.target)
-      console.log(Array.from(ff.entries()))
-      console.log(e);
-      // saveChanges = true
+      // const ff =  new FormData(e.target)
+      // // const ff = serializeForm(e.target)
+      // console.log(Array.from(ff.entries()))
+      // console.log(e);
+      saveChanges = true
     },
     async mainEmitFromPhotos(e) {
       this.error.photos = await e
