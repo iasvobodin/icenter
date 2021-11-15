@@ -128,7 +128,7 @@ export default {
       // // const ff = serializeForm(e.target)
       // console.log(Array.from(ff.entries()))
       // console.log(e);
-      saveChanges = true
+      this.saveChanges = true
     },
     async mainEmitFromPhotos(e) {
       this.error.photos = await e
