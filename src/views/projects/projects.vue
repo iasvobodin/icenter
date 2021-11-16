@@ -12,6 +12,7 @@
     placeholder="SF, PM, №"
   />
   <br />
+  <button class="my__projects" @click="myProjects">Мои проекты</button>
   <br />
   <div class="holder__switch">
     <div class="open" :class="{ isactive: !selectedStatus }">
@@ -269,7 +270,11 @@ export default {
         return 0
       })
     }
+    const myProjects = () => {
+      state.search = store.state.user.info.userDetails.toLowerCase()
+    }
     return {
+      myProjects,
       extendTemplate,
       updateChangedProjects,
       getIndex,
@@ -284,6 +289,12 @@ export default {
 </script>
 
 <style lang="css" scoped>
+.my__projects {
+  position: absolute;
+  right: 1vw;
+  top: calc(50px + 1vw);
+  width: fit-content;
+}
 .isactive {
   border-bottom: 1px solid orange;
   /* border-radius: 5px; */

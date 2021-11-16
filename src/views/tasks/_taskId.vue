@@ -4,35 +4,44 @@
       <h2>Информация</h2>
       <info-render :info-data="state.task.info" />
     </div>
-    <div v-if="state.task&&!state.timeToCalc">
+    <div v-if="state.task && !state.timeToCalc">
       <h3>
         Время старта : {{ formatDate(new Date(state.task.body.timeStart)) }}
       </h3>
       <h3 v-if="!state.timeToCalc">Время работы: {{ time }}</h3>
- <button @click="state.timeToCalc = state.passedTime">Завершить работу</button>
+      <button @click="state.timeToCalc = state.passedTime">
+        Завершить работу
+      </button>
     </div>
-      
 
- <br />
-    <br /> <br />
     <br />
- <h3>Выбор задач</h3>
- <p>Выберите задачи которые полностью или частично выполнены</p>
+    <br />
+    <br />
+    <br />
+    <h3>Выбор задач</h3>
+    <p>Выберите задачи которые полностью или частично выполнены</p>
     <task-cab-time
       @cabtime-with-status="state.ctStatus = $event"
-      v-if="state.cabTime&&state.timeToCalc"
+      v-if="state.cabTime && state.timeToCalc"
       :input-data="state.cabTime"
     />
     <br />
     <br />
     <button>Далее</button>
-     <br />
-    <br /> <br />
     <br />
- <h3>Время выполнения</h3>
- <p>Время по отмеченным задачам расчитывается автоматически, проверьте столбец результат, и внесите корректировки, если это необходимо. 
-   <br> Итоговое время по задачам в кабтайме, должно соответсвоть общему времени выполнения.</p>
-   <h3 v-if="state.timeToCalc">Затраченное время: {{ Math.floor(state.timeToCalc/60000) }} минут</h3>
+    <br />
+    <br />
+    <br />
+    <h3>Время выполнения</h3>
+    <p>
+      Время по отмеченным задачам расчитывается автоматически, проверьте столбец
+      результат, и внесите корректировки, если это необходимо. <br />
+      Итоговое время по задачам в кабтайме, должно соответсвоть общему времени
+      выполнения.
+    </p>
+    <h3 v-if="state.timeToCalc">
+      Затраченное время: {{ Math.floor(state.timeToCalc / 60000) }} минут
+    </h3>
     <task-cab-time
       :status-mark="false"
       v-if="state.ctStatus"

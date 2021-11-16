@@ -2,18 +2,27 @@
   <div>
     <table>
       <colgroup>
-        <col span="1" class="collgroup1" />
+        <!-- <col span="1" class="collgroup1" /> -->
         <col span="1" class="collgroup2" />
         <col v-if="statusMark" span="1" class="collgroup3" />
         <col v-if="statusMark" span="1" class="collgroup4" />
         <col v-if="!statusMark" span="1" class="collgroup5" />
+        <col v-if="!statusMark" span="1" class="collgroup5" />
       </colgroup>
       <thead class="head">
         <tr>
-          <th rowspan="2">№</th>
+          <!-- <th rowspan="2">№</th> -->
           <th rowspan="2">Задача</th>
           <th v-if="statusMark" colspan="2">Выполнено</th>
-          <th v-if="!statusMark" rowspan="1">Автоматически расчитанное время</th>
+          <th class="vertical" v-if="!statusMark" rowspan="1">CabTime (мин)</th>
+          <th
+            style="text-align: center"
+            class="vertical"
+            v-if="!statusMark"
+            rowspan="1"
+          >
+            Авто-расчёт (мин)
+          </th>
         </tr>
         <tr v-if="statusMark">
           <th class="vertical">Частично</th>
@@ -29,7 +38,7 @@
             done: value.status === 'done',
           }"
         >
-          <td>{{ value._id }}</td>
+          <!-- <td>{{ value._id }}</td> -->
           <td class="desc">{{ value.name }}</td>
           <td v-if="statusMark">
             <input
@@ -54,6 +63,9 @@
             <!-- <label>
               <input :id="`${value._id}two`" type="radio" :name="`${index}o`" @input="changeStatus($event, value._id, 'done')" />
             </label> -->
+          </td>
+          <td style="text-align: center" v-if="!statusMark">
+            {{ value.result }}
           </td>
           <td v-if="!statusMark">
             <input
@@ -99,13 +111,13 @@ const { inputData, changeData, templateData, statusMark } = toRefs(props)
 inputData.value.body
   .sort((a, b) => a._id.split('.')[1] - b._id.split('.')[1])
   .sort((a, b) => a._id.split('.')[0] - b._id.split('.')[0])
-watchEffect(()=>{
-!statusMark.value &&
-  inputData.value.body.sort((a, b) => {
-    const x = a.status.toLowerCase()
-    const y = b.status.toLowerCase()
-    return x < y ? -1 : x > y ? 1 : 0
-  })
+watchEffect(() => {
+  !statusMark.value &&
+    inputData.value.body.sort((a, b) => {
+      const x = a.status.toLowerCase()
+      const y = b.status.toLowerCase()
+      return x < y ? -1 : x > y ? 1 : 0
+    })
 })
 
 const changeStatus = (ev, id, val) => {
@@ -146,8 +158,13 @@ th {
     rgba(9, 30, 66, 0.13) 0px 0px 1px 1px;
   box-shadow: rgba(17, 17, 26, 0.1) 0px 1px 0px;
 
-  padding: 3px;
+  /* padding: 3px; */
+  /* padding-right: 1ch; */
+  text-align: start;
   font-size: 12px;
+}
+td input {
+  text-align: center;
 }
 
 tbody tr:nth-child(odd) {
@@ -212,6 +229,10 @@ table tbody .done {
   }
   .collgroup2 {
     width: 55%;
+  }
+  .cabtime__input {
+    text-align: center;
+    width: 5ch;
   }
   tbody tr {
     height: 50px;
