@@ -499,8 +499,6 @@ table {
   /* border-collapse: separate;
         border-spacing: 0; */
 }
-th {
-}
 td,
 th {
   box-shadow: rgba(0, 0, 0, 0.15) 2.4px 2.4px 3.2px;

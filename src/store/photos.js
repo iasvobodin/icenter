@@ -1,11 +1,15 @@
 export default {
   state: () => ({
+    passedTime: null,
     currentPhotos: [],
     blobFiles: [],
     deletePhotos: [],
     formData: new FormData(),
   }),
   mutations: {
+    changePassedTime(state, payload) {
+      state.passedTime = payload
+    },
     setBlobFiles(state, payload) {
       console.log(state.user.info.userDetails.toLowerCase())
       // if (state.cabTime.blobFiles.length > 0) {

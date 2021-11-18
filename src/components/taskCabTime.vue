@@ -13,7 +13,9 @@
         <tr>
           <!-- <th rowspan="2">№</th> -->
           <th rowspan="2">Задача</th>
-          <th v-if="statusMark" colspan="2">Выполнено</th>
+          <th style="text-align: center" v-if="statusMark" colspan="2">
+            Выполнено
+          </th>
           <th class="vertical" v-if="!statusMark" rowspan="1">CabTime (мин)</th>
           <th
             style="text-align: center"
@@ -25,13 +27,13 @@
           </th>
         </tr>
         <tr v-if="statusMark">
-          <th class="vertical">Частично</th>
-          <th class="vertical">Полностью</th>
+          <th style="text-align: center" class="vertical">Частично</th>
+          <th style="text-align: center" class="vertical">Полностью</th>
         </tr>
       </thead>
       <tbody>
         <tr
-          v-for="(value, index) in inputData.body"
+          v-for="(value, index) in copyInputData"
           :key="index"
           :class="{
             partially: value.status === 'partially',
@@ -39,8 +41,8 @@
           }"
         >
           <!-- <td>{{ value._id }}</td> -->
-          <td class="desc">{{ value.name }}</td>
-          <td v-if="statusMark">
+          <td class="desc">{{ value._id }}{{ value.name }}</td>
+          <td style="text-align: center" v-if="statusMark">
             <input
               @input="changeStatus($event, value._id, 'partially')"
               :checked="value.status === 'partially'"
@@ -52,7 +54,7 @@
               <input  :id="`${value._id}thr`" type="radio" :name="`${index}o`" @input="changeStatus($event, value._id, 'partially')" />
             </label> -->
           </td>
-          <td v-if="statusMark">
+          <td style="text-align: center" v-if="statusMark">
             <input
               @input="changeStatus($event, value._id, 'done')"
               :checked="value.status === 'done'"
@@ -69,60 +71,118 @@
           </td>
           <td v-if="!statusMark">
             <input
+            @input="changePartyalyyTime($event, value._id)"
               class="cabtime__input"
               type="number"
-              :value="+value.result"
+              :value="value.propTime"
             />
           </td>
         </tr>
       </tbody>
     </table>
+    {{ state.alertMessage ? state.alertMessage : '' }}
   </div>
 </template>
 
-<script setup>
-import { toRefs } from '@vue/reactivity'
-import { watchEffect } from '@vue/runtime-core'
+<script setup lang="ts">
+import { computed, reactive, toRefs } from '@vue/reactivity'
+import { PropType, watchEffect } from '@vue/runtime-core'
+import { useStore } from 'vuex'
+import { cabtimeType } from '@/types/cabtimeTypes.js'
 
+const store = useStore()
 // eslint-disable-next-line no-undef
 const props = defineProps({
   inputData: {
-    type: Object,
+    type: Object as PropType<cabtimeType>,
     required: true,
   },
-  //   changeData: {
-  //     type: Boolean,
-  //     default: () => false,
-  //   },
   statusMark: {
     type: Boolean,
     default: () => true,
   },
-  //   templateData: {
-  //     type: Object,
-  //     required: true,
-  //   },
+})
+const state = reactive({
+  alertMessage: '',
 })
 const emit = defineEmits({
   cabtimeWithStatus: null,
+  proportTime: null,
 })
-const { inputData, changeData, templateData, statusMark } = toRefs(props)
+const { inputData, statusMark } = toRefs(props)
 
-inputData.value.body
-  .sort((a, b) => a._id.split('.')[1] - b._id.split('.')[1])
-  .sort((a, b) => a._id.split('.')[0] - b._id.split('.')[0])
+const timeToCalc = computed(() => store.state.photosModule.passedTime)
+
+const copyInputData = computed(() => [...inputData.value.body]
+    .sort((a, b) => +a._id.split('.')[1] - +b._id.split('.')[1])
+    .sort((a, b) => +a._id.split('.')[0] - +b._id.split('.')[0]))
+
 watchEffect(() => {
-  !statusMark.value &&
-    inputData.value.body.sort((a, b) => {
+  if (!statusMark.value) {
+    const acc = {
+      allSumm: 0,
+      doneSumm: 0,
+      partiallySumm: 0,
+      partiallyTimeSumm: 0,
+    }
+    type Account = typeof acc
+
+    const calcSumm = copyInputData.value.reduce((acc: Account, e) => {
+      e.status === 'partially' && (acc.partiallySumm += e.result)
+      e.status === 'done' && (acc.doneSumm += e.result)
+      e.propTime && (acc.partiallyTimeSumm += e.propTime)
+      acc.allSumm += e.result
+      return acc
+    }, acc)
+    console.log(calcSumm)
+
+    if (
+      timeToCalc.value > calcSumm.doneSumm &&
+      timeToCalc.value < calcSumm.allSumm
+    ) {
+      state.alertMessage = 'all ok'
+    }
+
+    if (timeToCalc.value < calcSumm.doneSumm) {
+      state.alertMessage = 'to fast'
+    }
+
+    if (timeToCalc.value > calcSumm.allSumm) {
+      state.alertMessage = 'to slow'
+    }
+
+    // console.log(copyInputData.value);
+    copyInputData.value.forEach((e) => {
+      e.propTime = Math.round((e.result / calcSumm.allSumm) * timeToCalc.value)
+    })
+
+
+
+    console.log(copyInputData.value)
+    copyInputData.value.sort((a, b) => {
       const x = a.status.toLowerCase()
       const y = b.status.toLowerCase()
       return x < y ? -1 : x > y ? 1 : 0
     })
+  }
 })
+const changePartyalyyTime = (ev: Event, id:string) => {
+  if (!(ev.target instanceof HTMLInputElement)) return
+ const item = copyInputData.value.find((e) => e._id === id)
+  item&&(item.propTime = +ev.target.value)
 
-const changeStatus = (ev, id, val) => {
+      const partiallySumm = copyInputData.value.reduce(
+      (acc: number, e) => (acc += e.propTime!),
+      0
+    )
+    console.log(partiallySumm)
+}
+const changeStatus = (ev: Event, id: string, val: string) => {
+  if (!(ev.target instanceof HTMLInputElement)) return
+  // const input = ev.target as HTMLInputElement;
+
   const item = inputData.value.body.find((e) => e._id === id)
-  ev.target.checked ? (item.status = val) : (item.status = 'open')
+  ev.target.checked ? (item!.status = val) : (item!.status = 'open')
   emit(
     'cabtimeWithStatus',
     inputData.value.body.filter((f) => f.status && f.status !== 'open')
@@ -132,7 +192,7 @@ const changeStatus = (ev, id, val) => {
 
 <style lang="css" scoped>
 .cabtime__input {
-  width: min(100%, 60px);
+  width: min(100%, 70px);
 }
 thead tr th {
   white-space: pre-wrap;
@@ -160,7 +220,7 @@ th {
 
   /* padding: 3px; */
   /* padding-right: 1ch; */
-  text-align: start;
+  /* text-align: start; */
   font-size: 12px;
 }
 td input {
@@ -198,6 +258,7 @@ input[type='radio'] {
 }
 tbody tr {
   margin-bottom: 10px;
+  height: 40px;
 }
 .collgroup1 {
   width: 5%;
@@ -209,10 +270,10 @@ tbody tr {
   width: 10%;
 }
 .collgroup4 {
-  width: 10%;
+  width: 15%;
 }
 .collgroup5 {
-  width: 10%;
+  width: 15%;
 }
 
 table tbody .partially {
@@ -232,7 +293,7 @@ table tbody .done {
   }
   .cabtime__input {
     text-align: center;
-    width: 5ch;
+    width: 6ch;
   }
   tbody tr {
     height: 50px;
