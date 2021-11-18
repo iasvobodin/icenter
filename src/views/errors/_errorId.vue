@@ -100,7 +100,7 @@
       v-if="
         error &&
         !changeInfo &&
-        (error.info.Добавил === $store.state.user.info.userDetails ||
+        (error.info.Добавил === $store.state.user.info.userDetails || error.info.status === 'confirmed' ||
           $store.state.user.info.userRoles.includes('admin'))
       "
       @click="changeData"
