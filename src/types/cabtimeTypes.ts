@@ -1,15 +1,3 @@
-type bodyType = {
-  _id: string
-  _const: string
-  _type: string
-  _field: string
-  name: string
-  value: string
-  result: number
-  status: string
-  propTime?: number
-}
-
 export interface cabtimeType {
   body: {
     _id: string

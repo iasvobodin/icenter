@@ -88,7 +88,7 @@
 import { computed, reactive, toRefs } from '@vue/reactivity'
 import { PropType, watchEffect } from '@vue/runtime-core'
 import { useStore } from 'vuex'
-import { cabtimeType } from '@/types/cabtimeTypes.js'
+import { cabtimeType } from '@/types/cabtimeTypes'
 
 const store = useStore()
 // eslint-disable-next-line no-undef
