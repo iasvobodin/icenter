@@ -19,9 +19,9 @@
     <h3>Выбор задач</h3>
     <p>Выберите задачи которые полностью или частично выполнены</p>
     <task-cab-time
-      @cabtime-with-status="state.ctStatus = $event"
       v-if="state.cabTime && timeToCalc"
       :input-data="state.cabTime"
+      @cabtime-with-status="state.ctStatus = $event"
     />
     <br />
     <br />
@@ -39,9 +39,9 @@
     </p>
     <h3 v-if="timeToCalc">Затраченное время: {{ timeToCalc }} минут</h3>
     <task-cab-time
+      v-if="ctWithStatus"
       :status-mark="false"
-      v-if="state.ctStatus"
-      :input-data="{ body: state.ctStatus }"
+      :input-data="{ body: ctWithStatus }"
     />
   </div>
 </template>
@@ -66,11 +66,22 @@ const state = reactive({
   ctStatus: null,
 })
 const setStatePassedTime = () => {
-  store.commit('changePassedTime', Math.floor(state.passedTime / 60000) - 3700)
+  store.commit('changePassedTime', Math.floor(state.passedTime / 60000) - 10000)
   console.log(store.state) //timeToCalc = state.passedTime
 }
 
 const timeToCalc = computed(() => store.state.photosModule.passedTime)
+
+const ctWithStatus = computed(() =>
+  store.state.photosModule.cabtimeWithStatus
+    ? store.state.photosModule.cabtimeWithStatus.sort((a, b) => {
+        const x = a.status?.toLowerCase()
+        const y = b.status?.toLowerCase()
+        return x < y ? -1 : x > y ? 1 : 0
+      })
+    : null
+)
+
 const getTask = async () => {
   const { request, response } = useFetch(`/api/errors/${route.params.taskId}`)
   await request()

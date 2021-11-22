@@ -11,7 +11,6 @@
       </colgroup>
       <thead class="head">
         <tr>
-          <!-- <th rowspan="2">№</th> -->
           <th rowspan="2">Задача</th>
           <th style="text-align: center" v-if="statusMark" colspan="2">
             Выполнено
@@ -33,14 +32,13 @@
       </thead>
       <tbody>
         <tr
-          v-for="(value, index) in copyInputData"
+          v-for="(value, index) in inputData.body"
           :key="index"
           :class="{
             partially: value.status === 'partially',
             done: value.status === 'done',
           }"
         >
-          <!-- <td>{{ value._id }}</td> -->
           <td class="desc">{{ value._id }}{{ value.name }}</td>
           <td style="text-align: center" v-if="statusMark">
             <input
@@ -50,9 +48,6 @@
               name=""
               id=""
             />
-            <!-- <label>
-              <input  :id="`${value._id}thr`" type="radio" :name="`${index}o`" @input="changeStatus($event, value._id, 'partially')" />
-            </label> -->
           </td>
           <td style="text-align: center" v-if="statusMark">
             <input
@@ -62,30 +57,44 @@
               name=""
               id=""
             />
-            <!-- <label>
-              <input :id="`${value._id}two`" type="radio" :name="`${index}o`" @input="changeStatus($event, value._id, 'done')" />
-            </label> -->
           </td>
           <td style="text-align: center" v-if="!statusMark">
             {{ value.result }}
           </td>
           <td v-if="!statusMark">
             <input
-            @input="changePartyalyyTime($event, value._id)"
+              @input="changePartyalyyTime($event, value._id)"
               class="cabtime__input"
               type="number"
               :value="value.propTime"
             />
           </td>
         </tr>
+        <tr v-if="!statusMark">
+          <td>Суммарно</td>
+           <td>{{state.allSumm}}</td>
+            <td>test</td>
+        </tr>
       </tbody>
     </table>
     {{ state.alertMessage ? state.alertMessage : '' }}
+    <button v-if="statusMark" @click="firstCaptureData">test</button>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, reactive, toRefs } from '@vue/reactivity'
+import {
+  computed,
+  reactive,
+  toRefs,
+  readonly,
+  Ref,
+  ref,
+  toRaw,
+  isReactive,
+  isRef,
+  unref,
+} from '@vue/reactivity'
 import { PropType, watchEffect } from '@vue/runtime-core'
 import { useStore } from 'vuex'
 import { cabtimeType } from '@/types/cabtimeTypes'
@@ -104,78 +113,158 @@ const props = defineProps({
 })
 const state = reactive({
   alertMessage: '',
+  allSumm: 0 as number,
+  partiallySumm: 0 as number,
+
 })
 const emit = defineEmits({
   cabtimeWithStatus: null,
   proportTime: null,
 })
-const { inputData, statusMark } = toRefs(props)
+const { statusMark, inputData } = toRefs(props)
 
-const timeToCalc = computed(() => store.state.photosModule.passedTime)
+inputData.value.body
+  .sort((a, b) => +a._id.split('.')[1] - +b._id.split('.')[1])
+  .sort((a, b) => +a._id.split('.')[0] - +b._id.split('.')[0])
 
-const copyInputData = computed(() => [...inputData.value.body]
-    .sort((a, b) => +a._id.split('.')[1] - +b._id.split('.')[1])
-    .sort((a, b) => +a._id.split('.')[0] - +b._id.split('.')[0]))
+// watchEffect(() => {
+//   inputData.value.body.sort((a, b) => {
+//     if (statusMark.value) {
+//       return 0
+//     }
+//     const x = a.status?.toLowerCase()
+//     const y = b.status?.toLowerCase()
+//     return x < y ? -1 : x > y ? 1 : 0
+//   })
+// })
 
-watchEffect(() => {
-  if (!statusMark.value) {
-    const acc = {
-      allSumm: 0,
-      doneSumm: 0,
-      partiallySumm: 0,
-      partiallyTimeSumm: 0,
+// const inputData = ref<cabtimeType>( JSON.parse(JSON.stringify(props.inputData)))
+// const inputData = <cabtimeType>JSON.parse(JSON.stringify(props.inputData))
+const timeToCalc = computed(() => store.state.photosModule.passedTime as number)
+
+// const copy = computed(() => readonly(inputData.value.body))
+// console.log(isRef(props.inputData), "isRef");
+
+// const copyInputData = computed(() => {
+//   const copy = JSON.parse(JSON.stringify(props.inputData)) as cabtimeType
+
+//     copy.body.sort((a, b) => +a._id.split('.')[1] - +b._id.split('.')[1])
+//     .sort((a, b) => +a._id.split('.')[0] - +b._id.split('.')[0])
+//     .sort((a, b) => {
+//       if (statusMark.value){return 0}
+//       const x = a.status?.toLowerCase()
+//       const y = b.status?.toLowerCase()
+//       return x < y ? -1 : x > y ? 1 : 0
+//     })
+//     return copy.body
+//     })
+const firstCaptureData = () => {
+  const rawData = toRaw(unref(inputData))
+
+  state.allSumm = rawData.body.reduce((acc: number, e) => {
+    if (e?.status && e.status !== 'open') {
+      console.log(e.result);
+      
+      acc += e.result
     }
-    type Account = typeof acc
-
-    const calcSumm = copyInputData.value.reduce((acc: Account, e) => {
-      e.status === 'partially' && (acc.partiallySumm += e.result)
-      e.status === 'done' && (acc.doneSumm += e.result)
-      e.propTime && (acc.partiallyTimeSumm += e.propTime)
-      acc.allSumm += e.result
-      return acc
-    }, acc)
-    console.log(calcSumm)
-
-    if (
-      timeToCalc.value > calcSumm.doneSumm &&
-      timeToCalc.value < calcSumm.allSumm
-    ) {
-      state.alertMessage = 'all ok'
+    return acc
+  }, 0)
+console.log(state.allSumm);
+  const partiallySumm = rawData.body.reduce(
+    (acc: number, e) => (acc += e.propTime!),
+    0
+  )
+  const doneSumm = rawData.body.reduce((acc: number, e) => {
+    if (e?.status === 'done') {
+      acc += e.result
     }
+    return acc
+  }, 0)
 
-    if (timeToCalc.value < calcSumm.doneSumm) {
-      state.alertMessage = 'to fast'
-    }
-
-    if (timeToCalc.value > calcSumm.allSumm) {
-      state.alertMessage = 'to slow'
-    }
-
-    // console.log(copyInputData.value);
-    copyInputData.value.forEach((e) => {
-      e.propTime = Math.round((e.result / calcSumm.allSumm) * timeToCalc.value)
-    })
-
-
-
-    console.log(copyInputData.value)
-    copyInputData.value.sort((a, b) => {
-      const x = a.status.toLowerCase()
-      const y = b.status.toLowerCase()
-      return x < y ? -1 : x > y ? 1 : 0
-    })
+  if (timeToCalc.value > doneSumm && timeToCalc.value < state.allSumm) {
+    state.alertMessage = 'all ok'
   }
-})
-const changePartyalyyTime = (ev: Event, id:string) => {
-  if (!(ev.target instanceof HTMLInputElement)) return
- const item = copyInputData.value.find((e) => e._id === id)
-  item&&(item.propTime = +ev.target.value)
 
-      const partiallySumm = copyInputData.value.reduce(
-      (acc: number, e) => (acc += e.propTime!),
-      0
-    )
-    console.log(partiallySumm)
+  if (timeToCalc.value < doneSumm) {
+    state.alertMessage = 'to fast'
+  }
+
+  if (timeToCalc.value > state.allSumm) {
+    state.alertMessage = 'to slow'
+  }
+
+  rawData.body.forEach((e) => {
+    e.propTime = Math.round((e.result / state.allSumm) * timeToCalc.value)
+  })
+  // console.log(timeToCalc.value);
+
+  //    rawData.sort((a, b) => {
+  //   const x = a.status?.toLowerCase()
+  //   const y = b.status?.toLowerCase()
+  //   return x < y ? -1 : x > y ? 1 : 0
+  // })
+  store.commit(
+    'setCabtimeWithStatus',
+    rawData.body.filter((f) => f.status && f.status !== 'open')
+  )
+}
+// watchEffect(() => {
+//   if (!statusMark.value) {
+//     const acc = {
+//       allSumm: 0,
+//       doneSumm: 0,
+//       partiallySumm: 0,
+//       partiallyTimeSumm: 0,
+//     }
+//     type Account = typeof acc
+
+//     const calcSumm = copyInputData.value.reduce((acc: Account, e) => {
+//       e.status === 'partially' && (acc.partiallySumm += e.result)
+//       e.status === 'done' && (acc.doneSumm += e.result)
+//       e.propTime && (acc.partiallyTimeSumm += e.propTime)
+//       acc.allSumm += e.result
+//       return acc
+//     }, acc)
+//     console.log(calcSumm)
+
+//     if (
+//       timeToCalc.value > calcSumm.doneSumm &&
+//       timeToCalc.value < calcSumm.allSumm
+//     ) {
+//       state.alertMessage = 'all ok'
+//     }
+
+//     if (timeToCalc.value < calcSumm.doneSumm) {
+//       state.alertMessage = 'to fast'
+//     }
+
+//     if (timeToCalc.value > calcSumm.allSumm) {
+//       state.alertMessage = 'to slow'
+//     }
+
+//     // console.log(copyInputData.value);
+//     copyInputData.value.forEach((e) => {
+//       e.propTime = Math.round((e.result / calcSumm.allSumm) * timeToCalc.value)
+//     })
+
+//     console.log(copyInputData.value)
+//     copyInputData.value.sort((a, b) => {
+//       const x = a.status.toLowerCase()
+//       const y = b.status.toLowerCase()
+//       return x < y ? -1 : x > y ? 1 : 0
+//     })
+//   }
+// })
+const changePartyalyyTime = (ev: Event, id: string) => {
+  if (!(ev.target instanceof HTMLInputElement)) return
+  const item = inputData.value.body.find((e) => e._id === id)
+  item && (item.propTime = +ev.target.value)
+
+  const partiallySumm = inputData.value.body.reduce(
+    (acc: number, e) => (acc += e.propTime!),
+    0
+  )
+  console.log(partiallySumm)
 }
 const changeStatus = (ev: Event, id: string, val: string) => {
   if (!(ev.target instanceof HTMLInputElement)) return
@@ -183,10 +272,12 @@ const changeStatus = (ev: Event, id: string, val: string) => {
 
   const item = inputData.value.body.find((e) => e._id === id)
   ev.target.checked ? (item!.status = val) : (item!.status = 'open')
-  emit(
-    'cabtimeWithStatus',
-    inputData.value.body.filter((f) => f.status && f.status !== 'open')
-  )
+  console.log(item)
+
+  // emit(
+  //   'cabtimeWithStatus',
+  //   inputData.value.body.filter((f) => f.status && f.status !== 'open')
+  // )
 }
 </script>
 
