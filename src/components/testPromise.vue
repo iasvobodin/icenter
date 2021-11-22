@@ -1,18 +1,18 @@
 <template>
   <div>testPromise{{ props.testFlag }}</div>
   <input
-    @input="changeStatus($event, 'done')"
+    id=""
     :checked="item.status === 'done'"
     type="checkbox"
     name=""
-    id=""
+    @input="changeStatus($event, 'done')"
   />
   <input
-    @input="changeStatus($event, 'partially')"
+    id=""
     :checked="item.status === 'partially'"
     type="checkbox"
     name=""
-    id=""
+    @input="changeStatus($event, 'partially')"
   />
 </template>
 

@@ -1,6 +1,6 @@
 import { createStore } from 'vuex'
 import { useFetch } from '@/hooks/fetch'
-import photosModule from './photos.js'
+import photosModule from './photos'
 const createName = (clientPrincipal) => {
   if (clientPrincipal.identityProvider === 'aad') {
     const splitName = clientPrincipal.userDetails.split('@')[0].split('.')
