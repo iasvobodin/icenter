@@ -1,6 +1,6 @@
-import {cabtimeType} from './cabtimeTypes'
+import { cabtimeType } from './cabtimeTypes'
 
-type Extend = { _field: string; name: string; value: string | string[] }
+export type Extend = { _field: string; name: string; value: string | string[]; min?: number; max?: number; }
 
 export interface templateType {
   id: 'ver1'
@@ -11,10 +11,10 @@ export interface templateType {
       'status project': string[]
     }
     extendManual: {
-        [index: string]: Extend
+      [index: string]: Extend
     }
     extend: {
-        [index: string]: Extend
+      [index: string]: Extend
     }
   }
   CabTimeV3: cabtimeType
