@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import store from '@/store/index.js'
+import { store } from '@/store/index'
 const routes = [
   {
     path: '/',
@@ -30,10 +30,6 @@ const routes = [
         component: () => import('@/views/admin/UserProfile.vue'),
       },
       {
-        path: 'addproject',
-        component: () => import('@/views/admin/addProject.vue'),
-      },
-      {
         path: 'reports',
         component: () => import('@/views/admin/reports.vue'),
       },
@@ -48,7 +44,6 @@ const routes = [
     component: () => import('@/views/errors/errors.vue'),
     // beforeEnter: async (to, from) => {
     //   !store.state.template && (await store.dispatch('GET_template'))
-    //   // reject the navigation
     //   return true
     // },
   },
@@ -57,7 +52,6 @@ const routes = [
     component: () => import('@/views/errors/_errorId.vue'),
     beforeEnter: async (to, from) => {
       !store.state.template && (await store.dispatch('GET_template'))
-      // reject the navigation
       return true
     },
   },
@@ -65,7 +59,6 @@ const routes = [
     path: '/errors/addNewError',
     beforeEnter: async (to, from) => {
       !store.state.template && (await store.dispatch('GET_template'))
-      // reject the navigation
       return true
     },
     component: () => import('@/views/errors/addNewError.vue'),
@@ -75,7 +68,6 @@ const routes = [
     component: () => import('@/views/errors/info.vue'),
     beforeEnter: async (to, from) => {
       !store.state.template && (await store.dispatch('GET_template'))
-      // reject the navigation
       return true
     },
   },
@@ -96,7 +88,6 @@ const routes = [
     component: () => import('@/views/cabinets/_cabinetId.vue'),
     beforeEnter: async (to, from) => {
       !store.state.template && (await store.dispatch('GET_template'))
-      // reject the navigation
       return true
     },
   },
@@ -105,7 +96,6 @@ const routes = [
     component: () => import('@/views/cabtimes/cabtimes.vue'),
     beforeEnter: async (to, from) => {
       !store.state.template && (await store.dispatch('GET_template'))
-      // reject the navigation
       return true
     },
   },
@@ -114,7 +104,6 @@ const routes = [
     component: () => import('@/views/cabtimes/_cabtimeId.vue'),
     beforeEnter: async (to, from) => {
       !store.state.template && (await store.dispatch('GET_template'))
-      // reject the navigation
       return true
     },
   },
@@ -123,7 +112,6 @@ const routes = [
     component: () => import('@/views/cabtimes/addNewCabtime.vue'),
     beforeEnter: async (to, from) => {
       !store.state.template && (await store.dispatch('GET_template'))
-      // reject the navigation
       return true
     },
   },
@@ -132,29 +120,14 @@ const routes = [
     component: () => import('@/views/projects/projects.vue'),
     beforeEnter: async (to, from) => {
       !store.state.template && (await store.dispatch('extendProject'))
-      // reject the navigation
       return true
     },
-    //     async beforeEnter(to, from, next) {
-    //   try {
-    //     var hasPermission = await store.dispatch("auth/hasPermission");
-    //     if (hasPermission) {
-    //       next()
-    //     }
-    //   } catch (e) {
-    //     next({
-    //       name: "login", // back to safety route //
-    //       query: { redirectFrom: to.fullPath }
-    //     })
-    //   }
-    // }
   },
   {
     path: '/projects/addNewProject',
     component: () => import('@/views/projects/addNewProject.vue'),
     beforeEnter: async (to, from) => {
       !store.state.template && (await store.dispatch('GET_template'))
-      // reject the navigation
       return true
     },
   },
@@ -163,7 +136,6 @@ const routes = [
     component: () => import('@/views/projects/addNewProjectManual.vue'),
     beforeEnter: async (to, from) => {
       !store.state.template && (await store.dispatch('GET_template'))
-      // reject the navigation
       return true
     },
   },
@@ -172,7 +144,6 @@ const routes = [
     component: () => import('@/views/projects/_projectId.vue'),
     beforeEnter: async (to, from) => {
       !store.state.template && (await store.dispatch('GET_template'))
-      // reject the navigation
       return true
     },
   },

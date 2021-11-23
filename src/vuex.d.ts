@@ -1,15 +1,13 @@
 import { ComponentCustomProperties } from 'vue'
 import { Store } from 'vuex'
+import { State } from './store/index'
 
 declare module '@vue/runtime-core' {
-  // declare your own store states
-  interface State {
-    count: number
-    // projectInfo: {} as IPrInfo
-  }
-
-  // provide typings for `this.$store`
   interface ComponentCustomProperties {
     $store: Store<State>
   }
+}
+
+declare module 'vuex' {
+  export function useStore(key?: string): Store<State>
 }
