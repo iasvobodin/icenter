@@ -72,8 +72,8 @@
         </tr>
         <tr v-if="!statusMark">
           <td>Суммарно</td>
-           <td>{{state.allSumm}}</td>
-            <td>test</td>
+          <td>{{ state.allSumm }}</td>
+          <td>test</td>
         </tr>
       </tbody>
     </table>
@@ -97,6 +97,7 @@ import {
 } from '@vue/reactivity'
 import { PropType, watchEffect } from '@vue/runtime-core'
 import { useStore } from 'vuex'
+// import { useStore } from '@/store'
 import { cabtimeType } from '@/types/cabtimeTypes'
 
 const store = useStore()
@@ -115,7 +116,6 @@ const state = reactive({
   alertMessage: '',
   allSumm: 0 as number,
   partiallySumm: 0 as number,
-
 })
 const emit = defineEmits({
   cabtimeWithStatus: null,
@@ -127,49 +127,19 @@ inputData.value.body
   .sort((a, b) => +a._id.split('.')[1] - +b._id.split('.')[1])
   .sort((a, b) => +a._id.split('.')[0] - +b._id.split('.')[0])
 
-// watchEffect(() => {
-//   inputData.value.body.sort((a, b) => {
-//     if (statusMark.value) {
-//       return 0
-//     }
-//     const x = a.status?.toLowerCase()
-//     const y = b.status?.toLowerCase()
-//     return x < y ? -1 : x > y ? 1 : 0
-//   })
-// })
-
-// const inputData = ref<cabtimeType>( JSON.parse(JSON.stringify(props.inputData)))
-// const inputData = <cabtimeType>JSON.parse(JSON.stringify(props.inputData))
-const timeToCalc = computed(() => store.state.photosModule.passedTime as number)
-
-// const copy = computed(() => readonly(inputData.value.body))
-// console.log(isRef(props.inputData), "isRef");
-
-// const copyInputData = computed(() => {
-//   const copy = JSON.parse(JSON.stringify(props.inputData)) as cabtimeType
-
-//     copy.body.sort((a, b) => +a._id.split('.')[1] - +b._id.split('.')[1])
-//     .sort((a, b) => +a._id.split('.')[0] - +b._id.split('.')[0])
-//     .sort((a, b) => {
-//       if (statusMark.value){return 0}
-//       const x = a.status?.toLowerCase()
-//       const y = b.status?.toLowerCase()
-//       return x < y ? -1 : x > y ? 1 : 0
-//     })
-//     return copy.body
-//     })
+const timeToCalc = computed(() => store.state.passedTime)
 const firstCaptureData = () => {
   const rawData = toRaw(unref(inputData))
 
   state.allSumm = rawData.body.reduce((acc: number, e) => {
     if (e?.status && e.status !== 'open') {
-      console.log(e.result);
-      
+      console.log(e.result)
+
       acc += e.result
     }
     return acc
   }, 0)
-console.log(state.allSumm);
+  console.log(state.allSumm)
   const partiallySumm = rawData.body.reduce(
     (acc: number, e) => (acc += e.propTime!),
     0
