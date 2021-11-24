@@ -158,8 +158,9 @@ import { reactive, toRefs, watch, computed, ref } from 'vue'
 import { useFetch } from '@/hooks/fetch'
 import infoRender from '@/components/infoRender.vue'
 import { useStore } from 'vuex'
+import { onBeforeRouteLeave, onBeforeRouteUpdate, useRouter } from 'vue-router'
 // import conditionalRender from '@/components/conditionalRender.vue'
-import renderInputs from '@/components/renderInputs.js'
+import renderInputs from '@/components/renderInputs'
 export default {
   components: {
     // conditionalRender,
@@ -180,7 +181,7 @@ export default {
       updateIndex: new Set(),
     })
     const getIndex = (i) => state.updateIndex.add(i)
-
+    const router = useRouter()
     const filterProjects = computed(() => {
       //  debugger
       return state.search
@@ -199,6 +200,15 @@ export default {
       filterProjects.value.filter(
         (f) => f.info?.extends['status project'] === status
       )
+
+    router.beforeEach(async (to, from) => {
+      !store.state.template && (await store.dispatch('extendProject'))
+      // reject the navigation
+      return true
+      // only fetch the user if the id changed as maybe only the query or the hash changed
+      // console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
+      // return false
+    })
 
     const getErrors = async (status) => {
       const { request, response } = useFetch(`/api/projects?status=${status}`)

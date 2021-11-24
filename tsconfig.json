@@ -20,6 +20,6 @@
     "src/**/*.d.ts",
     "src/**/*.tsx",
     "src/**/*.vue",
-    "src/store/index.js"
+    "src/store/index.ts"
   ]
 }

@@ -1,5 +1,5 @@
 import { ref, Ref } from 'vue'
-import store from '@/store/index'
+import { store } from '@/store/index'
 type ApiRequest = () => Promise<void>
 
 interface FetchApi<T> {
