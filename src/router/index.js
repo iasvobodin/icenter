@@ -30,10 +30,6 @@ const routes = [
         component: () => import('@/views/admin/UserProfile.vue'),
       },
       {
-        path: 'addproject',
-        component: () => import('@/views/admin/addProject.vue'),
-      },
-      {
         path: 'reports',
         component: () => import('@/views/admin/reports.vue'),
       },
