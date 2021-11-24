@@ -137,6 +137,7 @@ import renderInputs from '@/components/renderInputs'
 import { reactive } from '@vue/reactivity'
 import { useStore } from 'vuex'
 import { useRoute, useRouter } from 'vue-router'
+import { useFetch } from '@/hooks/fetch'
 
 const store = useStore()
 const route = useRoute()
@@ -201,16 +202,31 @@ const deleteError = async () => {
       ttl: 10,
     }),
   }
+
+  const { request, response } = useFetch('/api/post_item', delErr)
+
+  await request()
+
   // await fetch('/api/POST_openError', delErr)
-  await fetch('/api/post_item', delErr)
-  state.error.photos.length > 0 &&
-    (await Promise.all(
+  // await fetch('/api/post_item', delErr)
+
+  if (state.error.photos.length > 0) {
+    await Promise.all(
       state.error.photos.map(async (e) => {
         await fetch(
           `/api/blob?container=errors-photo&fileName=${e}&delblob=true`
         )
       })
-    ))
+    )
+  }
+  // state.error.photos.length > 0 &&
+  //   (await Promise.all(
+  //     state.error.photos.map(async (e) => {
+  //       await fetch(
+  //         `/api/blob?container=errors-photo&fileName=${e}&delblob=true`
+  //       )
+  //     })
+  //   ))
   router.back()
 }
 
