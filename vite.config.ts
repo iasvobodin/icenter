@@ -4,7 +4,7 @@ import eslintPlugin from 'vite-plugin-eslint'
 import { resolve } from 'path'
 import tsconfigPaths from 'vite-tsconfig-paths'
 
-// https://vitejs.dev/config/!!! 
+// https://vitejs.dev/config/!!!
 export default defineConfig({
   build: {
     manifest: true,

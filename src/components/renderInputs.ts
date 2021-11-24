@@ -11,17 +11,20 @@ export default defineComponent({
           {
             required: this.required,
             value: this.modelValue[this.dataRender.name],
-            onInput: ($event: Event) => this.addVmodel($event, this.dataRender.name), // this.$emit('update:modelValue', {...this.modelValue, [this.dataRender.name] : $event.target.value}),
+            onInput: ($event: Event) =>
+              this.addVmodel($event, this.dataRender.name), // this.$emit('update:modelValue', {...this.modelValue, [this.dataRender.name] : $event.target.value}),
           },
-          typeof this.dataRender.value !== "string" && this.dataRender.value.map((item) => {
-            return h('option', item)
-          })
+          typeof this.dataRender.value !== 'string' &&
+            this.dataRender.value.map((item) => {
+              return h('option', item)
+            })
         )
       case 'textarea':
         return h('textarea', {
           required: this.required,
           value: this.modelValue[this.dataRender.name],
-          onInput: ($event: Event) => this.addVmodel($event, this.dataRender.name),
+          onInput: ($event: Event) =>
+            this.addVmodel($event, this.dataRender.name),
           rows: 5,
         })
       case 'checkbox':
@@ -29,14 +32,16 @@ export default defineComponent({
           type: 'checkbox',
           required: this.required,
           value: this.modelValue[this.dataRender.name],
-          onInput: ($event: Event) => this.addVmodel($event, this.dataRender.name),
+          onInput: ($event: Event) =>
+            this.addVmodel($event, this.dataRender.name),
         })
       case 'number':
         return h('input', {
           type: 'number',
           required: this.required,
           value: this.modelValue[this.dataRender.name],
-          onInput: ($event: Event) => this.addVmodel($event, this.dataRender.name),
+          onInput: ($event: Event) =>
+            this.addVmodel($event, this.dataRender.name),
           min: this.dataRender.min,
           max: this.dataRender.max,
         })
@@ -45,7 +50,8 @@ export default defineComponent({
           type: 'text',
           required: this.required,
           value: this.modelValue[this.dataRender.name],
-          onInput: ($event: Event) => this.addVmodel($event, this.dataRender.name),
+          onInput: ($event: Event) =>
+            this.addVmodel($event, this.dataRender.name),
         })
     }
   },

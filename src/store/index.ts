@@ -28,7 +28,6 @@ import { templateType } from '@/types/templateType'
 
 // export const key: InjectionKey<Store<State>> = Symbol()
 
-
 export interface State {
   loader: false
   template: templateType
@@ -44,7 +43,7 @@ export interface State {
 }
 
 export const store = createStore<State>({
-  state : {
+  state: {
     loader: false,
     template: {} as templateType,
     projectList: null,
@@ -55,7 +54,8 @@ export const store = createStore<State>({
     cabinetItems: [],
     passedTime: 0,
     cabtimeWithStatus: null,
-    allSumm: 0,},
+    allSumm: 0,
+  },
   mutations: {
     changePassedTime(state, payload) {
       state.passedTime = payload
