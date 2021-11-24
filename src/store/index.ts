@@ -4,7 +4,7 @@ import { useFetch } from '@/hooks/fetch'
 import { InjectionKey } from 'vue'
 import { userType } from '@/types/userType'
 import { templateType } from '@/types/templateType'
-
+import { projectInfoType, projectType } from '@/types/projectInfoType'
 // const createName = (clientPrincipal) => {
 //   if (clientPrincipal.identityProvider === 'aad') {
 //     const splitName = clientPrincipal.userDetails.split('@')[0].split('.')
@@ -33,7 +33,7 @@ export interface State {
   template: templateType
   projectList: null
   selectedProjectNumber: string
-  projectInfo: null
+  projectInfo: projectInfoType
   user: userType
   currentError: null
   cabinetItems: []
@@ -48,7 +48,7 @@ export const store = createStore<State>({
     template: {} as templateType,
     projectList: null,
     selectedProjectNumber: '',
-    projectInfo: null,
+    projectInfo:{} as projectInfoType,
     user: <userType>{},
     currentError: null,
     cabinetItems: [],
@@ -86,7 +86,7 @@ export const store = createStore<State>({
     SETprojectNumber(state, payload) {
       state.selectedProjectNumber = payload
     },
-    SETcurrentProject(state, payload) {
+    SETcurrentProject(state, payload:projectInfoType) {
       state.projectInfo = payload
       // console.log(state.projectInfo, "state.projectInfo");
     },
@@ -112,18 +112,18 @@ export const store = createStore<State>({
   },
   actions: {
     async getCabinetsInfo({ commit }, payload) {
-      const projects = []
-      const { request, response } = useFetch('/api/projects?status=open')
+      // const projects: Array<projectType> = []
+      const { request, response } = useFetch<projectType[]>('/api/projects?status=open')
       await request()
-      response.value.forEach((p) => {
-        p.cabinets.forEach((c) => {
-          let payload = {
-            'project number': p.id,
+      const projects = response.value!.map((p) => {
+      return p.cabinets.map((c) => {
+          const payload = {
             ...c,
             ...p.info.base,
             ...p.info.extends,
+            'project number': p.id,
           }
-          projects.push(payload)
+          return {...payload}
         })
       })
       const currentInfo = projects.find((e) => e.wo === payload)
