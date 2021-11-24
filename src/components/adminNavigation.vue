@@ -2,7 +2,7 @@
   <div v-if="showMenu" v-click-away="onClickAway" class="navigation">
     <nav>
       <ul>
-        <li> 
+        <li>
           <router-link :to="`/projects`">Проекты</router-link>
         </li>
         <li>
