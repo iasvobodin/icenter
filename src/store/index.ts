@@ -80,7 +80,7 @@ export const store = createStore<State>({
       state.template = payload
     },
     extendTemplate(state, payload) {
-      // state.template = {} as templateType
+      state.template as templateType
       state.template.template = payload
     },
     SETprojectNumber(state, payload) {
