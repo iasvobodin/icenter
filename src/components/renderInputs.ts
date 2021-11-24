@@ -2,6 +2,7 @@ import { h, defineComponent, PropType } from 'vue'
 import { Extend } from '@/types/templateType'
 
 export default defineComponent({
+  name: 'renderInputs',
   render() {
     switch (this.dataRender._field) {
       case 'select':
@@ -10,17 +11,20 @@ export default defineComponent({
           {
             required: this.required,
             value: this.modelValue[this.dataRender.name],
-            onInput: ($event: Event) => this.addVmodel($event, this.dataRender.name), // this.$emit('update:modelValue', {...this.modelValue, [this.dataRender.name] : $event.target.value}),
+            onInput: ($event: Event) =>
+              this.addVmodel($event, this.dataRender.name), // this.$emit('update:modelValue', {...this.modelValue, [this.dataRender.name] : $event.target.value}),
           },
-          typeof this.dataRender.value !== "string" && this.dataRender.value.map((item) => {
-            return h('option', item)
-          })
+          typeof this.dataRender.value !== 'string' &&
+            this.dataRender.value.map((item) => {
+              return h('option', item)
+            })
         )
       case 'textarea':
         return h('textarea', {
           required: this.required,
           value: this.modelValue[this.dataRender.name],
-          onInput: ($event: Event) => this.addVmodel($event, this.dataRender.name),
+          onInput: ($event: Event) =>
+            this.addVmodel($event, this.dataRender.name),
           rows: 5,
         })
       case 'checkbox':
@@ -28,14 +32,16 @@ export default defineComponent({
           type: 'checkbox',
           required: this.required,
           value: this.modelValue[this.dataRender.name],
-          onInput: ($event: Event) => this.addVmodel($event, this.dataRender.name),
+          onInput: ($event: Event) =>
+            this.addVmodel($event, this.dataRender.name),
         })
       case 'number':
         return h('input', {
           type: 'number',
           required: this.required,
           value: this.modelValue[this.dataRender.name],
-          onInput: ($event: Event) => this.addVmodel($event, this.dataRender.name),
+          onInput: ($event: Event) =>
+            this.addVmodel($event, this.dataRender.name),
           min: this.dataRender.min,
           max: this.dataRender.max,
         })
@@ -44,17 +50,16 @@ export default defineComponent({
           type: 'text',
           required: this.required,
           value: this.modelValue[this.dataRender.name],
-          onInput: ($event: Event) => this.addVmodel($event, this.dataRender.name),
+          onInput: ($event: Event) =>
+            this.addVmodel($event, this.dataRender.name),
         })
     }
   },
   methods: {
     addVmodel($event: Event, key: string) {
-      // console.log($event.target.value);
-      if (!($event.target instanceof HTMLInputElement)) return
       this.$emit('update:modelValue', {
         ...this.modelValue,
-        [key]: $event.target.value,
+        [key]: ($event.target as HTMLInputElement).value,
       })
     },
   },

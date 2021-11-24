@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { store }  from '@/store/index'
+import { store } from '@/store/index'
 const routes = [
   {
     path: '/',
@@ -51,15 +51,14 @@ const routes = [
     path: '/errors/:errorId',
     component: () => import('@/views/errors/_errorId.vue'),
     beforeEnter: async (to, from) => {
-      console.log(Object.keys(store.state.template).length)
-      Object.keys(store.state.template).length===0 && (await store.dispatch('GET_template'))
+      !store.state.template.error && (await store.dispatch('GET_template'))
       return true
     },
   },
   {
     path: '/errors/addNewError',
     beforeEnter: async (to, from) => {
-      Object.keys(store.state.template).length===0 && (await store.dispatch('GET_template'))
+      !store.state.template.error && (await store.dispatch('GET_template'))
       return true
     },
     component: () => import('@/views/errors/addNewError.vue'),
@@ -68,7 +67,7 @@ const routes = [
     path: '/errors/info',
     component: () => import('@/views/errors/info.vue'),
     beforeEnter: async (to, from) => {
-      Object.keys(store.state.template).length===0 && (await store.dispatch('GET_template'))
+      !store.state.template.error && (await store.dispatch('GET_template'))
       return true
     },
   },
@@ -88,7 +87,8 @@ const routes = [
     path: '/cabinets/:cabinetId',
     component: () => import('@/views/cabinets/_cabinetId.vue'),
     beforeEnter: async (to, from) => {
-      Object.keys(store.state.template).length===0 && (await store.dispatch('GET_template'))
+      Object.keys(store.state.template).length === 0 &&
+        (await store.dispatch('GET_template'))
       return true
     },
   },
@@ -96,7 +96,8 @@ const routes = [
     path: '/cabtimes',
     component: () => import('@/views/cabtimes/cabtimes.vue'),
     beforeEnter: async (to, from) => {
-      Object.keys(store.state.template).length===0 && (await store.dispatch('GET_template'))
+      Object.keys(store.state.template).length === 0 &&
+        (await store.dispatch('GET_template'))
       return true
     },
   },
@@ -104,7 +105,8 @@ const routes = [
     path: '/cabtimes/:cabtimeId',
     component: () => import('@/views/cabtimes/_cabtimeId.vue'),
     beforeEnter: async (to, from) => {
-      Object.keys(store.state.template).length===0 && (await store.dispatch('GET_template'))
+      Object.keys(store.state.template).length === 0 &&
+        (await store.dispatch('GET_template'))
       return true
     },
   },
@@ -112,7 +114,8 @@ const routes = [
     path: '/cabtimes/addNewCabtime',
     component: () => import('@/views/cabtimes/addNewCabtime.vue'),
     beforeEnter: async (to, from) => {
-      Object.keys(store.state.template).length===0 && (await store.dispatch('GET_template'))
+      Object.keys(store.state.template).length === 0 &&
+        (await store.dispatch('GET_template'))
       return true
     },
   },
@@ -120,7 +123,8 @@ const routes = [
     path: '/projects',
     component: () => import('@/views/projects/projects.vue'),
     beforeEnter: async (to, from) => {
-      Object.keys(store.state.template).length===0 && (await store.dispatch('extendProject'))
+      Object.keys(store.state.template).length === 0 &&
+        (await store.dispatch('extendProject'))
       return true
     },
   },
@@ -128,7 +132,8 @@ const routes = [
     path: '/projects/addNewProject',
     component: () => import('@/views/projects/addNewProject.vue'),
     beforeEnter: async (to, from) => {
-      Object.keys(store.state.template).length===0 && (await store.dispatch('GET_template'))
+      Object.keys(store.state.template).length === 0 &&
+        (await store.dispatch('GET_template'))
       return true
     },
   },
@@ -136,7 +141,8 @@ const routes = [
     path: '/projects/addNewProjectManual',
     component: () => import('@/views/projects/addNewProjectManual.vue'),
     beforeEnter: async (to, from) => {
-      Object.keys(store.state.template).length===0 && (await store.dispatch('GET_template'))
+      Object.keys(store.state.template).length === 0 &&
+        (await store.dispatch('GET_template'))
       return true
     },
   },
@@ -144,7 +150,8 @@ const routes = [
     path: '/projects/:projectId',
     component: () => import('@/views/projects/_projectId.vue'),
     beforeEnter: async (to, from) => {
-      Object.keys(store.state.template).length===0 && (await store.dispatch('GET_template'))
+      Object.keys(store.state.template).length === 0 &&
+        (await store.dispatch('GET_template'))
       return true
     },
   },

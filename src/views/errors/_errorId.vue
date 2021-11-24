@@ -4,12 +4,12 @@
       <h1>{{ $route.params.errorId }}</h1>
       <br />
     </div>
-    <div v-if="error" class="cabinet__info">
+    <div v-if="state.error" class="cabinet__info">
       <section class="information">
-        <info-render :info-data="error.info" />
+        <info-render :info-data="state.error.info" />
       </section>
       <section
-        v-for="(val, key) in error.body"
+        v-for="(val, key) in state.error.body"
         :key="val.id"
         class="eror__body"
       >
@@ -22,10 +22,10 @@
         </div>
       </section>
       <section class="mod__error__body">
-        <form id="errorData" @submit.prevent="saveChanges = true">
+        <form id="errorData" @submit.prevent="state.saveChanges = true">
           <div
             v-for="(value, key, index) in $store.state.template?.error[
-              error.type
+              state.error.type
             ]"
             :key="index"
           >
@@ -44,28 +44,33 @@
                   {{ k }}
                 </h4>
                 <render-inputs
-                  v-model="error.body[key]"
+                  v-model="state.error.body[key]"
                   :required="
                     !$store.state.user.info.userRoles.includes('admin')
                   "
                   :data-render="v"
                 />
               </div>
-              <div v-if="error.body[key] && error.body[key]['Ответственный']">
+              <div
+                v-if="
+                  state.error.body[key] &&
+                  state.error.body[key]['Ответственный']
+                "
+              >
                 <div class="error__item">
                   <h4 class="error__item__title">
-                    {{ error.body[key]['Ответственный'] }}
+                    {{ state.error.body[key]['Ответственный'] }}
                   </h4>
                   <select
-                    v-model="error.body[key]['Ошибку допустил']"
+                    v-model="state.error.body[key]['Ошибку допустил']"
                     required
                     :name="key"
-                    :value="error.body[key]['Ошибку допустил']"
+                    :value="state.error.body[key]['Ошибку допустил']"
                     class="error__item__desc"
                   >
                     <option
                       v-for="(value2, key2, index2) in $store.state.template[
-                        error.body[key2]['Ответственный']
+                        state.error.body[key2]['Ответственный']
                       ]"
                       :key="index2"
                     >
@@ -81,196 +86,210 @@
         </form>
       </section>
       <item-photo-uploader
-        v-if="error"
-        :change-photos="changeInfo"
+        v-if="state.error"
+        :change-photos="state.changeInfo"
         container="errors-photo"
-        :current-photos="error.photos"
-        :object-id="error.id"
-        :save-changes-photo="saveChanges"
+        :current-photos="state.error.photos"
+        :object-id="state.error.id"
+        :save-changes-photo="state.saveChanges"
         @uploadChanges="mainEmitFromPhotos"
       />
     </div>
     <div v-else class="loading" />
-    <p v-if="errorIsNotDef">{{ errorIsNotDef }}</p>
+    <p v-if="state.errorIsNotDef">{{ state.errorIsNotDef }}</p>
   </div>
   <br />
   <br />
   <div class="button__block">
     <button
       v-if="
-        error &&
-        !changeInfo &&
-        (error.info.Добавил === $store.state.user.info.userDetails ||
-          error.info.status === 'confirmed' ||
+        state.error &&
+        !state.changeInfo &&
+        (state.error?.info.Добавил === $store.state.user.info.userDetails ||
+          state.error?.info.status === 'confirmed' ||
           $store.state.user.info.userRoles.includes('admin'))
       "
       @click="changeData"
     >
-      {{ !changeInfo ? 'Редактировать' : 'Отмена' }}
+      {{ !state.changeInfo ? 'Редактировать' : 'Отмена' }}
     </button>
     <button
-      v-if="changeInfo && $store.state.user.info.userRoles.includes('admin')"
+      v-if="
+        state.changeInfo && $store.state.user.info.userRoles.includes('admin')
+      "
       @click="deleteError"
     >
       Удалить
     </button>
-    <button v-if="changeInfo" type="submit" form="errorData">Сохранить</button>
+    <button v-if="state.changeInfo" type="submit" form="errorData">
+      Сохранить
+    </button>
   </div>
 
   <!-- <img crossorigin="anonymous" src="https://icaenter.blob.core.windows.net/errors-photo/21-01-04-12-30-23.jpg" alt="11"> -->
 </template>
 
-<script>
+<script setup>
 import itemPhotoUploader from '@/components/itemPhotoUploader.vue'
 import conditionalRender from '@/components/conditionalRender.vue'
 import infoRender from '@/components/infoRender.vue'
 import renderInputs from '@/components/renderInputs'
-export default {
-  components: {
-    itemPhotoUploader,
-    renderInputs,
-    infoRender,
-  },
-  data() {
-    return {
-      saveChanges: false,
-      changeInfo: false,
-      error: null,
-      errorIsNotDef: null,
+import { reactive } from '@vue/reactivity'
+import { useStore } from 'vuex'
+import { useRoute, useRouter } from 'vue-router'
+
+const store = useStore()
+const route = useRoute()
+const router = useRouter()
+// export default {
+//   components: {
+//     itemPhotoUploader,
+//     renderInputs,
+//     infoRender,
+//   },
+//   data() {
+//     return {
+//       saveChanges: false,
+//       changeInfo: false,
+//       error: null,
+//       state.errorIsNotDef: null,
+//     }
+//   },
+const state = reactive({
+  saveChanges: false,
+  changeInfo: false,
+  error: null,
+  errorIsNotDef: null,
+})
+
+const getCurrentError = async () => {
+  try {
+    const responsError = await fetch(`/api/errors/${route.params.errorId}`)
+    const error = await responsError.json()
+    if (!responsError.ok) {
+      state.errorIsNotDef = 'Данной ошибки не существует'
+      console.log('Данной ошибки не существует')
     }
-  },
 
-  async created() {
-    this.error = await this.getCurrentError()
-    this.error.body = this.error.body[this.error.body.length - 1]
-  },
-  methods: {
-    async mainEmitFromPhotos(e) {
-      this.error.photos = await e
-      this.updateErorData()
-    },
-    async deleteError() {
-      const delErr = {
-        method: 'POST', // или 'PUT'
-        body: JSON.stringify({
-          id: this.error.id,
-          status: this.error.status,
-          type: this.error.type,
-          info: {
-            wo: this.error.info.wo,
-          },
-          ttl: 10,
-        }),
-      }
-      // await fetch('/api/POST_openError', delErr)
-      await fetch('/api/post_item', delErr)
-      this.error.photos.length > 0 &&
-        (await Promise.all(
-          this.error.photos.map(async (e) => {
-            await fetch(
-              `/api/blob?container=errors-photo&fileName=${e}&delblob=true`
-            )
-          })
-        ))
-      this.$router.back()
-    },
-
-    returnRender(key) {
-      if (
-        this.changeInfo &&
-        this.$store.state.user.info.userRoles.includes('admin')
-      ) {
-        return true
-      }
-      if (this.changeInfo && this.error.info.status === 'confirmed') {
-        if (key === 'Открыто') {
-          return false
-        }
-        if (key === 'Принято') {
-          return false
-        }
-        if (key === 'Устранено') {
-          return true
-        }
-      }
-      if (
-        this.changeInfo &&
-        this.$store.state.user.info.userDetails.toLowerCase() ===
-          this.error.info.Добавил
-      ) {
-        if (key === 'Открыто') {
-          return true
-        }
-        if (key === 'Принято') {
-          return false
-        }
-        if (key === 'Устранено') {
-          return false
-        }
-      }
-    },
-    changeData() {
-      this.changeInfo = !this.changeInfo
-    },
-    async updateErorData() {
-      //GET CURRENT ITEM FROM DB
-      const err = await this.getCurrentError()
-      const photos = this.error.photos
-      // OBJECT FOR NEW UPDATET ERROR
-      const updateErorBody = {
-        ...err,
-        info: {
-          ...err.info,
-          status: Object.values(this.error.body.Устранено)[0]
-            ? 'closed'
-            : Object.values(this.error.body.Принято)[0]
-            ? 'confirmed'
-            : 'open',
-        },
-        body: [
-          ...err.body, //CURRENT BODY +
-          {
-            ...this.error.body, //CHANGED BODY
-            _changed: JSON.parse(
-              localStorage.getItem('user')
-            ).info.userDetails.toLowerCase(),
-            _time: `${Date.now()}`,
-          },
-        ],
-        photos,
-      }
-      try {
-        await fetch('/api/post_item', {
-          method: 'POST', // или 'PUT'
-          body: JSON.stringify({
-            ...updateErorBody,
-          }),
-        })
-      } finally {
-        this.error = await this.getCurrentError()
-        this.error.body = this.error.body[this.error.body.length - 1]
-        this.changeInfo = !this.changeInfo
-      }
-    },
-    async getCurrentError() {
-      try {
-        const responsError = await fetch(
-          `/api/errors/${this.$route.params.errorId}`
-        )
-        const error = await responsError.json()
-        if (!responsError.ok) {
-          this.errorIsNotDef = 'Данной ошибки не существует'
-          console.log('Данной ошибки не существует')
-        }
-
-        return error
-      } catch (error) {
-        this.errorIsNotDef = 'Данной ошибки не существует'
-        console.log('errors is not def', error)
-      }
-    },
-  },
+    return error
+  } catch (error) {
+    state.errorIsNotDef = 'Данной ошибки не существует'
+    console.log('errors is not def', error)
+  }
 }
+
+const getData = async () => {
+  state.error = await getCurrentError()
+  state.error.body = state.error.body[state.error.body.length - 1]
+}
+getData()
+// methods: {
+const mainEmitFromPhotos = async (e) => {
+  state.error.photos = await e
+  updateErorData()
+}
+const deleteError = async () => {
+  const delErr = {
+    method: 'POST', // или 'PUT'
+    body: JSON.stringify({
+      id: state.error.id,
+      status: state.error.status,
+      type: state.error.type,
+      info: {
+        wo: state.error.info.wo,
+      },
+      ttl: 10,
+    }),
+  }
+  // await fetch('/api/POST_openError', delErr)
+  await fetch('/api/post_item', delErr)
+  state.error.photos.length > 0 &&
+    (await Promise.all(
+      state.error.photos.map(async (e) => {
+        await fetch(
+          `/api/blob?container=errors-photo&fileName=${e}&delblob=true`
+        )
+      })
+    ))
+  router.back()
+}
+
+const returnRender = (key) => {
+  if (state.changeInfo && store.state.user.info.userRoles.includes('admin')) {
+    return true
+  }
+  if (state.changeInfo && state.error.info.status === 'confirmed') {
+    if (key === 'Открыто') {
+      return false
+    }
+    if (key === 'Принято') {
+      return false
+    }
+    if (key === 'Устранено') {
+      return true
+    }
+  }
+  if (
+    state.changeInfo &&
+    store.state.user.info.userDetails.toLowerCase() === state.error.info.Добавил
+  ) {
+    if (key === 'Открыто') {
+      return true
+    }
+    if (key === 'Принято') {
+      return false
+    }
+    if (key === 'Устранено') {
+      return false
+    }
+  }
+}
+const changeData = () => {
+  state.changeInfo = !state.changeInfo
+}
+const updateErorData = async () => {
+  //GET CURRENT ITEM FROM DB
+  const err = await getCurrentError()
+  const photos = state.error.photos
+  // OBJECT FOR NEW UPDATET ERROR
+  const updateErorBody = {
+    ...err,
+    info: {
+      ...err.info,
+      status: Object.values(state.error.body.Устранено)[0]
+        ? 'closed'
+        : Object.values(state.error.body.Принято)[0]
+        ? 'confirmed'
+        : 'open',
+    },
+    body: [
+      ...err.body, //CURRENT BODY +
+      {
+        ...state.error.body, //CHANGED BODY
+        _changed: JSON.parse(
+          localStorage.getItem('user')
+        ).info.userDetails.toLowerCase(),
+        _time: `${Date.now()}`,
+      },
+    ],
+    photos,
+  }
+  try {
+    await fetch('/api/post_item', {
+      method: 'POST', // или 'PUT'
+      body: JSON.stringify({
+        ...updateErorBody,
+      }),
+    })
+  } finally {
+    state.error = await getCurrentError()
+    state.error.body = state.error.body[state.error.body.length - 1]
+    state.changeInfo = !state.changeInfo
+  }
+}
+
+// },
+// }
 </script>
 
 <style lang="css" scoped>
