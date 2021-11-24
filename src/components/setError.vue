@@ -99,7 +99,7 @@
 <script>
 // import conditionalRender from '@/components/conditionalRender.vue'
 import itemPhotoUploader from '@/components/itemPhotoUploader.vue'
-import renderInputs from '@/components/renderInputs.js'
+import renderInputs from '@/components/renderInputs'
 import * as imageConversion from 'image-conversion'
 export default {
   components: {

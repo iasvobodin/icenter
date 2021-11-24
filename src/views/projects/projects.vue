@@ -160,7 +160,7 @@ import infoRender from '@/components/infoRender.vue'
 import { useStore } from 'vuex'
 import { onBeforeRouteLeave, onBeforeRouteUpdate, useRouter } from 'vue-router'
 // import conditionalRender from '@/components/conditionalRender.vue'
-import renderInputs from '@/components/renderInputs.js'
+import renderInputs from '@/components/renderInputs'
 export default {
   components: {
     // conditionalRender,
