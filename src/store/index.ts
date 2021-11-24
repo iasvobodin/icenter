@@ -1,4 +1,4 @@
-import { createStore, useStore as baseUseStore, Store } from 'vuex'
+import { createStore, Store } from 'vuex'
 import { useFetch } from '@/hooks/fetch'
 // import { timeTracking, timeTrackingType } from './timeTracking'
 import { InjectionKey } from 'vue'
@@ -28,24 +28,34 @@ import { templateType } from '@/types/templateType'
 
 // export const key: InjectionKey<Store<State>> = Symbol()
 
-const state = {
-  loader: false,
-  template: {} as templateType,
-  projectList: null,
-  selectedProjectNumber: '',
-  projectInfo: null,
-  user: <userType>{},
-  currentError: null,
-  cabinetItems: [],
-  passedTime: 0,
-  cabtimeWithStatus: null,
-  allSumm: 0,
+
+export interface State {
+  loader: false
+  template: templateType
+  projectList: null
+  selectedProjectNumber: string
+  projectInfo: null
+  user: userType
+  currentError: null
+  cabinetItems: []
+  passedTime: number
+  cabtimeWithStatus: null
+  allSumm: number
 }
 
-export type State = typeof state
-
 export const store = createStore<State>({
-  state,
+  state : {
+    loader: false,
+    template: {} as templateType,
+    projectList: null,
+    selectedProjectNumber: '',
+    projectInfo: null,
+    user: <userType>{},
+    currentError: null,
+    cabinetItems: [],
+    passedTime: 0,
+    cabtimeWithStatus: null,
+    allSumm: 0,},
   mutations: {
     changePassedTime(state, payload) {
       state.passedTime = payload
@@ -70,7 +80,7 @@ export const store = createStore<State>({
       state.template = payload
     },
     extendTemplate(state, payload) {
-      state.template = {} as templateType
+      // state.template = {} as templateType
       state.template.template = payload
     },
     SETprojectNumber(state, payload) {
