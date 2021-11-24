@@ -2,6 +2,7 @@ import { h, defineComponent, PropType } from 'vue'
 import { Extend } from '@/types/templateType'
 
 export default defineComponent({
+  name: 'renderInputs',
   render() {
     switch (this.dataRender._field) {
       case 'select':
@@ -50,11 +51,9 @@ export default defineComponent({
   },
   methods: {
     addVmodel($event: Event, key: string) {
-      // console.log($event.target.value);
-      if (!($event.target instanceof HTMLInputElement)) return
       this.$emit('update:modelValue', {
         ...this.modelValue,
-        [key]: $event.target.value,
+        [key]: ($event.target as HTMLInputElement).value,
       })
     },
   },
