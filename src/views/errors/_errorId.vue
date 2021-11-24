@@ -124,7 +124,7 @@
 import itemPhotoUploader from '@/components/itemPhotoUploader.vue'
 import conditionalRender from '@/components/conditionalRender.vue'
 import infoRender from '@/components/infoRender.vue'
-import renderInputs from '@/components/renderInputs.js'
+import renderInputs from '@/components/renderInputs'
 export default {
   components: {
     itemPhotoUploader,

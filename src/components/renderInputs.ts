@@ -64,7 +64,7 @@ export default defineComponent({
       required: true,
     },
     dataRender: {
-      type: {} as PropType<Extend>,
+      type: Object as PropType<Extend>,
       required: true,
     },
     required: {

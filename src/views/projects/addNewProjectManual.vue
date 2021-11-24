@@ -38,7 +38,7 @@
 import { useFetch } from '@/hooks/fetch'
 import { useRouter } from 'vue-router'
 import { watch, ref, reactive } from '@vue/runtime-core'
-import renderInputs from '@/components/renderInputs.js'
+import renderInputs from '@/components/renderInputs'
 
 const router = useRouter()
 
