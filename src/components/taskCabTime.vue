@@ -241,6 +241,7 @@ const changeStatus = (ev: Event, id: string, val: string) => {
   // const input = ev.target as HTMLInputElement;
 
   const item = inputData.value.body.find((e) => e._id === id)
+  
   ev.target.checked ? (item!.status = val) : (item!.status = 'open')
   console.log(item)
 
