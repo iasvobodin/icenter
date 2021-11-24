@@ -1,5 +1,5 @@
 <template>
-  <h1>iCenter.</h1>
+  <h1>iCenterStable.</h1>
   <p>This application development is in progress</p>
   <!-- <chooseCabinet />
   <setError /> -->
