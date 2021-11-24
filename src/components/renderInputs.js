@@ -14,7 +14,7 @@ export default {
           this.dataRender.value.map((item) => {
             return h('option', item)
           })
-        )
+        ) 
       case 'textarea':
         return h('textarea', {
           required: this.required,

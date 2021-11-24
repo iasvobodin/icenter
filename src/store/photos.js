@@ -14,7 +14,7 @@ export default {
       console.log(state.user.info.userDetails.toLowerCase())
       // if (state.cabTime.blobFiles.length > 0) {
       //     !state.cabTime.photos && (state.cabTime.photos = [])
-      //     state.formData
+      //     state.formData 
 
       //     state.cabTime.blobFiles?.forEach((e, i) => {
       //       const unic = Date.now()

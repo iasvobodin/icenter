@@ -11,7 +11,7 @@ const createName = (clientPrincipal) => {
   return clientPrincipal.userDetails.split('@')[0]
 }
 export default createStore({
-  state: {
+  state: { 
     loader: false,
     template: null,
     projectList: null,

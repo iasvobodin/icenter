@@ -21,7 +21,7 @@ const routes = [
     name: 'role',
     component: () => import('@/views/role.vue'),
   },
-  {
+  { 
     path: '/admin',
     component: () => import('@/views/admin/index.vue'),
     children: [
