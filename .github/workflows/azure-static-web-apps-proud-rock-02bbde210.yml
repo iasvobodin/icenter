@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master
+      - dev-ts
   pull_request:
     types: [opened, synchronize, reopened, closed]
     branches:
