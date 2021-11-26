@@ -5,6 +5,7 @@ import { InjectionKey } from 'vue'
 import { userType } from '@/types/userType'
 import { templateType } from '@/types/templateType'
 import { projectInfoType, projectType } from '@/types/projectInfoType'
+
 // const createName = (clientPrincipal) => {
 //   if (clientPrincipal.identityProvider === 'aad') {
 //     const splitName = clientPrincipal.userDetails.split('@')[0].split('.')
@@ -40,15 +41,23 @@ export interface State {
   passedTime: number
   cabtimeWithStatus: null
   allSumm: number
+  photosToUpload: FormData
+  compressBlob: Blob[]
+  photosToDelete: string[]
+  photoContainer: ''
 }
 
 export const store = createStore<State>({
   state: {
+    photosToUpload: new FormData(),
+    photosToDelete: [],
+    photoContainer: '',
+    compressBlob: [],
     loader: false,
     template: {} as templateType,
     projectList: null,
     selectedProjectNumber: '',
-    projectInfo:{} as projectInfoType,
+    projectInfo: {} as projectInfoType,
     user: <userType>{},
     currentError: null,
     cabinetItems: [],
@@ -57,6 +66,21 @@ export const store = createStore<State>({
     allSumm: 0,
   },
   mutations: {
+    SetPhotosToUpload(state, payload: FormData) {
+      state.photosToUpload = payload
+      //   for(const pair of state.photosToUpload.entries()) {
+      //     console.log(pair[0]+ ', '+ pair[1]);
+      //  }
+    },
+    SetPhotosToDelete(state, payload: string[]) {
+      state.photosToDelete = payload
+      //   for(const pair of state.photosToUpload.entries()) {
+      //     console.log(pair[0]+ ', '+ pair[1]);
+      //  }
+    },
+    SetPhotosContainer(state, payload: string) {
+      state.photoContainer = payload
+    },
     changePassedTime(state, payload) {
       state.passedTime = payload
     },
@@ -86,7 +110,7 @@ export const store = createStore<State>({
     SETprojectNumber(state, payload) {
       state.selectedProjectNumber = payload
     },
-    SETcurrentProject(state, payload:projectInfoType) {
+    SETcurrentProject(state, payload: projectInfoType) {
       state.projectInfo = payload
       // console.log(state.projectInfo, "state.projectInfo");
     },
@@ -111,24 +135,74 @@ export const store = createStore<State>({
     },
   },
   actions: {
-    async getCabinetsInfo({ commit }, payload) {
-      // const projects: Array<projectType> = []
-      const { request, response } = useFetch<projectType[]>('/api/projects?status=open')
+    async UPLOAD_PHOTOS({ state }) {
+      const options = {
+        method: 'POST',
+        body: state.photosToUpload,
+      }
+      const { request, response } = useFetch(
+        `/api/blob?container=${state.photoContainer}&test=true`,
+        options
+      )
       await request()
-      const projects = response.value!.map((p) => {
-      return p.cabinets.map((c) => {
-          const payload = {
+    },
+    async DELETE_PHOTOS({state }) {
+      if (state.photosToDelete.length > 0) {
+        await Promise.all(
+          state.photosToDelete.map(async (e) => {
+            const { request: deletePhoto } = useFetch(e)
+            await deletePhoto()
+          })
+        )
+      }
+    },
+    //
+    // if (photosForDelete.length > 0) {
+    //   await Promise.all(
+    //     photosForDelete.map(async (e) => {
+    //       const { request: deletePhoto } = useFetch(e)
+    //       await deletePhoto()
+    //     })
+    //   )
+    // }
+    // async getCabinetsInfo({ commit }, payload) {
+    //   const projects:projectType[] = []
+    //   const { request, response } = useFetch<projectType[]>('/api/projects?status=open')
+    //   await request()
+    //   response.value!.forEach((p) => {
+    //     p.cabinets.forEach((c) => {
+    //       let payload = {
+    //         ...c,
+    //         ...p.info.base,
+    //         ...p.info.extends,
+    //         'project number': p.id,
+    //       }
+    //       projects.push(payload)
+    //     })
+    //   })
+    //   const currentInfo = projects.find((e) => e.wo === payload)
+    //   commit('SETcurrentProject', currentInfo)
+    //   // console.log(projects);
+    // },
+    async getCabinetsInfo({ commit }, payload: string) {
+      const projects: projectInfoType[] = []
+      const { request, response } = useFetch<projectType[]>(
+        '/api/projects?status=open'
+      )
+      await request()
+      response.value!.forEach((p) => {
+        p.cabinets.forEach((c) => {
+          let payload: projectInfoType = {
             ...c,
             ...p.info.base,
             ...p.info.extends,
             'project number': p.id,
           }
-          return {...payload}
+          projects.push(payload)
         })
       })
       const currentInfo = projects.find((e) => e.wo === payload)
       commit('SETcurrentProject', currentInfo)
-      // console.log(projects);
     },
     async GET_cabinetItems({ commit }, payload) {
       const { request, response } = useFetch(`/api/cabinetItems?wo=${payload}`)

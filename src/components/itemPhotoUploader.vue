@@ -47,7 +47,13 @@
 <script setup>
 import { useFetch } from '@/hooks/fetch'
 import { reactive, ref, toRefs } from '@vue/reactivity'
-import { onBeforeUnmount, onMounted, watch } from '@vue/runtime-core'
+import {
+  onBeforeUnmount,
+  onMounted,
+  onUnmounted,
+  watch,
+  watchEffect,
+} from '@vue/runtime-core'
 import * as imageConversion from 'image-conversion'
 import { useStore } from 'vuex'
 const store = useStore()
@@ -78,12 +84,15 @@ const emit = defineEmits({
   deleteBlob: null,
   resizedBlob: null,
   uploadChanges: null,
+  updatedPhotos:null,
 })
 
 const { currentPhotos, changePhotos, container, saveChangesPhoto, objectId } =
   toRefs(props)
 
 const fileInput = ref(null)
+
+store.commit('SetPhotosContainer', props.container)
 
 const state = reactive({
   emitPhotos: [],
@@ -108,16 +117,20 @@ const deleteCurrentPhoto = (el, i) => {
     `/api/blob?container=${props.container}&fileName=thumb__${el}&delblob=true`
   )
   //DELETE PROPS !!!  IMPLICIT BEHAVIOR
-  props.currentPhotos.splice(i, 1)
-
+  currentPhotos.value.splice(i, 1)
+  // props.currentPhotos.splice(i, 1)
+  store.commit('SetPhotosToDelete', photosForDelete)
   // emit('deleteBlob', photosForDelete)
 }
-
+watchEffect(()=>{
+  emit('updatedPhotos', [...currentPhotos.value, ...state.emitPhotos])
+})
 const deletePhoto = (i) => {
   state.files.fileInputUnic.splice(i, 1)
   state.files.compressBlob.splice(i, 1)
   URL.revokeObjectURL(state.blobLink[i])
   state.blobLink.splice(i, 1)
+  uploadChangesStore(state.files.compressBlob)
   //emit('resizedBlob', state.files.compressBlob)
 }
 
@@ -134,17 +147,6 @@ const compressPhoto = async (f, i) => {
   state.files.compressBlob[i] = compressBlob
 
   state.blobLink[i] = URL.createObjectURL(compressBlob)
-
-  //     // ON A FEATURE
-
-  //     // const img = await imageConversion.urltoImage(newBlobUrl)
-  //     // const canvas = await imageConversion.imagetoCanvas(img)
-  //     // canvas.style.width = '100%'
-  //     // canvas.style.height = '100%'
-  //     // canvas.style.objectFit = 'cover'
-  //     // canvas.style.objectPosition = 'center' //, ...canvas.style}
-
-  // emit('resizedBlob', state.files.compressBlob)
 }
 
 const checkIfFileExist = async () => {
@@ -156,6 +158,24 @@ const checkIfFileExist = async () => {
       }
     })
   )
+  uploadChangesStore(state.files.compressBlob)
+}
+
+const uploadChangesStore = (blobArr) => {
+  const formData = new FormData()
+  const unicId = Date.now()
+const emitPhotos = []
+  if (blobArr.length > 0) {
+    blobArr.map((e, i) => {
+      const imageName = `${
+        props.objectId
+      }__${store.state.user.info.userDetails.toLowerCase()}__${unicId + i}.jpg`
+      emitPhotos.push(imageName)
+      formData.set(`photo${unicId + i}`, e, imageName)
+    })
+    state.emitPhotos = emitPhotos
+    store.commit('SetPhotosToUpload', formData)
+  }
 }
 
 const uploadChanges = async () => {
@@ -196,9 +216,10 @@ const uploadChanges = async () => {
       formData.set(`photo${unicId + i}`, e, imageName)
     })
     await request()
+    store.commit('SetPhotosToUpload', formData)
   }
 
-  return [...props.currentPhotos, ...state.emitPhotos]
+  return [...currentPhotos.value, ...state.emitPhotos]
 }
 
 watch(saveChangesPhoto, (newV, oldV) => {
@@ -252,6 +273,14 @@ onBeforeUnmount(() => {
     false
   )
 })
+
+onUnmounted(
+  () =>
+    //CLEARSTATE
+    store.commit('SetPhotosContainer', ''),
+  store.commit('SetPhotosToDelete', []),
+  store.commit('SetPhotosToUpload', new FormData())
+)
 </script>
 
 <style lang="css" scoped>
