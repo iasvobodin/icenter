@@ -63,7 +63,7 @@
       </div>
       <br />
       <item-photo-uploader
-        :change-photos="true"
+        :change-photos-flag="true"
         container="errors-photo"
         :object-id="id"
         :save-changes-photo="saveChanges"

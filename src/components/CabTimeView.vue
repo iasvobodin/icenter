@@ -125,7 +125,7 @@
   </section>
   <div class="error-photos">
     <!-- <error-photos
-      :change-photos="changeData"
+      :change-photos-flag="changeData"
       container="cabtime-photo"
       :current-photos="inputData.photos"
       @resized-blob="addPhotos($event)"

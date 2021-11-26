@@ -40,7 +40,7 @@
     />
     <item-photo-uploader
       v-if="state.cabTime"
-      :change-photos="state.changeCabTime"
+      :change-photos-flag="state.changeCabTime"
       container="cabtime-photo"
       :current-photos="state.cabTime.photos"
       :object-id="state.cabTime.id"

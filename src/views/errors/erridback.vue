@@ -42,7 +42,7 @@
       </section>
       <h3 v-if="error.photos[0]">Фотографии</h3>
       <item-photo-uploader
-        :change-photos="changeInfo"
+        :change-photos-flag="changeInfo"
         :current-photos="error.photos"
         @delete-blob="setPH"
         @resized-blob="errorPhotosBlob($event)"

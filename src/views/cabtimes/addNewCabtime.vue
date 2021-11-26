@@ -40,7 +40,7 @@
       @final="em($event)"
     />
     <item-photo-uploader
-      :change-photos="true"
+      :change-photos-flag="true"
       container="cabtime-photo"
       :object-id="`cabtime__${projectInfoState.wo}`"
       :save-changes-photo="state.saveChanges"

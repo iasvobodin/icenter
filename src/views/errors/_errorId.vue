@@ -86,8 +86,7 @@
         </form>
       </section>
       <item-photo-uploader
-        v-if="state.error.body"
-        :change-photos="state.changeInfo"
+        :change-photos-flag="state.changeInfo"
         container="errors-photo"
         :current-photos="state.error.photos"
         :object-id="state.error.id"
@@ -140,11 +139,9 @@ import { useRoute, useRouter } from 'vue-router'
 import { useFetch } from '@/hooks/fetch'
 import { errorType } from '@/types/errorType'
 import { userType } from '@/types/userType'
-
 const store = useStore()
 const route = useRoute()
 const router = useRouter()
-
 type UsableError = Promise<{ errorFromServer: Ref<errorType | undefined> }>
 
 const state = reactive({
