@@ -160,8 +160,8 @@ const compressPhoto = async (f, i) => {
 
 const checkIfFileExist = async (e) => {
   // console.log(Object.values(e.target.files), 'inside file target');
-  console.log(Object.values(fileInput.value.files));
-  console.log(e);
+  console.log(Object.values(fileInput.value.files))
+  console.log(e)
   await Promise.all(
     e.map(async (f) => {
       if (!state.files.fileInputUnic.some((file) => f.name === file.name)) {
@@ -259,7 +259,7 @@ watch(saveChangesPhoto, (newV, oldV) => {
 // }
 const retrieveImageFromClipboardAsBlob = (pasteEvent) => {
   const items = pasteEvent.clipboardData.items
-const pasteFiles =[]
+  const pasteFiles = []
   for (var i = 0; i < items.length; i++) {
     // Skip content if not image
     if (items[i].type.indexOf('image') === -1) continue
@@ -268,9 +268,8 @@ const pasteFiles =[]
     pasteFiles.push(blob)
     // callback(blob, state.blobLink.length)
   }
-    console.log(pasteFiles)
-checkIfFileExist(pasteFiles)
-
+  console.log(pasteFiles)
+  checkIfFileExist(pasteFiles)
 }
 
 // onMounted(() => {

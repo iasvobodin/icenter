@@ -4,13 +4,13 @@
       <h1>{{ $route.params.errorId }}</h1>
       <br />
     </div>
-    <div v-if="state.error.body" class="cabinet__info">
+    <div v-if="state.error?.body" class="cabinet__info">
       <section class="information">
         <info-render :info-data="state.error.info" />
       </section>
       <section
         v-for="(val, key) in state.error.body[0]"
-        :key="val.id"
+        :key="key"
         class="eror__body"
       >
         <div v-if="Object.values(val)[1] && !key.startsWith('_')">
@@ -22,7 +22,7 @@
         </div>
       </section>
       <section class="mod__error__body">
-        <form id="errorData" @submit.prevent="state.saveChanges = true">
+        <form id="errorData" @submit.prevent="updateErorData">
           <div
             v-for="(value, key, index) in $store.state.template?.error[
               state.error.type
@@ -91,7 +91,7 @@
         :current-photos="state.error.photos"
         :object-id="state.error.id"
         :save-changes-photo="state.saveChanges"
-        @uploadChanges="mainEmitFromPhotos"
+        @uploadChanges="updatePhotoCollection"
       />
     </div>
     <div v-else class="loading" />
@@ -102,7 +102,7 @@
   <div class="button__block">
     <button
       v-if="
-        state.error.body &&
+        state.error?.body &&
         !state.changeInfo &&
         (state.error?.info.Добавил === $store.state.user.info.userDetails ||
           state.error?.info.status === 'confirmed' ||
@@ -168,9 +168,8 @@ const getData = async () => {
 }
 getData()
 // methods: {
-const mainEmitFromPhotos = async (e: Promise<string[] | undefined>) => {
-  state.error!.photos = await e
-  updateErorData()
+const updatePhotoCollection = async (e: string[] | undefined) => {
+  state.error!.photos = e
 }
 const deleteError = async () => {
   const delErr = {
@@ -240,6 +239,7 @@ const changeData = () => {
 const updateErorData = async () => {
   //GET CURRENT ITEM FROM DB
   const err = (await getCurrentError()).errorFromServer.value
+
   const photos = state.error!.photos
   // OBJECT FOR NEW UPDATET ERROR
   let user = {} as userType
@@ -266,18 +266,23 @@ const updateErorData = async () => {
     ],
     photos,
   }
+  const { request, response } = useFetch('/api/post_item', {
+    method: 'POST', // или 'PUT'
+    body: JSON.stringify(updateErorBody),
+  })
 
-  try {
-    await fetch('/api/post_item', {
-      method: 'POST', // или 'PUT'
-      body: JSON.stringify({
-        ...updateErorBody,
-      }),
-    })
-  } finally {
-    getData()
-    state.changeInfo = !state.changeInfo
-  }
+  await store.dispatch('UPLOAD_PHOTOS', 'errors-photo')
+  await store.dispatch('DELETE_PHOTOS')
+  await request()
+  // try {
+  //   await fetch('/api/post_item', {
+  //     method: 'POST', // или 'PUT'
+  //     body: JSON.stringify(updateErorBody),
+  //   })
+  // } finally {
+  getData()
+  state.changeInfo = !state.changeInfo
+  // }
 }
 </script>
 
