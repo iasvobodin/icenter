@@ -8,6 +8,7 @@
         v-model="selectedProject"
         :disabled="dis"
         type="text"
+        @keyup.enter="$event.target.blur()"
         list="projetList"
         :placeholder="placeHolder"
         @focus="listIsActive = true"

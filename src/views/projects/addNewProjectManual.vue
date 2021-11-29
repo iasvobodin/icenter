@@ -26,6 +26,7 @@
           v-model="selected.cabinets[i]['cab name']"
           required
           type="text"
+          @keyup.enter="$event.target.blur()"
         /><br /><br />
       </div>
       <div class="add__row" @click="addNewRow">+</div>

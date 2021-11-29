@@ -6,6 +6,7 @@
         v-model="state.search"
         class="choose"
         type="text"
+        @keyup.enter="$event.target.blur()"
         placeholder="wo или название шкафа"
       />
       <img

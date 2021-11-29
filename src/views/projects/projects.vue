@@ -9,6 +9,7 @@
     id="select__filter"
     v-model="search"
     type="text"
+    @keyup.enter="$event.target.blur()"
     placeholder="SF, PM, №"
   />
   <br />
