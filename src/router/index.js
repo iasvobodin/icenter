@@ -269,7 +269,7 @@ router.beforeEach(async (to, from) => {
         return '/role'
       } else {
         commitUser(userParse)
-        CHECK_userDB(userParse)
+       await CHECK_userDB(userParse)
         return true
       }
     } else {
@@ -279,7 +279,7 @@ router.beforeEach(async (to, from) => {
         if (!userCheck.info.userRoles.includes('icenter')) { // user from azure
           return '/role'
         } else {
-          CHECK_userDB(userCheck)
+         await CHECK_userDB(userCheck)
           return true
         }
       } else {
