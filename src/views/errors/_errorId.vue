@@ -282,7 +282,7 @@ const updateErorData = async () => {
   })
 
   await store.dispatch('UPLOAD_PHOTOS', 'errors-photo')
-  await store.dispatch('DELETE_PHOTOS')
+  // await store.dispatch('DELETE_PHOTOS')
   await request()
   // try {
   //   await fetch('/api/post_item', {

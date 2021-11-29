@@ -136,7 +136,7 @@ export const store = createStore<State>({
     },
   },
   actions: {
-    async UPLOAD_PHOTOS({ commit, state }, payload: string) {
+    async UPLOAD_PHOTOS({ dispatch, commit, state }, payload: string) {
       const { request, response } = useFetch(
         `/api/blob?container=${payload}&test=true`,
         { method: 'POST', body: state.photosToUpload }
@@ -144,9 +144,11 @@ export const store = createStore<State>({
       await request()
       //CLEAR STATE AFTER UPLOAD
       commit('SetPhotosToUpload', new FormData())
+      if (state.photosToDelete.length > 0) {
+       await dispatch('DELETE_PHOTOS')
+      }
     },
     async DELETE_PHOTOS({ commit, state }) {
-      if (state.photosToDelete.length > 0) {
         await Promise.all(
           state.photosToDelete.map(async (e) => {
             const { request: deletePhoto } = useFetch(e)
@@ -155,7 +157,6 @@ export const store = createStore<State>({
         )
         //CLEAR STATE AFTER DELETE
         commit('SetPhotosToDelete', [])
-      }
     },
     //
     // if (photosForDelete.length > 0) {

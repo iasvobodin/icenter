@@ -177,7 +177,7 @@ const postCabtime = async () => {
   })
   await request()
   await store.dispatch('UPLOAD_PHOTOS', 'cabtime-photo')
-  await store.dispatch('DELETE_PHOTOS')
+  // await store.dispatch('DELETE_PHOTOS')
 
   await getCabTime()
   await store.dispatch('getCabinetsInfo', route.params.cabtimeId)
