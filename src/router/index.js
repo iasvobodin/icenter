@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { store } from '@/store/index'
+import  { store }  from '@/store/index'
 const routes = [
   {
     path: '/',
@@ -206,12 +206,14 @@ const CHECK_auth = async () => {
 const commitUser = (user) => {
   window.localStorage.setItem('user', JSON.stringify(user))
   store.commit('setUserAuth', JSON.stringify(user))
+  // debugger
 }
 const CHECK_userDB = async (user) => {
   try {
     const registerUserRes = await fetch(
       `/api/user/${user.info.userId}?getRegisterUser=true`
-    )
+      )
+      // debugger
     //   console.log(responseUserAuth,'responseUserAuth');
     if (registerUserRes.ok) {
       user = await registerUserRes.json()
@@ -240,41 +242,41 @@ router.beforeEach(async (to, from) => {
 
   // Object.keys(store.state.template).length===0 && (await store.dispatch('GET_template'))
 
-  if (import.meta.env.MODE === 'development') {
-    const user = {
-      id: '9c0c1980f5904d10b43e552d2b7c4041',
-      type: 'info',
-      info: {
-        identityProvider: 'aad',
-        userId: '9c0c1980f5904d10b43e552d2b7c4041',
-        userDetails: 'ivan.svobodin@emerson.com',
-        userRoles: ['admin', 'anonymous', 'icenter', 'authenticated'],
-      },
-      body: {
-        name: 'I.S.',
-      },
-    }
-    commitUser(user)
-    return true
-  } else {
+  // if (import.meta.env.MODE === 'development') {
+  //   const user = {
+  //     id: '9c0c1980f5904d10b43e552d2b7c4041',
+  //     type: 'info',
+  //     info: {
+  //       identityProvider: 'aad',
+  //       userId: '9c0c1980f5904d10b43e552d2b7c4041',
+  //       userDetails: 'ivan.svobodin@emerson.com',
+  //       userRoles: ['admin', 'anonymous', 'icenter', 'authenticated'],
+  //     },
+  //     body: {
+  //       name: 'I.S.',
+  //     },
+  //   }
+  //   commitUser(user)
+  //   return true
+  // } else {
     //CHECK USER GLOBAL
     const user = window.localStorage.getItem('user') // type string
 
     if (user) {
-      const userParse = JSON.parse(user) // type object
+      const userParse = JSON.parse(user) // type object local user
       if (!userParse.info.userRoles.includes('icenter')) {
         //CHECK ROLE
         return '/role'
       } else {
         commitUser(userParse)
-        // CHECK_userDB(userParse)
+        CHECK_userDB(userParse)
         return true
       }
     } else {
       const userCheck = await CHECK_auth()
       if (userCheck) {
         //CHECK ROLE
-        if (!userCheck.info.userRoles.includes('icenter')) {
+        if (!userCheck.info.userRoles.includes('icenter')) { // user from azure
           return '/role'
         } else {
           CHECK_userDB(userCheck)
@@ -284,7 +286,7 @@ router.beforeEach(async (to, from) => {
         return '/login'
       }
     }
-  }
+  // }
 
   // const test = await CHECK_auth()
   // console.log(await CHECK_auth(), 'just check user auth from route own');

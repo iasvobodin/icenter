@@ -44,11 +44,11 @@
       container="cabtime-photo"
       :object-id="`cabtime__${projectInfoState.wo}`"
       :save-changes-photo="state.saveChanges"
-      @uploadChanges="mainEmitFromPhotos"
+       @updated-photos="updatePhotoCollection"
     />
   </section>
   <br />
-  <button v-if="projectInfoState?.wo" @click="state.saveChanges = true">
+  <button v-if="projectInfoState?.wo" @click="postCabTime">
     SEND
   </button>
   <br />
@@ -89,6 +89,7 @@ const state = reactive({
   ctv3: null,
   cabTime: null,
   saveChanges: false,
+  updatedPhotos:[]
 })
 const getCabTime = async (wo) => {
   const { request, response } = useFetch(`/api/errors/cabtime__${wo}`)
@@ -102,6 +103,10 @@ const getCabTime = async (wo) => {
   // state.projects = JSON.parse(JSON.stringify(state.errors))
 }
 const projectInfoState = computed(() => store.state.projectInfo)
+
+const updatePhotoCollection = (e) => {
+  state.updatedPhotos = e
+}
 
 const fetchProjectList = async () => {
   if (!state.projectData) {
@@ -129,68 +134,25 @@ const em = (e) => {
   state.ctv3 = e
 }
 
-const mainEmitFromPhotos = async (e) => {
-  state.ctv3.photos = await e
-  await postCabTime()
-  router.back()
-}
 const postCabTime = async () => {
-  // await photo()
-
+const photos = state.updatedPhotos
   const { request } = useFetch('/api/post_item', {
     method: 'POST', // или 'PUT'
     body: JSON.stringify({
       ...state.ctv3,
       body: state.ctv3.body.filter((e) => e.value),
+      photos
     }),
   })
   await request()
-  // router.back()
+  await store.dispatch('UPLOAD_PHOTOS', 'cabtime-photo')
+  router.back()
 }
-// const photo = async () => {
-//   const formData = new FormData()
-//   state.ctv3.blobFiles.map((e, i) =>
-//     formData.set(`photo${i + 1}`, e, state.ctv3.photos[i])
-//   )
-//   // UPLOAD PHOTOS
-//   const { request, response } = useFetch(
-//     '/api/blob?container=cabtime-photo&test=true',
-//     {
-//       method: 'POST',
-//       body: formData,
-//     }
-//   )
-//   await request()
-//   state.ctv3.blobFiles = null
-// }
 
 const clearstate = () => {
   store.commit('SETcurrentProject', {})
   state.projectInformation = null
-  // state.ctv3 = JSON.parse(JSON.stringify(store.state.template.CabTimeV3))
 }
-
-//         return {
-//             CabTimeGroup,
-//             projectInfoState,
-//             clearstate,
-//             cabtimeResult,
-//             addNewRow,
-//             // getType,
-//             groupBy,
-//             postCabTime,
-//             fetchProjectList,
-//             // result,
-//             calculateLogic,
-//             choose, // filterByGroup,
-//             cabtimeVal,
-//             chooseCabinet,
-//             finalResult,
-//             // summByType,
-//             ...toRefs(state)
-//         }
-//     }
-// }
 </script>
 
 <style lang="css" scoped>

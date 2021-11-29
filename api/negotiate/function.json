@@ -16,6 +16,7 @@
       "type": "signalRConnectionInfo",
       "name": "connectionInfo",
       "hubName": "icenter",
+      "userId": "{headers.x-ms-client-principal}",
       "direction": "in",
       "connectionStringSetting": "AzureSignalRConnectionString"
     }
