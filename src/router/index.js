@@ -235,6 +235,7 @@ const CHECK_userDB = async (user) => {
       console.log(error, 'error from register user in db')
     }
   }
+  console.log('CHECK_userDB');
 }
 
 router.beforeEach(async (to, from) => {
@@ -269,7 +270,7 @@ router.beforeEach(async (to, from) => {
         return '/role'
       } else {
         commitUser(userParse)
-       await CHECK_userDB(userParse)
+      //  await CHECK_userDB(userParse)
         return true
       }
     } else {
