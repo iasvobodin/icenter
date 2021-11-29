@@ -101,7 +101,7 @@ const {
 
 const fileInput = ref(null)
 
-store.commit('SetPhotosContainer', props.container)
+// store.commit('SetPhotosContainer', props.container)
 
 const state = reactive({
   emitPhotos: [],

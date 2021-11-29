@@ -87,11 +87,11 @@
       </section>
       <item-photo-uploader
         :change-photos-flag="state.changeInfo"
-        container="errors-photo"
+        :container="container"
         :current-photos="state.error.photos"
         :object-id="state.error.id"
         :save-changes-photo="state.saveChanges"
-        @uploadChanges="updatePhotoCollection"
+        @updated-photos="updatePhotoCollection"
       />
     </div>
     <div v-else class="loading" />
@@ -147,10 +147,14 @@ type UsableError = Promise<{ errorFromServer: Ref<errorType | undefined> }>
 const state = reactive({
   saveChanges: false,
   changeInfo: false,
+  updatedPhotos : [] as string[],
   error: {} as errorType | undefined,
   readOnlyError: {} as errorType | undefined,
   errorIsNotDef: null,
 })
+
+const container= "errors-photo"
+
 const getCurrentError = async (): UsableError => {
   // try {
   const { request, response: errorFromServer } = useFetch<errorType>(
@@ -168,8 +172,8 @@ const getData = async () => {
 }
 getData()
 // methods: {
-const updatePhotoCollection = async (e: string[] | undefined) => {
-  state.error!.photos = e
+const updatePhotoCollection = (e: string[]) => {
+  state.updatedPhotos = e
 }
 const deleteError = async () => {
   const delErr = {
@@ -189,15 +193,21 @@ const deleteError = async () => {
 
   await request()
 
-  if (state.error!.photos!.length > 0) {
-    await Promise.all(
-      state.error!.photos!.map(async (e) => {
-        await fetch(
-          `/api/blob?container=errors-photo&fileName=${e}&delblob=true`
-        )
-      })
-    )
-  }
+if (state.error!.photos!.length > 0) {
+   store.commit('PreparePhotosToDelete', {photos : state.error!.photos, container : "errors-photo"})
+   await store.dispatch('DELETE_PHOTOS')
+}
+
+
+  // if (state.error!.photos!.length > 0) {
+  //   await Promise.all(
+  //     state.error!.photos!.map(async (e) => {
+  //       await fetch(
+  //         `/api/blob?container=errors-photo&fileName=${e}&delblob=true`
+  //       )
+  //     })
+  //   )
+  // }
 
   router.back()
 }
@@ -240,7 +250,7 @@ const updateErorData = async () => {
   //GET CURRENT ITEM FROM DB
   const err = (await getCurrentError()).errorFromServer.value
 
-  const photos = state.error!.photos
+  const photos = state.updatedPhotos
   // OBJECT FOR NEW UPDATET ERROR
   let user = {} as userType
   const u = localStorage.getItem('user')

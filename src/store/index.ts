@@ -44,7 +44,7 @@ export interface State {
   photosToUpload: FormData
   compressBlob: Blob[]
   photosToDelete: string[]
-  photoContainer: ''
+  photoContainer: string
 }
 
 export const store = createStore<State>({
@@ -68,18 +68,19 @@ export const store = createStore<State>({
   mutations: {
     SetPhotosToUpload(state, payload: FormData) {
       state.photosToUpload = payload
-      //   for(const pair of state.photosToUpload.entries()) {
-      //     console.log(pair[0]+ ', '+ pair[1]);
-      //  }
     },
     SetPhotosToDelete(state, payload: string[]) {
       state.photosToDelete = payload
-      //   for(const pair of state.photosToUpload.entries()) {
-      //     console.log(pair[0]+ ', '+ pair[1]);
-      //  }
     },
-    SetPhotosContainer(state, payload: string) {
-      state.photoContainer = payload
+    // SetPhotosContainer(state, payload: string) {
+    //   state.photoContainer = payload
+    // },
+    PreparePhotosToDelete(state, payload: {photos:string[], container:string}) {
+      state.photosToDelete = payload.photos.reduce((acc:string[], e )=>{
+        acc.push(`/api/blob?container=${payload.container}&fileName=${e}&delblob=true`)
+        acc.push( `/api/blob?container=${payload.container}&fileName=thumb__${e}&delblob=true`)
+        return acc
+       },[])
     },
     changePassedTime(state, payload) {
       state.passedTime = payload

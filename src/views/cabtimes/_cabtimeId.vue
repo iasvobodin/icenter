@@ -45,7 +45,7 @@
       :current-photos="state.cabTime.photos"
       :object-id="state.cabTime.id"
       :save-changes-photo="state.saveChanges"
-      @uploadChanges="mainEmitFromPhotos"
+      @updated-photos="updatePhotoCollection"
     />
     <!-- @resized-blob="addPhotos($event)"
       @delete-blob="delPhotos($event)" -->
@@ -69,7 +69,7 @@
     >
       {{ state.changeCabTime ? 'Cancel' : 'Change' }}
     </button>
-    <button v-if="state.changeCabTime" @click="state.saveChanges = true">
+    <button v-if="state.changeCabTime" @click="postCabtime">
       Save
     </button>
     <button v-if="state.changeCabTime" @click="state.popupOpened = true">
@@ -96,6 +96,7 @@ const state = reactive({
   cabTime: null,
   changeCabTime: false,
   taskEdit: false,
+  updatedPhotos:[]
 })
 const route = useRoute()
 const router = useRouter()
@@ -157,20 +158,26 @@ const em = (e) => (state.cabTime = e)
 //     await request()
 //   }
 // }
-const mainEmitFromPhotos = async (e) => {
-  state.cabTime.photos = await e
-  postCabtime()
+// const mainEmitFromPhotos = async (e) => {
+//   state.cabTime.photos = await e
+//   postCabtime()
+// }
+const updatePhotoCollection = (e) => {
+  state.updatedPhotos = e
 }
-
 const postCabtime = async () => {
+  const photos = state.updatedPhotos
   const { request } = useFetch('/api/post_item', {
     method: 'POST', // или 'PUT'
     body: JSON.stringify({
       ...state.cabTime,
       body: state.cabTime.body.filter((e) => e.value),
+      photos
     }),
   })
   await request()
+  await store.dispatch('UPLOAD_PHOTOS', 'cabtime-photo')
+  await store.dispatch('DELETE_PHOTOS')
 
   await getCabTime()
   await store.dispatch('getCabinetsInfo', route.params.cabtimeId)
@@ -178,14 +185,19 @@ const postCabtime = async () => {
   state.changeCabTime = !state.changeCabTime
 }
 const deleteCabTime = async () => {
-  state.cabTime.photos?.length > 0 &&
-    (await Promise.all(
-      state.cabTime.photos.map(async (e) => {
-        await fetch(
-          `/api/blob?container=cabtime-photo&fileName=${e}&delblob=true`
-        )
-      })
-    ))
+  // state.cabTime.photos?.length > 0 &&
+  //   (await Promise.all(
+  //     state.cabTime.photos.map(async (e) => {
+  //       await fetch(
+  //         `/api/blob?container=cabtime-photo&fileName=${e}&delblob=true`
+  //       )
+  //     })
+  //   ))
+
+if (state.cabTime.photos?.length > 0) {
+   store.commit('PreparePhotosToDelete', {photos : state.cabTime.photos, container : "cabtime-photo"})
+   await store.dispatch('DELETE_PHOTOS')
+}
 
   const { request: deleteCabTimeReq } = useFetch('/api/post_item', {
     method: 'POST', // или 'PUT'
