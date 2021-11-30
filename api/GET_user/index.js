@@ -17,7 +17,7 @@ module.exports = async function (context, req, user) {
   if (req.query.postRegisterUser) {
     context.res = {
       status: 200,
-      body: req.body,
+      body: 'userUploaded',
     }
     return (context.bindings.userPost = req.body)
     // return

@@ -120,7 +120,7 @@ export default {
       role: 'f_error',
       statusConfirmed: false,
       statusClosed: false,
-      photos:[]
+      photos: [],
     }
   },
   methods: {
@@ -135,7 +135,7 @@ export default {
     //   this.error.photos = await e
     //   // this.postError()
     // },
-    updatePhotoCollection(e){
+    updatePhotoCollection(e) {
       this.photos = e
     },
     firedFileInput() {

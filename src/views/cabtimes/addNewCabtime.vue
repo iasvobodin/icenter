@@ -44,13 +44,11 @@
       container="cabtime-photo"
       :object-id="`cabtime__${projectInfoState.wo}`"
       :save-changes-photo="state.saveChanges"
-       @updated-photos="updatePhotoCollection"
+      @updated-photos="updatePhotoCollection"
     />
   </section>
   <br />
-  <button v-if="projectInfoState?.wo" @click="postCabTime">
-    SEND
-  </button>
+  <button v-if="projectInfoState?.wo" @click="postCabTime">SEND</button>
   <br />
   <br />
 </template>
@@ -89,7 +87,7 @@ const state = reactive({
   ctv3: null,
   cabTime: null,
   saveChanges: false,
-  updatedPhotos:[]
+  updatedPhotos: [],
 })
 const getCabTime = async (wo) => {
   const { request, response } = useFetch(`/api/errors/cabtime__${wo}`)
@@ -135,13 +133,13 @@ const em = (e) => {
 }
 
 const postCabTime = async () => {
-const photos = state.updatedPhotos
+  const photos = state.updatedPhotos
   const { request } = useFetch('/api/post_item', {
     method: 'POST', // или 'PUT'
     body: JSON.stringify({
       ...state.ctv3,
       body: state.ctv3.body.filter((e) => e.value),
-      photos
+      photos,
     }),
   })
   await request()

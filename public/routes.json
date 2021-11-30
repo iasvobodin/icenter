@@ -20,5 +20,4 @@
       "serve": "/.auth/login/aad?post_login_redirect_uri=/login"
     }
   ]
-  
 }

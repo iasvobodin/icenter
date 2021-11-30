@@ -147,13 +147,13 @@ type UsableError = Promise<{ errorFromServer: Ref<errorType | undefined> }>
 const state = reactive({
   saveChanges: false,
   changeInfo: false,
-  updatedPhotos : [] as string[],
+  updatedPhotos: [] as string[],
   error: {} as errorType | undefined,
   readOnlyError: {} as errorType | undefined,
   errorIsNotDef: null,
 })
 
-const container= "errors-photo"
+const container = 'errors-photo'
 
 const getCurrentError = async (): UsableError => {
   // try {
@@ -193,11 +193,13 @@ const deleteError = async () => {
 
   await request()
 
-if (state.error!.photos!.length > 0) {
-   store.commit('PreparePhotosToDelete', {photos : state.error!.photos, container : "errors-photo"})
-   await store.dispatch('DELETE_PHOTOS')
-}
-
+  if (state.error!.photos!.length > 0) {
+    store.commit('PreparePhotosToDelete', {
+      photos: state.error!.photos,
+      container: 'errors-photo',
+    })
+    await store.dispatch('DELETE_PHOTOS')
+  }
 
   // if (state.error!.photos!.length > 0) {
   //   await Promise.all(

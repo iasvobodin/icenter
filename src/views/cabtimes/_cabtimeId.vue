@@ -69,9 +69,7 @@
     >
       {{ state.changeCabTime ? 'Cancel' : 'Change' }}
     </button>
-    <button v-if="state.changeCabTime" @click="postCabtime">
-      Save
-    </button>
+    <button v-if="state.changeCabTime" @click="postCabtime">Save</button>
     <button v-if="state.changeCabTime" @click="state.popupOpened = true">
       Delete
     </button>
@@ -96,7 +94,7 @@ const state = reactive({
   cabTime: null,
   changeCabTime: false,
   taskEdit: false,
-  updatedPhotos:[]
+  updatedPhotos: [],
 })
 const route = useRoute()
 const router = useRouter()
@@ -172,7 +170,7 @@ const postCabtime = async () => {
     body: JSON.stringify({
       ...state.cabTime,
       body: state.cabTime.body.filter((e) => e.value),
-      photos
+      photos,
     }),
   })
   await request()
@@ -194,10 +192,13 @@ const deleteCabTime = async () => {
   //     })
   //   ))
 
-if (state.cabTime.photos?.length > 0) {
-   store.commit('PreparePhotosToDelete', {photos : state.cabTime.photos, container : "cabtime-photo"})
-   await store.dispatch('DELETE_PHOTOS')
-}
+  if (state.cabTime.photos?.length > 0) {
+    store.commit('PreparePhotosToDelete', {
+      photos: state.cabTime.photos,
+      container: 'cabtime-photo',
+    })
+    await store.dispatch('DELETE_PHOTOS')
+  }
 
   const { request: deleteCabTimeReq } = useFetch('/api/post_item', {
     method: 'POST', // или 'PUT'
