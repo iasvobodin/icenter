@@ -13,11 +13,6 @@
     {
       "errorType": "NotFound",
       "serve": "/custom-404.html"
-    },
-    {
-      "errorType": "Unauthenticated",
-      "statusCode": "302",
-      "serve": "/.auth/login/aad?post_login_redirect_uri=/login"
     }
   ]
 }

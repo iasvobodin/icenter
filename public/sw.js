@@ -46,10 +46,6 @@ self.addEventListener('activate', (e) => {
 })
 
 self.addEventListener('fetch', (e) => {
-  //   const modifiedHeaders = new Headers({
-  //     ...e.request.headers,
-  //     'x-ms-client-principal-id': '000000000000000000001'
-  //  });
   e.respondWith(
     caches
       .match(e.request)
