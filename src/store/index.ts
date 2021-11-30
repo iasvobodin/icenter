@@ -1,8 +1,8 @@
 import { createStore, Store } from 'vuex'
 import { useFetch } from '@/hooks/fetch'
 // import { timeTracking, timeTrackingType } from './timeTracking'
-import { InjectionKey } from 'vue'
-import { userType } from '@/types/userType'
+import { InjectionKey, Ref } from 'vue'
+import { userType, azureAuth } from '@/types/userType'
 import { templateType } from '@/types/templateType'
 import { projectInfoType, projectType } from '@/types/projectInfoType'
 
@@ -72,15 +72,28 @@ export const store = createStore<State>({
     SetPhotosToDelete(state, payload: string[]) {
       state.photosToDelete = payload
     },
+    SET_USER(state, payload:userType) {
+      window.localStorage.setItem('user', JSON.stringify(payload))
+      // store.commit('setUserAuth', JSON.stringify(payload))
+      state.user = payload
+      // debugger
+    },
     // SetPhotosContainer(state, payload: string) {
     //   state.photoContainer = payload
     // },
-    PreparePhotosToDelete(state, payload: {photos:string[], container:string}) {
-      state.photosToDelete = payload.photos.reduce((acc:string[], e )=>{
-        acc.push(`/api/blob?container=${payload.container}&fileName=${e}&delblob=true`)
-        acc.push( `/api/blob?container=${payload.container}&fileName=thumb__${e}&delblob=true`)
+    PreparePhotosToDelete(
+      state,
+      payload: { photos: string[]; container: string }
+    ) {
+      state.photosToDelete = payload.photos.reduce((acc: string[], e) => {
+        acc.push(
+          `/api/blob?container=${payload.container}&fileName=${e}&delblob=true`
+        )
+        acc.push(
+          `/api/blob?container=${payload.container}&fileName=thumb__${e}&delblob=true`
+        )
         return acc
-       },[])
+      }, [])
     },
     changePassedTime(state, payload) {
       state.passedTime = payload
@@ -145,18 +158,114 @@ export const store = createStore<State>({
       //CLEAR STATE AFTER UPLOAD
       commit('SetPhotosToUpload', new FormData())
       if (state.photosToDelete.length > 0) {
-       await dispatch('DELETE_PHOTOS')
+        await dispatch('DELETE_PHOTOS')
       }
     },
     async DELETE_PHOTOS({ commit, state }) {
-        await Promise.all(
-          state.photosToDelete.map(async (e) => {
-            const { request: deletePhoto } = useFetch(e)
-            await deletePhoto()
-          })
+      await Promise.all(
+        state.photosToDelete.map(async (e) => {
+          const { request: deletePhoto } = useFetch(e)
+          await deletePhoto()
+        })
+      )
+      //CLEAR STATE AFTER DELETE
+      commit('SetPhotosToDelete', [])
+    },
+    async CHECK_AUTH_GLOBAL({ commit, dispatch, state }): Promise<string | boolean> {
+      const user: string | null = window.localStorage.getItem('user') // type string
+
+      if (user) {
+        const userParse: userType = JSON.parse(user) // type object local user
+        if (!userParse.info.userRoles.includes('icenter')) {
+          //CHECK ROLE
+          return '/role'
+        } else {
+          Object.keys(state.user).length==0 && commit('SET_USER', userParse)
+          return true
+        }
+      } else {
+        const userCheck: false | userType = await dispatch('CHECK_AUTH_AZURE')
+        if (userCheck) {
+          //CHECK ROLE
+          if (!userCheck.info.userRoles.includes('icenter')) {
+            return '/role'
+          } else {
+            await dispatch('CHECK_AUTH_SERVER',userCheck)
+            return true
+          }
+        } else {
+          return '/login'
+        }
+      }
+    },
+
+    async CHECK_AUTH_AZURE(): Promise<false | userType> {
+      const createName = (
+        clientPrincipal: azureAuth['clientPrincipal']
+      ): string => {
+        if (clientPrincipal.identityProvider === 'aad') {
+          const splitName = clientPrincipal.userDetails.split('@')[0].split('.')
+          const name =
+            splitName[0][0].toUpperCase() +
+            '.' +
+            splitName[1][0].toUpperCase() +
+            '.'
+          return name
+        }
+        return clientPrincipal.userDetails.split('@')[0]
+      }
+
+      try {
+        const { request: auth, response } = useFetch<azureAuth>('/.auth/me')
+        await auth()
+        const user = response.value
+
+        const { clientPrincipal } = user!
+        //CREATE OBJECT FOR SERVER
+        if (clientPrincipal) {
+          const userRes = {
+            id: clientPrincipal.userId,
+            type: 'info',
+            info: clientPrincipal,
+            body: {
+              name: createName(clientPrincipal),
+            },
+          }
+          return userRes
+        }
+        return false
+      } catch (error) {
+        console.log(error, 'CHECK AUTH ERROR')
+        return false
+      }
+    },
+    async CHECK_AUTH_SERVER({ commit }, user: userType) {
+      try {
+        const { request: getUser, response } = useFetch<userType>(
+          `/api/user/${user.info.userId}?getRegisterUser=true`
         )
-        //CLEAR STATE AFTER DELETE
-        commit('SetPhotosToDelete', [])
+        await getUser()
+        //USER IN SERVER IS EXIST
+        if (response.value) {
+          commit('SET_USER', user)
+        }
+      } catch (error) {
+        console.log(error, 'USER IS NOT EXIST IN DB')
+        //USER IS NOT EXIST
+        try {
+          const { request: postUser } = useFetch<string>(
+            `/api/user/${user.info.userId}?postRegisterUser=true`,
+            {
+              method: 'POST', // или 'PUT'
+              body: JSON.stringify(user),
+            }
+          )
+          await postUser()
+          commit('SET_USER', user)
+        } catch (error) {
+          console.log(error, 'SAVE USER IN A SERVER IS FALL')
+        }
+      }
     },
     //
     // if (photosForDelete.length > 0) {
