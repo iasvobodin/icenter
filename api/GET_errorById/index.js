@@ -4,8 +4,12 @@ module.exports = async function (context) {
       status: 404,
     }
   } else {
+    const item = Object.entries(context.bindings.errorData[0]).filter(
+      (entries) => !entries[0].startsWith('_') && !entries[0].startsWith('ttl')
+    )
+    const objF = Object.fromEntries(item)
     context.res = {
-      body: context.bindings.errorData[0],
+      body: objF,
     }
   }
   // context.log(context.bindings.errorData[0])

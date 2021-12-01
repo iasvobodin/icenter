@@ -4,13 +4,13 @@
       <h1>{{ $route.params.errorId }}</h1>
       <br />
     </div>
-    <div v-if="state.error" class="cabinet__info">
+    <div v-if="state.error?.body" class="cabinet__info">
       <section class="information">
         <info-render :info-data="state.error.info" />
       </section>
       <section
-        v-for="(val, key) in state.error.body"
-        :key="val.id"
+        v-for="(val, key) in state.error.body[0]"
+        :key="key"
         class="eror__body"
       >
         <div v-if="Object.values(val)[1] && !key.startsWith('_')">
@@ -22,7 +22,7 @@
         </div>
       </section>
       <section class="mod__error__body">
-        <form id="errorData" @submit.prevent="state.saveChanges = true">
+        <form id="errorData" @submit.prevent="updateErorData">
           <div
             v-for="(value, key, index) in $store.state.template?.error[
               state.error.type
@@ -44,7 +44,7 @@
                   {{ k }}
                 </h4>
                 <render-inputs
-                  v-model="state.error.body[key]"
+                  v-model="state.error.body[0][key]"
                   :required="
                     !$store.state.user.info.userRoles.includes('admin')
                   "
@@ -53,24 +53,24 @@
               </div>
               <div
                 v-if="
-                  state.error.body[key] &&
-                  state.error.body[key]['Ответственный']
+                  state.error.body[0][key] &&
+                  state.error.body[0][key]['Ответственный']
                 "
               >
                 <div class="error__item">
                   <h4 class="error__item__title">
-                    {{ state.error.body[key]['Ответственный'] }}
+                    {{ state.error.body[0][key]['Ответственный'] }}
                   </h4>
                   <select
-                    v-model="state.error.body[key]['Ошибку допустил']"
+                    v-model="state.error.body[0][key]['Ошибку допустил']"
                     required
                     :name="key"
-                    :value="state.error.body[key]['Ошибку допустил']"
+                    :value="state.error.body[0][key]['Ошибку допустил']"
                     class="error__item__desc"
                   >
                     <option
                       v-for="(value2, key2, index2) in $store.state.template[
-                        state.error.body[key2]['Ответственный']
+                        state.error.body[0][key2]['Ответственный']
                       ]"
                       :key="index2"
                     >
@@ -86,13 +86,12 @@
         </form>
       </section>
       <item-photo-uploader
-        v-if="state.error"
-        :change-photos="state.changeInfo"
-        container="errors-photo"
+        :change-photos-flag="state.changeInfo"
+        :container="container"
         :current-photos="state.error.photos"
         :object-id="state.error.id"
         :save-changes-photo="state.saveChanges"
-        @uploadChanges="mainEmitFromPhotos"
+        @updated-photos="updatePhotoCollection"
       />
     </div>
     <div v-else class="loading" />
@@ -103,7 +102,7 @@
   <div class="button__block">
     <button
       v-if="
-        state.error &&
+        state.error?.body &&
         !state.changeInfo &&
         (state.error?.info.Добавил === $store.state.user.info.userDetails ||
           state.error?.info.status === 'confirmed' ||
@@ -129,96 +128,97 @@
   <!-- <img crossorigin="anonymous" src="https://icaenter.blob.core.windows.net/errors-photo/21-01-04-12-30-23.jpg" alt="11"> -->
 </template>
 
-<script setup>
+<script setup lang="ts">
 import itemPhotoUploader from '@/components/itemPhotoUploader.vue'
 import conditionalRender from '@/components/conditionalRender.vue'
 import infoRender from '@/components/infoRender.vue'
 import renderInputs from '@/components/renderInputs'
-import { reactive } from '@vue/reactivity'
+import { reactive, Ref } from '@vue/reactivity'
 import { useStore } from 'vuex'
 import { useRoute, useRouter } from 'vue-router'
-
+import { useFetch } from '@/hooks/fetch'
+import { errorType } from '@/types/errorType'
+import { userType } from '@/types/userType'
 const store = useStore()
 const route = useRoute()
 const router = useRouter()
-// export default {
-//   components: {
-//     itemPhotoUploader,
-//     renderInputs,
-//     infoRender,
-//   },
-//   data() {
-//     return {
-//       saveChanges: false,
-//       changeInfo: false,
-//       error: null,
-//       state.errorIsNotDef: null,
-//     }
-//   },
+type UsableError = Promise<{ errorFromServer: Ref<errorType | undefined> }>
+
 const state = reactive({
   saveChanges: false,
   changeInfo: false,
-  error: null,
+  updatedPhotos: [] as string[],
+  error: {} as errorType | undefined,
+  readOnlyError: {} as errorType | undefined,
   errorIsNotDef: null,
 })
 
-const getCurrentError = async () => {
-  try {
-    const responsError = await fetch(`/api/errors/${route.params.errorId}`)
-    const error = await responsError.json()
-    if (!responsError.ok) {
-      state.errorIsNotDef = 'Данной ошибки не существует'
-      console.log('Данной ошибки не существует')
-    }
+const container = 'errors-photo'
 
-    return error
-  } catch (error) {
-    state.errorIsNotDef = 'Данной ошибки не существует'
-    console.log('errors is not def', error)
-  }
+const getCurrentError = async (): UsableError => {
+  // try {
+  const { request, response: errorFromServer } = useFetch<errorType>(
+    `/api/errors/${route.params.errorId}`
+  )
+
+  await request()
+  return { errorFromServer }
 }
 
 const getData = async () => {
-  state.error = await getCurrentError()
-  state.error.body = state.error.body[state.error.body.length - 1]
+  const errorFromServer = (await getCurrentError()).errorFromServer.value
+  state.error = errorFromServer
+  state.error!.body = [state.error!.body[state.error!.body.length - 1]]
 }
 getData()
 // methods: {
-const mainEmitFromPhotos = async (e) => {
-  state.error.photos = await e
-  updateErorData()
+const updatePhotoCollection = (e: string[]) => {
+  state.updatedPhotos = e
 }
 const deleteError = async () => {
   const delErr = {
     method: 'POST', // или 'PUT'
     body: JSON.stringify({
-      id: state.error.id,
-      status: state.error.status,
-      type: state.error.type,
+      id: state.error!.id,
+      type: state.error!.type,
       info: {
-        wo: state.error.info.wo,
+        status: state.error!.info.status,
+        wo: state.error!.info.wo,
       },
       ttl: 10,
     }),
   }
-  // await fetch('/api/POST_openError', delErr)
-  await fetch('/api/post_item', delErr)
-  state.error.photos.length > 0 &&
-    (await Promise.all(
-      state.error.photos.map(async (e) => {
-        await fetch(
-          `/api/blob?container=errors-photo&fileName=${e}&delblob=true`
-        )
-      })
-    ))
+
+  const { request, response } = useFetch('/api/post_item', delErr)
+
+  await request()
+
+  if (state.error!.photos!.length > 0) {
+    store.commit('PreparePhotosToDelete', {
+      photos: state.error!.photos,
+      container: 'errors-photo',
+    })
+    await store.dispatch('DELETE_PHOTOS')
+  }
+
+  // if (state.error!.photos!.length > 0) {
+  //   await Promise.all(
+  //     state.error!.photos!.map(async (e) => {
+  //       await fetch(
+  //         `/api/blob?container=errors-photo&fileName=${e}&delblob=true`
+  //       )
+  //     })
+  //   )
+  // }
+
   router.back()
 }
 
-const returnRender = (key) => {
+const returnRender = (key: string) => {
   if (state.changeInfo && store.state.user.info.userRoles.includes('admin')) {
     return true
   }
-  if (state.changeInfo && state.error.info.status === 'confirmed') {
+  if (state.changeInfo && state.error!.info.status === 'confirmed') {
     if (key === 'Открыто') {
       return false
     }
@@ -231,7 +231,8 @@ const returnRender = (key) => {
   }
   if (
     state.changeInfo &&
-    store.state.user.info.userDetails.toLowerCase() === state.error.info.Добавил
+    store.state.user.info.userDetails.toLowerCase() ===
+      state.error!.info.Добавил
   ) {
     if (key === 'Открыто') {
       return true
@@ -249,47 +250,52 @@ const changeData = () => {
 }
 const updateErorData = async () => {
   //GET CURRENT ITEM FROM DB
-  const err = await getCurrentError()
-  const photos = state.error.photos
+  const err = (await getCurrentError()).errorFromServer.value
+
+  const photos = state.updatedPhotos
   // OBJECT FOR NEW UPDATET ERROR
+  let user = {} as userType
+  const u = localStorage.getItem('user')
+  u && (user = JSON.parse(u))
+
   const updateErorBody = {
     ...err,
     info: {
-      ...err.info,
-      status: Object.values(state.error.body.Устранено)[0]
+      ...err!.info,
+      status: Object.values(state.error!.body[0].Устранено)[0]
         ? 'closed'
-        : Object.values(state.error.body.Принято)[0]
+        : Object.values(state.error!.body[0].Принято)[0]
         ? 'confirmed'
         : 'open',
     },
     body: [
-      ...err.body, //CURRENT BODY +
+      ...err!.body, //CURRENT BODY +
       {
-        ...state.error.body, //CHANGED BODY
-        _changed: JSON.parse(
-          localStorage.getItem('user')
-        ).info.userDetails.toLowerCase(),
+        ...state.error!.body[0], //CHANGED BODY
+        _changed: user.info.userDetails.toLowerCase(),
         _time: `${Date.now()}`,
       },
     ],
     photos,
   }
-  try {
-    await fetch('/api/post_item', {
-      method: 'POST', // или 'PUT'
-      body: JSON.stringify({
-        ...updateErorBody,
-      }),
-    })
-  } finally {
-    state.error = await getCurrentError()
-    state.error.body = state.error.body[state.error.body.length - 1]
-    state.changeInfo = !state.changeInfo
-  }
-}
+  const { request, response } = useFetch('/api/post_item', {
+    method: 'POST', // или 'PUT'
+    body: JSON.stringify(updateErorBody),
+  })
 
-// },
-// }
+  await store.dispatch('UPLOAD_PHOTOS', 'errors-photo')
+  // await store.dispatch('DELETE_PHOTOS')
+  await request()
+  // try {
+  //   await fetch('/api/post_item', {
+  //     method: 'POST', // или 'PUT'
+  //     body: JSON.stringify(updateErorBody),
+  //   })
+  // } finally {
+  getData()
+  state.changeInfo = !state.changeInfo
+  // }
+}
 </script>
 
 <style lang="css" scoped>

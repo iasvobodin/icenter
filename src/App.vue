@@ -115,7 +115,7 @@ const connect = async () => {
 }
 
 // import.meta.env.MODE !== 'development'&&
-connect()
+Object.keys(store.state.user).length !== 0 && connect()
 
 const onNewMessage = (message) => state.messages.push(message)
 const sendmessage = async () => {

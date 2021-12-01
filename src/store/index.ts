@@ -1,9 +1,10 @@
 import { createStore, Store } from 'vuex'
 import { useFetch } from '@/hooks/fetch'
 // import { timeTracking, timeTrackingType } from './timeTracking'
-import { InjectionKey } from 'vue'
-import { userType } from '@/types/userType'
+import { InjectionKey, Ref } from 'vue'
+import { userType, azureAuth } from '@/types/userType'
 import { templateType } from '@/types/templateType'
+import { projectInfoType, projectType } from '@/types/projectInfoType'
 
 // const createName = (clientPrincipal) => {
 //   if (clientPrincipal.identityProvider === 'aad') {
@@ -33,22 +34,30 @@ export interface State {
   template: templateType
   projectList: null
   selectedProjectNumber: string
-  projectInfo: null
+  projectInfo: projectInfoType
   user: userType
   currentError: null
   cabinetItems: []
   passedTime: number
   cabtimeWithStatus: null
   allSumm: number
+  photosToUpload: FormData
+  compressBlob: Blob[]
+  photosToDelete: string[]
+  photoContainer: string
 }
 
 export const store = createStore<State>({
   state: {
+    photosToUpload: new FormData(),
+    photosToDelete: [],
+    photoContainer: '',
+    compressBlob: [],
     loader: false,
     template: {} as templateType,
     projectList: null,
     selectedProjectNumber: '',
-    projectInfo: null,
+    projectInfo: {} as projectInfoType,
     user: <userType>{},
     currentError: null,
     cabinetItems: [],
@@ -57,6 +66,35 @@ export const store = createStore<State>({
     allSumm: 0,
   },
   mutations: {
+    SetPhotosToUpload(state, payload: FormData) {
+      state.photosToUpload = payload
+    },
+    SetPhotosToDelete(state, payload: string[]) {
+      state.photosToDelete = payload
+    },
+    SET_USER(state, payload:userType) {
+      window.localStorage.setItem('user', JSON.stringify(payload))
+      // store.commit('setUserAuth', JSON.stringify(payload))
+      state.user = payload
+      // debugger
+    },
+    // SetPhotosContainer(state, payload: string) {
+    //   state.photoContainer = payload
+    // },
+    PreparePhotosToDelete(
+      state,
+      payload: { photos: string[]; container: string }
+    ) {
+      state.photosToDelete = payload.photos.reduce((acc: string[], e) => {
+        acc.push(
+          `/api/blob?container=${payload.container}&fileName=${e}&delblob=true`
+        )
+        acc.push(
+          `/api/blob?container=${payload.container}&fileName=thumb__${e}&delblob=true`
+        )
+        return acc
+      }, [])
+    },
     changePassedTime(state, payload) {
       state.passedTime = payload
     },
@@ -86,7 +124,7 @@ export const store = createStore<State>({
     SETprojectNumber(state, payload) {
       state.selectedProjectNumber = payload
     },
-    SETcurrentProject(state, payload) {
+    SETcurrentProject(state, payload: projectInfoType) {
       state.projectInfo = payload
       // console.log(state.projectInfo, "state.projectInfo");
     },
@@ -111,24 +149,171 @@ export const store = createStore<State>({
     },
   },
   actions: {
-    async getCabinetsInfo({ commit }, payload) {
-      const projects = []
-      const { request, response } = useFetch('/api/projects?status=open')
+    async UPLOAD_PHOTOS({ dispatch, commit, state }, payload: string) {
+      const { request, response } = useFetch(
+        `/api/blob?container=${payload}&test=true`,
+        { method: 'POST', body: state.photosToUpload }
+      )
       await request()
-      response.value.forEach((p) => {
+      //CLEAR STATE AFTER UPLOAD
+      commit('SetPhotosToUpload', new FormData())
+      if (state.photosToDelete.length > 0) {
+        await dispatch('DELETE_PHOTOS')
+      }
+    },
+    async DELETE_PHOTOS({ commit, state }) {
+      await Promise.all(
+        state.photosToDelete.map(async (e) => {
+          const { request: deletePhoto } = useFetch(e)
+          await deletePhoto()
+        })
+      )
+      //CLEAR STATE AFTER DELETE
+      commit('SetPhotosToDelete', [])
+    },
+    async CHECK_AUTH_GLOBAL({ commit, dispatch, state }): Promise<string | boolean> {
+      const user: string | null = window.localStorage.getItem('user') // type string
+
+      if (user) {
+        const userParse: userType = JSON.parse(user) // type object local user
+        if (!userParse.info.userRoles.includes('icenter')) {
+          //CHECK ROLE
+          return '/role'
+        } else {
+          Object.keys(state.user).length==0 && commit('SET_USER', userParse)
+          return true
+        }
+      } else {
+        const userCheck: false | userType = await dispatch('CHECK_AUTH_AZURE')
+        if (userCheck) {
+          //CHECK ROLE
+          if (!userCheck.info.userRoles.includes('icenter')) {
+            return '/role'
+          } else {
+            await dispatch('CHECK_AUTH_SERVER',userCheck)
+            return true
+          }
+        } else {
+          return '/login'
+        }
+      }
+    },
+
+    async CHECK_AUTH_AZURE(): Promise<false | userType> {
+      const createName = (
+        clientPrincipal: azureAuth['clientPrincipal']
+      ): string => {
+        if (clientPrincipal.identityProvider === 'aad') {
+          const splitName = clientPrincipal.userDetails.split('@')[0].split('.')
+          const name =
+            splitName[0][0].toUpperCase() +
+            '.' +
+            splitName[1][0].toUpperCase() +
+            '.'
+          return name
+        }
+        return clientPrincipal.userDetails.split('@')[0]
+      }
+
+      try {
+        const { request: auth, response } = useFetch<azureAuth>('/.auth/me')
+        await auth()
+        const user = response.value
+
+        const { clientPrincipal } = user!
+        //CREATE OBJECT FOR SERVER
+        if (clientPrincipal) {
+          const userRes = {
+            id: clientPrincipal.userId,
+            type: 'info',
+            info: clientPrincipal,
+            body: {
+              name: createName(clientPrincipal),
+            },
+          }
+          return userRes
+        }
+        return false
+      } catch (error) {
+        console.log(error, 'CHECK AUTH ERROR')
+        return false
+      }
+    },
+    async CHECK_AUTH_SERVER({ commit }, user: userType) {
+      try {
+        const { request: getUser, response } = useFetch<userType>(
+          `/api/user/${user.info.userId}?getRegisterUser=true`
+        )
+        await getUser()
+        //USER IN SERVER IS EXIST
+        if (response.value) {
+          commit('SET_USER', user)
+        }
+      } catch (error) {
+        console.log(error, 'USER IS NOT EXIST IN DB')
+        //USER IS NOT EXIST
+        try {
+          const { request: postUser } = useFetch<string>(
+            `/api/user/${user.info.userId}?postRegisterUser=true`,
+            {
+              method: 'POST', // или 'PUT'
+              body: JSON.stringify(user),
+            }
+          )
+          await postUser()
+          commit('SET_USER', user)
+        } catch (error) {
+          console.log(error, 'SAVE USER IN A SERVER IS FALL')
+        }
+      }
+    },
+    //
+    // if (photosForDelete.length > 0) {
+    //   await Promise.all(
+    //     photosForDelete.map(async (e) => {
+    //       const { request: deletePhoto } = useFetch(e)
+    //       await deletePhoto()
+    //     })
+    //   )
+    // }
+    // async getCabinetsInfo({ commit }, payload) {
+    //   const projects:projectType[] = []
+    //   const { request, response } = useFetch<projectType[]>('/api/projects?status=open')
+    //   await request()
+    //   response.value!.forEach((p) => {
+    //     p.cabinets.forEach((c) => {
+    //       let payload = {
+    //         ...c,
+    //         ...p.info.base,
+    //         ...p.info.extends,
+    //         'project number': p.id,
+    //       }
+    //       projects.push(payload)
+    //     })
+    //   })
+    //   const currentInfo = projects.find((e) => e.wo === payload)
+    //   commit('SETcurrentProject', currentInfo)
+    //   // console.log(projects);
+    // },
+    async getCabinetsInfo({ commit }, payload: string) {
+      const projects: projectInfoType[] = []
+      const { request, response } = useFetch<projectType[]>(
+        '/api/projects?status=open'
+      )
+      await request()
+      response.value!.forEach((p) => {
         p.cabinets.forEach((c) => {
-          let payload = {
-            'project number': p.id,
+          let payload: projectInfoType = {
             ...c,
             ...p.info.base,
             ...p.info.extends,
+            'project number': p.id,
           }
           projects.push(payload)
         })
       })
       const currentInfo = projects.find((e) => e.wo === payload)
       commit('SETcurrentProject', currentInfo)
-      // console.log(projects);
     },
     async GET_cabinetItems({ commit }, payload) {
       const { request, response } = useFetch(`/api/cabinetItems?wo=${payload}`)
