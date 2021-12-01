@@ -2,7 +2,7 @@
   <div class="login__holder">
     <div class="login">
       <h1>iCenterApp<br />Login</h1>
-      <a href="/.auth/login/aad?post_login_redirect_uri=/">
+      <a href="/.auth/login/aad?post_login_redirect_uri=/user">
         <img src="/img/Microsoft.svg" alt=""
       /></a>
       <br />
