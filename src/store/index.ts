@@ -45,12 +45,12 @@ export interface State {
   compressBlob: Blob[]
   photosToDelete: string[]
   photoContainer: string
-  taskResult:{[index:string]: number}
+  taskResult: { [index: string]: number }
 }
 
 export const store = createStore<State>({
   state: {
-    taskResult:{},
+    taskResult: {},
     photosToUpload: new FormData(),
     photosToDelete: [],
     photoContainer: '',
@@ -74,13 +74,13 @@ export const store = createStore<State>({
     SetPhotosToDelete(state, payload: string[]) {
       state.photosToDelete = payload
     },
-    SET_USER(state, payload:userType) {
+    SET_USER(state, payload: userType) {
       window.localStorage.setItem('user', JSON.stringify(payload))
       // store.commit('setUserAuth', JSON.stringify(payload))
       state.user = payload
       // debugger
     },
-    SET_TASK_DONE_SUMM(state, payload){
+    SET_TASK_DONE_SUMM(state, payload) {
       state.taskResult.doneSumm = payload
     },
     // SetPhotosContainer(state, payload: string) {
@@ -176,7 +176,11 @@ export const store = createStore<State>({
       //CLEAR STATE AFTER DELETE
       commit('SetPhotosToDelete', [])
     },
-    async CHECK_AUTH_GLOBAL({ commit, dispatch, state }): Promise<string | boolean> {
+    async CHECK_AUTH_GLOBAL({
+      commit,
+      dispatch,
+      state,
+    }): Promise<string | boolean> {
       const user: string | null = window.localStorage.getItem('user') // type string
 
       if (user) {
@@ -185,7 +189,7 @@ export const store = createStore<State>({
           //CHECK ROLE
           return '/role'
         } else {
-          Object.keys(state.user).length==0 && commit('SET_USER', userParse)
+          Object.keys(state.user).length == 0 && commit('SET_USER', userParse)
           return true
         }
       } else {
@@ -195,7 +199,7 @@ export const store = createStore<State>({
           if (!userCheck.info.userRoles.includes('icenter')) {
             return '/role'
           } else {
-            await dispatch('CHECK_AUTH_SERVER',userCheck)
+            await dispatch('CHECK_AUTH_SERVER', userCheck)
             return true
           }
         } else {

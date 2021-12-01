@@ -167,10 +167,9 @@ const router = createRouter({
   routes,
 })
 
-
 router.beforeEach(async (to, from) => {
   if (to.path === '/login' || to.path === '/role') return true
-  return (await store.dispatch('CHECK_AUTH_GLOBAL'))
+  return await store.dispatch('CHECK_AUTH_GLOBAL')
 })
 // const createName = (clientPrincipal) => {
 //   if (clientPrincipal.identityProvider === 'aad') {
@@ -247,76 +246,76 @@ router.beforeEach(async (to, from) => {
 //   if (to.path === '/login' || to.path === '/role') return true
 //   return (await store.dispatch('CHECK_AUTH_GLOBAL'))
 
-  // Object.keys(store.state.template).length===0 && (await store.dispatch('GET_template'))
+// Object.keys(store.state.template).length===0 && (await store.dispatch('GET_template'))
 
-  // if (import.meta.env.MODE === 'development') {
-  //   const user = {
-  //     id: '9c0c1980f5904d10b43e552d2b7c4041',
-  //     type: 'info',
-  //     info: {
-  //       identityProvider: 'aad',
-  //       userId: '9c0c1980f5904d10b43e552d2b7c4041',
-  //       userDetails: 'ivan.svobodin@emerson.com',
-  //       userRoles: ['admin', 'anonymous', 'icenter', 'authenticated'],
-  //     },
-  //     body: {
-  //       name: 'I.S.',
-  //     },
-  //   }
-  //   commitUser(user)
-  //   return true
-  // } else {
-  //CHECK USER GLOBAL
-  // const user = window.localStorage.getItem('user') // type string
+// if (import.meta.env.MODE === 'development') {
+//   const user = {
+//     id: '9c0c1980f5904d10b43e552d2b7c4041',
+//     type: 'info',
+//     info: {
+//       identityProvider: 'aad',
+//       userId: '9c0c1980f5904d10b43e552d2b7c4041',
+//       userDetails: 'ivan.svobodin@emerson.com',
+//       userRoles: ['admin', 'anonymous', 'icenter', 'authenticated'],
+//     },
+//     body: {
+//       name: 'I.S.',
+//     },
+//   }
+//   commitUser(user)
+//   return true
+// } else {
+//CHECK USER GLOBAL
+// const user = window.localStorage.getItem('user') // type string
 
-  // if (user) {
-  //   const userParse = JSON.parse(user) // type object local user
-  //   if (!userParse.info.userRoles.includes('icenter')) {
-  //     //CHECK ROLE
-  //     return '/role'
-  //   } else {
-  //     commitUser(userParse)
-  //     //  await CHECK_userDB(userParse)
-  //     return true
-  //   }
-  // } else {
-  //   const userCheck = await CHECK_auth()
-  //   if (userCheck) {
-  //     //CHECK ROLE
-  //     if (!userCheck.info.userRoles.includes('icenter')) {
-  //       // user from azure
-  //       return '/role'
-  //     } else {
-  //       await CHECK_userDB(userCheck)
-  //       return true
-  //     }
-  //   } else {
-  //     return '/login'
-  //   }
-  // }
-  // }
+// if (user) {
+//   const userParse = JSON.parse(user) // type object local user
+//   if (!userParse.info.userRoles.includes('icenter')) {
+//     //CHECK ROLE
+//     return '/role'
+//   } else {
+//     commitUser(userParse)
+//     //  await CHECK_userDB(userParse)
+//     return true
+//   }
+// } else {
+//   const userCheck = await CHECK_auth()
+//   if (userCheck) {
+//     //CHECK ROLE
+//     if (!userCheck.info.userRoles.includes('icenter')) {
+//       // user from azure
+//       return '/role'
+//     } else {
+//       await CHECK_userDB(userCheck)
+//       return true
+//     }
+//   } else {
+//     return '/login'
+//   }
+// }
+// }
 
-  // const test = await CHECK_auth()
-  // console.log(await CHECK_auth(), 'just check user auth from route own');
+// const test = await CHECK_auth()
+// console.log(await CHECK_auth(), 'just check user auth from route own');
 
-  // async function getUser() {
-  //   const response = await fetch('/api/user');
-  //   const payload = await response.json();
-  //   const { clientPrincipal } = payload;
-  //   return clientPrincipal;
-  // }
+// async function getUser() {
+//   const response = await fetch('/api/user');
+//   const payload = await response.json();
+//   const { clientPrincipal } = payload;
+//   return clientPrincipal;
+// }
 
-  // console.log(await getUser(), 'just check user auth from route ff');
+// console.log(await getUser(), 'just check user auth from route ff');
 
-  // if (to.path === '/role')  return true
-  // if (user) {
-  //   if (!JSON.parse(user).info.userRoles.includes('icenter')) { //CHECK ROLE
-  //     return '/role'
-  //   }
-  //   store.commit('setUserAuth', user) //ADD USER TO VUEX
-  // } else {
-  //   await store.dispatch('GET_auth') // TRY TO GET AUTH
-  // }
+// if (to.path === '/role')  return true
+// if (user) {
+//   if (!JSON.parse(user).info.userRoles.includes('icenter')) { //CHECK ROLE
+//     return '/role'
+//   }
+//   store.commit('setUserAuth', user) //ADD USER TO VUEX
+// } else {
+//   await store.dispatch('GET_auth') // TRY TO GET AUTH
+// }
 // })
 
 export default router

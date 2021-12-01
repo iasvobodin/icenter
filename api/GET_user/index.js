@@ -7,7 +7,7 @@ module.exports = async function (context, req, user) {
       }
     } else {
       context.res = {
-        status: 201,
+        status: 404,
       }
     }
 

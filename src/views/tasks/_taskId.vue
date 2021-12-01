@@ -25,10 +25,6 @@
     />
     <br />
     <br />
-    <button>Далее</button>
-    <br />
-    <br />
-    <br />
     <br />
     <h3>Время выполнения</h3>
     <p>
@@ -37,12 +33,15 @@
       Итоговое время по задачам в кабтайме, должно соответсвоть общему времени
       выполнения.
     </p>
+    <br>
     <h3 v-if="timeToCalc">Затраченное время: {{ timeToCalc }} минут</h3>
     <task-cab-time
       v-if="ctWithStatus"
       :status-mark="false"
       :input-data="{ body: ctWithStatus }"
     />
+    
+
   </div>
 </template>
 
@@ -66,7 +65,7 @@ const state = reactive({
   ctStatus: null,
 })
 const setStatePassedTime = () => {
-  store.commit('changePassedTime', Math.floor(state.passedTime / 60000) - 22500)
+  store.commit('changePassedTime', Math.floor(state.passedTime / 60000) - 23000)
   console.log(store.state) //timeToCalc = state.passedTime
 }
 

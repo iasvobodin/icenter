@@ -73,12 +73,14 @@
         <tr v-if="!statusMark">
           <td>Суммарно</td>
           <td>{{ state.allSumm }}</td>
-          <td>test</td>
+          <td>{{state.partiallySumm}}</td>
         </tr>
       </tbody>
     </table>
-    {{ state.alertMessage&&!statusMark ? state.alertMessage : '' }}
-    <button v-if="statusMark" @click="firstCaptureData">test</button>
+    {{ state.alertMessage && !statusMark ? state.alertMessage : '' }}
+    <br><br>
+    <button v-if="statusMark" @click="firstCaptureData">Далее</button>
+    <button v-if="!statusMark&&!state.wellDone" >SAVE</button>
   </div>
 </template>
 
@@ -114,8 +116,9 @@ const props = defineProps({
 })
 const state = reactive({
   alertMessage: '',
-  allSumm: 0 as number,
-  partiallySumm: 0 as number,
+  allSumm: 0,
+  partiallySumm: 0,
+  wellDone: true,
 })
 const emit = defineEmits({
   cabtimeWithStatus: null,
@@ -130,48 +133,103 @@ inputData.value.body
 const timeToCalc = computed(() => store.state.passedTime)
 const firstCaptureData = () => {
   const rawData = toRaw(unref(inputData))
+  const modArr = rawData.body.filter((f) => f.status && f.status !== 'open')
+
+    const particalCalculate = (
+    taskArray: cabtimeType['body'],
+    spentTime: number,
+    timeAll: number,
+    timeDone: number
+  ) => {
+    if (spentTime > timeDone && spentTime < timeAll) {
+      console.log('ALL OK')
+
+      // state.alertMessage = 'all ok'
+      const difTime = spentTime - timeDone
+      const partiallyTime = timeAll - timeDone
+      taskArray.forEach((e) => {
+        if (e.status === 'done') {
+          e.propTime = e.result
+        }
+        if (e.status === 'partially') {
+          e.propTime = Math.round((e.result / partiallyTime) * difTime)
+        }
+      })
+    }
+
+    if (spentTime < timeDone) {
+      // state.alertMessage = 'to fast'
+      //CALCULATE ONLY DONE
+      console.log('TO FAST')
+      taskArray.forEach((e) => {
+        if (e.status === 'done') {
+          e.propTime = Math.round((e.result / timeDone) * spentTime)
+        }
+        if (e.status === 'partially') {
+          e.propTime = 0
+        }
+      })
+    }
+
+    if (spentTime > timeAll) {
+      // state.alertMessage = 'to slow'
+      console.log('TO SLOW')
+      taskArray.forEach((e) => {
+        e.propTime = Math.round((e.result / timeAll) * spentTime)
+      })
+    }
+    return taskArray
+  }
+
 
   state.allSumm = rawData.body.reduce((acc: number, e) => {
     if (e?.status && e.status !== 'open') {
-      console.log(e.result)
-
       acc += e.result
     }
     return acc
   }, 0)
-  // console.log(state.allSumm)
+  console.log(state.allSumm, 'allSumm')
 
-  const partiallySumm = rawData.body.reduce(
-    (acc: number, e) => (acc += e.propTime!),
-    0
-  )
+  const partiallySumm = rawData.body.reduce((acc: number, e) => {
+    if (e?.status && e.status === 'partially') {
+      acc += e.result
+    }
+    return acc
+  }, 0)
+
+  console.log(partiallySumm, 'partiallySumm')
+
   const doneSumm = rawData.body.reduce((acc: number, e) => {
     if (e?.status === 'done') {
       acc += e.result
     }
     return acc
   }, 0)
-    store.commit('SET_TASK_DONE_SUMM',doneSumm)
 
-  if (timeToCalc.value > doneSumm && timeToCalc.value < state.allSumm) {
-    state.alertMessage = 'all ok'
-  }
+  console.log(doneSumm, 'doneSumm')
+  // store.commit('SET_TASK_DONE_SUMM',doneSumm)
 
-  if (timeToCalc.value < doneSumm) {
-    state.alertMessage = 'to fast'
-  }
 
-  if (timeToCalc.value > state.allSumm) {
-    state.alertMessage = 'to slow'
-  }
+console.log(particalCalculate(modArr, timeToCalc.value, state.allSumm, doneSumm), 'TADA')
+  // if (timeToCalc.value > doneSumm && timeToCalc.value < state.allSumm) {
+  //   state.alertMessage = 'all ok'
+  //   //ALL OK
+  //   timeToCalc.value - doneSumm
+  // }
 
-  rawData.body.forEach((e) => {
-    e.propTime = Math.round((e.result / state.allSumm) * timeToCalc.value)
-  })
+  // if (timeToCalc.value < doneSumm) {
+  //   state.alertMessage = 'to fast'
+  // }
 
-  const particalCalculate = () => {
-    
-  }
+  // if (timeToCalc.value > state.allSumm) {
+  //   state.alertMessage = 'to slow'
+  // }
+
+  // rawData.body.forEach((e) => {
+  //   e.propTime = Math.round((e.result / state.allSumm) * timeToCalc.value)
+  // })
+
+
   // console.log(timeToCalc.value);
 
   //    rawData.sort((a, b) => {
@@ -180,8 +238,8 @@ const firstCaptureData = () => {
   //   return x < y ? -1 : x > y ? 1 : 0
   // })
   store.commit(
-    'setCabtimeWithStatus',
-    rawData.body.filter((f) => f.status && f.status !== 'open')
+    'setCabtimeWithStatus', particalCalculate(modArr, timeToCalc.value, state.allSumm, doneSumm)
+    // rawData.body.filter((f) => f.status && f.status !== 'open')
   )
 }
 // watchEffect(() => {
@@ -231,30 +289,42 @@ const firstCaptureData = () => {
 //     })
 //   }
 // })
+
+const calculatePartiallySumm = () => {
+  state.partiallySumm = inputData.value.body.reduce(
+    (acc: number, e) => (acc += e.propTime!),
+    0
+  )
+  // debugger
+    const difTime = timeToCalc.value - state.partiallySumm
+
+  // console.log(difTime, 'eee')
+  if (difTime >= -10&&difTime <= 10) {
+    
+    state.wellDone = false
+  } else state.wellDone = true
+}
+
+calculatePartiallySumm()
 const changePartyalyyTime = (ev: Event, id: string) => {
   if (!(ev.target instanceof HTMLInputElement)) return
   const item = inputData.value.body.find((e) => e._id === id)
   item && (item.propTime = +ev.target.value)
+calculatePartiallySumm()
+  // state.partiallySumm = inputData.value.body.reduce(
+  //   (acc: number, e) => (acc += e.propTime!),
+  //   0
+  // )
 
-  const partiallySumm = inputData.value.body.reduce(
-    (acc: number, e) => (acc += e.propTime!),
-    0
-  )
-  console.log(partiallySumm)
+  //   if (difTime < -10) {
+    
+  //   console.log(difTime, 'www')
+  // }
 }
 const changeStatus = (ev: Event, id: string, val: string) => {
   if (!(ev.target instanceof HTMLInputElement)) return
-  // const input = ev.target as HTMLInputElement;
-
   const item = inputData.value.body.find((e) => e._id === id)
-
   ev.target.checked ? (item!.status = val) : (item!.status = 'open')
-  console.log(item)
-
-  // emit(
-  //   'cabtimeWithStatus',
-  //   inputData.value.body.filter((f) => f.status && f.status !== 'open')
-  // )
 }
 </script>
 
