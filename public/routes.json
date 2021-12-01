@@ -4,7 +4,7 @@
       "route": "/api/*"
     },
     {
-      "route": "/.auth/login/aad",
+      "route": "/.auth/login/*",
       "statusCode": 200
     },
     {
