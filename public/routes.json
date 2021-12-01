@@ -4,6 +4,10 @@
       "route": "/api/*"
     },
     {
+      "route": "/.auth/login/aad",
+      "statusCode": 200
+    }
+    {
       "route": "/*",
       "serve": "/index.html",
       "allowedRoles": ["anonymous"]
