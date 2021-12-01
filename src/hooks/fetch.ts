@@ -26,6 +26,7 @@ export function useFetch<T>(
       }
     } catch (error) {
       console.log(error, 'eops')
+      throw new Error('404')
     } finally {
       store.commit('changeLoader', false)
     }
