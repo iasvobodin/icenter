@@ -45,10 +45,12 @@ export interface State {
   compressBlob: Blob[]
   photosToDelete: string[]
   photoContainer: string
+  taskResult:{[index:string]: number}
 }
 
 export const store = createStore<State>({
   state: {
+    taskResult:{},
     photosToUpload: new FormData(),
     photosToDelete: [],
     photoContainer: '',
@@ -77,6 +79,9 @@ export const store = createStore<State>({
       // store.commit('setUserAuth', JSON.stringify(payload))
       state.user = payload
       // debugger
+    },
+    SET_TASK_DONE_SUMM(state, payload){
+      state.taskResult.doneSumm = payload
     },
     // SetPhotosContainer(state, payload: string) {
     //   state.photoContainer = payload

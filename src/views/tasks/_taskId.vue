@@ -66,15 +66,15 @@ const state = reactive({
   ctStatus: null,
 })
 const setStatePassedTime = () => {
-  store.commit('changePassedTime', Math.floor(state.passedTime / 60000) - 10000)
+  store.commit('changePassedTime', Math.floor(state.passedTime / 60000) - 22500)
   console.log(store.state) //timeToCalc = state.passedTime
 }
 
-const timeToCalc = computed(() => store.state.photosModule.passedTime)
+const timeToCalc = computed(() => store.state.passedTime)
 
 const ctWithStatus = computed(() =>
-  store.state.photosModule.cabtimeWithStatus
-    ? store.state.photosModule.cabtimeWithStatus.sort((a, b) => {
+  store.state.cabtimeWithStatus
+    ? store.state.cabtimeWithStatus.sort((a, b) => {
         const x = a.status?.toLowerCase()
         const y = b.status?.toLowerCase()
         return x < y ? -1 : x > y ? 1 : 0

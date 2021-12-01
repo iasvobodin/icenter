@@ -26,7 +26,6 @@
     "xlsx": "^0.17.4"
   },
   "devDependencies": {
-    "@azure/static-web-apps-cli": "^0.8.1",
     "@types/node": "^16.11.10",
     "@typescript-eslint/eslint-plugin": "^5.4.0",
     "@typescript-eslint/parser": "^5.4.0",

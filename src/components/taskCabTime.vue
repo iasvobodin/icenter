@@ -77,7 +77,7 @@
         </tr>
       </tbody>
     </table>
-    {{ state.alertMessage ? state.alertMessage : '' }}
+    {{ state.alertMessage&&!statusMark ? state.alertMessage : '' }}
     <button v-if="statusMark" @click="firstCaptureData">test</button>
   </div>
 </template>
@@ -139,7 +139,8 @@ const firstCaptureData = () => {
     }
     return acc
   }, 0)
-  console.log(state.allSumm)
+  // console.log(state.allSumm)
+
   const partiallySumm = rawData.body.reduce(
     (acc: number, e) => (acc += e.propTime!),
     0
@@ -150,6 +151,7 @@ const firstCaptureData = () => {
     }
     return acc
   }, 0)
+    store.commit('SET_TASK_DONE_SUMM',doneSumm)
 
   if (timeToCalc.value > doneSumm && timeToCalc.value < state.allSumm) {
     state.alertMessage = 'all ok'
@@ -166,6 +168,10 @@ const firstCaptureData = () => {
   rawData.body.forEach((e) => {
     e.propTime = Math.round((e.result / state.allSumm) * timeToCalc.value)
   })
+
+  const particalCalculate = () => {
+    
+  }
   // console.log(timeToCalc.value);
 
   //    rawData.sort((a, b) => {
