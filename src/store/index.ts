@@ -189,7 +189,8 @@ export const store = createStore<State>({
           //CHECK ROLE
           return '/role'
         } else {
-          Object.keys(state.user).length == 0 && commit('SET_USER', userParse)
+          //FIRST TIME CHECK
+          Object.keys(state.user).length == 0 && dispatch('CHECK_AUTH_SERVER', userParse) // commit('SET_USER', userParse)
           return true
         }
       } else {
@@ -252,10 +253,16 @@ export const store = createStore<State>({
       try {
         const { request: getUser, response } = useFetch<userType>(
           `/api/user/${user.info.userId}?getRegisterUser=true`
-        )
-        await getUser()
-        //USER IN SERVER IS EXIST
-        if (response.value) {
+          )
+          await getUser()
+          //USER IN SERVER IS EXIST
+        const userServer = response.value
+        const userServerString = JSON.stringify(userServer)
+        const userLocalString = JSON.stringify(user)
+
+        if (userLocalString !== userServerString) {
+          commit('SET_USER', userServer)
+        } else{
           commit('SET_USER', user)
         }
       } catch (error) {
@@ -272,7 +279,7 @@ export const store = createStore<State>({
           await postUser()
           commit('SET_USER', user)
         } catch (error) {
-          console.log(error, 'SAVE USER IN A SERVER IS FALL')
+          console.log(error, 'SAVE USER IN A SERVER IS FAILED')
         }
       }
     },

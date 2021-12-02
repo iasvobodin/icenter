@@ -21,7 +21,7 @@ const createTask = async () => {
     body: JSON.stringify({
       id: `task__${Date.now()}`,
       info: {
-        user: userInfoState.value.info.userDetails,
+        user: userInfoState.value.info.userDetails.toLowerCase(),
         userId: userInfoState.value.info.userId,
         Проект: projectInfoState.value['project number'],
         Шкаф: projectInfoState.value['cab name'],
