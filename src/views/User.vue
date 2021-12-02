@@ -56,8 +56,12 @@ const getUserTask = async () => {
   const { request, response } = useFetch(
     `/api/GET_userTasks?user=${store.state.user.info.userDetails.toLowerCase()}`
   )
-  await request()
-  state.userTask = response.value[0]
+  try {
+    await request()
+  } catch (error) {
+    console.log(error.message);
+  }
+  state.userTask = response.value
 }
 getUserTask()
 const saveColor = async () => {
@@ -84,21 +88,9 @@ const checkInput = (e) => {
 }
 const clearUser = () => {
   window.localStorage.removeItem('user')
-  if (import.meta.env.MODE === 'development') {
-    router.push('/login')
-  } else {
-    window.location.href = '/.auth/logout?post_logout_redirect_uri=/login'
-  }
-  // localUser.value = window.localStorage.getItem('user')
-  window.localStorage.removeItem('user')
+  window.location.href = '/.auth/logout?post_logout_redirect_uri=/login'
 }
-// },
-// const user = computed(() => store.state.user.info ? store.state.user : false );
 
-// watch(user, async () => {
-//   console.log('im watching');
-//   await store.dispatch('checkUser')
-// })
 onMounted(() => {
   localUser.value = window.localStorage.getItem('user')
   store.dispatch('checkUser')

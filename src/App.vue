@@ -22,7 +22,7 @@ import appHeader from '@/components/header.vue'
 import * as signalR from '@microsoft/signalr'
 import { useRoute, onBeforeRouteUpdate } from 'vue-router'
 import { useStore } from 'vuex'
-import { ref, computed, onBeforeMount, reactive } from 'vue'
+import { ref, computed, onBeforeMount, reactive, watchEffect } from 'vue'
 
 const store = useStore()
 const route = useRoute()
@@ -139,19 +139,28 @@ const sendmessage = async () => {
 // computed(()=> {
 //   return
 // })
-onBeforeMount(() => {
-  const userFromLocal = JSON.parse(window.localStorage.getItem('user'))
-  if (userFromLocal) {
-    document.documentElement.style.setProperty(
-      '--bg',
-      `${userFromLocal.body?.bg}`
-    )
-    document.documentElement.style.setProperty(
-      '--cursor',
-      `${userFromLocal.body?.customCursor}`
-    )
-  }
+const userData = computed(() => store.state.user.body)
+
+watchEffect(() => {
+  document.documentElement.style.setProperty('--bg', `${userData.value?.bg}`)
+  document.documentElement.style.setProperty(
+    '--cursor',
+    `${userData.value?.customCursor}`
+  )
 })
+// onBeforeMount(() => {
+//   const userFromLocal = JSON.parse(window.localStorage.getItem('user'))
+//   if (userFromLocal) {
+//     document.documentElement.style.setProperty(
+//       '--bg',
+//       `${userFromLocal.body?.bg}`
+//     )
+//     document.documentElement.style.setProperty(
+//       '--cursor',
+//       `${userFromLocal.body?.customCursor}`
+//     )
+//   }
+// })
 
 // document.documentElement.style.setProperty('--bg', `${store.state.user.body?.bg}`)
 // document.documentElement.style.setProperty('--cursor', `${store.state.user.body?.customCursor}`)

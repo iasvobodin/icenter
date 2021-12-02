@@ -26,32 +26,32 @@
     <br />
     <br />
     <br />
-    <h3>Время выполнения</h3>
+    <!-- <h3>Время выполнения</h3>
     <p>
       Время по отмеченным задачам расчитывается автоматически, проверьте столбец
       результат, и внесите корректировки, если это необходимо. <br />
       Итоговое время по задачам в кабтайме, должно соответсвоть общему времени
       выполнения.
-    </p>
-    <br>
-    <h3 v-if="timeToCalc">Затраченное время: {{ timeToCalc }} минут</h3>
-    <task-cab-time
+    </p> -->
+    <!-- <br /> -->
+    <!-- <h3 v-if="timeToCalc">Затраченное время: {{ timeToCalc }} минут</h3> -->
+    <!-- <task-cab-time
       v-if="ctWithStatus"
       :status-mark="false"
       :input-data="{ body: ctWithStatus }"
-    />
-    
-
+    /> -->
+    <task-status v-if="ctWithStatus" :input-data="{ body: ctWithStatus }" />
   </div>
 </template>
 
 <script setup>
-import { computed, reactive } from 'vue'
+import { computed, onUnmounted, reactive } from 'vue'
 import { useFetch } from '@/hooks/fetch'
 import taskCabTime from '@/components/taskCabTime.vue'
 import { onBeforeRouteUpdate, useRoute } from 'vue-router'
 import infoRender from '@/components/infoRender.vue'
 import { useStore } from 'vuex'
+import taskStatus from '@/components/task/taskStatus.vue'
 
 const route = useRoute()
 const store = useStore()
@@ -65,8 +65,8 @@ const state = reactive({
   ctStatus: null,
 })
 const setStatePassedTime = () => {
-  store.commit('changePassedTime', Math.floor(state.passedTime / 60000) - 23000)
-  console.log(store.state) //timeToCalc = state.passedTime
+  store.commit('changePassedTime', Math.floor(state.passedTime / 60000) )//- 24200)
+  // console.log(store.state) //timeToCalc = state.passedTime
 }
 
 const timeToCalc = computed(() => store.state.passedTime)
@@ -126,6 +126,12 @@ const getCabTime = async () => {
   state.passedTime = CurrentTime - state.task.body.timeStart
 }
 getCabTime()
+
+onUnmounted(()=> {
+ store.commit('changePassedTime',0) 
+ store.commit('setCabtimeWithStatus',null)
+})
+
 </script>
 
 <style lang="css" scoped>

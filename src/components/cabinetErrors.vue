@@ -87,21 +87,6 @@ export default {
     computedItems.value.forEach((e, i) => {
       state.currentTab[i] = 'Открыто'
     })
-    // const getCabinetItems = async () => {
-    //     const {
-    //         request,
-    //         response
-    //     } = useFetch(
-    //         `/api/cabinetItems?wo=${route.params.cabinetId}`,
-    //     )
-    //     await request()
-    //     state.cabinetItems = response
-    //     //need to chanche tabs set default OPEN
-    //     state.cabinetItems.forEach((e, i) => {
-    //         state.currentTab[i] = "Открыто"
-    //     });
-    // }
-    // getCabinetItems()
 
     const saveBook = async () => {
       const XLSX = await import('xlsx')

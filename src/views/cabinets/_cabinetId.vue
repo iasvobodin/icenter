@@ -40,7 +40,6 @@ const state = reactive({
   currentCabinetTab: null,
 })
 
-// onUnmounted(()=> store.commit('SETcurrentProject', null))
 
 const setState = async () => {
   await store.dispatch('getCabinetsInfo', route.params.cabinetId)

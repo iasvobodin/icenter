@@ -73,14 +73,13 @@
         <tr v-if="!statusMark">
           <td>Суммарно</td>
           <td>{{ state.allSumm }}</td>
-          <td>{{state.partiallySumm}}</td>
+          <td>{{ state.partiallySumm }}</td>
         </tr>
       </tbody>
     </table>
     {{ state.alertMessage && !statusMark ? state.alertMessage : '' }}
-    <br><br>
+    <br /><br />
     <button v-if="statusMark" @click="firstCaptureData">Далее</button>
-    <button v-if="!statusMark&&!state.wellDone" >SAVE</button>
   </div>
 </template>
 
@@ -135,7 +134,7 @@ const firstCaptureData = () => {
   const rawData = toRaw(unref(inputData))
   const modArr = rawData.body.filter((f) => f.status && f.status !== 'open')
 
-    const particalCalculate = (
+  const particalCalculate = (
     taskArray: cabtimeType['body'],
     spentTime: number,
     timeAll: number,
@@ -181,7 +180,6 @@ const firstCaptureData = () => {
     return taskArray
   }
 
-
   state.allSumm = rawData.body.reduce((acc: number, e) => {
     if (e?.status && e.status !== 'open') {
       acc += e.result
@@ -209,8 +207,10 @@ const firstCaptureData = () => {
   console.log(doneSumm, 'doneSumm')
   // store.commit('SET_TASK_DONE_SUMM',doneSumm)
 
-
-console.log(particalCalculate(modArr, timeToCalc.value, state.allSumm, doneSumm), 'TADA')
+  console.log(
+    particalCalculate(modArr, timeToCalc.value, state.allSumm, doneSumm),
+    'TADA'
+  )
   // if (timeToCalc.value > doneSumm && timeToCalc.value < state.allSumm) {
   //   state.alertMessage = 'all ok'
   //   //ALL OK
@@ -229,7 +229,6 @@ console.log(particalCalculate(modArr, timeToCalc.value, state.allSumm, doneSumm)
   //   e.propTime = Math.round((e.result / state.allSumm) * timeToCalc.value)
   // })
 
-
   // console.log(timeToCalc.value);
 
   //    rawData.sort((a, b) => {
@@ -238,7 +237,8 @@ console.log(particalCalculate(modArr, timeToCalc.value, state.allSumm, doneSumm)
   //   return x < y ? -1 : x > y ? 1 : 0
   // })
   store.commit(
-    'setCabtimeWithStatus', particalCalculate(modArr, timeToCalc.value, state.allSumm, doneSumm)
+    'setCabtimeWithStatus',
+    particalCalculate(modArr, timeToCalc.value, state.allSumm, doneSumm)
     // rawData.body.filter((f) => f.status && f.status !== 'open')
   )
 }
@@ -296,11 +296,10 @@ const calculatePartiallySumm = () => {
     0
   )
   // debugger
-    const difTime = timeToCalc.value - state.partiallySumm
+  const difTime = timeToCalc.value - state.partiallySumm
 
   // console.log(difTime, 'eee')
-  if (difTime >= -10&&difTime <= 10) {
-    
+  if (difTime >= -10 && difTime <= 10) {
     state.wellDone = false
   } else state.wellDone = true
 }
@@ -310,14 +309,14 @@ const changePartyalyyTime = (ev: Event, id: string) => {
   if (!(ev.target instanceof HTMLInputElement)) return
   const item = inputData.value.body.find((e) => e._id === id)
   item && (item.propTime = +ev.target.value)
-calculatePartiallySumm()
+  calculatePartiallySumm()
   // state.partiallySumm = inputData.value.body.reduce(
   //   (acc: number, e) => (acc += e.propTime!),
   //   0
   // )
 
   //   if (difTime < -10) {
-    
+
   //   console.log(difTime, 'www')
   // }
 }

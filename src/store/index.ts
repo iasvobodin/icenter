@@ -56,10 +56,10 @@ export const store = createStore<State>({
     photoContainer: '',
     compressBlob: [],
     loader: false,
-    template: {} as templateType,
+    template: <templateType>{},
     projectList: null,
     selectedProjectNumber: '',
-    projectInfo: {} as projectInfoType,
+    projectInfo: <projectInfoType>{},
     user: <userType>{},
     currentError: null,
     cabinetItems: [],
@@ -74,10 +74,10 @@ export const store = createStore<State>({
     SetPhotosToDelete(state, payload: string[]) {
       state.photosToDelete = payload
     },
-    SET_USER(state, payload: userType) {
+    SET_USER(state, payload) {
       window.localStorage.setItem('user', JSON.stringify(payload))
       // store.commit('setUserAuth', JSON.stringify(payload))
-      state.user = payload
+      state.user = payload as userType
       // debugger
     },
     SET_TASK_DONE_SUMM(state, payload) {
@@ -190,7 +190,8 @@ export const store = createStore<State>({
           return '/role'
         } else {
           //FIRST TIME CHECK
-          Object.keys(state.user).length == 0 && dispatch('CHECK_AUTH_SERVER', userParse) // commit('SET_USER', userParse)
+          Object.keys(state.user).length == 0 &&
+            (await dispatch('CHECK_AUTH_SERVER', userParse)) // commit('SET_USER', userParse)
           return true
         }
       } else {
@@ -253,16 +254,16 @@ export const store = createStore<State>({
       try {
         const { request: getUser, response } = useFetch<userType>(
           `/api/user/${user.info.userId}?getRegisterUser=true`
-          )
-          await getUser()
-          //USER IN SERVER IS EXIST
+        )
+        await getUser()
+        //USER IN SERVER IS EXIST
         const userServer = response.value
         const userServerString = JSON.stringify(userServer)
         const userLocalString = JSON.stringify(user)
 
         if (userLocalString !== userServerString) {
           commit('SET_USER', userServer)
-        } else{
+        } else {
           commit('SET_USER', user)
         }
       } catch (error) {
