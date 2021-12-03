@@ -10,36 +10,14 @@
       </h3>
       <h3 v-if="!timeToCalc">Время работы: {{ time }}</h3>
       <button @click="setStatePassedTime">Завершить работу</button>
+      <button @click="setStatePassedTime">Редактировать задачу</button>
     </div>
 
-    <br />
-    <br />
-    <br />
-    <br />
-    <h3>Выбор задач</h3>
-    <p>Выберите задачи которые полностью или частично выполнены</p>
     <task-cab-time
       v-if="state.cabTime && timeToCalc"
       :input-data="state.cabTime"
       @cabtime-with-status="state.ctStatus = $event"
     />
-    <br />
-    <br />
-    <br />
-    <!-- <h3>Время выполнения</h3>
-    <p>
-      Время по отмеченным задачам расчитывается автоматически, проверьте столбец
-      результат, и внесите корректировки, если это необходимо. <br />
-      Итоговое время по задачам в кабтайме, должно соответсвоть общему времени
-      выполнения.
-    </p> -->
-    <!-- <br /> -->
-    <!-- <h3 v-if="timeToCalc">Затраченное время: {{ timeToCalc }} минут</h3> -->
-    <!-- <task-cab-time
-      v-if="ctWithStatus"
-      :status-mark="false"
-      :input-data="{ body: ctWithStatus }"
-    /> -->
     <task-status v-if="ctWithStatus" :input-data="{ body: ctWithStatus }" />
   </div>
 </template>
@@ -65,7 +43,7 @@ const state = reactive({
   ctStatus: null,
 })
 const setStatePassedTime = () => {
-  store.commit('changePassedTime', Math.floor(state.passedTime / 60000) )//- 24200)
+  store.commit('changePassedTime', Math.floor(state.passedTime / 60000)) //- 24200)
   // console.log(store.state) //timeToCalc = state.passedTime
 }
 
@@ -127,11 +105,10 @@ const getCabTime = async () => {
 }
 getCabTime()
 
-onUnmounted(()=> {
- store.commit('changePassedTime',0) 
- store.commit('setCabtimeWithStatus',null)
+onUnmounted(() => {
+  store.commit('changePassedTime', 0)
+  store.commit('setCabtimeWithStatus', null)
 })
-
 </script>
 
 <style lang="css" scoped>

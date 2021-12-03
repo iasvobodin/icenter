@@ -186,7 +186,7 @@ export default {
         ],
       }
       try {
-        await $store.dispatch('UPLOAD_PHOTOS', 'errors-photo')
+        await this.$store.dispatch('UPLOAD_PHOTOS', 'errors-photo')
         // await $store.dispatch('DELETE_PHOTOS')
         await fetch('/api/post_item', {
           method: 'POST', // или 'PUT'

@@ -17,11 +17,11 @@
   <label for="search">Поиск: </label>
   <input
     id="search"
-    @keyup.enter="$event.target.blur()"
     v-model="state.search"
     class="choose"
     type="text"
     placeholder="WO или номер проекта"
+    @keyup.enter="$event.target.blur()"
   />
   <br /><br />
   <div v-if="state.errors" class="errors__holder">

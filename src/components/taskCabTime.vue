@@ -1,5 +1,9 @@
 <template>
   <div>
+    <div class="description">
+      <h3>Выбор задач</h3>
+      <p>Выберите задачи которые полностью или частично выполнены</p>
+    </div>
     <table>
       <colgroup>
         <!-- <col span="1" class="collgroup1" /> -->
@@ -39,7 +43,7 @@
             done: value.status === 'done',
           }"
         >
-          <td class="desc">{{ value._id }}{{ value.name }}</td>
+          <td class="desc">{{ value.name }}</td>
           <td style="text-align: center" v-if="statusMark">
             <input
               @input="changeStatus($event, value._id, 'partially')"

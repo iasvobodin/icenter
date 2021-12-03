@@ -1,8 +1,10 @@
 <template>
   <div>
-    <button v-if="computedItems" @click="createTask">Приступить к работе</button>
+    <button v-if="computedItems" @click="createTask">
+      Приступить к работе
+    </button>
     <h3 v-else>CabTime по этому шкафу не расчитан.</h3>
-    <h3 style="color :red">{{delay}}</h3>
+    <h3 style="color: red">{{ delay }}</h3>
   </div>
 </template>
 
@@ -18,14 +20,22 @@ const store = useStore()
 const projectInfoState = computed(() => store.state.projectInfo)
 const userInfoState = computed(() => store.state.user)
 
-const computedItems = computed(
-  () => store.state.cabinetItems.filter((e) => e.type === 'cabtime')[0] ? store.state.cabinetItems.filter((e) => e.type === 'cabtime')[0] : null
+const computedItems = computed(() =>
+  store.state.cabinetItems.filter((e) => e.type === 'cabtime')[0]
+    ? store.state.cabinetItems.filter((e) => e.type === 'cabtime')[0]
+    : null
 )
 const state = reactive({
-  redirectMessage:"",
+  redirectMessage: '',
   second: 0,
 })
-const delay = computed(()=> state.redirectMessage ? `Необходимо остановить предыдущую задачу, переадресация через ${state.second/1000} сек.`:'')
+const delay = computed(() =>
+  state.redirectMessage
+    ? `Необходимо остановить предыдущую задачу, переадресация через ${
+        state.second / 1000
+      } сек.`
+    : ''
+)
 const getUserTask = async () => {
   const { request, response } = useFetch(
     `/api/GET_userTasks?user=${userInfoState.value.info.userDetails.toLowerCase()}`
@@ -33,15 +43,15 @@ const getUserTask = async () => {
   try {
     await request()
   } catch (error) {
-    console.log(error.message);
+    console.log(error.message)
   }
   const userTask = response.value
   let delay = 5000
   if (userTask) {
     state.second = delay
-    setInterval(()=>state.second = delay -=1000,1000)
+    setInterval(() => (state.second = delay -= 1000), 1000)
     state.redirectMessage = 'Необходимо остановить предыдущую задачу'
-    setTimeout(() => router.push(`/tasks/${userTask.id}`),delay)
+    setTimeout(() => router.push(`/tasks/${userTask.id}`), delay)
   }
   // response.value&&router.push('/user')
   return

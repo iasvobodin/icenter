@@ -40,7 +40,6 @@ const state = reactive({
   currentCabinetTab: null,
 })
 
-
 const setState = async () => {
   await store.dispatch('getCabinetsInfo', route.params.cabinetId)
   await store.dispatch('GET_cabinetItems', route.params.cabinetId)

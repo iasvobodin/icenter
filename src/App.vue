@@ -4,7 +4,7 @@
     <router-view />
   </div>
   <app-header v-if="match()" />
-  <loader />
+  <fetch-loader />
 
   <!-- <input v-model="state.mess" type="text" name="" id="" /><br /><br /><button
     @click="sendmessage"
@@ -17,7 +17,7 @@
 </template>
 
 <script setup>
-import loader from '@/components/loader.vue'
+import fetchLoader from '@/components/fetchLoader.vue'
 import appHeader from '@/components/header.vue'
 import * as signalR from '@microsoft/signalr'
 import { useRoute, onBeforeRouteUpdate } from 'vue-router'

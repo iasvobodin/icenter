@@ -5,7 +5,7 @@
       <p>
         Время по отмеченным задачам расчитывается автоматически, проверьте
         столбец результат, и внесите корректировки, если это необходимо. <br />
-      При ручной корректировке время работы, должно соответсвоть расчётному!
+        При ручной корректировке время работы, должно соответсвоть расчётному!
       </p>
     </div>
     <table>
@@ -34,7 +34,7 @@
             done: value.status === 'done',
           }"
         >
-          <td class="desc">{{ value._id }}{{ value.name }}</td>
+          <td class="desc">{{ value.name }}</td>
 
           <td style="text-align: center">
             {{ value.result }}
@@ -119,7 +119,21 @@ const { inputData } = toRefs(props)
 
 const timeToCalc = computed(() => store.state.passedTime)
 
-const calculatePartiallySumm = () => {
+// const calculatePartiallySumm = () => {
+//   state.partiallySumm = inputData.value.body.reduce(
+//     (acc: number, e) => (acc += e.propTime!),
+//     0
+//   )
+//   state.difTime = timeToCalc.value - state.partiallySumm
+
+//   if (state.difTime >= -10 && state.difTime <= 10) {
+//     state.wellDone = false
+//   } else state.wellDone = true
+// }
+
+// calculatePartiallySumm()
+
+watchEffect(() => {
   state.partiallySumm = inputData.value.body.reduce(
     (acc: number, e) => (acc += e.propTime!),
     0
@@ -129,15 +143,15 @@ const calculatePartiallySumm = () => {
   if (state.difTime >= -10 && state.difTime <= 10) {
     state.wellDone = false
   } else state.wellDone = true
-}
+})
 
-calculatePartiallySumm()
+// calculatePartiallySumm()
 
 const changePartyalyyTime = (ev: Event, id: string) => {
   if (!(ev.target instanceof HTMLInputElement)) return
   const item = inputData.value.body.find((e) => e._id === id)
   item && (item.propTime = +ev.target.value)
-  calculatePartiallySumm()
+  //   calculatePartiallySumm()
 }
 </script>
 
