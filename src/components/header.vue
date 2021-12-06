@@ -10,7 +10,9 @@
     <div>
       <h4 v-if="!userInfo" class="checkAuth">Проверка авторизации</h4>
       <div v-else class="user" @click="$router.push('/user')">
-        <span>
+
+        <img class="user-photo" v-if="$store.state.user.body.photo" :src="`https://icaenter.blob.core.windows.net/user-photo/thumb__${store.state.user.info.userDetails}`" alt="user">
+                <span v-else>
           {{ $store.state.user.body.name }}
         </span>
       </div>
@@ -27,6 +29,11 @@ const userInfo = computed(() => store.state.user.info)
 </script>
 
 <style lang="css" scoped>
+.user-photo{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
 a {
   text-decoration-line: none;
   color: #ffffff;
@@ -49,6 +56,7 @@ a {
 }
 
 .user {
+  overflow: hidden;
   position: relative;
   top: 5px;
   left: 5px;

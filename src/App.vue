@@ -117,13 +117,13 @@ const connect = async () => {
 // import.meta.env.MODE !== 'development'&&
 Object.keys(store.state.user).length !== 0 && connect()
 
-const onNewMessage = (message) => state.messages.push(message)
-const sendmessage = async () => {
-  fetch('/api/getUserHeader', {
-    method: 'post',
-    body: state.mess,
-  })
-}
+// const onNewMessage = (message) => state.messages.push(message)
+// const sendmessage = async () => {
+//   fetch('/api/getUserHeader', {
+//     method: 'post',
+//     body: state.mess,
+//   })
+// }
 // const ttemp = ref(null)
 // onBeforeRouteUpdate(async ( to, from, next) => {
 //   console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");

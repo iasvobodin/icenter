@@ -3,9 +3,11 @@ import App from './App.vue'
 import router from './router/index.js'
 import { store } from './store'
 import VueClickAway from 'vue3-click-away'
-
+import { msalPlugin } from './plugins/msalPlugin'
+import { msalInstance } from './authConfig'
 const app = createApp(App)
 app.use(store)
 app.use(router)
 app.use(VueClickAway)
+app.use(msalPlugin, msalInstance)
 app.mount('#app')
