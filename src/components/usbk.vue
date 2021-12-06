@@ -25,7 +25,12 @@
     >
       {{ state.userTask.id }}
     </h2>
-    <button @click="tryToGetToken2">try to get photo</button>
+    <button
+      v-if="userFromStore.info.identityProvider === 'aad'"
+      @click="tryToGetToken2"
+    >
+      Загрузить фото
+    </button>
     <!-- <a
       :href="`https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id=${CLIENT_ID}&response_type=code&redirect_uri=http://localhost:4280/user&scope=offline_access User.Read User.ReadWrite&response_mode=query&state=12345`"
       >GetToken</a
@@ -33,7 +38,7 @@
     <!-- <mgt-msal2-provider :client-id="CLIENT_ID"></mgt-msal2-provider>
 <mgt-login></mgt-login>
 <mgt-people-picker></mgt-people-picker> -->
-<img :src="userFromStore.body.photo" alt="">
+    <img :src="userFromStore.body.photo" alt="" />
   </div>
 </template>
 
@@ -65,13 +70,10 @@ const state = reactive({
 })
 
 const publicClientApplication = msalInstance
-
 const savePhoto = async () => {
-  const updateUser = JSON.parse(JSON.stringify(store.state.user)) 
+  const updateUser = JSON.parse(JSON.stringify(store.state.user))
   updateUser.body.photo = `https://icaenter.blob.core.windows.net/user-photo/${store.state.user.info.userDetails}`
-
-  console.log(updateUser,'updateUser');
-//  await store.dispatch(' CHECK_AUTH_SERVER',updateUser)
+  CHECK_AUTH_SERVER
   const options = {
     method: 'POST', // или 'PUT'
     body: JSON.stringify(updateUser),
@@ -79,7 +81,7 @@ const savePhoto = async () => {
   const saveColorReq = await fetch(
     `/api/user/${store.state.user.id}?postRegisterUser=true`,
     options
-)
+  )
   // document.documentElement.style.setProperty('--cursor', `${userFromLocal.body?.customCursor}`)
 }
 const getPhoto = async (token) => {
@@ -93,25 +95,19 @@ const getPhoto = async (token) => {
     redirect: 'follow',
   }
 
-  fetch('https://graph.microsoft.com/v1.0/me/photo/$value', requestOptions)
-    .then((response) => response.blob())
-    .then(result => {
-      console.log(result);
-      const formData = new FormData()
-      formData.set('photo', result, store.state.user.info.userDetails)
-      store.commit('SetPhotosToUpload', formData)
-      console.log('commit formdata');
-      try {
-        store.dispatch('UPLOAD_PHOTOS', 'user-photo')
-        console.log('dispatch photo');
-      } catch (error) {
-        console.log(error);
-      }
-      savePhoto()
-      // 'https://icaenter.blob.core.windows.net/user-photo/'
+  const photoRes = await fetch(
+    `https://graph.microsoft.com/v1.0/me/photo/$value`,
+    requestOptions
+  )
+  const photo = await photoRes.blob()
 
-    })//.then(savePhoto)
-    .catch((error) => console.log('error', error))
+  const formData = new FormData()
+  formData.set('photo', photo, store.state.user.info.userDetails)
+  store.commit('SetPhotosToUpload', formData)
+  await store.dispatch('UPLOAD_PHOTOS', 'user-photo')
+  const updateUser = JSON.parse(JSON.stringify(store.state.user))
+  updateUser.body.photo = `https://icaenter.blob.core.windows.net/user-photo/${store.state.user.info.userDetails}`
+  await store.dispatch('CHECK_AUTH_SERVER', updateUser)
 }
 let accountId = ''
 let accessToken = ''
@@ -154,56 +150,99 @@ function handleResponse(response) {
   console.log(accountId)
 }
 
-
-const tryToGetToken =  () => {
-  publicClientApplication.handleRedirectPromise().then(handleResponse)
+const tryToGetToken = async () => {
+  const tryToAuth = await publicClientApplication.handleRedirectPromise()
+  handleResponse(tryToAuth)
 }
 
-
-const tryToGetToken2 =  async () => {
- const getAccount = await publicClientApplication.handleRedirectPromise()
-   if (getAccount !== null) {
-    accountId = getAccount.account.homeAccountId
+const tryToGetToken2 = async () => {
+  const redirectResponse = await publicClientApplication.handleRedirectPromise()
+  if (redirectResponse !== null) {
+    // Acquire token silent success
+    let accessToken = redirectResponse.accessToken
+    // Call your API with token
+    getPhoto(accessToken)
   } else {
-    const currentAccounts = publicClientApplication.getAllAccounts()
+    const account = publicClientApplication.getAllAccounts()[0]
 
-    if (currentAccounts.length === 0) {
-      // no accounts signed-in, attempt to sign a user in
-      publicClientApplication.loginRedirect(loginRequest)
-    } else if (currentAccounts.length > 1) {
-      // Add choose account code here
-      console.log('manyAccounts');
-    } else if (currentAccounts.length === 1) {
-      // accountId = currentAccounts[0].homeAccountId
-// console.log(currentAccounts[0],'currentAccounts[0]');
-      const accessTokenRequest = {
-        scopes: ['User.Read', 'User.ReadWrite'],
-        account: currentAccounts[0],
-      }
-try {
-       const {accessToken} = await publicClientApplication.acquireTokenSilent(accessTokenRequest)
-console.log(accessToken,'accessToken after silent');
-          accessToken&&getPhoto(accessToken)
-} catch (error) {
-  console.log(error);
-  publicClientApplication.acquireTokenRedirect(accessTokenRequest);
-}
-//      const {accessToken} = await publicClientApplication.acquireTokenSilent(accessTokenRequest)
-// console.log(accessToken,'accessToken after silent');
-//           getPhoto(accessToken)
+    const accessTokenRequest = {
+      scopes: ['User.Read', 'User.ReadWrite'],
+      account: account,
     }
-  }
-}
 
+    try {
+      const acquireToken = await publicClientApplication.acquireTokenSilent(
+        accessTokenRequest
+      )
+      let accessToken = acquireToken.accessToken
+     accessToken&& (await getPhoto(accessToken))
+    } catch (error) {
+      console.log(error)
+      // if (error instanceof InteractionRequiredAuthError) {
+      // const acquireTokenRedirect = await 
+      publicClientApplication.acquireTokenRedirect(accessTokenRequest)
+      // let accessToken = acquireTokenRedirect.accessToken
+    //  accessToken&& (await getPhoto(accessToken))
+      // console.log(acquireTokenRedirect);
+      // }
+    }
+
+    // catch(function (error) {
+    //         //Acquire token silent failure, and send an interactive request
+    //         console.log(error);
+    //         if (error instanceof InteractionRequiredAuthError) {
+    //             publicClientApplication.acquireTokenRedirect(accessTokenRequest);
+    //         }
+    //     });
+  }
+  // const loginPopup = await publicClientApplication.loginPopup(loginRequest)
+  //   const currentAccounts = publicClientApplication.getAllAccounts()[0]
+  //   const accessTokenRequest = {
+  //         scopes: ['User.Read', 'User.ReadWrite'],
+  //         account: currentAccounts,
+  //       }
+  // try {
+  //   const {accessToken} = await publicClientApplication.acquireTokenSilent(accessTokenRequest)
+  //  accessToken&&(await getPhoto(accessToken))
+
+  // } catch (error) {
+  //   console.log(error,'get token silent fail');
+  //  const {accessToken} = publicClientApplication.acquireTokenPopup(accessTokenRequest)
+  //  await getPhoto(accessToken)
+  // }
+
+  //  const {accessToken} = await publicClientApplication.acquireTokenSilent(accessTokenRequest)
+
+  //   publicClientApplication.acquireTokenSilent(accessTokenRequest).then(function(accessTokenResponse) {
+  //     // Acquire token silent success
+  //     let accessToken = accessTokenResponse.accessToken;
+  //     // Call your API with token
+  //     callApi(accessToken);
+  // }).catch(function (error) {
+  //     //Acquire token silent failure, and send an interactive request
+  //     if (error instanceof InteractionRequiredAuthError) {
+  //         publicClientApplication.acquireTokenPopup(accessTokenRequest).then(function(accessTokenResponse) {
+  //             // Acquire token interactive success
+  //             let accessToken = accessTokenResponse.accessToken;
+  //             // Call your API with token
+  //             callApi(accessToken);
+  //         }).catch(function(error) {
+  //             // Acquire token interactive failure
+  //             console.log(error);
+  //         });
+  //     }
+  //     console.log(error);
+  // });
+}
 
 const userFromStore = computed(() => store.state.user)
 // console.log(import.meta.env.VITE_CLIENT_ID,"test env");
 const getUserTask = async () => {
   const { request, response } = useFetch(
-    `/api/GET_userTasks?user=${userFromStore.value.info.userDetails.toLowerCase()}`
+    `/api/GET_userTasks?user=${store.state.user.info.userDetails.toLowerCase()}`
   )
   try {
-    userFromStore.value && (await request())
+    await request()
   } catch (error) {
     console.log(error.message)
   }

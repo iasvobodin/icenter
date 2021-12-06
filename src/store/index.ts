@@ -250,7 +250,7 @@ export const store = createStore<State>({
         return false
       }
     },
-    async CHECK_AUTH_SERVER({ commit }, user: userType) {
+    async CHECK_AUTH_SERVER({ commit, dispatch }, user: userType|any) {
       try {
         const { request: getUser, response } = useFetch<userType>(
           `/api/user/${user.info.userId}?getRegisterUser=true`
@@ -262,26 +262,30 @@ export const store = createStore<State>({
         const userLocalString = JSON.stringify(user)
 
         if (userLocalString !== userServerString) {
-          commit('SET_USER', userServer)
+          dispatch("POST_USER_DB",user )
+          // commit('SET_USER', userServer)
         } else {
           commit('SET_USER', user)
         }
       } catch (error) {
         console.log(error, 'USER IS NOT EXIST IN DB')
         //USER IS NOT EXIST
-        try {
-          const { request: postUser } = useFetch<string>(
-            `/api/user/${user.info.userId}?postRegisterUser=true`,
-            {
-              method: 'POST', // или 'PUT'
-              body: JSON.stringify(user),
-            }
-          )
-          await postUser()
-          commit('SET_USER', user)
-        } catch (error) {
-          console.log(error, 'SAVE USER IN A SERVER IS FAILED')
-        }
+        dispatch("POST_USER_DB",user )
+      }
+    },
+    async POST_USER_DB({ commit }, user: userType){
+      try {
+        const { request: postUser } = useFetch<string>(
+          `/api/user/${user.info.userId}?postRegisterUser=true`,
+          {
+            method: 'POST', // или 'PUT'
+            body: JSON.stringify(user),
+          }
+        )
+        await postUser()
+        commit('SET_USER', user)
+      } catch (error) {
+        console.log(error, 'SAVE USER IN A SERVER IS FAILED')
       }
     },
     //

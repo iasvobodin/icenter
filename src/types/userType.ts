@@ -15,5 +15,6 @@ export interface userType {
     name: string
     bg?: string
     customCursor?: string
+    photo?: string
   }
 }
