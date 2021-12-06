@@ -80,6 +80,12 @@ const savePhoto = async () => {
     `/api/user/${store.state.user.id}?postRegisterUser=true`,
     options
 )
+
+  if (saveColorReq.ok) {
+    // colorChanged.value = true
+    await store.dispatch('checkUser')
+    // document.documentElement.style.setProperty('--bg', `${color.value}`)
+  }
   // document.documentElement.style.setProperty('--cursor', `${userFromLocal.body?.customCursor}`)
 }
 const getPhoto = async (token) => {
