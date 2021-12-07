@@ -71,7 +71,12 @@ console.log(url, 'TEST SECRET')
 
 const tryToGetToken = async () => {
   const { request: test } = useFetch(`api/GET_token?test=true`)
+  try {
   await test()
+    
+  } catch (error) {
+    console.log(error);
+  }
 
   if (userFromStore.value?.token?.refresh_token) {
     const { request, response } = useFetch(
