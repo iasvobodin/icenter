@@ -181,7 +181,7 @@ onMounted(async () => {
     router.replace({ path: '/user' })
   }
   !userFromStore.value.body.photo &&
-    userFromStore.value.token.access_token &&
+    userFromStore.value.token?.access_token &&
     (await getPhoto(userFromStore.value.token.access_token))
 })
 </script>
