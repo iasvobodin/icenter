@@ -19,12 +19,20 @@ module.exports = async function (context, req, user) {
   }
 
   if (req.query.postRegisterUser) {
-    context.res = {
-      status: 200,
-      body: req.body,
+    try {
+      context.bindings.userPost = req.body
+      context.res = {
+        status: 200,
+        body: "ok post user",
+      }
+      return
+    } catch (error) {
+      context.res = {
+        status: 404,
+        body: "failure post user",
+      }
+      return
     }
-    return (context.bindings.userPost = req.body)
-    // return
   }
 
   if (context.bindings.userErors[0]) {

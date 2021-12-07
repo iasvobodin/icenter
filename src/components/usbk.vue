@@ -32,10 +32,10 @@
       Загрузить фото
     </button>
     <!-- <a
-      :href="`https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id=${CLIENT_ID}&response_type=code&redirect_uri=http://localhost:4280/user&scope=offline_access User.Read User.ReadWrite&response_mode=query&state=12345`"
+      :href="`https://login.microsoftonline.com/common/oauth2/v2.0/authorize?=${}&response_type=code&redirect_uri=http://localhost:4280/user&scope=offline_access User.Read User.ReadWrite&response_mode=query&state=12345`"
       >GetToken</a
     > -->
-    <!-- <mgt-msal2-provider :client-id="CLIENT_ID"></mgt-msal2-provider>
+    <!-- <mgt-msal2-provider :client-id=""></mgt-msal2-provider>
 <mgt-login></mgt-login>
 <mgt-people-picker></mgt-people-picker> -->
     <img :src="userFromStore.body.photo" alt="" />
@@ -236,7 +236,7 @@ const tryToGetToken2 = async () => {
 }
 
 const userFromStore = computed(() => store.state.user)
-// console.log(import.meta.env.VITE_CLIENT_ID,"test env");
+// console.log(import.meta.env.VITE_,"test env");
 const getUserTask = async () => {
   const { request, response } = useFetch(
     `/api/GET_userTasks?user=${store.state.user.info.userDetails.toLowerCase()}`
@@ -284,7 +284,7 @@ const fetchToken = (code) => {
   var urlencoded = new URLSearchParams()
   urlencoded.append('grant_type', 'authorization_code')
   urlencoded.append('code', code)
-  urlencoded.append('client_id', 'f2bba6ee-2c35-4e45-a2c1-c1a4fbfd2428')
+  urlencoded.append('', 'f2bba6ee-2c35-4e45-a2c1-c1a4fbfd2428')
   urlencoded.append('scope', 'offline_access User.Read User.ReadWrite')
   urlencoded.append('client_secret', 'SiO7Q~mTU0EB4yvqiYnJ.8s0HiuQwamGt_boP')
 
@@ -308,7 +308,7 @@ onMounted(async () => {
   store.dispatch('checkUser')
 
   // Providers.globalProvider = new Msal2Provider({
-  //   clientId: CLIENT_ID
+  //   clientId: 
   // });
   // function component() {
   //   const element = document.createElement('div');
@@ -333,7 +333,7 @@ onMounted(async () => {
   //     //   state:"12345",
   //     //   grant_type: 'authorization_code',
   //     //   code:CODE,
-  //     //   client_id:CLIENT_ID,
+  //     //   :,
   //     //   scope: 'offline_access User.Read User.ReadWrite',
   //     //   redirect_uri: 'http://localhost:4280/user',
   //     //   client_secret:CLIENT_SECRET,
@@ -342,7 +342,7 @@ onMounted(async () => {
   //       // Content-Type:"application/x-www-form-urlencoded",
   // grant_type:"authorization_code",
   // code:CODE,
-  // client_id:"f2bba6ee-2c35-4e45-a2c1-c1a4fbfd2428",
+  // :"f2bba6ee-2c35-4e45-a2c1-c1a4fbfd2428",
   // scope:"offline_access User.Read User.ReadWrite",
   // redirect_uri:"http://localhost:4280/user",
   // client_secret:"SiO7Q~mTU0EB4yvqiYnJ.8s0HiuQwamGt_boP",

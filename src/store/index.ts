@@ -191,7 +191,7 @@ export const store = createStore<State>({
         } else {
           //FIRST TIME CHECK
           Object.keys(state.user).length == 0 &&
-            (await dispatch('CHECK_AUTH_SERVER', userParse)) // commit('SET_USER', userParse)
+            dispatch('CHECK_AUTH_SERVER', userParse) // LOCALSTORAGE USER
           return true
         }
       } else {
@@ -250,32 +250,37 @@ export const store = createStore<State>({
         return false
       }
     },
-    async CHECK_AUTH_SERVER({ commit, dispatch }, user: userType|any) {
-      try {
-        const { request: getUser, response } = useFetch<userType>(
-          `/api/user/${user.info.userId}?getRegisterUser=true`
-        )
-        await getUser()
-        //USER IN SERVER IS EXIST
-        const userServer = response.value
-        const userServerString = JSON.stringify(userServer)
-        const userLocalString = JSON.stringify(user)
-
-        if (userLocalString !== userServerString) {
-          dispatch("POST_USER_DB",user )
-          // commit('SET_USER', userServer)
-        } else {
-          commit('SET_USER', user)
+    async CHECK_AUTH_SERVER({ commit, dispatch, state }, user: userType|any) {
+      const checkUserInLocal: string | null = window.localStorage.getItem('user')
+      const userPayloadString = JSON.stringify(user)
+      //IF PAYLOAD !==LOCAL
+      if (checkUserInLocal){
+        if (checkUserInLocal !== userPayloadString) {
+          console.log('IF PAYLOAD !==LOCAL');
+          dispatch("POST_USER_DB",user ) //NEED TO UPDATE DATA ON SERVER
+        }else{
+          Object.keys(state.user).length == 0 && commit('SET_USER', user)
         }
-      } catch (error) {
-        console.log(error, 'USER IS NOT EXIST IN DB')
-        //USER IS NOT EXIST
-        dispatch("POST_USER_DB",user )
-      }
+       } else{ //USER LOCAL IS NOT EXIST
+        try {
+          const { request: getUser, response } = useFetch<userType>(
+            `/api/user/${user.info.userId}?getRegisterUser=true`
+          )
+          await getUser()
+          //USER IN SERVER IS EXIST => COMMIT
+          const userServer = response.value
+          Object.keys(state.user).length == 0 && commit('SET_USER', userServer)
+        } catch (error) {
+          console.log(error, 'USER IS NOT EXIST IN DB')
+          //USER IS NOT EXIST, ADD NEW USER IN DB
+          dispatch("POST_USER_DB",user )
+        }
+       }
+
     },
     async POST_USER_DB({ commit }, user: userType){
       try {
-        const { request: postUser } = useFetch<string>(
+        const { request: postUser} = useFetch<string>(
           `/api/user/${user.info.userId}?postRegisterUser=true`,
           {
             method: 'POST', // или 'PUT'

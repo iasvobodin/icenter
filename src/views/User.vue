@@ -25,9 +25,9 @@
     >
       {{ state.userTask.id }}
     </h2>
-    <button @click="tryToGetToken2">try to get photo</button>
+    <button @click="tryToGetToken">try to get photo</button>
     <!-- <a
-      :href="`https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id=${CLIENT_ID}&response_type=code&redirect_uri=http://localhost:4280/user&scope=offline_access User.Read User.ReadWrite&response_mode=query&state=12345`"
+      :href="url"
       >GetToken</a
     > -->
     <!-- <mgt-msal2-provider :client-id="CLIENT_ID"></mgt-msal2-provider>
@@ -39,19 +39,10 @@
 
 <script setup>
 import { useStore } from 'vuex'
-// import * as Msal from '@azure/msal-browser'
-// import {
-//     useFetch
-// } from '@/hooks/fetch'
 import { computed, reactive, onMounted, watch, ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useFetch } from '@/hooks/fetch'
-// import { Providers, Msal2Provider } from '@microsoft/mgt';
-// import { useMsalAuthentication } from '@/hooks/useMsalAuthentication'
-// import { InteractionType } from '@azure/msal-browser'
-// import { reactive, watch } from 'vue'
-// import { loginRequest } from "@/authConfig";
-import { msalInstance, loginRequest, graphConfig } from '@/authConfig'
+
 
 const router = useRouter()
 const route = useRoute()
@@ -64,7 +55,20 @@ const state = reactive({
   userTask: null,
 })
 
-const publicClientApplication = msalInstance
+const CLIENT_ID = import.meta.env.VITE_CLIENT_ID
+const redirectUri = `${location.origin}/user`
+const scope = "offline_access User.Read User.ReadWrite"
+
+const url = new URL("https://login.microsoftonline.com/common/oauth2/v2.0/authorize");
+url.searchParams.append("client_id", CLIENT_ID);
+url.searchParams.append("response_type", "code");
+url.searchParams.append("redirect_uri", redirectUri);
+url.searchParams.append("scope", scope);
+url.searchParams.append("response_mode", "query");
+
+const tryToGetToken = () => {
+  location.href = url
+}
 
 const savePhoto = async () => {
   const updateUser = JSON.parse(JSON.stringify(store.state.user)) 
@@ -119,90 +123,10 @@ const getPhoto = async (token) => {
     })//.then(savePhoto)
     .catch((error) => console.log('error', error))
 }
-let accountId = ''
-let accessToken = ''
-// // const myMsal = new PublicClientApplication(config);
-
-function handleResponse(response) {
-  if (response !== null) {
-    accountId = response.account.homeAccountId
-    // Display signed-in user content, call API, etc.
-  } else {
-    // In case multiple accounts exist, you can select
-    const currentAccounts = publicClientApplication.getAllAccounts()
-
-    if (currentAccounts.length === 0) {
-      // no accounts signed-in, attempt to sign a user in
-      publicClientApplication.loginRedirect(loginRequest)
-    } else if (currentAccounts.length > 1) {
-      // Add choose account code here
-    } else if (currentAccounts.length === 1) {
-      accountId = currentAccounts[0].homeAccountId
-
-      const accessTokenRequest = {
-        scopes: ['User.Read', 'User.ReadWrite'],
-        account: currentAccounts[0],
-      }
-
-      publicClientApplication
-        .acquireTokenSilent(accessTokenRequest)
-        .then(function (accessTokenResponse) {
-          // Acquire token silent success
-          // Call API with token
-          accessToken = accessTokenResponse.accessToken
-          // console.log(accessToken);
-          getPhoto(accessToken)
-          // Call your API with token
-          // callApi(accessToken);
-        })
-    }
-  }
-  console.log(accountId)
-}
 
 
-const tryToGetToken =  () => {
-  publicClientApplication.handleRedirectPromise().then(handleResponse)
-}
 
-
-const tryToGetToken2 =  async () => {
- const getAccount = await publicClientApplication.handleRedirectPromise()
-   if (getAccount !== null) {
-    accountId = getAccount.account.homeAccountId
-  } else {
-    const currentAccounts = publicClientApplication.getAllAccounts()
-
-    if (currentAccounts.length === 0) {
-      // no accounts signed-in, attempt to sign a user in
-      publicClientApplication.loginRedirect(loginRequest)
-    } else if (currentAccounts.length > 1) {
-      // Add choose account code here
-      console.log('manyAccounts');
-    } else if (currentAccounts.length === 1) {
-      // accountId = currentAccounts[0].homeAccountId
-// console.log(currentAccounts[0],'currentAccounts[0]');
-      const accessTokenRequest = {
-        scopes: ['User.Read', 'User.ReadWrite'],
-        account: currentAccounts[0],
-      }
-try {
-       const {accessToken} = await publicClientApplication.acquireTokenSilent(accessTokenRequest)
-console.log(accessToken,'accessToken after silent');
-          accessToken&&getPhoto(accessToken)
-} catch (error) {
-  console.log(error);
-  publicClientApplication.acquireTokenRedirect(accessTokenRequest);
-}
-//      const {accessToken} = await publicClientApplication.acquireTokenSilent(accessTokenRequest)
-// console.log(accessToken,'accessToken after silent');
-//           getPhoto(accessToken)
-    }
-  }
-}
-
-
-const userFromStore = computed(() => store.state.user)
+const userFromStore = computed(() => JSON.parse(window.localStorage.getItem('user')))
 // console.log(import.meta.env.VITE_CLIENT_ID,"test env");
 const getUserTask = async () => {
   const { request, response } = useFetch(
@@ -243,83 +167,19 @@ const clearUser = () => {
   window.localStorage.removeItem('user')
   window.location.href = '/.auth/logout?post_logout_redirect_uri=/login'
 }
-const fetchToken = (code) => {
-  var myHeaders = new Headers()
-  myHeaders.append('Content-Type', 'application/x-www-form-urlencoded')
-  // myHeaders.append("Cookie", "buid=0.AQ4AXZgG68oGF0qB2mKauZ9lBe6mu_I1LEVOosHBpPv9JCgOAAA.AQABAAEAAAD--DLA3VO7QrddgJg7WevrM4CUFWANYgxGUNN3OZdqChOQkPET4UhHXo_JwRdf5-I-nnTrBWs9MveZaTM_WpzkLoQx81ntjsN0QS-L1USXWtkL-KxSxDEPaF7uzaEI-L4gAA; fpc=Aj-7mMf3IwNIn9cJ9tqoWXBg-pG8AgAAADl7P9kOAAAA; stsservicecookie=estsfd; x-ms-gateway-slice=estsfd");
 
-  var urlencoded = new URLSearchParams()
-  urlencoded.append('grant_type', 'authorization_code')
-  urlencoded.append('code', code)
-  urlencoded.append('client_id', 'f2bba6ee-2c35-4e45-a2c1-c1a4fbfd2428')
-  urlencoded.append('scope', 'offline_access User.Read User.ReadWrite')
-  urlencoded.append('client_secret', 'SiO7Q~mTU0EB4yvqiYnJ.8s0HiuQwamGt_boP')
-
-  var requestOptions = {
-    method: 'POST',
-    headers: myHeaders,
-    body: urlencoded,
-    redirect: 'follow',
-  }
-
-  fetch(
-    'https://login.microsoftonline.com/common/oauth2/v2.0/token',
-    requestOptions
-  )
-    .then((response) => response.text())
-    .then((result) => console.log(result))
-    .catch((error) => console.log('error', error))
-}
 onMounted(async () => {
   localUser.value = window.localStorage.getItem('user')
-  store.dispatch('checkUser')
+  // store.dispatch('checkUser')
 
-  // Providers.globalProvider = new Msal2Provider({
-  //   clientId: CLIENT_ID
-  // });
-  // function component() {
-  //   const element = document.createElement('div');
-  //   element.innerHTML = '<mgt-login></mgt-login>';
-  //   return element;
-  // }
-
-  // document.body.appendChild(component());
   if (route.query.code) {
-    fetchToken(route.query.code)
+    console.log('FETCH!!!');
+    const {request, response} = useFetch(`api/GET_token?code=${route.query.code}&redirect=${redirectUri}&scope=${scope}`)
+    await request()
+    console.log(response.value);
+    router.replace({ path: '/user' })
   }
-  //       console.log('has code');
-  // const CODE = route.query.code
-  //   const resToken = await fetch('https://login.microsoftonline.com/common/oauth2/v2.0/token', {
-  //     method: 'post',
-  //     mode: 'no-cors',
-  //     headers:{
-  //       'Content-Type':'application/x-www-form-urlencoded',
-  //       // 'Host':'https://login.microsoftonline.com'
-  //     },
-  //     // body: JSON.stringify({
-  //     //   state:"12345",
-  //     //   grant_type: 'authorization_code',
-  //     //   code:CODE,
-  //     //   client_id:CLIENT_ID,
-  //     //   scope: 'offline_access User.Read User.ReadWrite',
-  //     //   redirect_uri: 'http://localhost:4280/user',
-  //     //   client_secret:CLIENT_SECRET,
-  //     // }),
-  //     body:{
-  //       // Content-Type:"application/x-www-form-urlencoded",
-  // grant_type:"authorization_code",
-  // code:CODE,
-  // client_id:"f2bba6ee-2c35-4e45-a2c1-c1a4fbfd2428",
-  // scope:"offline_access User.Read User.ReadWrite",
-  // redirect_uri:"http://localhost:4280/user",
-  // client_secret:"SiO7Q~mTU0EB4yvqiYnJ.8s0HiuQwamGt_boP",
-  //     }
-  //   })
-  //   const token = resToken.json()
-  //   console.log(token);
-  //     }
 })
-// };
 </script>
 
 <style lang="css" scoped>
