@@ -36,7 +36,6 @@ const getToken = async (
     return data
   } catch (error) {
     throw new Error(error)
-    // console.log(error, 'ERROR')
   }
 }
 // req.query.client_id,
@@ -44,7 +43,14 @@ const getToken = async (
 module.exports = async function (context, req) {
   const CLIENT_ID = process.env["client_id"]
   const CLIENT_SECRET = process.env["client_secret"]
-  
+  context.log(CLIENT_ID,CLIENT_SECRET)
+
+  if (req.query.test) {
+    return context.res = {
+        body: `${CLIENT_ID}${CLIENT_SECRET}`
+      }
+    }
+
   if (req.query.refresh_token) {
     try {
       const data = await getToken(

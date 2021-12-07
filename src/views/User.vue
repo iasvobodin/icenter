@@ -70,6 +70,12 @@ url.searchParams.append('response_mode', 'query')
 console.log(url, "TEST SECRET");
 
 const tryToGetToken = async () => {
+
+      const { request:test } = useFetch(
+      `api/GET_token?test=true`
+    )
+await test()
+
   if (userFromStore.value?.token?.refresh_token) {
     const { request, response } = useFetch(
       `api/GET_token?refresh_token=${userFromStore.value.token.refresh_token}&redirect=${redirectUri}&scope=${scope}`
