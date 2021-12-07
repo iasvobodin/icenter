@@ -33,7 +33,8 @@ const getToken = async (
     // console.log(data);
     return data
   } catch (error) {
-    console.log(error, 'ERROR')
+    throw new Error(error)
+    // console.log(error, 'ERROR')
   }
 }
 
