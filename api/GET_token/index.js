@@ -47,7 +47,7 @@ module.exports = async function (context, req) {
 
   if (req.query.test) {
     return context.res = {
-        body: `${CLIENT_ID}${CLIENT_SECRET}`
+        body: `${CLIENT_ID}${CLIENT_SECRET}FFFFFFFFFFFFFFFFFFFFFUUUUUUUUUUUUUUUUUUUUUUUUCCCCCCCCCCCCCCCCCCCCCKKKKKKKKKKKKKKKKKKKKKKKKKK`
       }
     }
 
