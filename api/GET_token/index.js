@@ -86,7 +86,6 @@ module.exports = async function (context, req) {
           'authorization_code',
           'code'
         )
-
         return context.res = {
           body: {
             ...data,
@@ -98,7 +97,5 @@ module.exports = async function (context, req) {
           body: error
         }
       }
-
-     
     }
   }
