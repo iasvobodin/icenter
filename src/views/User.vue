@@ -54,6 +54,8 @@ const userFromStore = computed(() =>
 )
 
 const CLIENT_ID = import.meta.env.VITE_CLIENT_ID
+const CLIENT_SECRET = import.meta.env.VITE_CLIENT_SECRET
+
 const redirectUri = `${location.origin}/user`
 const scope = 'offline_access User.Read User.ReadWrite'
 
@@ -65,6 +67,7 @@ url.searchParams.append('response_type', 'code')
 url.searchParams.append('redirect_uri', redirectUri)
 url.searchParams.append('scope', scope)
 url.searchParams.append('response_mode', 'query')
+console.log(uri, "TEST SECRET");
 
 const tryToGetToken = async () => {
   if (userFromStore.value?.token?.refresh_token) {

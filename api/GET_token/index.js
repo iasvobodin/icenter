@@ -1,6 +1,8 @@
 const axios = require('axios')
 const qs = require('qs')
 
+
+
 const getToken = async (
   id,
   secret,
@@ -37,11 +39,12 @@ const getToken = async (
     // console.log(error, 'ERROR')
   }
 }
-
+// req.query.client_id,
+// req.query.client_secret,
 module.exports = async function (context, req) {
-  const CLIENT_ID = process.env.client_id
-  const CLIENT_SECRET = process.env.client_secret
-
+  const CLIENT_ID = process.env["client_id"]
+  const CLIENT_SECRET = process.env["client_secret"]
+  
   if (req.query.refresh_token) {
     try {
       const data = await getToken(
