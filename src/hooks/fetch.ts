@@ -19,12 +19,11 @@ export function useFetch<T>(
       // console.log(res)
 
       if (res.ok) {
-        console.log(res);
+        console.log(res)
         try {
           response.value = await res.json()
         } catch (error) {
-          console.log(error);
-          
+          console.log(error)
         }
       }
       if (res.status === 404) {

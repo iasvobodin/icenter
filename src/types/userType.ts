@@ -17,4 +17,12 @@ export interface userType {
     customCursor?: string
     photo?: string
   }
+  token?: {
+    access_token: string
+    expires_in: number
+    ext_expires_in: number
+    refresh_token: string
+    scope: string
+    token_type: string
+  }
 }

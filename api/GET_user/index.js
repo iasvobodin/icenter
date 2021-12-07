@@ -23,13 +23,13 @@ module.exports = async function (context, req, user) {
       context.bindings.userPost = req.body
       context.res = {
         status: 200,
-        body: "ok post user",
+        body: 'ok post user',
       }
       return
     } catch (error) {
       context.res = {
         status: 404,
-        body: "failure post user",
+        body: 'failure post user',
       }
       return
     }

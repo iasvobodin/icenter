@@ -175,14 +175,14 @@ const tryToGetToken2 = async () => {
         accessTokenRequest
       )
       let accessToken = acquireToken.accessToken
-     accessToken&& (await getPhoto(accessToken))
+      accessToken && (await getPhoto(accessToken))
     } catch (error) {
       console.log(error)
       // if (error instanceof InteractionRequiredAuthError) {
-      // const acquireTokenRedirect = await 
+      // const acquireTokenRedirect = await
       publicClientApplication.acquireTokenRedirect(accessTokenRequest)
       // let accessToken = acquireTokenRedirect.accessToken
-    //  accessToken&& (await getPhoto(accessToken))
+      //  accessToken&& (await getPhoto(accessToken))
       // console.log(acquireTokenRedirect);
       // }
     }
@@ -308,7 +308,7 @@ onMounted(async () => {
   store.dispatch('checkUser')
 
   // Providers.globalProvider = new Msal2Provider({
-  //   clientId: 
+  //   clientId:
   // });
   // function component() {
   //   const element = document.createElement('div');

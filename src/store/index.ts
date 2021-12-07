@@ -250,18 +250,20 @@ export const store = createStore<State>({
         return false
       }
     },
-    async CHECK_AUTH_SERVER({ commit, dispatch, state }, user: userType|any) {
-      const checkUserInLocal: string | null = window.localStorage.getItem('user')
+    async CHECK_AUTH_SERVER({ commit, dispatch, state }, user: userType | any) {
+      const checkUserInLocal: string | null =
+        window.localStorage.getItem('user')
       const userPayloadString = JSON.stringify(user)
       //IF PAYLOAD !==LOCAL
-      if (checkUserInLocal){
+      if (checkUserInLocal) {
         if (checkUserInLocal !== userPayloadString) {
-          console.log('IF PAYLOAD !==LOCAL');
-          dispatch("POST_USER_DB",user ) //NEED TO UPDATE DATA ON SERVER
-        }else{
+          console.log('IF PAYLOAD !==LOCAL')
+          dispatch('POST_USER_DB', user) //NEED TO UPDATE DATA ON SERVER
+        } else {
           Object.keys(state.user).length == 0 && commit('SET_USER', user)
         }
-       } else{ //USER LOCAL IS NOT EXIST
+      } else {
+        //USER LOCAL IS NOT EXIST
         try {
           const { request: getUser, response } = useFetch<userType>(
             `/api/user/${user.info.userId}?getRegisterUser=true`
@@ -273,14 +275,13 @@ export const store = createStore<State>({
         } catch (error) {
           console.log(error, 'USER IS NOT EXIST IN DB')
           //USER IS NOT EXIST, ADD NEW USER IN DB
-          dispatch("POST_USER_DB",user )
+          dispatch('POST_USER_DB', user)
         }
-       }
-
+      }
     },
-    async POST_USER_DB({ commit }, user: userType){
+    async POST_USER_DB({ commit }, user: userType) {
       try {
-        const { request: postUser} = useFetch<string>(
+        const { request: postUser } = useFetch<string>(
           `/api/user/${user.info.userId}?postRegisterUser=true`,
           {
             method: 'POST', // или 'PUT'
