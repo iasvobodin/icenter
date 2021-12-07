@@ -62,6 +62,7 @@ module.exports = async function (context, req) {
     } catch (error) {
       context.res = {
         status: 404,
+        body: error
       }
 
       return
@@ -87,6 +88,7 @@ module.exports = async function (context, req) {
       } catch (error) {
         context.res = {
           status: 404,
+          body: error
         }
       }
 
