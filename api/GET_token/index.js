@@ -45,7 +45,7 @@ module.exports = async function (context, req) {
   if (req.query.test) {
     context.log(process.env)
    context.res = {
-      status: 404,
+      status: 418,
       body: `${CLIENT_ID}${CLIENT_SECRET}FFFFFFFFFFFFFFFFFFFFFUUUUUUUUUUUUUUUUUUUUUUUUCCCCCCCCCCCCCCCCCCCCCKKKKKKKKKKKKKKKKKKKKKKKKKK`,
     }
     return
