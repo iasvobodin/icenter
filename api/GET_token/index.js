@@ -54,20 +54,18 @@ module.exports = async function (context, req) {
         'refresh_token'
       )
 
-      context.res = {
+      return context.res = {
         body: {
           ...data,
         },
       }
     } catch (error) {
-      context.res = {
+      return  context.res = {
         status: 404,
         body: error
       }
-
-      return
     }
-
+  }
     if (req.query.code) {
       try {
         const data = await getToken(
@@ -80,19 +78,18 @@ module.exports = async function (context, req) {
           'code'
         )
 
-        context.res = {
+        return context.res = {
           body: {
             ...data,
           },
         }
       } catch (error) {
-        context.res = {
+        return context.res = {
           status: 404,
           body: error
         }
       }
 
-      return
+     
     }
   }
-}
