@@ -43,12 +43,13 @@ const getToken = async (
 module.exports = async function (context, req) {
   const CLIENT_ID = process.env["AzureClienId"]
   const CLIENT_SECRET = process.env["AzureClientSecret"]
-  context.log(CLIENT_ID,CLIENT_SECRET)
-
+  
   if (req.query.test) {
+    context.log(process.env)
     return context.res = {
-        body: `${CLIENT_ID}${CLIENT_SECRET}FFFFFFFFFFFFFFFFFFFFFUUUUUUUUUUUUUUUUUUUUUUUUCCCCCCCCCCCCCCCCCCCCCKKKKKKKKKKKKKKKKKKKKKKKKKK`
-      }
+      body:{ff: `${CLIENT_ID}${CLIENT_SECRET}FFFFFFFFFFFFFFFFFFFFFUUUUUUUUUUUUUUUUUUUUUUUUCCCCCCCCCCCCCCCCCCCCCKKKKKKKKKKKKKKKKKKKKKKKKKK`,
+    env: process.env}
+    }
     }
 
   if (req.query.refresh_token) {
