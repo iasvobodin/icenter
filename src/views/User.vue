@@ -67,7 +67,7 @@ url.searchParams.append('scope', scope)
 url.searchParams.append('response_mode', 'query')
 
 const tryToGetToken = async () => {
-  if (userFromStore.value.token.refresh_token) {
+  if (userFromStore.value?.token?.refresh_token) {
     const { request, response } = useFetch(
       `api/GET_token?refresh_token=${userFromStore.value.token.refresh_token}&redirect=${redirectUri}&scope=${scope}`
     )
