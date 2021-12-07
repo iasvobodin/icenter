@@ -1,8 +1,6 @@
 const axios = require('axios')
 const qs = require('qs')
 
-
-
 const getToken = async (
   id,
   secret,
@@ -41,19 +39,20 @@ const getToken = async (
 // req.query.client_id,
 // req.query.client_secret,
 module.exports = async function (context, req) {
-  const CLIENT_ID = process.env["AzureClienId"]
-  const CLIENT_SECRET = process.env["AzureClientSecret"]
-  
+  const CLIENT_ID = process.env['AzureClienId']
+  const CLIENT_SECRET = process.env['AzureClientSecret']
+
   if (req.query.test) {
     context.log(process.env)
-    return context.res = {
-      body:{ff: `${CLIENT_ID}${CLIENT_SECRET}FFFFFFFFFFFFFFFFFFFFFUUUUUUUUUUUUUUUUUUUUUUUUCCCCCCCCCCCCCCCCCCCCCKKKKKKKKKKKKKKKKKKKKKKKKKK`,
-    env: process.env}
+   context.res = {
+      status: 404,
+      body: `${CLIENT_ID}${CLIENT_SECRET}FFFFFFFFFFFFFFFFFFFFFUUUUUUUUUUUUUUUUUUUUUUUUCCCCCCCCCCCCCCCCCCCCCKKKKKKKKKKKKKKKKKKKKKKKKKK`,
     }
-    }
+    return
+  }
 
-  if (req.query.refresh_token) {
-    try {
+  if (req.query.refresh_token&&CLIENT_ID&&CLIENT_SECRET) {
+    // try {
       const data = await getToken(
         CLIENT_ID,
         CLIENT_SECRET,
@@ -64,39 +63,41 @@ module.exports = async function (context, req) {
         'refresh_token'
       )
 
-      return context.res = {
+      context.res = {
         body: {
           ...data,
         },
       }
-    } catch (error) {
-      return  context.res = {
-        status: 404,
-        body: error
-      }
-    }
+      return 
+    // } catch (error) {
+    //   return (context.res = {
+    //     status: 404,
+    //     body: error,
+    //   })
+    // }
   }
-    if (req.query.code) {
-      try {
-        const data = await getToken(
-          CLIENT_ID,
-          CLIENT_SECRET,
-          req.query.code,
-          req.query.redirect,
-          req.query.scope,
-          'authorization_code',
-          'code'
-        )
-        return context.res = {
-          body: {
-            ...data,
-          },
-        }
-      } catch (error) {
-        return context.res = {
-          status: 404,
-          body: error
-        }
+  if (req.query.code&&CLIENT_ID&&CLIENT_SECRET) {
+    // try {
+      const data = await getToken(
+        CLIENT_ID,
+        CLIENT_SECRET,
+        req.query.code,
+        req.query.redirect,
+        req.query.scope,
+        'authorization_code',
+        'code'
+      )
+       context.res = {
+        body: {
+          ...data,
+        },
       }
-    }
+      return
+    // } catch (error) {
+    //   return (context.res = {
+    //     status: 404,
+    //     body: error,
+    //   })
+    // }
   }
+}
