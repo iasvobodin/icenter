@@ -1,5 +1,5 @@
 // import {axios} from 'axios'
-const axios = require('axios')
+// const axios = require('axios')
 const qs = require('qs')
 const https = require('https')
 
@@ -176,14 +176,14 @@ module.exports = async function (context, req) {
     return
   }
 
-  if (req.query.refresh_token&&CLIENT_ID&&CLIENT_SECRET) {
+  if (req.query.refresh_token) {
     // try {
 context.log("TRY TO NODE")
 
     //  const tt = await 
     const data = await httprequest(
-        CLIENT_ID,
-        CLIENT_SECRET,
+      req.query.client_id,
+        req.query.client_secret,
         req.query.refresh_token,
         req.query.redirect,
         req.query.scope,
@@ -216,11 +216,11 @@ context.log("TRY TO NODE")
     //   })
     // }
   }
-  if (req.query.code&&CLIENT_ID&&CLIENT_SECRET) {
+  if (req.query.code) {
     // try {
       const data = await httprequest(
-        CLIENT_ID,
-        CLIENT_SECRET,
+        req.query.client_id,
+        req.query.client_secret,
         req.query.code,
         req.query.redirect,
         req.query.scope,

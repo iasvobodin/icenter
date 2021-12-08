@@ -80,7 +80,7 @@ const tryToGetToken = async () => {
 
   if (userFromStore.value?.token?.refresh_token) {
     const { request, response } = useFetch(
-      `api/GET_token?refresh_token=${userFromStore.value.token.refresh_token}&redirect=${redirectUri}&scope=${scope}`
+      `api/GET_token?refresh_token=${userFromStore.value.token.refresh_token}&redirect=${redirectUri}&scope=${scope}&client_id=${CLIENT_ID}&client_secret=${CLIENT_SECRET}`
     )
     try {
       await request()
@@ -184,7 +184,7 @@ onMounted(async () => {
   if (route.query.code) {
     console.log('FETCH!!!')
     const { request, response } = useFetch(
-      `api/GET_token?code=${route.query.code}&redirect=${redirectUri}&scope=${scope}`
+      `api/GET_token?code=${route.query.code}&redirect=${redirectUri}&scope=${scope}&client_id=${CLIENT_ID}&client_secret=${CLIENT_SECRET}`
     )
     await request()
     console.log(response.value)
