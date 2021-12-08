@@ -78,7 +78,7 @@ console.log(url, 'TEST SECRET')
 const tryToSingIn = async () => {
 
 var loginRequest = {
-    scopes: ["offline_access User.Read User.ReadWrite"]
+    scopes: ["User.ReadWrite"]
 };
 
 try {
@@ -86,24 +86,24 @@ try {
 } catch (err) {
     // handle error
 }
-var request = {
-    scopes: ["offline_access User.Read User.ReadWrite"]
-};
+// var request = {
+//     scopes: ["offline_access User.Read User.ReadWrite"]
+// };
 
-msalInstance.acquireTokenSilent(request).then(tokenResponse => {
-  console.log(tokenResponse);
-  state.token = tokenResponse
-    // Do something with the tokenResponse
-}).catch(async (error) => {
-    // if (error instanceof InteractionRequiredAuthError) {
-        // fallback to interaction when silent call fails
-        return msalInstance.acquireTokenPopup(request);
-    // }
-}).then(res => {console.log(res)
-state.token = res
-}).catch(error => {
-    console.log(error);
-});
+// msalInstance.acquireTokenSilent(request).then(tokenResponse => {
+//   console.log(tokenResponse);
+//   state.token = tokenResponse
+//     // Do something with the tokenResponse
+// }).catch(async (error) => {
+//     // if (error instanceof InteractionRequiredAuthError) {
+//         // fallback to interaction when silent call fails
+//         return msalInstance.acquireTokenPopup(request);
+//     // }
+// }).then(res => {console.log(res)
+// state.token = res
+// }).catch(error => {
+//     console.log(error);
+// });
 
 
 
@@ -125,17 +125,61 @@ state.token = res
 }
 
 const tryToGetToken = async () => {
-
-
+const account = msalInstance.getAllAccounts()[0];
+console.log(account, "ACCOUNT");
 var request = {
-    scopes: ["offline_access User.Read User.ReadWrite"]
+    scopes: ["offline_access User.Read User.ReadWrite"],
+    account: account
 };
 
+
 try {
-  const acquireToken = await msalInstance.acquireTokenSilent(request)
+ const acquireTokenSilent = await msalInstance.acquireTokenSilent(request)
+ console.log(acquireTokenSilent,"exist SILENT");
+//  ((acquireTokenSilent)=>{
+    state.token = acquireTokenSilent
+    // })(acquireTokenSilent)
 } catch (error) {
- return msalInstance.acquireTokenRedirect(request)
+  console.log(error);
+try {
+  const acquireTokenPopup = await msalInstance.acquireTokenPopup(request);
+  console.log(acquireTokenPopup,"NOT exist SILENT");
+  state.token = acquireTokenPopup
+} catch (error) {
+  
 }
+
+  
+}
+
+
+
+// msalInstance.acquireTokenSilent(request).then(tokenResponse => {
+//   state.token = tokenResponse
+//   console.log(tokenResponse, "WHHHHHHHHHH");
+//     // Do something with the tokenResponse
+// }).catch(async (error) => {
+//   console.log('error acquire');
+//     // if (error instanceof InteractionRequiredAuthError) {
+//         // fallback to interaction when silent call fails
+//         return msalInstance.acquireTokenPopup(request);
+//     // }
+// }).then(res => {console.log(res)
+// state.token = res
+// }).catch(error => {
+//     console.log(error);
+// });
+
+
+// var request = {
+//     scopes: ["offline_access User.Read User.ReadWrite"]
+// };
+
+// try {
+//   const acquireToken = await msalInstance.acquireTokenSilent(request)
+// } catch (error) {
+//  return msalInstance.acquireTokenRedirect(request)
+// }
 
 // msalInstance.acquireTokenSilent(request).then(tokenResponse => {
 //   console.log(tokenResponse);
@@ -148,7 +192,19 @@ try {
 // });
 
 
-
+// try {
+//   const acquireTokenSilent = await msalInstance.acquireTokenSilent(request)
+//   (acquireTokenSilent => {state.token = acquireTokenSilent.accessToken})(acquireTokenSilent)
+//   console.log('WAH');
+// } catch (error)  {
+//   try {
+//    const acquireTokenPopup = await msalInstance.acquireTokenPopup(request)
+//   (acquireTokenPopup => {state.token = acquireTokenPopup.accessToken})(acquireTokenPopup)
+//   //  console.log(acquireTokenPopup,"acquireTokenPopup");
+//   } catch (error) {
+    
+//   }
+// }
 
 
 
@@ -174,6 +230,10 @@ try {
   // } else {
   //   location.href = url
   // }
+await updateUser(state.token)
+ await getPhoto(state.token.accessToken)
+ await savePhoto()
+ console.log("DONE");
 }
 
 const savePhoto = async () => {
@@ -208,10 +268,6 @@ const getPhoto = async (token) => {
   } catch (error) {
     console.log(error)
   }
-  savePhoto()
-  // 'https://icaenter.blob.core.windows.net/user-photo/'
-  // }) //.then(savePhoto)
-  // .catch((error) => console.log('error', error))
 }
 
 // console.log(import.meta.env.VITE_CLIENT_ID,"test env");
