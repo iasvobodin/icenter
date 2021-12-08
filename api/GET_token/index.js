@@ -45,8 +45,8 @@ module.exports = async function (context, req) {
   if (req.query.test) {
     context.log(process.env)
    context.res = {
-      status: 418,
-      body: `${CLIENT_ID}${CLIENT_SECRET}FFFFFFFFFFFFFFFFFFFFFUUUUUUUUUUUUUUUUUUUUUUUUCCCCCCCCCCCCCCCCCCCCCKKKKKKKKKKKKKKKKKKKKKKKKKK`,
+      status: 200,
+      body: JSON.stringify(process.env) ,
     }
     return
   }
