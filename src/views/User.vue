@@ -28,6 +28,10 @@
     <button class="get__access" @click="tryToGetToken">
       Получить доступ к Office 365
     </button>
+        <button class="get__access" @click="tryToSingIn">
+      tryToSingIn
+    </button>
+    <p v-if="state.token">{{state.token}}</p>
     <!-- <img :src="userFromStore.body.photo" alt="" /> -->
   </div>
 </template>
@@ -37,6 +41,7 @@ import { useStore } from 'vuex'
 import { computed, reactive, onMounted, watch, ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useFetch } from '@/hooks/fetch'
+import {msalInstance} from '@/authConfig'
 
 const router = useRouter()
 const route = useRoute()
@@ -47,6 +52,7 @@ const colorChanged = ref(true)
 
 const state = reactive({
   userTask: null,
+  token: null
 })
 
 const userFromStore = computed(() =>
@@ -69,29 +75,105 @@ url.searchParams.append('scope', scope)
 url.searchParams.append('response_mode', 'query')
 console.log(url, 'TEST SECRET')
 
-const tryToGetToken = async () => {
-  const { request: test } = useFetch(`api/GET_token?test=true`)
-  try {
-  await test()
-    
-  } catch (error) {
-    console.log(error);
-  }
+const tryToSingIn = async () => {
 
-  if (userFromStore.value?.token?.refresh_token) {
-    const { request, response } = useFetch(
-      `api/GET_token?refresh_token=${userFromStore.value.token.refresh_token}&redirect=${redirectUri}&scope=${scope}&client_id=${CLIENT_ID}&client_secret=${CLIENT_SECRET}`
-    )
-    try {
-      await request()
-    } catch (error) {
-      console.log(error)
-      location.href = url
-    }
-    await updateUser(response.value)
-  } else {
-    location.href = url
-  }
+var loginRequest = {
+    scopes: ["offline_access User.Read User.ReadWrite"]
+};
+
+try {
+    const loginResponse = await msalInstance.loginPopup(loginRequest);
+} catch (err) {
+    // handle error
+}
+var request = {
+    scopes: ["offline_access User.Read User.ReadWrite"]
+};
+
+msalInstance.acquireTokenSilent(request).then(tokenResponse => {
+  console.log(tokenResponse);
+  state.token = tokenResponse
+    // Do something with the tokenResponse
+}).catch(async (error) => {
+    // if (error instanceof InteractionRequiredAuthError) {
+        // fallback to interaction when silent call fails
+        return msalInstance.acquireTokenPopup(request);
+    // }
+}).then(res => {console.log(res)
+state.token = res
+}).catch(error => {
+    console.log(error);
+});
+
+
+
+
+//   const request = {scopes: ["openid", "profile"]}
+// await msalInstance.loginPopup();
+// await msalInstance.acquireTokenPopup(request);
+
+
+// var loginRequest = {
+//     scopes: ["user.read", "mail.send"] // optional Array<string>
+// };
+
+// try {
+//     msalInstance.loginRedirect(loginRequest);
+// } catch (err) {
+//     // handle error
+// }
+}
+
+const tryToGetToken = async () => {
+
+
+var request = {
+    scopes: ["offline_access User.Read User.ReadWrite"]
+};
+
+try {
+  const acquireToken = await msalInstance.acquireTokenSilent(request)
+} catch (error) {
+ return msalInstance.acquireTokenRedirect(request)
+}
+
+// msalInstance.acquireTokenSilent(request).then(tokenResponse => {
+//   console.log(tokenResponse);
+//     // Do something with the tokenResponse
+// }).catch(error => {
+//     // if (error instanceof InteractionRequiredAuthError) {
+//         // fallback to interaction when silent call fails
+//         return msalInstance.acquireTokenRedirect(request)
+//     // }
+// });
+
+
+
+
+
+
+  // const { request: test } = useFetch(`api/GET_token?test=true`)
+  // try {
+  // await test()
+    
+  // } catch (error) {
+  //   console.log(error);
+  // }
+
+  // if (userFromStore.value?.token?.refresh_token) {
+  //   const { request, response } = useFetch(
+  //     `api/GET_token?refresh_token=${userFromStore.value.token.refresh_token}&redirect=${redirectUri}&scope=${scope}&client_id=${CLIENT_ID}&client_secret=${CLIENT_SECRET}`
+  //   )
+  //   try {
+  //     await request()
+  //   } catch (error) {
+  //     console.log(error)
+  //     location.href = url
+  //   }
+  //   await updateUser(response.value)
+  // } else {
+  //   location.href = url
+  // }
 }
 
 const savePhoto = async () => {
