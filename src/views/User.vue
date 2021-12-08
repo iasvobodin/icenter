@@ -18,20 +18,32 @@
     <br />
     <button v-if="localUser" @click="clearUser">Log out</button><br />
     <br />
-    <h2
-      v-if="state.userTask"
-      style="cursor: pointer"
-      @click="$router.push(`/tasks/${state.userTask.id}`)"
-    >
-      {{ state.userTask.id }}
-    </h2>
+    <div class="task">
+      <h3>Ваша текущая задача.</h3>
+      <div
+        v-if="state.userTask"
+        style="cursor: pointer"
+        @click="$router.push(`/tasks/${state.userTask.id}`)"
+        class="task_card item__card"
+      >
+              <div class="user__photo__holder">
+          <img :src="userFromStore.body.photo" alt="" />
+        </div>
+      <div class="task__description">
+<p>Проект : {{ state.userTask.info.Проект }}</p>
+        <p>Шкаф : {{ state.userTask.info.Шкаф }}</p>
+        <p>Время работы: {{ time }}</p>
+      </div>
+        
+
+      </div>
+    </div>
+
     <button class="get__access" @click="tryToGetToken">
       Получить доступ к Office 365
     </button>
-        <button class="get__access" @click="tryToSingIn">
-      tryToSingIn
-    </button>
-    <p v-if="state.token">{{state.token}}</p>
+    <button class="get__access" @click="tryToSingIn">tryToSingIn</button>
+    <p v-if="state.token">{{ state.token }}</p>
     <!-- <img :src="userFromStore.body.photo" alt="" /> -->
   </div>
 </template>
@@ -41,7 +53,7 @@ import { useStore } from 'vuex'
 import { computed, reactive, onMounted, watch, ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useFetch } from '@/hooks/fetch'
-import {msalInstance} from '@/authConfig'
+import { msalInstance } from '@/authConfig'
 
 const router = useRouter()
 const route = useRoute()
@@ -52,7 +64,8 @@ const colorChanged = ref(true)
 
 const state = reactive({
   userTask: null,
-  token: null
+  token: null,
+  passedTime: 0,
 })
 
 const userFromStore = computed(() =>
@@ -76,164 +89,58 @@ url.searchParams.append('response_mode', 'query')
 console.log(url, 'TEST SECRET')
 
 const tryToSingIn = async () => {
+  var loginRequest = {
+    scopes: ['User.ReadWrite'],
+  }
 
-var loginRequest = {
-    scopes: ["User.ReadWrite"]
-};
-
-try {
-    const loginResponse = await msalInstance.loginPopup(loginRequest);
-} catch (err) {
-    // handle error
+  try {
+    const loginResponse = await msalInstance.loginPopup(loginRequest)
+  } catch (err) {}
 }
-// var request = {
-//     scopes: ["offline_access User.Read User.ReadWrite"]
-// };
 
-// msalInstance.acquireTokenSilent(request).then(tokenResponse => {
-//   console.log(tokenResponse);
-//   state.token = tokenResponse
-//     // Do something with the tokenResponse
-// }).catch(async (error) => {
-//     // if (error instanceof InteractionRequiredAuthError) {
-//         // fallback to interaction when silent call fails
-//         return msalInstance.acquireTokenPopup(request);
-//     // }
-// }).then(res => {console.log(res)
-// state.token = res
-// }).catch(error => {
-//     console.log(error);
-// });
+const CurrentTime = Date.now()
 
-
-
-
-//   const request = {scopes: ["openid", "profile"]}
-// await msalInstance.loginPopup();
-// await msalInstance.acquireTokenPopup(request);
-
-
-// var loginRequest = {
-//     scopes: ["user.read", "mail.send"] // optional Array<string>
-// };
-
-// try {
-//     msalInstance.loginRedirect(loginRequest);
-// } catch (err) {
-//     // handle error
-// }
-}
+const time = computed(
+  () => new Date(state.passedTime).toISOString().substr(11, 8) // time like hors and minutes
+)
+// state.pps =
+// const startTick = ()=>{
+setInterval(() => {
+  state.passedTime += 1000
+  // console.log(state.passedTime)
+}, 1000)
 
 const tryToGetToken = async () => {
-const account = msalInstance.getAllAccounts()[0];
-console.log(account, "ACCOUNT");
-var request = {
-    scopes: ["offline_access User.Read User.ReadWrite"],
-    account: account
-};
+  const account = msalInstance.getAllAccounts()[0]
+  console.log(account, 'ACCOUNT')
+  var request = {
+    scopes: ['offline_access User.Read User.ReadWrite'],
+    account: account,
+  }
 
-
-try {
- const acquireTokenSilent = await msalInstance.acquireTokenSilent(request)
- console.log(acquireTokenSilent,"exist SILENT");
-//  ((acquireTokenSilent)=>{
+  try {
+    const acquireTokenSilent = await msalInstance.acquireTokenSilent(request)
+    console.log(acquireTokenSilent, 'exist SILENT')
+    //  ((acquireTokenSilent)=>{
     state.token = acquireTokenSilent
     // })(acquireTokenSilent)
-} catch (error) {
-  console.log(error);
-try {
-  const acquireTokenPopup = await msalInstance.acquireTokenPopup(request);
-  console.log(acquireTokenPopup,"NOT exist SILENT");
-  state.token = acquireTokenPopup
-} catch (error) {
-  
-}
+  } catch (error) {
+    console.log(error)
+    try {
+      const acquireTokenPopup = await msalInstance.acquireTokenPopup(request)
+      console.log(acquireTokenPopup, 'NOT exist SILENT')
+      state.token = acquireTokenPopup
+    } catch (error) {}
+  }
+  try {
+    await updateUser(state.token)
+    await getPhoto(state.token.accessToken)
+    await savePhoto()
+  } catch (error) {
+    console.log(error)
+  }
 
-  
-}
-
-
-
-// msalInstance.acquireTokenSilent(request).then(tokenResponse => {
-//   state.token = tokenResponse
-//   console.log(tokenResponse, "WHHHHHHHHHH");
-//     // Do something with the tokenResponse
-// }).catch(async (error) => {
-//   console.log('error acquire');
-//     // if (error instanceof InteractionRequiredAuthError) {
-//         // fallback to interaction when silent call fails
-//         return msalInstance.acquireTokenPopup(request);
-//     // }
-// }).then(res => {console.log(res)
-// state.token = res
-// }).catch(error => {
-//     console.log(error);
-// });
-
-
-// var request = {
-//     scopes: ["offline_access User.Read User.ReadWrite"]
-// };
-
-// try {
-//   const acquireToken = await msalInstance.acquireTokenSilent(request)
-// } catch (error) {
-//  return msalInstance.acquireTokenRedirect(request)
-// }
-
-// msalInstance.acquireTokenSilent(request).then(tokenResponse => {
-//   console.log(tokenResponse);
-//     // Do something with the tokenResponse
-// }).catch(error => {
-//     // if (error instanceof InteractionRequiredAuthError) {
-//         // fallback to interaction when silent call fails
-//         return msalInstance.acquireTokenRedirect(request)
-//     // }
-// });
-
-
-// try {
-//   const acquireTokenSilent = await msalInstance.acquireTokenSilent(request)
-//   (acquireTokenSilent => {state.token = acquireTokenSilent.accessToken})(acquireTokenSilent)
-//   console.log('WAH');
-// } catch (error)  {
-//   try {
-//    const acquireTokenPopup = await msalInstance.acquireTokenPopup(request)
-//   (acquireTokenPopup => {state.token = acquireTokenPopup.accessToken})(acquireTokenPopup)
-//   //  console.log(acquireTokenPopup,"acquireTokenPopup");
-//   } catch (error) {
-    
-//   }
-// }
-
-
-
-  // const { request: test } = useFetch(`api/GET_token?test=true`)
-  // try {
-  // await test()
-    
-  // } catch (error) {
-  //   console.log(error);
-  // }
-
-  // if (userFromStore.value?.token?.refresh_token) {
-  //   const { request, response } = useFetch(
-  //     `api/GET_token?refresh_token=${userFromStore.value.token.refresh_token}&redirect=${redirectUri}&scope=${scope}&client_id=${CLIENT_ID}&client_secret=${CLIENT_SECRET}`
-  //   )
-  //   try {
-  //     await request()
-  //   } catch (error) {
-  //     console.log(error)
-  //     location.href = url
-  //   }
-  //   await updateUser(response.value)
-  // } else {
-  //   location.href = url
-  // }
-await updateUser(state.token)
- await getPhoto(state.token.accessToken)
- await savePhoto()
- console.log("DONE");
+  console.log('DONE')
 }
 
 const savePhoto = async () => {
@@ -281,6 +188,7 @@ const getUserTask = async () => {
     console.log(error.message)
   }
   state.userTask = response.value
+  state.passedTime = CurrentTime - state.userTask.timeStart
 }
 getUserTask()
 
@@ -336,6 +244,31 @@ onMounted(async () => {
 </script>
 
 <style lang="css" scoped>
+.task_card{
+  width: min(400px, 95vw);
+  margin: 3vh auto;
+  display: grid;
+  grid-auto-flow: column;
+}
+.task__description{
+  place-self: center;
+}
+.task__description p{
+  margin: 10px;
+}
+.user__photo__holder {
+  place-self: center;
+  overflow: hidden;
+  border-radius: 50%;
+  width: 100px;
+  height: 100px;
+}
+.user__photo__holder img {
+  object-fit: cover;
+  object-position: center;
+  width: 100%;
+  height: 100%;
+}
 .holder {
   min-height: calc(100vh - 125px);
   background-color: v-bind('color');
