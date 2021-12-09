@@ -1,50 +1,59 @@
 <template>
   <div v-if="userFromStore.info" class="holder">
-    <h1 class="userHeader">
-      Личная старница
-      {{ userFromStore.info.userDetails.split('@')[0].replace('.', ' ') }}
-    </h1>
+    <h1 class="userHeader"> <span>{{ userFromStore.info.userDetails.split('@')[0].replace('.', ' ') }}</span> <button class="logOut" v-if="localUser" @click="clearUser">Log out</button></h1>
+   
     <!-- <p>в разработке</p> -->
-    <label
-      >Choose background color
-      <input type="color" value="#ffffff" @input="checkInput($event)" /></label
-    ><br /><br />
-    <button v-if="color" :disabled="colorChanged" @click="saveColor">
-      Save color
-    </button>
-    <br />
+  <!-- <div class="profile"> -->
 
-    <!-- <p class="info">{{userFromStore}}</p> -->
-    <br />
-    <button v-if="localUser" @click="clearUser">Log out</button><br />
-    <br />
+  
+    <div class="profile__settings">
+      <h2>Настройки профиля</h2>
+      <label
+        >Choose background color
+        <input
+          type="color"
+          value="#ffffff"
+          @input="checkInput($event)" /></label
+      ><br /><br />
+      <button v-if="color" :disabled="colorChanged" @click="saveColor">
+        Save color
+      </button>
+      <!-- <p class="info">{{userFromStore}}</p> -->
+      <!-- <button v-if="localUser" @click="clearUser">Log out</button><br /> -->
+      <button v-if="!userFromStore.body.photo" class="get__access" @click="tryToGetToken">
+        Получить фотографию профиля
+      </button>
+      <!-- <button class="get__access" @click="tryToSingIn">tryToSingIn</button>
+    <p v-if="state.token">{{ state.token }}</p> -->
+    </div>
+
     <div class="task">
-      <h3>Ваша текущая задача.</h3>
+      <h2>Ваша текущая задача.</h2>
       <div
         v-if="state.userTask"
         style="cursor: pointer"
         @click="$router.push(`/tasks/${state.userTask.id}`)"
         class="task_card item__card"
       >
-              <div class="user__photo__holder">
-          <img :src="userFromStore.body.photo" alt="" />
+        <div class="user__photo__holder">
+          <img
+            :src="
+              userFromStore.body.photo
+                ? userFromStore.body.photo
+                : '/img/user.png'
+            "
+            alt=""
+          />
         </div>
-      <div class="task__description">
-<p>Проект : {{ state.userTask.info.Проект }}</p>
-        <p>Шкаф : {{ state.userTask.info.Шкаф }}</p>
-        <p>Время работы: {{ time }}</p>
+        <div class="task__description">
+          <p>Проект : {{ state.userTask.info.Проект }}</p>
+          <p>Шкаф : {{ state.userTask.info.Шкаф }}</p>
+          <p>Время работы: {{ time }}</p>
+        </div>
       </div>
-        
-
-      </div>
+      <h4 v-else>Нет активных задач.</h4>
     </div>
-
-    <button class="get__access" @click="tryToGetToken">
-      Получить доступ к Office 365
-    </button>
-    <button class="get__access" @click="tryToSingIn">tryToSingIn</button>
-    <p v-if="state.token">{{ state.token }}</p>
-    <!-- <img :src="userFromStore.body.photo" alt="" /> -->
+    <!-- </div> -->
   </div>
 </template>
 
@@ -184,11 +193,11 @@ const getUserTask = async () => {
   )
   try {
     userFromStore.value && (await request())
+    state.userTask = response.value
+    state.passedTime = CurrentTime - state.userTask.timeStart
   } catch (error) {
     console.log(error.message)
   }
-  state.userTask = response.value
-  state.passedTime = CurrentTime - state.userTask.timeStart
 }
 getUserTask()
 
@@ -244,16 +253,31 @@ onMounted(async () => {
 </script>
 
 <style lang="css" scoped>
-.task_card{
-  width: min(400px, 95vw);
+.logOut{
+  width: fit-content;
+  text-align: center;
+  vertical-align: middle;
+}
+.profile{
+  display: grid;
+  grid-auto-flow: column;
+}
+
+.profile__settings{
+  place-self: start;
+}
+
+.task_card {
+  max-height: 150px;
+  width: min(450px, 95vw);
   margin: 3vh auto;
   display: grid;
   grid-auto-flow: column;
 }
-.task__description{
+.task__description {
   place-self: center;
 }
-.task__description p{
+.task__description p {
   margin: 10px;
 }
 .user__photo__holder {
@@ -274,7 +298,8 @@ onMounted(async () => {
   background-color: v-bind('color');
 }
 .userHeader {
-  margin: 0;
+  width: fit-content;
+  margin: auto;
 }
 .info {
   color: #ffffff;

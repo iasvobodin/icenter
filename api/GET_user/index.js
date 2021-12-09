@@ -1,6 +1,5 @@
 module.exports = async function (context, req, user) {
   if (req.query.getRegisterUser) {
-
     if (user.length !== 0) {
       const objE = Object.entries(user[0]).filter(
         (entries) => !entries[0].startsWith('_')
