@@ -1,10 +1,11 @@
 module.exports = async function (context, req, user) {
   if (req.query.getRegisterUser) {
-    const objE = Object.entries(user[0]).filter(
-      (entries) => !entries[0].startsWith('_')
-    )
-    const objF = Object.fromEntries(objE)
-    if (user.length != 0) {
+
+    if (user.length !== 0) {
+      const objE = Object.entries(user[0]).filter(
+        (entries) => !entries[0].startsWith('_')
+      )
+      const objF = Object.fromEntries(objE)
       context.res = {
         status: 200,
         body: objF,
