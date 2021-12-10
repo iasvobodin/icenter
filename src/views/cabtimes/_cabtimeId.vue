@@ -12,20 +12,25 @@
     </teleport>
     <div>
       <h2>
-        Номер проекта
+        <i>
+№ :
+        </i>
         {{ pInfo['project number'] }}
       </h2>
       <h2>
-        Название проекта
+        <i>
+        Проект : 
+        </i>
         {{ pInfo['Project Name'] }}
       </h2>
 
-      <h2>Название шкафа {{ pInfo['cab name'] }}</h2>
+      <h2>
+        <i>Шкаф : </i>{{ pInfo['cab name'] }}</h2>
       <h2
         class="wo__clicked"
         @click="$router.push(`/cabinets/${$route.params.cabtimeId}`)"
       >
-        WO {{ $route.params.cabtimeId }}
+       <i>WO : </i>{{ $route.params.cabtimeId }}
       </h2>
     </div>
     <cab-time-view
@@ -240,5 +245,8 @@ button {
 }
 .wo__clicked:hover {
   color: blueviolet;
+}
+h2 i {
+color: gray;
 }
 </style>

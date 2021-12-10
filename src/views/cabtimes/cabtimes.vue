@@ -68,21 +68,36 @@ const state = reactive({
   fetchStatus: null,
   // errorMessage: "",
 })
-const selectedStatus = ref('open')
-const getErrors = async () => {
+// const selectedStatus = ref('open')
+const getCabTimes = async () => {
   const { request, response } = useFetch(`/api/cabTimes`)
-  state.errors = response
   await request()
+  state.errors = response
+
+  // state.errors
+  // .map(async (e) => {
+    // e.id //currentCabtime
+    
+    // const { request: reqCurrentCabTime, response: resCurrentCabTime } =
+    //   useFetch(`/api/GET_cabinet?wo=${state.errors[0].info.wo}&cabtimeid=${state.errors[0].id}`)
+    // await reqCurrentCabTime()
+    
+// const currentCabTime = resCurrentCabTime.value
+
+//     const { request: reqCurrentWO, response: resCurrentWO } =
+//       useFetch(`/api/errors/${e.id}`,{method: 'post',body:JSON.stringify(...)})
+//     await reqCurrentWO()
+  // })
 }
 
-getErrors()
-watch(selectedStatus, () => getErrors())
+getCabTimes()
+// watch(selectedStatus, () => getCabTimes())
 
-onBeforeRouteUpdate(async (to, from) => {
-  if (from.contains('error')) {
-    alert('a')
-  }
-})
+// onBeforeRouteUpdate(async (to, from) => {
+//   if (from.contains('error')) {
+//     alert('a')
+//   }
+// })
 onBeforeRouteLeave((to, from) => {
   console.log(to, 'onBeforeRouteLeave')
   console.log(from, 'onBeforeRouteLeave')

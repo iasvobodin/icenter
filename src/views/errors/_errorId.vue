@@ -1,7 +1,8 @@
 <template>
   <div class="cabinet">
     <div>
-      <h1>{{ $route.params.errorId }}</h1>
+      <!-- <h1>{{ $route.params.errorId }}</h1> -->
+      <h1>Ошибка от ({{errorHeader()}})</h1>
       <br />
     </div>
     <div v-if="state.error?.body" class="cabinet__info">
@@ -155,6 +156,16 @@ const state = reactive({
 
 const container = 'errors-photo'
 
+const errorHeader = () =>{
+  // const head:string = route.params.errorId
+  if(typeof route.params.errorId === 'string'){
+   const headSplit = route.params.errorId.split('__')
+   //return 
+  //  console.log(headSplit[1],Date.now(),);
+    // new Date(headSplit[1]).toISOString()
+   return new Date(+headSplit[1]).toLocaleString()
+  }
+}
 const getCurrentError = async (): UsableError => {
   // try {
   const { request, response: errorFromServer } = useFetch<errorType>(

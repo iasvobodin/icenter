@@ -36,52 +36,52 @@ const delay = computed(() =>
       } сек.`
     : ''
 )
-const getUserTask = async () => {
-  const { request, response } = useFetch(
-    `/api/GET_userTasks?user=${userInfoState.value.info.userDetails.toLowerCase()}`
-  )
+const id = `task__${Date.now()}`
+
+const options = {
+  method: 'post',
+  body: JSON.stringify({
+    id,
+    info: {
+      user: userInfoState.value.info.userDetails.toLowerCase(),
+      userId: userInfoState.value.info.userId,
+      Проект: projectInfoState.value['project number'],
+      Шкаф: projectInfoState.value['cab name'],
+      wo: projectInfoState.value.wo.toString(),
+    },
+    type: 'task',
+    status: 'active',
+    body: {
+      timeStart: Date.now(),
+      timeEnd: null,
+      timePassed: null,
+      completeTask: [],
+    },
+  }),
+}
+const { request: postNewTask, response } = useFetch('/api/post_item', options)
+
+const { request: reqUserTask, response: resUserTask } = useFetch(
+  `/api/GET_userTasks?user=${userInfoState.value.info.userDetails.toLowerCase()}`
+)
+
+const createTask = async () => {
   try {
-    await request()
-  } catch (error) {
-    console.log(error.message)
-  }
-  const userTask = response.value
-  let delay = 5000
-  if (userTask) {
+    await reqUserTask()
+    const userTask = resUserTask.value
+    let delay = 5000
     state.second = delay
     setInterval(() => (state.second = delay -= 1000), 1000)
     state.redirectMessage = 'Необходимо остановить предыдущую задачу'
     setTimeout(() => router.push(`/tasks/${userTask.id}`), delay)
+  } catch (error) {
+    try {
+      await postNewTask()
+      router.push(`/tasks/${id}`)
+    } catch (error) {
+      console.error(error.message, 'post userTask');
+    }
   }
-  // response.value&&router.push('/user')
-  return
-}
-const createTask = async () => {
-  await getUserTask()
-
-  const options = {
-    method: 'post',
-    body: JSON.stringify({
-      id: `task__${Date.now()}`,
-      info: {
-        user: userInfoState.value.info.userDetails.toLowerCase(),
-        userId: userInfoState.value.info.userId,
-        Проект: projectInfoState.value['project number'],
-        Шкаф: projectInfoState.value['cab name'],
-        wo: projectInfoState.value.wo.toString(),
-      },
-      type: 'task',
-      status: 'active',
-      body: {
-        timeStart: Date.now(),
-        timeEnd: null,
-        timePassed: null,
-        completeTask: [],
-      },
-    }),
-  }
-  const { request, response } = useFetch('/api/post_item', options)
-  request()
 }
 </script>
 

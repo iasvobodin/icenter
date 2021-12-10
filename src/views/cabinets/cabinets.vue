@@ -33,7 +33,7 @@
     </div>
     <br />
     <div
-      v-for="(val, key, index) in state.actualRojects"
+      v-for="(val, key, index) in state.actualProjects"
       v-show="state.groupCabinets(val).length != 0"
       :key="index"
     >
@@ -91,7 +91,7 @@ const state = reactive({
   cabinets: null,
   filter: null,
   groupCabinets: null,
-  actualRojects: null,
+  actualProjects: null,
   search: '',
 })
 watch(qr, (newValue, oldValue) => {
@@ -113,6 +113,70 @@ const routeToCabinet = (wo, val) => {
   // console.log(state.projects.find(c => c.id === val));
 }
 
+const postCabinets = async () => {
+  //getAllCabinet
+  const { request: reqProjects, response } = useFetch(
+    '/api/projects?status=open'
+  )
+  await reqProjects()
+
+  const projects = response.value //.filter((pr) => ['01', '02', '03', '04'].some((s) => pr.info.extends['status project'].includes(s) ) )
+  projects
+    .map((c) =>
+      c.cabinets.map(async (cc) => {
+        const body = {
+          id: cc.wo,
+          status: 'open',
+          info: {
+            ...cc,
+            'project number': c.id,
+            'project name': c.info.base['Project Name'],
+            'project status': c.info.extends['status project'],
+          },
+          extend: {},
+          stats: {},
+        }
+        const { request: postCabinet } = useFetch('api/createCabinets', {
+          method: 'post',
+          body: JSON.stringify(body),
+        })
+        await postCabinet()
+      })
+    )
+}
+
+const someUpdate = async () => {
+  const { request: reqCabinets, response: resCabinets } =
+    useFetch(`/api/GET_cabinet`)
+  await reqCabinets()
+
+// console.log(resCabinets.value);
+
+  const cabinets = resCabinets.value
+  console.log(cabinets, 'CABINETS')
+
+  cabinets.map(async (e) => {
+    const { request, response: cabError } = useFetch(
+      `/api/cabinetItems?wo=${e.id}`
+    )
+    await request()
+    e.stats.errors = cabError.value
+    console.log(e, 'EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE')
+
+if (e.stats.errors.length>0) {
+      const { request: postCabinets } = useFetch(`/api/GET_cabinet?post=true`, {
+      method: 'post',
+      body: JSON.stringify(e),
+    })
+
+    await postCabinets()
+}
+
+  })
+}
+
+// someUpdate()
+
 const getCabinets = async () => {
   const { request, response } = useFetch('/api/projects?status=open')
   await request()
@@ -121,7 +185,7 @@ const getCabinets = async () => {
       pr.info.extends['status project'].includes(s)
     )
   )
-  state.actualRojects = state.projects.map((p) => p.id)
+  state.actualProjects = state.projects.map((p) => p.id)
   state.cabinets = state.projects
     .map((c) =>
       c.cabinets.map((cc) => {
@@ -136,6 +200,8 @@ const getCabinets = async () => {
     filter.value.filter((c) => c.project === project)
 }
 getCabinets()
+
+
 const filter = computed(() => {
   return state.search
     ? state.cabinets.filter((e) =>
