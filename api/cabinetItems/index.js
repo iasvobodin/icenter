@@ -24,10 +24,11 @@ const filterArr = cabinetItems.filter((e)=> e.type.includes('error')).map(e => c
   })
   // context.log(changeStatus)
   const bodyMap = filterArr.map((e, i) => {
-    delete e.info
+    // delete e.info
     // if (e.type.includes('error')) {
       return {
         ...e,
+        status:e.info.status,
         body: e.body[e.body.length - 1],
         _ts: e.body[0]._time,
         confirmedTime: changeStatus[i]._time,

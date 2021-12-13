@@ -5,6 +5,7 @@ import { InjectionKey, Ref } from 'vue'
 import { userType, azureAuth } from '@/types/userType'
 import { templateType } from '@/types/templateType'
 import { projectInfoType, projectType } from '@/types/projectInfoType'
+import { cabinetsType } from '@/types/cabinetsType'
 
 // const createName = (clientPrincipal) => {
 //   if (clientPrincipal.identityProvider === 'aad') {
@@ -36,6 +37,7 @@ export interface State {
   selectedProjectNumber: string
   projectInfo: projectInfoType
   user: userType
+  cabinets: cabinetsType[]
   currentError: null
   cabinetItems: []
   passedTime: number
@@ -63,11 +65,15 @@ export const store = createStore<State>({
     user: <userType>{},
     currentError: null,
     cabinetItems: [],
+    cabinets:[],
     passedTime: 0,
     cabtimeWithStatus: null,
     allSumm: 0,
   },
   mutations: {
+    SET_cabinets(state, payload) {
+      state.cabinets = payload
+    },
     SetPhotosToUpload(state, payload: FormData) {
       state.photosToUpload = payload
     },
@@ -293,6 +299,14 @@ export const store = createStore<State>({
       } catch (error) {
         console.log(error, 'SAVE USER IN A SERVER IS FAILED')
       }
+    },
+    async GET_cabinets({ commit }) {
+      console.log('GET_cabinets');
+      
+      const { request: reqCabinets, response: resCabinets } =
+        useFetch('/api/GET_cabinet')
+      await reqCabinets()
+      commit('SET_cabinets', resCabinets.value)
     },
     //
     // if (photosForDelete.length > 0) {

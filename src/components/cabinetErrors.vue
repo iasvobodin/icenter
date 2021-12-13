@@ -6,8 +6,8 @@
       class="error__holder"
     >
       <h2 @click="$router.push(`/errors/${item.id}`)">{{ item.id }}</h2>
-      <small :style="{ backgroundColor: statusColor[item.info.status] }"
-        >Статус: {{ item.info.status }}</small
+      <small :style="{ backgroundColor: statusColor[item.status] }"
+        >Статус: {{ item.status }}</small
       >
       <br />
       <br />

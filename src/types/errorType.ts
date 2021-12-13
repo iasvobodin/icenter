@@ -22,7 +22,7 @@ export type errorBodyType = {
         ['Время на устранение']: number
         'Статус коррекции': string
       }
-  _changed: string | null
+  _changed?: string | null
   _time?: string
 }
 
@@ -34,9 +34,11 @@ export interface errorType {
     wo: string
     Добавил: string
     Мастер: string
-    status: string
+    status?: string
   }
   photos?: string[]
   type: 'f_error' | 't_error'
   body: errorBodyType[]
+  confirmedTime: number
+  confirmedChanged: string
 }
