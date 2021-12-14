@@ -10,7 +10,7 @@
       </h3>
       <h3 v-if="!timeToCalc">Время работы: {{ time }}</h3>
       <button @click="setStatePassedTime">Завершить работу</button>
-      <button @click="setStatePassedTime">Редактировать задачу</button>
+      <button @click="updateInfo">Редактировать задачу</button>
     </div>
 
     <task-cab-time
@@ -19,21 +19,38 @@
       @cabtime-with-status="state.ctStatus = $event"
     />
     <task-status v-if="ctWithStatus" :input-data="{ body: ctWithStatus }" />
+        <teleport to="body">
+      <confirm-popup
+        :opened="state.popupOpened"
+        @closed="popupClosed"
+        @confirm="popupConfirmed"
+      >
+        <template #header>
+          <h3>Выберите другой WO</h3>
+        </template>
+        <template #select>
+          <selectWO/>
+        </template>
+      </confirm-popup>
+    </teleport>
   </div>
 </template>
 
 <script setup>
+import selectWO from '@/components/selectWO.vue'
+import confirmPopup from '@/components/modal/cunfirmPopup.vue'
 import { computed, onUnmounted, reactive } from 'vue'
 import { useFetch } from '@/hooks/fetch'
-import taskCabTime from '@/components/taskCabTime.vue'
+import taskCabTime from '@/components/task/taskStatus.vue'
 import { onBeforeRouteUpdate, useRoute } from 'vue-router'
 import infoRender from '@/components/infoRender.vue'
 import { useStore } from 'vuex'
-import taskStatus from '@/components/task/taskStatus.vue'
+import taskStatus from '@/components/task/taskCalculate.vue'
 
 const route = useRoute()
 const store = useStore()
 const state = reactive({
+  popupOpened: false,
   cabTime: null,
   changeCabTime: false,
   task: null,
@@ -58,7 +75,16 @@ const ctWithStatus = computed(() =>
       })
     : null
 )
+function updateInfo(){
+state.popupOpened = !state.popupOpened
+}
 
+        function popupClosed (){
+state.popupOpened = !state.popupOpened
+        }
+                function popupConfirmed (){
+          
+        }
 const getTask = async () => {
   const { request, response } = useFetch(`/api/errors/${route.params.taskId}`)
   await request()

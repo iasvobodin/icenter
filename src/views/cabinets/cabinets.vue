@@ -92,6 +92,7 @@ import {
   computed,
   onUnmounted,
   watch,
+  watchEffect,
 } from 'vue'
 import { useRouter } from 'vue-router'
 // export default {
@@ -222,42 +223,54 @@ const someUpdate = async () => {
 //   state.groupCabinets = (project) => filter.value.filter((c) => c.project === project)
 // }
 // getCabinets()
-const getCabinets = async () => {
+const getCabinets = () => {
   // const { request, response } = useFetch('/api/GET_cabinet')
   // await request()
   // state.projects = response.value
-  if(store.state.cabinets.length !==0){
-await store.dispatch('GET_cabinets')
-  }
-console.log(store.state.cabinets,'store.state.cabinets');
-state.projects = JSON.parse(JSON.stringify(store.state.cabinets))
-  state.actualProjects = state.projects.reduce(
+  // if(store.state.cabinets.length ===0){
+  //   await store.dispatch('GET_cabinets')
+  // }
+// console.log(store.state.cabinets,'store.state.cabinets');
+// state.projects = JSON.parse(JSON.stringify(store.state.cabinets))
+
+  state.actualProjects = state.cabinets.reduce(
     (acc, p) => acc.add(p.info['project number']),
     new Set()
   )
   state.actualStatus = [
-    ...state.projects.reduce(
+    ...state.cabinets.reduce(
       (acc, p) => acc.add(p.info['project status']),
       new Set()
     ),
   ].sort()
-  state.cabinets = state.projects
+
+  // state.cabinets = state.projects
 
   state.groupCabinets = (project) =>
     filter.value.filter((c) => c.info['project number'] === project)
 }
+
+watchEffect(async ()=>{
+    if(store.state.cabinets.length ===0){
+    await store.dispatch('GET_cabinets')
+  }
+// console.log(store.state.cabinets,'store.state.cabinets');
+state.cabinets = JSON.parse(JSON.stringify(store.state.cabinets))
 getCabinets()
+})
+
+
 
 const filter = computed(() => {
   let cc
-  if (state.filterStatus.length > 0) {
+  if (state.cabinets&&state.filterStatus.length > 0 ) {
     cc = state.cabinets.filter((e) =>
       state.filterStatus.some((s) => e.info['project status'].includes(s))
     )
     if (state.hasCabTime) {
       cc = cc.filter((f) => f.stats.cabTime)
     }
-    console.log(cc)
+    // console.log(cc)
     // const cc = ff.filter(f => f.state.cabTime)
     if (state.search) {
       cc = cc.filter((e) =>

@@ -65,14 +65,25 @@ export const store = createStore<State>({
     user: <userType>{},
     currentError: null,
     cabinetItems: [],
-    cabinets:[],
+    cabinets: [],
     passedTime: 0,
     cabtimeWithStatus: null,
     allSumm: 0,
   },
   mutations: {
-    SET_cabinets(state, payload) {
+    SET_cabinets(state, payload:cabinetsType[]) {
       state.cabinets = payload
+    },
+    UPDATE_cabinets(state, payload:cabinetsType){
+      console.log('inside commit updatecabinets', payload);
+      
+     const update = state.cabinets.map(x => {
+       if( x.id === payload.id) {
+         console.log('match');
+         
+         return payload 
+        } else {return x}});
+        state.cabinets = update
     },
     SetPhotosToUpload(state, payload: FormData) {
       state.photosToUpload = payload
@@ -301,8 +312,8 @@ export const store = createStore<State>({
       }
     },
     async GET_cabinets({ commit }) {
-      console.log('GET_cabinets');
-      
+      // console.log('GET_cabinets');
+
       const { request: reqCabinets, response: resCabinets } =
         useFetch('/api/GET_cabinet')
       await reqCabinets()

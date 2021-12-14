@@ -19,7 +19,7 @@ export function useFetch<T>(
       // console.log(res)
 
       if (res.ok) {
-        console.log(res)
+        // console.log(res)
         try {
           response.value = await res.json()
         } catch (error) {

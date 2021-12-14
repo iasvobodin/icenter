@@ -3,18 +3,12 @@
     <div class="overlay" role="button" tabindex="0" @click="closed" />
     <div class="dialog">
       <div class="header">
-        <slot name="header"></slot>
-      </div>
-            <div class="select">
-        <slot name="select"></slot>
+        <slot></slot>
       </div>
       <div class="buttons">
-        <slot name="buttons">
-          <button class="cancel" @click="closed">Отмена</button>
-          <button class="confirm" @click="confirm">Да</button>
-        </slot>
+        <button class="cancel" @click="closed">Отмена</button>
+        <button class="confirm" @click="confirm">Да</button>
       </div>
-
     </div>
   </div>
 </template>
@@ -73,27 +67,19 @@ const closed = () => {
 }
 .dialog {
   display: grid;
-  /* grid-template-rows: 1fr 1fr; */
+  grid-template-rows: 1fr 1fr;
   place-self: center;
   position: relative;
   background-color: white;
   border-radius: 15px;
-  min-width: 250px;
+  width: min(95vw, 400px);
   min-height: 150px;
 }
-.select{
-  /* position: absolute; */
-  /* grid-area: 1/1/2/2; */
-      /* max-height: 200px; */
-
-}
 .buttons {
-  /* width: 90%; */
+  width: 90%;
   display: grid;
   grid-auto-flow: column;
   margin: auto;
-      min-height: 60px;
-    align-content: center;
 }
 .cancel:hover {
   background-color: rgba(0, 128, 0, 0.4);

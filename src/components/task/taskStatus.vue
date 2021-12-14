@@ -1,28 +1,37 @@
 <template>
   <div>
     <div class="description">
-      <h3>Время выполнения {{ timeToCalc }}мин</h3>
-      <p>
-        Время по отмеченным задачам расчитывается автоматически, проверьте
-        столбец результат, и внесите корректировки, если это необходимо. <br />
-        При ручной корректировке время работы, должно соответсвоть расчётному!
-      </p>
+      <h3>Выбор задач</h3>
+      <p>Выберите задачи которые полностью или частично выполнены</p>
     </div>
     <table>
       <colgroup>
         <!-- <col span="1" class="collgroup1" /> -->
         <col span="1" class="collgroup2" />
-        <col span="1" class="collgroup5" />
-        <col span="1" class="collgroup5" />
+        <col v-if="statusMark" span="1" class="collgroup3" />
+        <col v-if="statusMark" span="1" class="collgroup4" />
+        <col v-if="!statusMark" span="1" class="collgroup5" />
+        <col v-if="!statusMark" span="1" class="collgroup5" />
       </colgroup>
       <thead class="head">
         <tr>
           <th rowspan="2">Задача</th>
-
-          <th class="vertical" rowspan="1">CabTime (мин)</th>
-          <th style="text-align: center" class="vertical" rowspan="1">
+          <th style="text-align: center" v-if="statusMark" colspan="2">
+            Выполнено
+          </th>
+          <th class="vertical" v-if="!statusMark" rowspan="1">CabTime (мин)</th>
+          <th
+            style="text-align: center"
+            class="vertical"
+            v-if="!statusMark"
+            rowspan="1"
+          >
             Авто-расчёт (мин)
           </th>
+        </tr>
+        <tr v-if="statusMark">
+          <th style="text-align: center" class="vertical">Частично</th>
+          <th style="text-align: center" class="vertical">Полностью</th>
         </tr>
       </thead>
       <tbody>
@@ -35,11 +44,28 @@
           }"
         >
           <td class="desc">{{ value.name }}</td>
-
-          <td style="text-align: center">
+          <td style="text-align: center" v-if="statusMark">
+            <input
+              @input="changeStatus($event, value._id, 'partially')"
+              :checked="value.status === 'partially'"
+              type="checkbox"
+              name=""
+              id=""
+            />
+          </td>
+          <td style="text-align: center" v-if="statusMark">
+            <input
+              @input="changeStatus($event, value._id, 'done')"
+              :checked="value.status === 'done'"
+              type="checkbox"
+              name=""
+              id=""
+            />
+          </td>
+          <td style="text-align: center" v-if="!statusMark">
             {{ value.result }}
           </td>
-          <td>
+          <td v-if="!statusMark">
             <input
               @input="changePartyalyyTime($event, value._id)"
               class="cabtime__input"
@@ -48,33 +74,17 @@
             />
           </td>
         </tr>
-      </tbody>
-    </table>
-    {{ state.alertMessage ? state.alertMessage : '' }}
-
-    <table class="table__result">
-      <thead class="head">
-        <tr>
-          <th>Время работы</th>
-          <th>Расчётное время</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>
-            <h3>{{ timeToCalc }}</h3>
-          </td>
-          <td>
-            <h3>{{ state.partiallySumm }}</h3>
-          </td>
+        <tr v-if="!statusMark">
+          <td>Суммарно</td>
+          <td>{{ state.allSumm }}</td>
+          <td>{{ state.partiallySumm }}</td>
         </tr>
       </tbody>
     </table>
-    <!-- <p v-if="state.difTime">Разница между затраченным и расчетным временем не должна превышать 10 минут. <br> Будьте внимательны при внесении изменений!<br> Расхождение в {{state.difTime}}минут </p> <br> -->
-    <button v-if="!state.wellDone">SAVE</button>
-    <h3 v-else style="color: red">
-      Время работы должно равнятся расчётному! +- 10минут
-    </h3>
+    {{ state.alertMessage && !statusMark ? state.alertMessage : '' }}
+    <br /><br />
+    <button v-if="statusMark" @click="firstCaptureData">Далее</button>
+    <button v-if="statusMark" @click="resetStatus">Сбросить</button>
   </div>
 </template>
 
@@ -103,67 +113,229 @@ const props = defineProps({
     type: Object as PropType<cabtimeType>,
     required: true,
   },
+  statusMark: {
+    type: Boolean,
+    default: () => true,
+  },
 })
 const state = reactive({
   alertMessage: '',
   allSumm: 0,
   partiallySumm: 0,
   wellDone: true,
-  difTime: 0,
 })
 const emit = defineEmits({
   cabtimeWithStatus: null,
   proportTime: null,
 })
-const { inputData } = toRefs(props)
+const { statusMark, inputData } = toRefs(props)
+
+inputData.value.body
+  .sort((a, b) => +a._id.split('.')[1] - +b._id.split('.')[1])
+  .sort((a, b) => +a._id.split('.')[0] - +b._id.split('.')[0])
 
 const timeToCalc = computed(() => store.state.passedTime)
+const firstCaptureData = () => {
+  const rawData = toRaw(unref(inputData))
+  const modArr = rawData.body.filter((f) => f.status && f.status !== 'open')
 
-// const calculatePartiallySumm = () => {
-//   state.partiallySumm = inputData.value.body.reduce(
-//     (acc: number, e) => (acc += e.propTime!),
-//     0
-//   )
-//   state.difTime = timeToCalc.value - state.partiallySumm
+  const particalCalculate = (
+    taskArray: cabtimeType['body'],
+    spentTime: number,
+    timeAll: number,
+    timeDone: number
+  ) => {
+    if (spentTime > timeDone && spentTime < timeAll) {
+      console.log('ALL OK')
 
-//   if (state.difTime >= -10 && state.difTime <= 10) {
-//     state.wellDone = false
-//   } else state.wellDone = true
-// }
+      // state.alertMessage = 'all ok'
+      const difTime = spentTime - timeDone
+      const partiallyTime = timeAll - timeDone
+      taskArray.forEach((e) => {
+        if (e.status === 'done') {
+          e.propTime = e.result
+        }
+        if (e.status === 'partially') {
+          e.propTime = Math.round((e.result / partiallyTime) * difTime)
+        }
+      })
+    }
 
-// calculatePartiallySumm()
+    if (spentTime < timeDone) {
+      // state.alertMessage = 'to fast'
+      //CALCULATE ONLY DONE
+      console.log('TO FAST')
+      taskArray.forEach((e) => {
+        if (e.status === 'done') {
+          e.propTime = Math.round((e.result / timeDone) * spentTime)
+        }
+        if (e.status === 'partially') {
+          e.propTime = 0
+        }
+      })
+    }
 
-watchEffect(() => {
+    if (spentTime > timeAll) {
+      // state.alertMessage = 'to slow'
+      console.log('TO SLOW')
+      taskArray.forEach((e) => {
+        e.propTime = Math.round((e.result / timeAll) * spentTime)
+      })
+    }
+    return taskArray
+  }
+
+  state.allSumm = rawData.body.reduce((acc: number, e) => {
+    if (e?.status && e.status !== 'open') {
+      acc += e.result
+    }
+    return acc
+  }, 0)
+  console.log(state.allSumm, 'allSumm')
+
+  const partiallySumm = rawData.body.reduce((acc: number, e) => {
+    if (e?.status && e.status === 'partially') {
+      acc += e.result
+    }
+    return acc
+  }, 0)
+
+  console.log(partiallySumm, 'partiallySumm')
+
+  const doneSumm = rawData.body.reduce((acc: number, e) => {
+    if (e?.status === 'done') {
+      acc += e.result
+    }
+    return acc
+  }, 0)
+
+  console.log(doneSumm, 'doneSumm')
+  // store.commit('SET_TASK_DONE_SUMM',doneSumm)
+
+  console.log(
+    particalCalculate(modArr, timeToCalc.value, state.allSumm, doneSumm),
+    'TADA'
+  )
+  // if (timeToCalc.value > doneSumm && timeToCalc.value < state.allSumm) {
+  //   state.alertMessage = 'all ok'
+  //   //ALL OK
+  //   timeToCalc.value - doneSumm
+  // }
+
+  // if (timeToCalc.value < doneSumm) {
+  //   state.alertMessage = 'to fast'
+  // }
+
+  // if (timeToCalc.value > state.allSumm) {
+  //   state.alertMessage = 'to slow'
+  // }
+
+  // rawData.body.forEach((e) => {
+  //   e.propTime = Math.round((e.result / state.allSumm) * timeToCalc.value)
+  // })
+
+  // console.log(timeToCalc.value);
+
+  //    rawData.sort((a, b) => {
+  //   const x = a.status?.toLowerCase()
+  //   const y = b.status?.toLowerCase()
+  //   return x < y ? -1 : x > y ? 1 : 0
+  // })
+  store.commit(
+    'setCabtimeWithStatus',
+    particalCalculate(modArr, timeToCalc.value, state.allSumm, doneSumm)
+    // rawData.body.filter((f) => f.status && f.status !== 'open')
+  )
+}
+// watchEffect(() => {
+//   if (!statusMark.value) {
+//     const acc = {
+//       allSumm: 0,
+//       doneSumm: 0,
+//       partiallySumm: 0,
+//       partiallyTimeSumm: 0,
+//     }
+//     type Account = typeof acc
+
+//     const calcSumm = copyInputData.value.reduce((acc: Account, e) => {
+//       e.status === 'partially' && (acc.partiallySumm += e.result)
+//       e.status === 'done' && (acc.doneSumm += e.result)
+//       e.propTime && (acc.partiallyTimeSumm += e.propTime)
+//       acc.allSumm += e.result
+//       return acc
+//     }, acc)
+//     console.log(calcSumm)
+
+//     if (
+//       timeToCalc.value > calcSumm.doneSumm &&
+//       timeToCalc.value < calcSumm.allSumm
+//     ) {
+//       state.alertMessage = 'all ok'
+//     }
+
+//     if (timeToCalc.value < calcSumm.doneSumm) {
+//       state.alertMessage = 'to fast'
+//     }
+
+//     if (timeToCalc.value > calcSumm.allSumm) {
+//       state.alertMessage = 'to slow'
+//     }
+
+//     // console.log(copyInputData.value);
+//     copyInputData.value.forEach((e) => {
+//       e.propTime = Math.round((e.result / calcSumm.allSumm) * timeToCalc.value)
+//     })
+
+//     console.log(copyInputData.value)
+//     copyInputData.value.sort((a, b) => {
+//       const x = a.status.toLowerCase()
+//       const y = b.status.toLowerCase()
+//       return x < y ? -1 : x > y ? 1 : 0
+//     })
+//   }
+// })
+
+const calculatePartiallySumm = () => {
   state.partiallySumm = inputData.value.body.reduce(
     (acc: number, e) => (acc += e.propTime!),
     0
   )
-  state.difTime = timeToCalc.value - state.partiallySumm
+  // debugger
+  const difTime = timeToCalc.value - state.partiallySumm
 
-  if (state.difTime >= -10 && state.difTime <= 10) {
+  // console.log(difTime, 'eee')
+  if (difTime >= -10 && difTime <= 10) {
     state.wellDone = false
   } else state.wellDone = true
-})
+}
 
-// calculatePartiallySumm()
-
+calculatePartiallySumm()
 const changePartyalyyTime = (ev: Event, id: string) => {
   if (!(ev.target instanceof HTMLInputElement)) return
   const item = inputData.value.body.find((e) => e._id === id)
   item && (item.propTime = +ev.target.value)
-  //   calculatePartiallySumm()
+  calculatePartiallySumm()
+  // state.partiallySumm = inputData.value.body.reduce(
+  //   (acc: number, e) => (acc += e.propTime!),
+  //   0
+  // )
+
+  //   if (difTime < -10) {
+
+  //   console.log(difTime, 'www')
+  // }
+}
+function resetStatus(){
+  inputData.value.body.forEach(e=> e.status = 'open')
+}
+const changeStatus = (ev: Event, id: string, val: string) => {
+  if (!(ev.target instanceof HTMLInputElement)) return
+  const item = inputData.value.body.find((e) => e._id === id)
+  ev.target.checked ? (item!.status = val) : (item!.status = 'open')
 }
 </script>
 
 <style lang="css" scoped>
-.description {
-  width: min(95vw, 800px);
-  margin: 5vh auto;
-}
-.table__result {
-  margin-bottom: 4vh;
-  margin-top: 4vh;
-}
 .cabtime__input {
   width: min(100%, 70px);
 }

@@ -1,4 +1,5 @@
 module.exports = async function (context, req) {
+  // import {clearData} from '../extend.js'
 
   if (req.query.post) {
     context.bindings.outputWO = req.rawBody

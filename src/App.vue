@@ -72,8 +72,12 @@ const connect = async () => {
     console.log('SignalR connection disconnected')
     setTimeout(() => connect(), 2000)
   })
-  connection.on('newMessage', (message) => state.messages.push(message))
+  connection.on('newMessage', (message) => {
+    console.log(message,"newMessage")
+    store.commit('UPDATE_cabinets', message)
+  })// state.messages.push(message))
   connection.on('updated', (updatedStock) => {
+    console.log(updatedStock,"updatedStock")
     // NEED TO UPDATE IDB!!!
     //DISPATCH STORE
 
@@ -115,7 +119,8 @@ const connect = async () => {
 }
 
 // import.meta.env.MODE !== 'development'&&
-Object.keys(store.state.user).length !== 0 && connect()
+// Object.keys(store.state.user).length !== 0 && 
+connect()
 
 // const onNewMessage = (message) => state.messages.push(message)
 // const sendmessage = async () => {
@@ -236,11 +241,12 @@ input[type='submit'] {
   display: inline-block;
   box-sizing: border-box;
   font-size: 16px;
+  margin: 5px 1vw;
 }
 button,
 input[type='submit'] {
-  width: min(95vw, 400px);
-  margin: auto;
+  width: min(85vw, 350px);
+  /* margin: auto; */
 }
 input[type='submit']:hover {
   background-color: #00a2ff5b;

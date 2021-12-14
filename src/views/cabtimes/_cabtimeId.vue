@@ -7,30 +7,31 @@
         @closed="popupClosed"
         @confirm="popupConfirmed"
       >
-        <h3>Удалить cabTime?</h3>
+        <template #header>
+          <h3>Удалить cabTime?</h3>
+        </template>
+        <!-- <template #action>
+          <button class="cancel" @click="popupClosed">Отмена</button>
+          <button class="confirm" @click="confirm">Да</button>
+        </template> -->
       </confirm-popup>
     </teleport>
     <div>
       <h2>
-        <i>
-№ :
-        </i>
+        <i> № : </i>
         {{ pInfo['project number'] }}
       </h2>
       <h2>
-        <i>
-        Проект : 
-        </i>
+        <i> Проект : </i>
         {{ pInfo['Project Name'] }}
       </h2>
 
-      <h2>
-        <i>Шкаф : </i>{{ pInfo['cab name'] }}</h2>
+      <h2><i>Шкаф : </i>{{ pInfo['cab name'] }}</h2>
       <h2
         class="wo__clicked"
         @click="$router.push(`/cabinets/${$route.params.cabtimeId}`)"
       >
-       <i>WO : </i>{{ $route.params.cabtimeId }}
+        <i>WO : </i>{{ $route.params.cabtimeId }}
       </h2>
     </div>
     <cab-time-view
@@ -226,6 +227,16 @@ const popupConfirmed = async () => {
 </script>
 
 <style lang="css" scoped>
+.cancel {
+  min-width: 100px;
+  width: fit-content;
+  border: 1px solid green;
+}
+.confirm {
+  min-width: 100px;
+  width: fit-content;
+  border: 1px solid red;
+}
 h2 {
   margin: 1vh auto;
 }
@@ -247,6 +258,6 @@ button {
   color: blueviolet;
 }
 h2 i {
-color: gray;
+  color: gray;
 }
 </style>

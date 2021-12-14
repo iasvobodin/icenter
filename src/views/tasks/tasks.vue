@@ -1,6 +1,6 @@
 <template>
   <div>
-    <delete-photos />
+    <!-- <delete-photos /> -->
     <!-- <test-promise :test-flag="state.ff" @promise="awaitPr($event)" /> -->
   </div>
 </template>
