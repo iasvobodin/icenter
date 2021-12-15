@@ -1,6 +1,10 @@
 <template>
     <!-- <div @click="state.projectListActive = false" class="overlay"></div> -->
     <div class="choose__project">
+        <div @click="state.changeView = !state.changeView" class="qr__icon"></div>
+        <qr-scanner @scanned-wo='scannedEmit' v-if="state.changeView"></qr-scanner>
+        <div v-if="!state.changeView" class="global__holder">
+
         <div style="z-index: 2;" class="choose__project__holder">
             <div class="input__holder">
                 <input
@@ -14,7 +18,7 @@
                         @click="projectActive"
                         class="small__controls"
                     >{{ state.projectListActive ? ' &#128070;' : '&#128071;' }}</span>
-                    <span class="small__controls" @click="state.searchProject = ''">&#9940;</span>
+                    <span class="small__controls" @click="state.searchProject = ''">&#10060;</span>
                 </div>
             </div>
             <div v-if="state.projectListActive" class="project_list_holder">
@@ -44,7 +48,7 @@
                         @click="state.cabinetListActive = !state.cabinetListActive"
                         class="small__controls"
                     >{{ state.cabinetListActive ? ' &#128070;' : '&#128071;' }}</span>
-                    <span class="small__controls" @click="state.searchCabinet = ''">&#9940;</span>
+                    <span class="small__controls" @click="state.searchCabinet = ''">&#10060;</span>
                 </div>
             </div>
             <div v-if="state.cabinetListActive" class="project_list_holder">
@@ -61,10 +65,13 @@
                 </ul>
             </div>
         </div>
+        </div>
+
     </div>
 </template>
 
 <script setup lang="ts">
+import qrScanner from '@/components/qrScanner.vue'
 import { computed, ComputedRef, reactive } from '@vue/reactivity'
 import { ssrContextKey } from '@vue/runtime-core'
 import { useStore } from 'vuex'
@@ -75,6 +82,7 @@ const state = reactive({
     searchCabinet: '',
     projectListActive: false,
     cabinetListActive: false,
+    changeView: false
 })
 const store = useStore()
 const cabinets = computed(() => store.state.cabinets)
@@ -115,6 +123,10 @@ async function checkStore() {
 }
 checkStore()
 
+const scannedEmit =(e:string) =>{
+state.searchCabinet = e
+}
+
 const chooseProject = (e: string) => {
     state.searchCabinet = ''
     state.searchProject = e
@@ -130,6 +142,39 @@ const projectActive = () => {
 }
 </script>
 <style scoped>
+.qr__icon {
+  /* display: inline-block; */
+  margin: auto;
+  background-color: blue;
+  mask: url(/img/qr-code.svg) no-repeat center / contain;
+  -webkit-mask: url(/img/qr-code.svg) no-repeat center / contain;
+  animation: pulse 5s infinite;
+  width: 50px;
+  height: 50px;
+  cursor: pointer;
+  place-self: center;
+  /* align-self: start; */
+  /* margin-top: 5px; */
+}
+@keyframes pulse {
+  0% {
+    /* transform: scale(0.9); */
+    background-color: blue;
+    /* box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.7); */
+  }
+
+  50% {
+    /* transform: scale(1.1); */
+    background-color: orange;
+    /* box-shadow: 0 0 0 10px rgba(0, 0, 0, 0); */
+  }
+
+  100% {
+    /* transform: scale(0.9); */
+    background-color: blue;
+    /* box-shadow: 0 0 0 0 rgba(0, 0, 0, 0); */
+  }
+}
 .p__holder {
     white-space: pre-wrap;
     word-wrap: break-word;

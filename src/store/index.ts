@@ -6,6 +6,7 @@ import { userType, azureAuth } from '@/types/userType'
 import { templateType } from '@/types/templateType'
 import { projectInfoType, projectType } from '@/types/projectInfoType'
 import { cabinetsType } from '@/types/cabinetsType'
+import {cabtimeType} from '@/types/cabtimeTypes'
 
 // const createName = (clientPrincipal) => {
 //   if (clientPrincipal.identityProvider === 'aad') {
@@ -41,7 +42,7 @@ export interface State {
   currentError: null
   cabinetItems: []
   passedTime: number
-  cabtimeWithStatus: null
+  cabtimeWithStatus: cabtimeType['body']
   allSumm: number
   photosToUpload: FormData
   compressBlob: Blob[]
@@ -67,7 +68,7 @@ export const store = createStore<State>({
     cabinetItems: [],
     cabinets: [],
     passedTime: 0,
-    cabtimeWithStatus: null,
+    cabtimeWithStatus: [],
     allSumm: 0,
   },
   mutations: {
@@ -117,10 +118,10 @@ export const store = createStore<State>({
         return acc
       }, [])
     },
-    changePassedTime(state, payload) {
+    changePassedTime(state, payload: number) {
       state.passedTime = payload
     },
-    setCabtimeWithStatus(state, payload) {
+    setCabtimeWithStatus(state, payload:cabtimeType['body']) {
       state.cabtimeWithStatus = payload
     },
     setSummResult(state, payload) {
