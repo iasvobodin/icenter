@@ -26,7 +26,7 @@
         @confirm="popupConfirmed"
       >
         <template #header>
-          <h3>Выберите другой WO</h3>
+          <h3>Выберите другой WO<br>для списания времени.</h3>
         </template>
         <template #select>
           <selectWO/>
