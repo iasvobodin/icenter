@@ -1,7 +1,9 @@
 <template>
     <!-- <div @click="state.projectListActive = false" class="overlay"></div> -->
     <div class="choose__project">
-        <div @click="state.changeView = !state.changeView" class="qr__icon"></div>
+        <div v-if="!state.changeView" @click="state.changeView = !state.changeView" class="qr__icon"></div>
+        <div v-else @click="state.changeView = !state.changeView" class="edit__icon"></div>
+        
         <qr-scanner @scanned-wo='scannedEmit' v-if="state.changeView"></qr-scanner>
         <div v-if="!state.changeView" class="global__holder">
 
@@ -82,7 +84,7 @@ const state = reactive({
     searchCabinet: '',
     projectListActive: false,
     cabinetListActive: false,
-    changeView: false
+    changeView: true
 })
 const store = useStore()
 const cabinets = computed(() => store.state.cabinets)
@@ -112,10 +114,6 @@ state.searchCabinet ?
     )
 )
 
-const datalist = (e: Event) => {
-    if (!(e.target instanceof HTMLInputElement)) return
-    console.log(e.target.value)
-}
 async function checkStore() {
     if (store.state.cabinets.length === 0) {
         await store.dispatch('GET_cabinets')
@@ -142,6 +140,20 @@ const projectActive = () => {
 }
 </script>
 <style scoped>
+.edit__icon {
+  /* display: inline-block; */
+  margin: auto;
+  background-color: blue;
+  mask: url(/img/edit.png) no-repeat center / contain;
+  -webkit-mask: url(/img/edit.png) no-repeat center / contain;
+  animation: pulse 5s infinite;
+  width: 50px;
+  height: 50px;
+  cursor: pointer;
+  place-self: center;
+  /* align-self: start; */
+  /* margin-top: 5px; */
+}
 .qr__icon {
   /* display: inline-block; */
   margin: auto;
@@ -186,10 +198,7 @@ const projectActive = () => {
     /* line-height: calc(18px); */
 }
 
-datalist {
-    height: 30vh;
-    max-height: 30vh;
-}
+
 
 .input__holder > img {
     cursor: pointer;
