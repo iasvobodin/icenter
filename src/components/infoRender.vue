@@ -4,27 +4,25 @@
       class="cabinet__info__item"
       :class="{
         error__item__desc:
-          k.includes('Описание') ||
-          k.includes('Specific') ||
-          k.includes('Comments'),
+        typeof k === 'string' && k.includes('Описание') ||
+        typeof k === 'string' &&  k.includes('Specific') ||
+       typeof k === 'string' &&   k.includes('Comments'),
       }"
     >
       <h3
         :class="{
           error__item__vertical__title:
-            k.includes('Описание') ||
-            k.includes('Specific') ||
-            k.includes('Comments'),
+          typeof k === 'string' &&  k.includes('Описание') ||
+         typeof k === 'string' &&   k.includes('Specific') ||
+        typeof k === 'string' &&    k.includes('Comments'),
         }"
         class="info__item__title"
-      >
-        {{ k }}:
-      </h3>
+      >{{ k }}:</h3>
       <p
         :class="{
           error__item__vertical__title:
-            k.includes('Описание') || k.includes('Specific'),
-          left__allign: k.includes('Comments'),
+          typeof k === 'string' &&  k.includes('Описание') ||typeof k === 'string' && k.includes('Specific'),
+          left__allign: typeof k === 'string' && k.includes('Comments'),
         }"
         class="error__item__desc"
       >
@@ -40,19 +38,21 @@
   </div>
 </template>
 
-<script>
-export default {
-  props: {
-    hr: {
-      type: Boolean,
-      default: () => true,
-    },
-    infoData: {
-      type: Object,
-      required: true,
-    },
+<script setup lang="ts">
+import { PropType, toRefs } from 'vue';
+type ooo = {[key:string]:string}
+const props = defineProps({
+  hr: {
+    type: Boolean,
+    default: () => true,
   },
-}
+  infoData: {
+    type: Object, //as PropType<ooo>,
+    required: true,
+  },
+})
+const{hr, infoData} = toRefs(props)
+
 </script>
 
 <style lang="css" scoped>
@@ -98,7 +98,7 @@ export default {
   margin: 0;
   /* border-bottom: none; */
 }
-
+/* 
 .error__item__vertical__title {
   width: inherit;
   text-align: center;
@@ -109,5 +109,5 @@ export default {
 .left__allign {
   text-align: start;
   font-size: 14px;
-}
+} */
 </style>

@@ -2,7 +2,7 @@
   <div class="cabinet">
     <div>
       <!-- <h1>{{ $route.params.errorId }}</h1> -->
-      <h1>Ошибка от ({{errorHeader()}})</h1>
+      <h1>Ошибка от ({{ errorHeader() }})</h1>
       <br />
     </div>
     <div v-if="state.error?.body" class="cabinet__info">
@@ -16,7 +16,7 @@
       >
         <div v-if="Object.values(val)[1] && !key.startsWith('_')">
           <!-- {{key}} -->
-          <div v-if="!returnRender(key, val)">
+          <div v-if="!returnRender(key)">
             <h2>{{ key }}</h2>
             <info-render :info-data="val" />
           </div>
@@ -30,7 +30,7 @@
             ]"
             :key="index"
           >
-            <div v-if="returnRender(key, value)">
+            <div v-if="returnRender(key)">
               <h3>Статус ошибки: {{ key }}</h3>
               <div
                 v-for="(v, k, i) in value"
@@ -41,9 +41,7 @@
                 <h4
                   :class="{ error__item__vertical__title: k === 'Описание' }"
                   class="error__item__title"
-                >
-                  {{ k }}
-                </h4>
+                >{{ k }}</h4>
                 <render-inputs
                   v-model="state.error.body[0][key]"
                   :required="
@@ -52,36 +50,24 @@
                   :data-render="v"
                 />
               </div>
-              <div
-                v-if="
-                  state.error.body[0][key] &&
-                  state.error.body[0][key]['Ответственный']
-                "
-              >
+              <div>
                 <div class="error__item">
-                  <h4 class="error__item__title">
-                    {{ state.error.body[0][key]['Ответственный'] }}
-                  </h4>
+                  <h4 class="error__item__title">{{ state.error.body[0][key]['Ответственный'] }}</h4>
                   <select
-                    v-model="state.error.body[0][key]['Ошибку допустил']"
+                    v-model="state.responsible"
                     required
                     :name="key"
-                    :value="state.error.body[0][key]['Ошибку допустил']"
                     class="error__item__desc"
                   >
                     <option
-                      v-for="(value2, key2, index2) in $store.state.template[
-                        state.error.body[0][key2]['Ответственный']
-                      ]"
+                      v-for="(value2, key2, index2) in $store.state.template[state.responsible]"
                       :key="index2"
-                    >
-                      {{ value2 }}
-                    </option>
+                    >{{ value2 }}</option>
                   </select>
                 </div>
               </div>
               <!-- <conditional-render v-model="error.body[key]" :data-render="value"
-                :required="!$store.state.user.info.userRoles.includes('admin')" /> -->
+              :required="!$store.state.user.info.userRoles.includes('admin')" />-->
             </div>
           </div>
         </form>
@@ -110,20 +96,14 @@
           $store.state.user.info.userRoles.includes('admin'))
       "
       @click="changeData"
-    >
-      {{ !state.changeInfo ? 'Редактировать' : 'Отмена' }}
-    </button>
+    >{{ !state.changeInfo ? 'Редактировать' : 'Отмена' }}</button>
     <button
       v-if="
         state.changeInfo && $store.state.user.info.userRoles.includes('admin')
       "
       @click="deleteError"
-    >
-      Удалить
-    </button>
-    <button v-if="state.changeInfo" type="submit" form="errorData">
-      Сохранить
-    </button>
+    >Удалить</button>
+    <button v-if="state.changeInfo" type="submit" form="errorData">Сохранить</button>
   </div>
 
   <!-- <img crossorigin="anonymous" src="https://icaenter.blob.core.windows.net/errors-photo/21-01-04-12-30-23.jpg" alt="11"> -->
@@ -138,7 +118,7 @@ import { reactive, Ref } from '@vue/reactivity'
 import { useStore } from 'vuex'
 import { useRoute, useRouter } from 'vue-router'
 import { useFetch } from '@/hooks/fetch'
-import { errorType } from '@/types/errorType'
+import { errorType, errorType2, errorBodyTesterType, errorBodyFitterType } from '@/types/errorType'
 import { userType } from '@/types/userType'
 const store = useStore()
 const route = useRoute()
@@ -149,37 +129,55 @@ const state = reactive({
   saveChanges: false,
   changeInfo: false,
   updatedPhotos: [] as string[],
-  error: {} as errorType | undefined,
-  readOnlyError: {} as errorType | undefined,
+  error: <errorType>{},
+  body:{} as errorBodyFitterType[] | errorBodyTesterType[],
+  f_body: [] as errorBodyFitterType[],
+  t_body: [] as errorBodyTesterType[],
+  // readOnlyError: {} as errorType | undefined,
   errorIsNotDef: null,
+  responsible:''
 })
 
 const container = 'errors-photo'
 
-const errorHeader = () =>{
+const errorHeader = () => {
   // const head:string = route.params.errorId
-  if(typeof route.params.errorId === 'string'){
-   const headSplit = route.params.errorId.split('__')
-   //return 
-  //  console.log(headSplit[1],Date.now(),);
+  if (typeof route.params.errorId === 'string') {
+    const headSplit = route.params.errorId.split('__')
+    //  console.log(headSplit[1],Date.now(),);
     // new Date(headSplit[1]).toISOString()
-   return new Date(+headSplit[1]).toLocaleString()
+    return new Date(+headSplit[1]).toLocaleString()
   }
 }
-const getCurrentError = async (): UsableError => {
+const getCurrentError = async () => {
   // try {
   const { request, response: errorFromServer } = useFetch<errorType>(
     `/api/errors/${route.params.errorId}`
   )
 
   await request()
-  return { errorFromServer }
+  return errorFromServer!.value
 }
 
 const getData = async () => {
-  const errorFromServer = (await getCurrentError()).errorFromServer.value
-  state.error = errorFromServer
-  state.error!.body = [state.error!.body[state.error!.body.length - 1]]
+  const errorFromServer = await getCurrentError()
+state.error = errorFromServer!
+
+  
+
+
+
+  // state.error!.body = [state.error!.body[state.error!.body.length - 1]]
+
+  if (errorFromServer!.type === 't_error') {
+  //   // state.t_body = [errorFromServer!.body[ errorFromServer!.body.length - 1]] 
+  //   // state.body = state.error.body[0]
+  // state.error.body[0] as errorBodyTesterType
+    state.responsible = state.error.body[0].Открыто.Ответственный!
+  }
+  //  else{
+  // state.error.body[0] as errorBodyFitterType
+  // }
 }
 getData()
 // methods: {
@@ -224,8 +222,7 @@ const deleteError = async () => {
 
   router.back()
 }
-
-const returnRender = (key: string) => {
+const returnRender = (key: keyof errorType['body'][0] ) => {
   if (state.changeInfo && store.state.user.info.userRoles.includes('admin')) {
     return true
   }
@@ -243,7 +240,7 @@ const returnRender = (key: string) => {
   if (
     state.changeInfo &&
     store.state.user.info.userDetails.toLowerCase() ===
-      state.error!.info.Добавил
+    state.error!.info.Добавил
   ) {
     if (key === 'Открыто') {
       return true
@@ -261,7 +258,7 @@ const changeData = () => {
 }
 const updateErorData = async () => {
   //GET CURRENT ITEM FROM DB
-  const err = (await getCurrentError()).errorFromServer.value
+  const err = await getCurrentError()
 
   const photos = state.updatedPhotos
   // OBJECT FOR NEW UPDATET ERROR
@@ -276,8 +273,8 @@ const updateErorData = async () => {
       status: Object.values(state.error!.body[0].Устранено)[0]
         ? 'closed'
         : Object.values(state.error!.body[0].Принято)[0]
-        ? 'confirmed'
-        : 'open',
+          ? 'confirmed'
+          : 'open',
     },
     body: [
       ...err!.body, //CURRENT BODY +
@@ -321,7 +318,7 @@ const updateErorData = async () => {
 }
 .custom-file-input:active::before {
   background: -webkit-linear-gradient(top, #e3e3e3, #f9f9f9);
-  background-image: url('/img/add__image.svg');
+  background-image: url("/img/add__image.svg");
 }
 .back__image {
   position: fixed;

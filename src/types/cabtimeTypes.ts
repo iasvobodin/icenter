@@ -9,10 +9,11 @@ export interface cabtimeType {
     result: number
     status: string
     propTime?: number
+    newRow?: boolean,
   }[]
   groupByType: {
     type: string
-    total: string
+    total: number
     _id: number
   }[]
   control: {

@@ -11,6 +11,7 @@
     "lib": ["esnext", "dom", "dom.iterable"],
     "types": ["vite/client", "node"],
     "baseUrl": ".",
+    "charset": "utf8",
     "paths": {
       "@/*": ["src/*"]
     }

@@ -1,10 +1,6 @@
 <template>
   <section v-if="state.ctv3.groupByType">
-    <div
-      v-for="(t, i) in state.ctv3.groupByType"
-      :key="i"
-      class="table__wrapper"
-    >
+    <div v-for="(t, i) in state.ctv3.groupByType" :key="i" class="table__wrapper">
       <table>
         <colgroup>
           <col span="1" class="collgroup1" />
@@ -24,7 +20,7 @@
           <tr v-for="(value, index) in groupBy(t.type)" :key="index">
             <td>{{ value._id }}</td>
             <td class="cabtime__name">
-              <div v-if="value.new && changeData" class="textarea">
+              <div v-if="value.newRow && changeData" class="textarea">
                 <textarea
                   rows="1"
                   :value="value.name"
@@ -49,7 +45,7 @@
             </td>
             <td>
               <input
-                v-if="value.new && changeData"
+                v-if="value.newRow && changeData"
                 class="cabtime__input"
                 min="0"
                 type="number"
@@ -60,9 +56,7 @@
             </td>
             <td>{{ value.result }}</td>
           </tr>
-          <div v-if="changeData" class="add__row" @click="addNewRow(t.type)">
-            +
-          </div>
+          <div v-if="changeData" class="add__row" @click="addNewRow(t.type)">+</div>
         </tbody>
       </table>
     </div>
@@ -116,9 +110,7 @@
           <th>Сборка + Админ</th>
         </tr>
         <tr>
-          <td v-for="(val, index) in cabtimeResult" :key="index">
-            {{ val ? val : 0 }}
-          </td>
+          <td v-for="(val, index) in cabtimeResult" :key="index">{{ val ? val : 0 }}</td>
         </tr>
       </tbody>
     </table>
@@ -130,25 +122,27 @@
       :current-photos="inputData.photos"
       @resized-blob="addPhotos($event)"
       @delete-blob="delPhotos($event)"
-    /> -->
+    />-->
   </div>
 
   <!-- 
-        @resized-blob="errorPhotosBlob($event)" -->
+  @resized-blob="errorPhotosBlob($event)"-->
 </template>
 
-<script setup>
+<script lang="ts" setup>
 import itemPhotoUploader from '@/components/itemPhotoUploader.vue'
 import conditionalRender from '@/components/conditionalRender.vue'
 import chooseWoNumber from '@/components/chooseWoNumber.vue'
 import chooseProjectNumber from '@/components/chooseProjectNumber.vue'
 import { useStore } from 'vuex'
 import { onBeforeRouteUpdate, useRouter } from 'vue-router'
+import { cabtimeType } from '@/types/cabtimeTypes'
 import {
   reactive,
   toRefs,
   computed,
   nextTick,
+  PropType,
   onMounted,
   watchEffect,
 } from 'vue'
@@ -167,7 +161,7 @@ const router = useRouter()
 // eslint-disable-next-line no-undef
 const props = defineProps({
   inputData: {
-    type: Object,
+    type: Object as PropType<cabtimeType>,
     required: true,
   },
   changeData: {
@@ -179,7 +173,7 @@ const props = defineProps({
     default: () => false,
   },
   templateData: {
-    type: Object,
+    type: Object as PropType<cabtimeType>,
     required: true,
   },
 })
@@ -188,13 +182,13 @@ const emit = defineEmits(['final'])
 const state = reactive({
   blobFiles: null,
   projectInformation: null,
-  ctv3: null,
+  ctv3: <cabtimeType>{},
 })
 // DEEP COPY OBJECT
 // const { inputData } = props
 const { inputData, changeData, templateData, taskEdit } = toRefs(props)
 
-const mergeObject = (templateObj, cabTimeObj) => {
+const mergeObject = (templateObj: cabtimeType, cabTimeObj: cabtimeType) => {
   const bodyResult = [
     ...cabTimeObj.body,
     ...templateObj.body.filter(
@@ -225,10 +219,10 @@ const inputDataComputed = computed(() =>
     : inputData.value
 )
 const projectInfoState = computed(() => store.state.projectInfo)
+type P =  keyof cabtimeType['body'][0]
+const calculateLogic = ($event: Event, key: string, val:  'name'| '_const'|'value' ) => {
 
-const calculateLogic = ($event, key, val) => {
-  // console.log($event, key, val)
-  let arr, coef, arr2, coef2
+  let arr: string[], coef: number, arr2: string[], coef2: number
   switch (key) {
     case '1.3':
       arr = ['2.3', '2.4']
@@ -275,32 +269,39 @@ const calculateLogic = ($event, key, val) => {
     default:
       break
   }
+  if (!($event.target instanceof HTMLInputElement)) return
+
   state.ctv3.body.map((e) => {
     arr &&
       arr.forEach((el) => {
         if (e._id === el) {
-          e[val] = $event.target.value * coef
-          e.result = Math.round(e.value * e._const)
+          e[val] = (+($event.target as HTMLInputElement).value * coef).toString()
+          e.result = Math.round(+e.value * +e._const)
         }
       })
     arr2 &&
       arr2.forEach((el) => {
         if (e._id === el) {
-          e[val] = $event.target.value * coef2
-          e.result = Math.round(e.value * e._const)
+          e[val] = (+($event.target as HTMLInputElement).value * coef2).toString()
+          e.result = Math.round(+e.value * +e._const)
         }
       })
     if (e._id === key) {
       console.log('tada', e._id, key)
-      e[val] = $event.target.value
-      e.result = Math.round(e.value * e._const)
+      e[val] = (+($event.target as HTMLInputElement).value).toString()
+      e.result = Math.round(+e.value * +e._const)
     }
   })
   state.ctv3.groupByType.map((e) => {
     return (e.total = state.ctv3.body
       .filter((f) => f._type === e.type)
       .reduce((acc, m) => {
-        return m.result ? (acc += +m.result) : acc
+        if (m.result) {
+          acc += +m.result
+          return acc
+        } else {
+          return acc
+        }
       }, 0))
   })
 
@@ -333,7 +334,14 @@ const updateEmit = () => {
 // }
 const finalResult = computed(() =>
   state.ctv3.groupByType.reduce(
-    (acc, e) => (e.type === 'Тестирование и Поверка' ? acc : (acc += e.total)),
+    (acc, e) => {
+      if (e.type === 'Тестирование и Поверка') {
+        return acc
+      } else {
+        acc += +e.total
+        return acc
+      }
+    },
     0
   )
 )
@@ -341,46 +349,45 @@ const cabtimeResult = computed(() => {
   return {
     assemble: Math.round(finalResult.value / 60),
     test: Math.round(
-      state.ctv3.groupByType.find((e) => e.type === 'Тестирование и Поверка')
-        ?.total / 60
+      +(state.ctv3.groupByType.find((e) => e.type === 'Тестирование и Поверка')?.total!) / 60
     ),
     admin: Math.round(
       Math.round(
         (+finalResult.value * +state.ctv3.control.adminCoef) / 100 +
-          +state.ctv3.control.documents
+        +state.ctv3.control.documents
       ) / 60
     ),
     final: Math.round(
       (+finalResult.value +
         Math.round(
           (+finalResult.value * +state.ctv3.control.adminCoef) / 100 +
-            +state.ctv3.control.documents
+          +state.ctv3.control.documents
         )) /
-        60
+      60
     ),
   }
 })
-const groupBy = (t) =>
+const groupBy = (t: string) =>
   state.ctv3?.body
     .filter((g) => g._type === t)
-    .sort((a, b) => a._id.split('.')[1] - b._id.split('.')[1])
+    .sort((a, b) => +a._id.split('.')[1] - +b._id.split('.')[1])
 
-const chooseCabinet = (e) => {
-  // state.cabinet = e.split('   ')[0];
-  store.commit('SETcabinetInfo', e)
-  //   this.woState = true;
-}
-const choose = ($event) => {
-  if (!$event) {
-    state.projectInformation = false
-    return
-  }
-  state.projectInformation = state.fetchProject.filter(
-    (e) => e.id === $event
-  )[0]
-  //   console.log(this.projectInformation, "this.projectInformation");
-  store.commit('SETprojectInfo', state.projectInformation)
-}
+// const chooseCabinet = (e) => {
+//   // state.cabinet = e.split('   ')[0];
+//   store.commit('SETcabinetInfo', e)
+//   //   this.woState = true;
+// }
+// const choose = ($event) => {
+//   if (!$event) {
+//     state.projectInformation = false
+//     return
+//   }
+//   state.projectInformation = state.fetchProject.filter(
+//     (e) => e.id === $event
+//   )[0]
+//   //   console.log(this.projectInformation, "this.projectInformation");
+//   store.commit('SETprojectInfo', state.projectInformation)
+// }
 
 // const postCabTime = async () => {
 //   const cabTime = {
@@ -430,25 +437,27 @@ const choose = ($event) => {
 //   await request()
 // }
 
-const addNewRow = (e) => {
+const addNewRow = (e:string) => {
   console.log(e)
   //filter by type
   const ff = state.ctv3.body
     .filter((g) => g._type === e)
-    .sort((a, b) => a._id.split('.')[1] - b._id.split('.')[1])
+    .sort((a, b) => +a._id.split('.')[1] - +b._id.split('.')[1])
   //take last and create array by dot
   const id = ff[ff.length - 1]._id.split('.')
   // increese the last element and joy
   const dd = [id[0], +id[1] + 1].join('.')
 
   state.ctv3.body.push({
-    new: true,
     _id: dd,
-    name: '',
     _const: '',
     _type: e,
     _field: '',
+    name: '',
     value: '',
+    newRow: true,
+    result: 0,
+    status: 'open',
   })
   // console.log(e)
 }
@@ -457,9 +466,9 @@ const clearstate = () => {
   state.projectInformation = null
   state.ctv3 = JSON.parse(JSON.stringify(store.state.template.CabTimeV3))
 }
-const deleteRow = (id) => {
+const deleteRow = (id: string) => {
   const currentArrow = state.ctv3.body.find((e) => e._id === id)
-  const index = state.ctv3.body.indexOf(currentArrow)
+  const index = state.ctv3.body.indexOf(currentArrow!)
   state.ctv3.body.splice(index, 1)
   updateEmit()
 }
@@ -548,7 +557,7 @@ label {
   text-align: start;
   /* display: in; */
 }
-input[type='radio'] {
+input[type="radio"] {
   margin: 0;
 }
 .collgroup1 {

@@ -9,6 +9,7 @@ export type Extend = {
 }
 
 export interface templateType {
+  [x:string]:any
   id: 'ver1'
   type: 'templateProject'
   template: {
@@ -25,15 +26,15 @@ export interface templateType {
   }
   CabTimeV3: cabtimeType
   error: {
-    errorid: ''
-    wo: ''
-    user: 'local@mail.com'
-    'project number': '71501851.4'
-    'cab name': 'MMS-4.2'
-    type: 'error'
+    errorid: string
+    wo: string
+    user: string
+    'project number': string
+    'cab name': string
+    type: string
     status: ['open', 'confirmed', 'closed']
-    'senior fitter': ''
-    Photo: ''
+    'senior fitter': string
+    Photo: [string]
     body: {
       Открыто: {
         'Тип ошибки': ['Материалы', 'ПД электрическая схема', 'ПД конструктив']
