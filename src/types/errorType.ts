@@ -58,8 +58,8 @@ export interface errorBodyFitterType {
     'Статус коррекции': string
     ['Время на устранение']: number
   }
-  _changed: string | null
-  _time: string
+  // _changed: string | null
+  // _time: string
 }
 export interface errorBodyTesterType {
   Открыто: {
@@ -83,8 +83,8 @@ export interface errorBodyTesterType {
     'Статус коррекции': string
     ['Время на устранение']: number
   }
-  _changed: string | null
-  _time: string
+  // _changed: string | null
+  // _time: string
 }
 
 // export interface AddressWithUnit extends errorBodyType {
@@ -105,7 +105,7 @@ export type errorType = {
     wo: string
     Добавил: string
     Мастер: string
-    status?: string
+    status?: 'open'| 'confirmed'| 'closed'
   }
   photos?: string[]
   type: 'f_error' | 't_error'

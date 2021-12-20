@@ -16,7 +16,7 @@ module.exports = async function (context, req, data) {
         }
       }),
       // el.project.toString()).filter(el => el.length > 6).sort(),
-      lastUpdate: data[data.length - 1]._ts,
+      lastUpdate: data.at(-1)._ts,
     },
   }
 }

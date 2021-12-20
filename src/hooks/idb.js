@@ -237,7 +237,7 @@ limitations under the License.
     ;[ObjectStore, Index].forEach(function (Constructor) {
       Constructor.prototype[funcName.replace('open', 'iterate')] = function () {
         var args = toArray(arguments)
-        var callback = args[args.length - 1]
+        var callback = args.at(-1)
         var request = (this._store || this._index)[funcName].apply(
           this._store,
           args.slice(0, -1)

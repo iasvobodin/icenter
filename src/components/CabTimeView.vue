@@ -131,7 +131,7 @@
 
 <script lang="ts" setup>
 import itemPhotoUploader from '@/components/itemPhotoUploader.vue'
-import conditionalRender from '@/components/conditionalRender.vue'
+// import conditionalRender from '@/components/conditionalRender.vue'
 import chooseWoNumber from '@/components/chooseWoNumber.vue'
 import chooseProjectNumber from '@/components/chooseProjectNumber.vue'
 import { useStore } from 'vuex'
@@ -192,7 +192,7 @@ const mergeObject = (templateObj: cabtimeType, cabTimeObj: cabtimeType) => {
   const bodyResult = [
     ...cabTimeObj.body,
     ...templateObj.body.filter(
-      (e) => !cabTimeObj.body.some((s) => s._id === e._id)
+       
     ),
   ]
   const groupByTypeResult = [
@@ -213,13 +213,14 @@ watchEffect(() => {
 // !state.ctv3.blobFiles && (state.ctv3.blobFiles = [])
 // !state.ctv3.photos && (state.ctv3.photos = [])
 // state.ctv3 = JSON.parse(JSON.stringify(store.state.template.CabTimeV3))
+
 const inputDataComputed = computed(() =>
   props.changeData
     ? mergeObject(templateData.value, inputData.value)
     : inputData.value
 )
 const projectInfoState = computed(() => store.state.projectInfo)
-type P =  keyof cabtimeType['body'][0]
+// type P =  keyof cabtimeType['body'][0]
 const calculateLogic = ($event: Event, key: string, val:  'name'| '_const'|'value' ) => {
 
   let arr: string[], coef: number, arr2: string[], coef2: number
@@ -444,7 +445,7 @@ const addNewRow = (e:string) => {
     .filter((g) => g._type === e)
     .sort((a, b) => +a._id.split('.')[1] - +b._id.split('.')[1])
   //take last and create array by dot
-  const id = ff[ff.length - 1]._id.split('.')
+  const id = ff.at(-1)!._id.split('.')
   // increese the last element and joy
   const dd = [id[0], +id[1] + 1].join('.')
 

@@ -50,7 +50,7 @@ module.exports = async function (context, req, legendStat, projects) {
   context.res = {
     body: {
       data: transformData,
-      lastUpdate: legendStat[legendStat.length - 1]._ts,
+      lastUpdate: legendStat.at(-1)._ts,
     },
   }
   // const fProject = {

@@ -29,7 +29,7 @@ const filterArr = cabinetItems.filter((e)=> e.type.includes('error')).map(e => c
       return {
         ...e,
         status:e.info.status,
-        body: e.body[e.body.length - 1],
+        body: e.body.at(-1),
         _ts: e.body[0]._time,
         confirmedTime: changeStatus[i]._time,
         confirmedChanged: changeStatus[i]._changed,
