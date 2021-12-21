@@ -1,4 +1,5 @@
 <template>
+<error-view v-if="state.error?.id" :input-data="state.error" :template-data="$store.state.template?.errorBody" :change-data="false" />
   <div class="cabinet">
     <div>
       <!-- <h1>{{ $route.params.errorId }}</h1> -->
@@ -112,6 +113,7 @@
 <script setup lang="ts">
 import itemPhotoUploader from '@/components/itemPhotoUploader.vue'
 import conditionalRender from '@/components/conditionalRender.vue'
+import errorView from '@/components/errorView.vue'
 import infoRender from '@/components/infoRender.vue'
 import renderInputs from '@/components/renderInputs'
 import { reactive, Ref } from '@vue/reactivity'
@@ -140,6 +142,25 @@ const state = reactive({
 
 const container = 'errors-photo'
 
+// function modifyBody(el:errorType) {
+
+//     const lastBody = el.body.at(-1)!
+
+//     for (const key in lastBody) {
+//         key.startsWith('_') && delete lastBody[key as keyof errorType['body'][0]]
+//     }
+//     console.log(typeof lastBody, lastBody);
+    
+
+// //   const objE = Object.entries(lastBody).filter(
+// //     (entries) => !entries[0].startsWith('_')
+// //   )
+// //   let mBody :errorBodyFitterType|errorBodyTesterType;
+// //   if (el.type === 't_error' ) {
+// //       mBody =  Object.fromEntries(objE) as errorBodyTesterType
+// //   }
+// }
+
 const errorHeader = () => {
   // const head:string = route.params.errorId
   if (typeof route.params.errorId === 'string') {
@@ -165,7 +186,7 @@ state.error = errorFromServer!
 
   
 
-
+// modifyBody(state.error)
 
   // state.error!.body = [state.error!.body[state.error!.body.length - 1]]
 

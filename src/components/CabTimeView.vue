@@ -192,7 +192,7 @@ const mergeObject = (templateObj: cabtimeType, cabTimeObj: cabtimeType) => {
   const bodyResult = [
     ...cabTimeObj.body,
     ...templateObj.body.filter(
-       
+      (e) => !cabTimeObj.body.some((s) => s._id === e._id)
     ),
   ]
   const groupByTypeResult = [
