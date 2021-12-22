@@ -82,7 +82,7 @@ module.exports = async function (context, req, cabinetItems) {
       return {
         ...e,
         status: e.info.status,
-        body: clearData(e.body.at(-1)),
+        body: clearData(e.body[e.body.length - 1]),
         // _ts: e.body[0]._time,
         history,
         // confirmedTime: changeStatus[i]?._time,

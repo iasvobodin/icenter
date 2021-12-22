@@ -4,9 +4,9 @@
         <section class="information">
             <info-render :info-data="inputData.info" />
         </section>
-        <div v-for="(val, key, index) in mainFilterBody">
+        <div v-for="(val, key, index) in mainFilterBody" :key="index">
             <h2 class="error__stage">{{ key }}</h2>
-            <div class="error__body" v-for="(v, k, i) in val">
+            <div class="error__body" v-for="(v, k, i) in val" :key="i">
                 <h3 class="body__item__title">{{ k }}</h3>
                 <p v-if="!changeData">{{ v }}</p>
                 <render-inputs
@@ -16,6 +16,7 @@
                 />
             </div>
         </div>
+        <button @click="changeData = !changeData">Редактировать</button>
     </div>
 </template>
 
@@ -58,6 +59,8 @@ const cloneInputData: errorType = JSON.parse(JSON.stringify(inputData.value))
 
 const store = useStore()
 const router = useRouter()
+
+
 
 const checkAccessLevel = (creator: string) => {
     if (
