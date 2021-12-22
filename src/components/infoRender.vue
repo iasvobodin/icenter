@@ -47,7 +47,7 @@ const props = defineProps({
     default: () => true,
   },
   infoData: {
-    type: Object, //as PropType<ooo>,
+    type: Object,// as PropType<ooo>,
     required: true,
   },
 })

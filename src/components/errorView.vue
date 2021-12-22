@@ -108,21 +108,6 @@ const mainFilterBody = computed(() => {
         return templateData.value
     } else {
         const error = modifyBody(inputData.value, cloneInputData.info.status!)
-        // switch (cloneInputData.info.status) {
-        //     case 'open': return { error }
-        //     // break
-        //     case 'confirmed':
-        //         break
-        //     case 'closed':
-        //         break
-
-        //     default:
-        //         break;
-        // }
-        // if (cloneInputData.info.status === 'open') {
-
-        // }
-
         return error
     }
 })

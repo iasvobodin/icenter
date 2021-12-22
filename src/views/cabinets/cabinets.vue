@@ -178,7 +178,7 @@ const someUpdate = async () => {
   // console.log(resCabinets.value);
 
   const cabinets = resCabinets.value
-  console.log(cabinets, 'CABINETS')
+  // console.log(cabinets, 'CABINETS')
 
   cabinets.map(async (e) => {
     const { request, response: cabError } = useFetch(
@@ -186,7 +186,7 @@ const someUpdate = async () => {
     )
     await request()
     e.stats.errors = cabError.value
-    console.log(e, 'EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE')
+    // console.log(e, 'EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE')
 
     if (e.stats.errors.length > 0) {
       const { request: postCabinets } = useFetch(`/api/GET_cabinet?post=true`, {

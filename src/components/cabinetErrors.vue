@@ -1,14 +1,8 @@
 <template>
   <div v-if="computedItems.length > 0">
-    <div
-      v-for="(item, key) in computedItems"
-      :key="item.id"
-      class="error__holder"
-    >
+    <div v-for="(item, key) in computedItems" :key="item.id" class="error__holder">
       <h2 @click="$router.push(`/errors/${item.id}`)">{{ item.id }}</h2>
-      <small :style="{ backgroundColor: statusColor[item.status] }"
-        >Статус: {{ item.status }}</small
-      >
+      <small :style="{ backgroundColor: statusColor[item.status] }">Статус: {{ item.status }}</small>
       <br />
       <br />
       <div class="err__tabs">
@@ -20,9 +14,7 @@
             :name="`tab-control${key}`"
             :value="tab"
           />
-          <label :for="`tab${i + 1}${key}`" role="button">
-            {{ tab }}
-          </label>
+          <label :for="`tab${i + 1}${key}`" role="button">{{ tab }}</label>
         </div>
       </div>
       <div class="card__holder">
@@ -30,9 +22,7 @@
           <info-render :info-data="{ ...item.body[currentTab[key]] }" />
         </div>
         <div v-for="ph in item.photos" v-else :key="ph" class="photo__holder">
-          <a
-            :href="`https://icaenter.blob.core.windows.net/errors-photo/${ph}`"
-          >
+          <a :href="`https://icaenter.blob.core.windows.net/errors-photo/${ph}`">
             <img
               :src="`https://icaenter.blob.core.windows.net/errors-photo/thumb__${ph}`"
               alt="photo error"
@@ -46,9 +36,7 @@
     <h2>Безошибочный шкаф</h2>
   </div>
   <br />
-  <button v-if="computedItems && computedItems.length > 0" @click="saveBook">
-    Экспорт excel
-  </button>
+  <button v-if="computedItems && computedItems.length > 0" @click="saveBook">Экспорт excel</button>
   <br />
   <router-link to="/errors/addnewerror">
     <img class="add__button" src="/img/add.svg" alt="Добавить новую ошибку" />
@@ -100,47 +88,50 @@ export default {
         // if (e.type === 't_error') {
         // }
         arrArr.push([
-          i + 1,
-          // e.body.Открыто.Описание,
-          e.body.Открыто?.['Тип'],
-          e.body.Открыто?.['Причина'],
-          e.body.Открыто?.['Этап'],
-          e.body.Открыто?.['Описание'],
-          e.body.Открыто?.['Количество ошибок'],
-          e.body.Открыто?.['Ответственный'],
-          e.body.Открыто?.['Ошибку допустил'],
-          e.info.Добавил.split('@')[0].replace('.', ' '),
-          formatDate(new Date(+e._ts)),
-          e.body.Принято.Описание,
-          e.info.Мастер.split('@')[0].replace('.', ' '),
-          e.body.Устранено['Статус коррекции'],
-          e.body.Устранено['Время на устранение'],
-          e.body._changed.split('@')[0].replace('.', ' '),
-          formatDate(new Date(+e.body._time)),
-          ...e.photos.map(
+          i + 1,//0
+          e.type === 't_error' ? 'Тестирование' : 'Сборка',//1
+          e.body.Открыто?.['Тип'] || e.body.Открыто?.['Тип ошибки'],//2
+          e.body.Открыто?.['Причина'],//3
+          e.body.Открыто?.['Этап'],//4
+          e.body.Открыто?.['Описание'],//5
+          e.body.Открыто?.['Количество ошибок'],//6
+          e.body.Открыто?.['Ответственный'],//7
+          e.body.Открыто?.['Ошибку допустил'],//8
+          e.history.opened._changed.split('@')[0].replace('.', ' '),//9
+          new Date(+e.history?.opened._time).toLocaleString(),//10
+          e.body.Принято.Описание,//11
+          e.history.confirmed?._changed.split('@')[0].replace('.', ' '),//12
+          new Date(+e.history.confirmed?._time).toLocaleString(),
+          e.body.Устранено['Статус коррекции'],//13
+          e.body.Устранено['Время на устранение'],//14
+          e.history.closed?._changed.split('@')[0].replace('.', ' ')||null,//15
+          new Date(+e.history.closed?._time).toLocaleString()||null,//16
+          ...e.photos.map(//17
             (p) => `https://icaenter.blob.core.windows.net/errors-photo/${p}`
           ),
         ])
       })
       const worksheet = XLSX.utils.aoa_to_sheet([
         [
-          '№',
-          'Тип',
-          'Причина',
-          'Этап',
-          'Описание замечания',
-          'Количество ошибок',
-          'Ответственный',
-          'Ошибку допустил',
-          'ФИО',
-          'Дата',
-          'Описание решения',
-          'ФИО',
-          'Статус',
-          'Время на устранение',
-          'ФИО',
-          'Дата',
-          'Фото',
+          '№',//0
+          'Этап добавления',//1
+          'Тип',//2
+          'Причина',//3
+          'Этап',//4
+          'Описание замечания',//5
+          'Количество ошибок',//6
+          'Ответственный',//7
+          'Ошибку допустил',//8
+          'Добавил ошибку',//9
+          'Время добавления',//10
+          'Описание решения',//11
+          'Ошибку подтвердил',//12
+          'Время подтверждения',//12
+          'Статус коррекции',//13
+          'Время на устранение',//14
+          'Закрыл ошибку',//15
+          'Время закрытия',//16
+          'Фото',//17
         ],
         ...arrArr,
       ])
@@ -170,7 +161,7 @@ export default {
   height: 40px;
   cursor: pointer;
 }
-[type='radio'] {
+[type="radio"] {
   display: none;
 }
 
@@ -195,7 +186,7 @@ label {
   width: 100%;
 }
 
-[type='radio']:checked ~ label {
+[type="radio"]:checked ~ label {
   background: white;
   background-color: rgb(255, 255, 255);
   /* color: aliceblue; */

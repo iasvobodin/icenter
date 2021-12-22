@@ -1,0 +1,26 @@
+{
+  "bindings": [
+    {
+      "authLevel": "anonymous",
+      "type": "httpTrigger",
+      "direction": "in",
+      "name": "req",
+      "route": "test/{id}",
+      "methods": ["get", "post"]
+    },
+    {
+      "type": "http",
+      "direction": "out",
+      "name": "res"
+    },
+    {
+      "type": "cosmosDB",
+      "direction": "in",
+      "name": "errorData",
+      "ConnectionStringSetting": "legendstats_DOCUMENTDB",
+      "databaseName": "icenter",
+      "collectionName": "icenterDB",
+      "sqlQuery": "SELECT * from c where c.id = {id}"
+    }
+  ]
+}
