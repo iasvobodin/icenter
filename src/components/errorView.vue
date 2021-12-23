@@ -1,21 +1,51 @@
 <template>
     <div class="error__holder">
-        <h1>Ошибка от <small>({{ errorHeader() }})</small> </h1>
+        <h1>
+            Ошибка от
+            <small>({{ errorHeader() }})</small>
+        </h1>
         <section class="information">
             <info-render :info-data="inputData.info" />
         </section>
-        <div v-for="(val, key, index) in mainFilterBody" :key="index">
-            <h2 class="error__stage">{{ key }}</h2>
-            <div class="error__body" v-for="(v, k, i) in val" :key="i">
+        <!-- <div v-for="(val, key, index) in mainFilterBody" :key="index"> -->
+        <div>
+            <h2 class="error__stage">Открыто</h2>
+            <div class="error__body" v-for="(v, k, i) in mainFilterBody.Открыто" :key="i">
                 <h3 class="body__item__title">{{ k }}</h3>
                 <p v-if="!changeData">{{ v }}</p>
                 <render-inputs
                     v-else
-                    v-model="inputData.body[0][key]"
+                    v-model="mainFilterBody.Открыто![k as keyof BodyType['Открыто']]"
                     :data-render="typeof v === 'object' ? v : undefined"
                 />
             </div>
         </div>
+        <div>
+            <h2 class="error__stage">Принято</h2>
+            <div class="error__body" v-for="(v, k, i) in mainFilterBody.Принято" :key="i">
+                <h3 class="body__item__title">{{ k }}</h3>
+                <p v-if="!changeData">{{ v }}</p>
+                <render-inputs
+                    v-else
+                    v-model="mainFilterBody.Принято![k as keyof BodyType['Принято']]"
+                    :data-render="typeof v === 'object' ? v : undefined"
+                />
+            </div>
+        </div>
+        <div>
+            <h2 class="error__stage">Устранено</h2>
+            <div class="error__body" v-for="(v, k, i) in mainFilterBody.Устранено" :key="i">
+                <h3 class="body__item__title">{{ k }}</h3>
+                <p v-if="!changeData">{{ v }}</p>
+                <render-inputs
+                    v-else
+                    v-model="mainFilterBody.Устранено![k as keyof BodyType['Устранено']]"
+                    :data-render="typeof v === 'object' ? v : undefined"
+                />
+            </div>
+        </div>
+
+        <!-- </div> -->
         <button @click="changeData = !changeData">Редактировать</button>
     </div>
 </template>
@@ -33,8 +63,7 @@ import { PropType } from 'vue'
 import {
     errorType,
     templateBodyType,
-    errorBodyFitterType,
-    errorBodyTesterType,
+    BodyType, Extend
 } from '@/types/errorType'
 
 const props = defineProps({
@@ -47,7 +76,7 @@ const props = defineProps({
         default: () => false,
     },
     templateData: {
-        type: Object as PropType<templateBodyType>,
+        type: Object as PropType<BodyType>,
         required: true,
     },
 })
@@ -76,14 +105,30 @@ const checkAccessLevel = (creator: string) => {
     }
 }
 
-const modifyBody = (el: errorType, status: string): errorType['body'][0] => {
-    console.log(el)
+
+
+// const filterrByType = (e: BodyType['Открыто']) => {
+//     for (const key in e) {
+//         type Key = keyof BodyType['Открыто']
+//         // if (key in e) {
+//             const element = e[key as Key];
+//             console.log(element);
+            
+//             typeof element === 'object' && element.type && element.type === 't_error' && delete e[key as Key]
+//         // }
+//     }
+//     return e
+// }
+// console.log(filterrByType(templateData.value.Открыто),"filterrByType");
+
+const modifyBody = (el: errorType, status: string): BodyType => {
+    // console.log(el)
 
     const lastElementInErrorBody = el.body.at(-1)!
 
     for (const key in lastElementInErrorBody) {
         key.startsWith('_') &&
-            delete lastElementInErrorBody[key as keyof errorType['body'][0]]
+            delete lastElementInErrorBody[key as keyof BodyType]
     }
 
     switch (status) {
@@ -106,28 +151,38 @@ const modifyBody = (el: errorType, status: string): errorType['body'][0] => {
 //     return {...inputData.value,
 //     body: modBody}
 // }
+const filterrByType = computed(()=>{
+    const e: BodyType['Открыто'] = JSON.parse(JSON.stringify(templateData.value.Открыто))
+        for (const key in e ) {
+        type Key = keyof BodyType['Открыто']
+            const element = e[key as Key];
+            typeof element === 'object' && element.type && element.type === 't_error' && delete e[key as Key]
+    }
+    return e
+})
+
 const mainFilterBody = computed(() => {
     if (changeData.value) {
-        return templateData.value
+        return {...templateData.value, Открыто : filterrByType.value} as templateBodyType
     } else {
         const error = modifyBody(inputData.value, cloneInputData.info.status!)
         return error
     }
 })
 const errorHeader = () => {
-  // const head:string = route.params.errorId
-  if (typeof route.params.errorId === 'string') {
-    const headSplit = route.params.errorId.split('__')
-    //  console.log(headSplit[1],Date.now(),);
-    // new Date(headSplit[1]).toISOString()
-    return new Date(+headSplit[1]).toLocaleString()
-  }
+    // const head:string = route.params.errorId
+    if (typeof route.params.errorId === 'string') {
+        const headSplit = route.params.errorId.split('__')
+        //  console.log(headSplit[1],Date.now(),);
+        // new Date(headSplit[1]).toISOString()
+        return new Date(+headSplit[1]).toLocaleString()
+    }
 }
 </script>
 
 <style scoped>
 .error__holder {
-        border: 1px solid orange;
+    border: 1px solid orange;
     border-radius: 4px;
     margin: auto;
     margin-top: 1vh;
