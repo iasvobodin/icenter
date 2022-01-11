@@ -1,11 +1,13 @@
 import { cabtimeType } from './cabtimeTypes'
 
 export type Extend = {
-  _field: string
+  _field?: string
   name: string
   value: string | string[]
   min?: number
   max?: number
+  type?: string
+  status: 'open' | 'confirmed' | 'closed'
 }
 
 export interface templateBodyType {

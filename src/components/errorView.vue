@@ -14,9 +14,8 @@
                 <h3 class="body__item__title">{{ k }}</h3>
                 <p v-if="!changeData">{{ v }}</p>
                 <render-inputs
-                    v-else
-                    v-model="mainFilterBody.Открыто![k as keyof BodyType['Открыто']]"
-                    :data-render="typeof v === 'object' ? v : undefined"
+                   v-if="changeData&&typeof v === 'object'"
+                    :data-render="v"
                 />
             </div>
         </div>
@@ -24,11 +23,10 @@
             <h2 class="error__stage">Принято</h2>
             <div class="error__body" v-for="(v, k, i) in mainFilterBody.Принято" :key="i">
                 <h3 class="body__item__title">{{ k }}</h3>
-                <p v-if="!changeData">{{ v }}</p>
+                <p v-if="!changeData&&typeof v === 'string'">{{ v }}</p>
                 <render-inputs
-                    v-else
-                    v-model="mainFilterBody.Принято![k as keyof BodyType['Принято']]"
-                    :data-render="typeof v === 'object' ? v : undefined"
+                    v-if="changeData&&typeof v === 'object'"
+                    :data-render="v"
                 />
             </div>
         </div>
@@ -38,9 +36,8 @@
                 <h3 class="body__item__title">{{ k }}</h3>
                 <p v-if="!changeData">{{ v }}</p>
                 <render-inputs
-                    v-else
-                    v-model="mainFilterBody.Устранено![k as keyof BodyType['Устранено']]"
-                    :data-render="typeof v === 'object' ? v : undefined"
+                    v-if="changeData&&typeof v === 'object'"
+                    :data-render="v"
                 />
             </div>
         </div>
@@ -63,7 +60,7 @@ import { PropType } from 'vue'
 import {
     errorType,
     templateBodyType,
-    BodyType, Extend
+    bodyType, flatBody
 } from '@/types/errorType'
 
 const props = defineProps({
@@ -76,7 +73,7 @@ const props = defineProps({
         default: () => false,
     },
     templateData: {
-        type: Object as PropType<BodyType>,
+        type: Object as PropType<bodyType>,
         required: true,
     },
 })
@@ -105,11 +102,28 @@ const checkAccessLevel = (creator: string) => {
     }
 }
 
-
-
-// const filterrByType = (e: BodyType['Открыто']) => {
+const flatError = (error:errorType) =>{
+const flatBody = error.body.map(err =>{
+//   console.log(Object.entries(err));
+  const entries = Object.entries(err)
+//   console.log(entries,"entries");
+  const fEntr = entries.filter(f=> typeof f[1] === 'object'  ).map(m => {
+       for (const key in m[1]) {
+        //   if (Object.prototype.hasOwnProperty.call(m[1], key)) {
+              const element = m[1][key as keyof flatBody];
+              
+        //   }
+      }
+      })
+    return fEntr
+})
+// const fFilter = flatBody.filter(f => )
+console.log(flatBody,"flatBody");
+}
+ flatError(inputData.value)
+// const filterrByType = (e: bodyType['Открыто']) => {
 //     for (const key in e) {
-//         type Key = keyof BodyType['Открыто']
+//         type Key = keyof bodyType['Открыто']
 //         // if (key in e) {
 //             const element = e[key as Key];
 //             console.log(element);
@@ -121,14 +135,14 @@ const checkAccessLevel = (creator: string) => {
 // }
 // console.log(filterrByType(templateData.value.Открыто),"filterrByType");
 
-const modifyBody = (el: errorType, status: string): BodyType => {
+const modifyBody = (el: errorType, status: string): bodyType => {
     // console.log(el)
 
     const lastElementInErrorBody = el.body.at(-1)!
 
     for (const key in lastElementInErrorBody) {
         key.startsWith('_') &&
-            delete lastElementInErrorBody[key as keyof BodyType]
+            delete lastElementInErrorBody[key as keyof bodyType]
     }
 
     switch (status) {
@@ -152,9 +166,9 @@ const modifyBody = (el: errorType, status: string): BodyType => {
 //     body: modBody}
 // }
 const filterrByType = computed(()=>{
-    const e: BodyType['Открыто'] = JSON.parse(JSON.stringify(templateData.value.Открыто))
+    const e: bodyType['Открыто'] = JSON.parse(JSON.stringify(templateData.value.Открыто))
         for (const key in e ) {
-        type Key = keyof BodyType['Открыто']
+        type Key = keyof bodyType['Открыто']
             const element = e[key as Key];
             typeof element === 'object' && element.type && element.type === 't_error' && delete e[key as Key]
     }
