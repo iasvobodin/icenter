@@ -2,7 +2,7 @@
   <div class="cabinet">
     <div>
       <!-- <h1>{{ $route.params.errorId }}</h1> -->
-      <h1>Ошибка от ({{errorHeader()}})</h1>
+      <h1>Ошибка от ({{ errorHeader() }})</h1>
       <br />
     </div>
     <div v-if="state.error?.body" class="cabinet__info">
@@ -14,7 +14,7 @@
         :key="key"
         class="eror__body"
       >
-        <div v-if="val &&  Object.values(val)[1] && !key.startsWith('_')">
+        <div v-if="val && Object.values(val)[1] && !key.startsWith('_')">
           <!-- {{key}} -->
           <div v-if="!returnRender(key)">
             <h2>{{ key }}</h2>
@@ -31,7 +31,7 @@
             :key="index"
           >
             <div v-if="returnRender(key)">
-              <h3>Статус ошибки: {{ key }}</h3>
+              <h3 class="statusHeader">Статус ошибки: {{ key }}</h3>
               <div
                 v-for="(v, k, i) in value"
                 :key="i"
@@ -54,7 +54,10 @@
               </div>
               <div
                 v-if="
-                key && key === 'Открыто' && state.error.body[0][key] && state.error.body[0][key]['Ответственный']
+                  key &&
+                  key === 'Открыто' &&
+                  state.error.body[0][key] &&
+                  state.error.body[0][key]['Ответственный']
                 "
               >
                 <div class="error__item">
@@ -69,7 +72,10 @@
                     class="error__item__desc"
                   >
                     <option
-                       v-if="typeof state.error.body[0].Открыто['Ответственный'] === 'string'"
+                      v-if="
+                        typeof state.error.body[0].Открыто['Ответственный'] ===
+                        'string'
+                      "
                       v-for="(value2, key2, index2) in $store.state.template[
                         state.error.body[0].Открыто['Ответственный']
                       ]"
@@ -81,7 +87,7 @@
                 </div>
               </div>
               <!-- <conditional-render v-model="error.body[key]" :data-render="value"
-                :required="!$store.state.user.info.userRoles.includes('admin')" /> -->
+              :required="!$store.state.user.info.userRoles.includes('admin')" />-->
             </div>
           </div>
         </form>
@@ -117,7 +123,7 @@
       v-if="
         state.changeInfo && $store.state.user.info.userRoles.includes('admin')
       "
-      @click="deleteError"
+      @click="state.popupOpened = true"
     >
       Удалить
     </button>
@@ -125,11 +131,26 @@
       Сохранить
     </button>
   </div>
-
+  <teleport to="body">
+    <confirm-popup
+      :opened="state.popupOpened"
+      @closed="popupClosed"
+      @confirm="popupConfirmed"
+    >
+      <template #header>
+        <h3 class="popText">Удалить ошибку?</h3>
+      </template>
+      <!-- <template #action>
+          <button class="cancel" @click="popupClosed">Отмена</button>
+          <button class="confirm" @click="confirm">Да</button>
+        </template> -->
+    </confirm-popup>
+  </teleport>
   <!-- <img crossorigin="anonymous" src="https://icaenter.blob.core.windows.net/errors-photo/21-01-04-12-30-23.jpg" alt="11"> -->
 </template>
 
 <script setup lang="ts">
+import confirmPopup from '@/components/modal/cunfirmPopup.vue'
 import itemPhotoUploader from '@/components/itemPhotoUploader.vue'
 import conditionalRender from '@/components/conditionalRender.vue'
 import infoRender from '@/components/infoRender.vue'
@@ -147,6 +168,7 @@ const router = useRouter()
 type UsableError = Promise<{ errorFromServer: Ref<errorType | undefined> }>
 
 const state = reactive({
+  popupOpened: false,
   saveChanges: false,
   changeInfo: false,
   updatedPhotos: [] as string[],
@@ -157,14 +179,14 @@ const state = reactive({
 
 const container = 'errors-photo'
 
-const errorHeader = () =>{
+const errorHeader = () => {
   // const head:string = route.params.errorId
-  if(typeof route.params.errorId === 'string'){
-   const headSplit = route.params.errorId.split('__')
-   //return 
-  //  console.log(headSplit[1],Date.now(),);
+  if (typeof route.params.errorId === 'string') {
+    const headSplit = route.params.errorId.split('__')
+    //return
+    //  console.log(headSplit[1],Date.now(),);
     // new Date(headSplit[1]).toISOString()
-   return new Date(+headSplit[1]).toLocaleString()
+    return new Date(+headSplit[1]).toLocaleString()
   }
 }
 const getCurrentError = async (): UsableError => {
@@ -179,7 +201,7 @@ const getCurrentError = async (): UsableError => {
 
 const getData = async () => {
   const errorFromServer = (await getCurrentError()).errorFromServer.value
-  errorFromServer&&(state.error = errorFromServer)
+  errorFromServer && (state.error = errorFromServer)
   state.error!.body = [state.error!.body[state.error!.body.length - 1]]
 }
 getData()
@@ -308,6 +330,15 @@ const updateErorData = async () => {
   state.changeInfo = !state.changeInfo
   // }
 }
+
+const popupClosed = () => {
+  state.popupOpened = false
+}
+const popupConfirmed = async () => {
+  await deleteError()
+  state.popupOpened = false
+  // state.popupOpened = false
+}
 </script>
 
 <style lang="css" scoped>
@@ -375,7 +406,7 @@ const updateErorData = async () => {
 p {
   font-size: 16px;
 }
-h3 {
+.statusHeader {
   margin: 5px;
 }
 .cabinet {

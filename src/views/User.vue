@@ -1,6 +1,6 @@
 <template>
   <div v-if="userFromStore.info" class="holder">
-    <h1 class="userHeader"> <span>{{ userFromStore.info.userDetails.split('@')[0].replace('.', ' ') }}</span> <button class="logOut" v-if="localUser" @click="clearUser">Log out</button></h1>
+    <h1 class="userHeader"> <span>{{ userFromStore.info.userDetails.split('@')[0].replace('.', ' ') }}</span> <button v-if="localUser" class="logOut" @click="clearUser">Log out</button></h1>
    
     <!-- <p>в разработке</p> -->
   <!-- <div class="profile"> -->
@@ -32,8 +32,8 @@
       <div
         v-if="state.userTask"
         style="cursor: pointer"
-        @click="$router.push(`/tasks/${state.userTask.id}`)"
         class="task_card item__card"
+        @click="$router.push(`/tasks/${state.userTask.id}`)"
       >
         <div class="user__photo__holder">
           <img

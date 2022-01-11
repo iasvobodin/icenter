@@ -19,7 +19,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { toRefs } from '@vue/reactivity'
 import { onBeforeUnmount, onMounted } from '@vue/runtime-core'
 

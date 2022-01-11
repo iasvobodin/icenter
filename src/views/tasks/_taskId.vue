@@ -51,9 +51,9 @@ const route = useRoute()
 const store = useStore()
 const state = reactive({
   popupOpened: false,
-  cabTime: {} as cabtimeType,
+  cabTime: <cabtimeType>{},
   changeCabTime: false,
-  task: {} as taskType,
+  task: <taskType>{},
   passedTime: 0,
   // timeToCalc: null,
   pps: null,

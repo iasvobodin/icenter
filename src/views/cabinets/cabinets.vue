@@ -29,14 +29,14 @@
     <h3>Статус проекта</h3>
     <ul>
       <li v-for="(status, index) in state.actualStatus" :key="index">
-        <input type="checkbox" :value="status" v-model="state.filterStatus" />{{
+        <input v-model="state.filterStatus" type="checkbox" :value="status" />{{
           status
         }}
       </li>
     </ul>
     <h3>CabTime расчитан</h3>
     <ul>
-      <li><input type="checkbox" v-model="state.hasCabTime" /> CabTime</li>
+      <li><input v-model="state.hasCabTime" type="checkbox" /> CabTime</li>
     </ul>
     <h3>Поиск</h3>
     <input

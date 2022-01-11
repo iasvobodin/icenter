@@ -11,8 +11,8 @@
       <h4 v-if="!userInfo" class="checkAuth">Проверка авторизации</h4>
       <div v-else class="user" @click="$router.push('/user')">
         <img
-          class="user-photo"
           v-if="$store.state.user.body.photo"
+          class="user-photo"
           :src="`https://icaenter.blob.core.windows.net/user-photo/thumb__${store.state.user.info.userDetails}`"
           alt="user"
         />
