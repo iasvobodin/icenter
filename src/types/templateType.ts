@@ -8,7 +8,7 @@ export type Extend = {
   max?: number
 }
 
-export interface templateType {
+export type templateType = {
   id: 'ver1'
   type: 'templateProject'
   template: {

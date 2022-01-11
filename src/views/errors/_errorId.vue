@@ -14,9 +14,9 @@
         :key="key"
         class="eror__body"
       >
-        <div v-if="Object.values(val)[1] && !key.startsWith('_')">
+        <div v-if="val &&  Object.values(val)[1] && !key.startsWith('_')">
           <!-- {{key}} -->
-          <div v-if="!returnRender(key, val)">
+          <div v-if="!returnRender(key)">
             <h2>{{ key }}</h2>
             <info-render :info-data="val" />
           </div>
@@ -30,7 +30,7 @@
             ]"
             :key="index"
           >
-            <div v-if="returnRender(key, value)">
+            <div v-if="returnRender(key)">
               <h3>Статус ошибки: {{ key }}</h3>
               <div
                 v-for="(v, k, i) in value"
@@ -54,8 +54,7 @@
               </div>
               <div
                 v-if="
-                  state.error.body[0][key] &&
-                  state.error.body[0][key]['Ответственный']
+                key && key === 'Открыто' && state.error.body[0][key] && state.error.body[0][key]['Ответственный']
                 "
               >
                 <div class="error__item">
@@ -63,15 +62,16 @@
                     {{ state.error.body[0][key]['Ответственный'] }}
                   </h4>
                   <select
-                    v-model="state.error.body[0][key]['Ошибку допустил']"
+                    v-model="state.error.body[0].Открыто['Ошибку допустил']"
                     required
                     :name="key"
-                    :value="state.error.body[0][key]['Ошибку допустил']"
+                    :value="state.error.body[0].Открыто['Ошибку допустил']"
                     class="error__item__desc"
                   >
                     <option
+                       v-if="typeof state.error.body[0].Открыто['Ответственный'] === 'string'"
                       v-for="(value2, key2, index2) in $store.state.template[
-                        state.error.body[0][key2]['Ответственный']
+                        state.error.body[0].Открыто['Ответственный']
                       ]"
                       :key="index2"
                     >
@@ -140,6 +140,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { useFetch } from '@/hooks/fetch'
 import { errorType } from '@/types/errorType'
 import { userType } from '@/types/userType'
+import { templateType } from '@/types/templateType'
 const store = useStore()
 const route = useRoute()
 const router = useRouter()
@@ -149,8 +150,8 @@ const state = reactive({
   saveChanges: false,
   changeInfo: false,
   updatedPhotos: [] as string[],
-  error: {} as errorType | undefined,
-  readOnlyError: {} as errorType | undefined,
+  error: <errorType>{},
+  readOnlyError: <errorType>{},
   errorIsNotDef: null,
 })
 
@@ -178,7 +179,7 @@ const getCurrentError = async (): UsableError => {
 
 const getData = async () => {
   const errorFromServer = (await getCurrentError()).errorFromServer.value
-  state.error = errorFromServer
+  errorFromServer&&(state.error = errorFromServer)
   state.error!.body = [state.error!.body[state.error!.body.length - 1]]
 }
 getData()
