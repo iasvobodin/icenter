@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "vite",
+    "swa": "swa start http://localhost:8080 --api-location http://localhost:7071",
     "build": "vite build",
     "serve": "vite preview",
     "format": "prettier --write .",

@@ -69,9 +69,7 @@
                     class="error__item__desc"
                   >
                     <option
-                      v-for="(value2, key2, index2) in $store.state.template[
-                        state.error.body[key2]['Ответственный']
-                      ]"
+                      v-for="(value2, key2, index2) in $store.state.template[state.error.body[key]['Ответственный']]"
                       :key="index2"
                     >
                       {{ value2 }}
