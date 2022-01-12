@@ -5,7 +5,7 @@
       <div class="header">
         <slot name="header"></slot>
       </div>
-            <div class="select">
+      <div class="select">
         <slot name="select"></slot>
       </div>
       <div class="buttons">
@@ -14,7 +14,6 @@
           <button class="confirm" @click="confirm">Да</button>
         </slot>
       </div>
-
     </div>
   </div>
 </template>
@@ -29,7 +28,7 @@ const props = defineProps({
     default: () => false,
   },
 })
-const hendleKeyDown = (e) => {
+const hendleKeyDown = (e: KeyboardEvent) => {
   props.opened && e.key === 'Escape' && closed()
 }
 onMounted(() => {
@@ -81,19 +80,18 @@ const closed = () => {
   min-width: 250px;
   min-height: 150px;
 }
-.select{
+.select {
   /* position: absolute; */
   /* grid-area: 1/1/2/2; */
-      /* max-height: 200px; */
-
+  /* max-height: 200px; */
 }
 .buttons {
   /* width: 90%; */
   display: grid;
   grid-auto-flow: column;
   margin: auto;
-      min-height: 60px;
-    align-content: center;
+  min-height: 60px;
+  align-content: center;
 }
 .cancel:hover {
   background-color: rgba(0, 128, 0, 0.4);

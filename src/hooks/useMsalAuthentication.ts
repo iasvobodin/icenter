@@ -84,7 +84,7 @@ export function useMsalAuthentication(
   }
 
   const stopWatcher = watch(inProgress, () => {
-    if (!result && !error) {
+    if (!result.value && !error.value) {
       acquireToken()
     } else {
       stopWatcher()

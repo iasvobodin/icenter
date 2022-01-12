@@ -13,41 +13,12 @@ module.exports = async function (context, req) {
     return Object.fromEntries(objE)
   }
   context.res = {
-    body:context.bindings.inputWO.map(e => {return clearData(e)})
+    body: context.bindings.inputWO.map((e) => {
+      return clearData(e)
+    }),
   }
 
-
   // context.bindings.inputWO
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   // let wo, cabtime
 
@@ -84,10 +55,7 @@ module.exports = async function (context, req) {
 
   // context.log(wo,"___________________________", cabtime, "_________________________________", upadate)
 
-
-
-
-  // // context.bindings.outputWO = JSON.stringify() 
+  // // context.bindings.outputWO = JSON.stringify()
   // context.res = {
   //   body: 'ok',
   // }

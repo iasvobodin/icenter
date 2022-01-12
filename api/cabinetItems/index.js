@@ -11,31 +11,33 @@ module.exports = async function (context, req, cabinetItems) {
     )
     return Object.fromEntries(objE)
   }
-const filterArr = cabinetItems.filter((e)=> e.type.includes('error')).map(e => clearData(e))
+  const filterArr = cabinetItems
+    .filter((e) => e.type.includes('error'))
+    .map((e) => clearData(e))
 
   const changeStatus = filterArr.map((e) => {
     // if (e.type.includes('error')) {
-      const fStatus = e.body.filter((f) => f.Принято)[0]
-      return {
-        _time: fStatus._time,
-        _changed: fStatus._changed,
-      }
+    const fStatus = e.body.filter((f) => f.Принято)[0]
+    return {
+      _time: fStatus._time,
+      _changed: fStatus._changed,
+    }
     // }
   })
   // context.log(changeStatus)
   const bodyMap = filterArr.map((e, i) => {
     // delete e.info
     // if (e.type.includes('error')) {
-      return {
-        ...e,
-        status:e.info.status,
-        body: e.body[e.body.length - 1],
-        _ts: e.body[0]._time,
-        confirmedTime: changeStatus[i]._time,
-        confirmedChanged: changeStatus[i]._changed,
-      }
+    return {
+      ...e,
+      status: e.info.status,
+      body: e.body[e.body.length - 1],
+      _ts: e.body[0]._time,
+      confirmedTime: changeStatus[i]._time,
+      confirmedChanged: changeStatus[i]._changed,
+    }
     // } else {
-      // return //e
+    // return //e
     // }
   })
 

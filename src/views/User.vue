@@ -1,11 +1,17 @@
 <template>
   <div v-if="userFromStore.info" class="holder">
-    <h1 class="userHeader"> <span>{{ userFromStore.info.userDetails.split('@')[0].replace('.', ' ') }}</span> <button v-if="localUser" class="logOut" @click="clearUser">Log out</button></h1>
-   
-    <!-- <p>в разработке</p> -->
-  <!-- <div class="profile"> -->
+    <h1 class="userHeader">
+      <span>{{
+        userFromStore.info.userDetails.split('@')[0].replace('.', ' ')
+      }}</span>
+      <button v-if="localUser" class="logOut" @click="clearUser">
+        Log out
+      </button>
+    </h1>
 
-  
+    <!-- <p>в разработке</p> -->
+    <!-- <div class="profile"> -->
+
     <div class="profile__settings">
       <h2>Настройки профиля</h2>
       <label
@@ -20,7 +26,11 @@
       </button>
       <!-- <p class="info">{{userFromStore}}</p> -->
       <!-- <button v-if="localUser" @click="clearUser">Log out</button><br /> -->
-      <button v-if="!userFromStore.body.photo" class="get__access" @click="tryToGetToken">
+      <button
+        v-if="!userFromStore.body.photo"
+        class="get__access"
+        @click="tryToGetToken"
+      >
         Получить фотографию профиля
       </button>
       <!-- <button class="get__access" @click="tryToSingIn">tryToSingIn</button>
@@ -253,17 +263,17 @@ onMounted(async () => {
 </script>
 
 <style lang="css" scoped>
-.logOut{
+.logOut {
   width: fit-content;
   text-align: center;
   vertical-align: middle;
 }
-.profile{
+.profile {
   display: grid;
   grid-auto-flow: column;
 }
 
-.profile__settings{
+.profile__settings {
   place-self: start;
 }
 

@@ -6,7 +6,7 @@ import { userType, azureAuth } from '@/types/userType'
 import { templateType } from '@/types/templateType'
 import { projectInfoType, projectType } from '@/types/projectInfoType'
 import { cabinetsType } from '@/types/cabinetsType'
-import {cabtimeType} from '@/types/cabtimeTypes'
+import { cabtimeType } from '@/types/cabtimeTypes'
 
 // const createName = (clientPrincipal) => {
 //   if (clientPrincipal.identityProvider === 'aad') {
@@ -72,19 +72,22 @@ export const store = createStore<State>({
     allSumm: 0,
   },
   mutations: {
-    SET_cabinets(state, payload:cabinetsType[]) {
+    SET_cabinets(state, payload: cabinetsType[]) {
       state.cabinets = payload
     },
-    UPDATE_cabinets(state, payload:cabinetsType){
-      console.log('inside commit updatecabinets', payload);
-      
-     const update = state.cabinets.map(x => {
-       if( x.id === payload.id) {
-         console.log('match');
-         
-         return payload 
-        } else {return x}});
-        state.cabinets = update
+    UPDATE_cabinets(state, payload: cabinetsType) {
+      console.log('inside commit updatecabinets', payload)
+
+      const update = state.cabinets.map((x) => {
+        if (x.id === payload.id) {
+          console.log('match')
+
+          return payload
+        } else {
+          return x
+        }
+      })
+      state.cabinets = update
     },
     SetPhotosToUpload(state, payload: FormData) {
       state.photosToUpload = payload
@@ -121,7 +124,7 @@ export const store = createStore<State>({
     changePassedTime(state, payload: number) {
       state.passedTime = payload
     },
-    setCabtimeWithStatus(state, payload:cabtimeType['body']) {
+    setCabtimeWithStatus(state, payload: cabtimeType['body']) {
       state.cabtimeWithStatus = payload
     },
     setSummResult(state, payload) {
@@ -356,7 +359,7 @@ export const store = createStore<State>({
       await request()
       response.value!.forEach((p) => {
         p.cabinets.forEach((c) => {
-          let payload: projectInfoType = {
+          const payload: projectInfoType = {
             ...c,
             ...p.info.base,
             ...p.info.extends,

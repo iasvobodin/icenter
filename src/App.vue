@@ -73,11 +73,11 @@ const connect = async () => {
     setTimeout(() => connect(), 2000)
   })
   connection.on('newMessage', (message) => {
-    console.log(message,"newMessage")
+    console.log(message, 'newMessage')
     store.commit('UPDATE_cabinets', message)
-  })// state.messages.push(message))
+  }) // state.messages.push(message))
   connection.on('updated', (updatedStock) => {
-    console.log(updatedStock,"updatedStock")
+    console.log(updatedStock, 'updatedStock')
     // NEED TO UPDATE IDB!!!
     //DISPATCH STORE
 
@@ -119,7 +119,7 @@ const connect = async () => {
 }
 
 // import.meta.env.MODE !== 'development'&&
-// Object.keys(store.state.user).length !== 0 && 
+// Object.keys(store.state.user).length !== 0 &&
 connect()
 
 // const onNewMessage = (message) => state.messages.push(message)

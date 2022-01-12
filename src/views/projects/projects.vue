@@ -281,7 +281,11 @@ export default {
       })
     }
     const myProjects = () => {
-      state.search = store.state.user.info.userDetails.toLowerCase()
+      if (state.search !== store.state.user.info.userDetails.toLowerCase()) {
+        state.search = store.state.user.info.userDetails.toLowerCase()
+      } else {
+        state.search = ''
+      }
     }
     return {
       myProjects,

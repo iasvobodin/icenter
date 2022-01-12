@@ -76,17 +76,17 @@ const getCabTimes = async () => {
 
   // state.errors
   // .map(async (e) => {
-    // e.id //currentCabtime
-    
-    // const { request: reqCurrentCabTime, response: resCurrentCabTime } =
-    //   useFetch(`/api/GET_cabinet?wo=${state.errors[0].info.wo}&cabtimeid=${state.errors[0].id}`)
-    // await reqCurrentCabTime()
-    
-// const currentCabTime = resCurrentCabTime.value
+  // e.id //currentCabtime
 
-//     const { request: reqCurrentWO, response: resCurrentWO } =
-//       useFetch(`/api/errors/${e.id}`,{method: 'post',body:JSON.stringify(...)})
-//     await reqCurrentWO()
+  // const { request: reqCurrentCabTime, response: resCurrentCabTime } =
+  //   useFetch(`/api/GET_cabinet?wo=${state.errors[0].info.wo}&cabtimeid=${state.errors[0].id}`)
+  // await reqCurrentCabTime()
+
+  // const currentCabTime = resCurrentCabTime.value
+
+  //     const { request: reqCurrentWO, response: resCurrentWO } =
+  //       useFetch(`/api/errors/${e.id}`,{method: 'post',body:JSON.stringify(...)})
+  //     await reqCurrentWO()
   // })
 }
 

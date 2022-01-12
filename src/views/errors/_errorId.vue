@@ -72,13 +72,13 @@
                     class="error__item__desc"
                   >
                     <option
+                      v-for="(value2, key2, index2) in $store.state.template[
+                        state.error.body[0].Открыто['Ответственный']
+                      ]"
                       v-if="
                         typeof state.error.body[0].Открыто['Ответственный'] ===
                         'string'
                       "
-                      v-for="(value2, key2, index2) in $store.state.template[
-                        state.error.body[0].Открыто['Ответственный']
-                      ]"
                       :key="index2"
                     >
                       {{ value2 }}

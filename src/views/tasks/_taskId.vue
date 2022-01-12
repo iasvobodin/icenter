@@ -5,7 +5,7 @@
       <info-render :info-data="state.task?.info" />
     </div>
     <div v-if="state.task && !timeToCalc">
-      <h3 >Время старта : {{ timeStartmod }}</h3>
+      <h3>Время старта : {{ timeStartmod }}</h3>
       <h3 v-if="!timeToCalc">Время работы: {{ time }}</h3>
       <button @click="setStatePassedTime">Завершить работу</button>
       <button @click="updateInfo">Редактировать задачу</button>
@@ -16,15 +16,21 @@
       :input-data="state.cabTime"
       @cabtime-with-status="state.ctStatus = $event"
     />
-    <task-status v-if="ctWithStatus.length !==0" :input-data="{ body: ctWithStatus }" />
+    <task-status
+      v-if="ctWithStatus.length !== 0"
+      :input-data="{ body: ctWithStatus }"
+    />
     <teleport to="body">
-      <confirm-popup :opened="state.popupOpened" @closed="popupClosed" @confirm="popupConfirmed">
+      <confirm-popup
+        :opened="state.popupOpened"
+        @closed="popupClosed"
+        @confirm="popupConfirmed"
+      >
         <template #header>
           <h3>
             Выберите другой WO
             <br />для списания времени.
           </h3>
-          
         </template>
         <template #select>
           <selectWO />
@@ -75,22 +81,26 @@ const formatDate = (date: Date) => {
     second: 'numeric',
   }
   const formatter = new Intl.DateTimeFormat('ru', options)
-console.log(formatter.format(date));
+  console.log(formatter.format(date))
 
   return formatter.format(date)
 }
 
 const timeToCalc = computed(() => store.state.passedTime)
 
-const timeStartmod = computed(()=> state.task?.body?.timeStart ? formatDate(new Date(state.task.body.timeStart)) : 0)
+const timeStartmod = computed(() =>
+  state.task?.body?.timeStart
+    ? formatDate(new Date(state.task.body.timeStart))
+    : 0
+)
 
 const ctWithStatus = computed(() =>
   store.state.cabtimeWithStatus.length !== 0
     ? store.state.cabtimeWithStatus.sort((a, b) => {
-      const x = a.status?.toLowerCase()
-      const y = b.status?.toLowerCase()
-      return x < y ? -1 : x > y ? 1 : 0
-    })
+        const x = a.status?.toLowerCase()
+        const y = b.status?.toLowerCase()
+        return x < y ? -1 : x > y ? 1 : 0
+      })
     : []
 )
 function updateInfo() {
@@ -100,14 +110,15 @@ function updateInfo() {
 function popupClosed() {
   state.popupOpened = !state.popupOpened
 }
-function popupConfirmed() {
-
-}
+function popupConfirmed() {}
 
 const CurrentTime = Date.now()
 
 const time = computed(
-  () => state.passedTime ? new Date(state.passedTime).toISOString().substr(11, 8) : 0 // time like hors and minutes
+  () =>
+    state.passedTime
+      ? new Date(state.passedTime).toISOString().substr(11, 8)
+      : 0 // time like hors and minutes
 )
 // state.pps =
 // const startTick = ()=>{
@@ -117,17 +128,17 @@ setInterval(() => {
 }, 1000)
 // }
 
-
 //GET DB DATA
-  const { request:reqTask, response: resTask } = useFetch<taskType>(`/api/errors/${route.params.taskId}`)
-
+const { request: reqTask, response: resTask } = useFetch<taskType>(
+  `/api/errors/${route.params.taskId}`
+)
 
 const getTask = async () => {
   try {
     await reqTask()
     state.task = resTask.value!
   } catch (error) {
-    console.error(error);
+    console.error(error)
   }
 
   // state.errors = response
@@ -135,21 +146,19 @@ const getTask = async () => {
 }
 const getCabTime = async () => {
   await getTask()
-    const { request: reqCabTime, response : resCabTime } = useFetch<cabtimeType>(
+  const { request: reqCabTime, response: resCabTime } = useFetch<cabtimeType>(
     `/api/errors/cabtime__${state.task.info.wo}`
   )
-try {
-  await reqCabTime()
-   state.cabTime = resCabTime.value!
-   state.task = resTask.value!
-   state.passedTime = CurrentTime - state.task.body.timeStart
-} catch (error) {
-  console.error(error);
-}
-
+  try {
+    await reqCabTime()
+    state.cabTime = resCabTime.value!
+    state.task = resTask.value!
+    state.passedTime = CurrentTime - state.task.body.timeStart
+  } catch (error) {
+    console.error(error)
+  }
 
   // state.cabTime = resCabTime.value!
-
 }
 getCabTime()
 
@@ -170,5 +179,4 @@ h1 {
   width: min(95vw, 800px);
   margin: 2vh auto;
 }
-
 </style>

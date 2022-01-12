@@ -16,14 +16,14 @@
       <thead class="head">
         <tr>
           <th rowspan="2">Задача</th>
-          <th style="text-align: center" v-if="statusMark" colspan="2">
+          <th v-if="statusMark" style="text-align: center" colspan="2">
             Выполнено
           </th>
-          <th class="vertical" v-if="!statusMark" rowspan="1">CabTime (мин)</th>
+          <th v-if="!statusMark" class="vertical" rowspan="1">CabTime (мин)</th>
           <th
+            v-if="!statusMark"
             style="text-align: center"
             class="vertical"
-            v-if="!statusMark"
             rowspan="1"
           >
             Авто-расчёт (мин)
@@ -44,33 +44,33 @@
           }"
         >
           <td class="desc">{{ value.name }}</td>
-          <td style="text-align: center" v-if="statusMark">
+          <td v-if="statusMark" style="text-align: center">
             <input
-              @input="changeStatus($event, value._id, 'partially')"
+              id=""
               :checked="value.status === 'partially'"
               type="checkbox"
               name=""
-              id=""
+              @input="changeStatus($event, value._id, 'partially')"
             />
           </td>
-          <td style="text-align: center" v-if="statusMark">
+          <td v-if="statusMark" style="text-align: center">
             <input
-              @input="changeStatus($event, value._id, 'done')"
+              id=""
               :checked="value.status === 'done'"
               type="checkbox"
               name=""
-              id=""
+              @input="changeStatus($event, value._id, 'done')"
             />
           </td>
-          <td style="text-align: center" v-if="!statusMark">
+          <td v-if="!statusMark" style="text-align: center">
             {{ value.result }}
           </td>
           <td v-if="!statusMark">
             <input
-              @input="changePartyalyyTime($event, value._id)"
               class="cabtime__input"
               type="number"
               :value="value.propTime"
+              @input="changePartyalyyTime($event, value._id)"
             />
           </td>
         </tr>
@@ -325,8 +325,8 @@ const changePartyalyyTime = (ev: Event, id: string) => {
   //   console.log(difTime, 'www')
   // }
 }
-function resetStatus(){
-  inputData.value.body.forEach(e=> e.status = 'open')
+function resetStatus() {
+  inputData.value.body.forEach((e) => (e.status = 'open'))
 }
 const changeStatus = (ev: Event, id: string, val: string) => {
   if (!(ev.target instanceof HTMLInputElement)) return

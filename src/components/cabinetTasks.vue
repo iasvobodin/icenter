@@ -79,7 +79,7 @@ const createTask = async () => {
       await postNewTask()
       router.push(`/tasks/${id}`)
     } catch (error) {
-      console.error(error.message, 'post userTask');
+      console.error(error.message, 'post userTask')
     }
   }
 }

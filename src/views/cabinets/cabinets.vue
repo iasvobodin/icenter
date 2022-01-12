@@ -21,32 +21,38 @@
       ></canvas>
     </div>
   </div>
-  <h2 style="cursor: pointer" @click="state.additionalSearch =!state.additionalSearch">Расширенный поиск 	{{state.additionalSearch ? '&#9650;' :'&#9660;'}}</h2>
+  <h2
+    style="cursor: pointer"
+    @click="state.additionalSearch = !state.additionalSearch"
+  >
+    Расширенный поиск {{ state.additionalSearch ? '&#9650;' : '&#9660;' }}
+  </h2>
   <div class="filter__holder">
-
-  <transition name="slide-fade">
-  <div v-show="state.additionalSearch" class="additional__filter">
-    <h3>Статус проекта</h3>
-    <ul>
-      <li v-for="(status, index) in state.actualStatus" :key="index">
-        <input v-model="state.filterStatus" type="checkbox" :value="status" />{{
-          status
-        }}
-      </li>
-    </ul>
-    <h3>CabTime расчитан</h3>
-    <ul>
-      <li><input v-model="state.hasCabTime" type="checkbox" /> CabTime</li>
-    </ul>
-    <h3>Поиск</h3>
-    <input
-      v-model="state.search"
-      class="choose"
-      type="text"
-      placeholder="WO или название шкафа"
-    />
-  </div>
-  </transition>
+    <transition name="slide-fade">
+      <div v-show="state.additionalSearch" class="additional__filter">
+        <h3>Статус проекта</h3>
+        <ul>
+          <li v-for="(status, index) in state.actualStatus" :key="index">
+            <input
+              v-model="state.filterStatus"
+              type="checkbox"
+              :value="status"
+            />{{ status }}
+          </li>
+        </ul>
+        <h3>CabTime расчитан</h3>
+        <ul>
+          <li><input v-model="state.hasCabTime" type="checkbox" /> CabTime</li>
+        </ul>
+        <h3>Поиск</h3>
+        <input
+          v-model="state.search"
+          class="choose"
+          type="text"
+          placeholder="WO или название шкафа"
+        />
+      </div>
+    </transition>
   </div>
 
   <br />
@@ -118,7 +124,7 @@ const state = reactive({
   actualStatus: null,
   filterStatus: ['04-Сборка/Assembly'],
   hasCabTime: false,
-  additionalSearch:false
+  additionalSearch: false,
 })
 watch(qr, (newValue, oldValue) => {
   router.push(`/cabinets/${newValue}`)
@@ -230,8 +236,8 @@ const getCabinets = () => {
   // if(store.state.cabinets.length ===0){
   //   await store.dispatch('GET_cabinets')
   // }
-// console.log(store.state.cabinets,'store.state.cabinets');
-// state.projects = JSON.parse(JSON.stringify(store.state.cabinets))
+  // console.log(store.state.cabinets,'store.state.cabinets');
+  // state.projects = JSON.parse(JSON.stringify(store.state.cabinets))
 
   state.actualProjects = state.cabinets.reduce(
     (acc, p) => acc.add(p.info['project number']),
@@ -250,20 +256,18 @@ const getCabinets = () => {
     filter.value.filter((c) => c.info['project number'] === project)
 }
 
-watchEffect(async ()=>{
-    if(store.state.cabinets.length ===0){
+watchEffect(async () => {
+  if (store.state.cabinets.length === 0) {
     await store.dispatch('GET_cabinets')
   }
-// console.log(store.state.cabinets,'store.state.cabinets');
-state.cabinets = JSON.parse(JSON.stringify(store.state.cabinets))
-getCabinets()
+  // console.log(store.state.cabinets,'store.state.cabinets');
+  state.cabinets = JSON.parse(JSON.stringify(store.state.cabinets))
+  getCabinets()
 })
-
-
 
 const filter = computed(() => {
   let cc
-  if (state.cabinets&&state.filterStatus.length > 0 ) {
+  if (state.cabinets && state.filterStatus.length > 0) {
     cc = state.cabinets.filter((e) =>
       state.filterStatus.some((s) => e.info['project status'].includes(s))
     )
@@ -356,7 +360,7 @@ onMounted(async () => {
 </script>
 
 <style lang="css" scoped>
-.filter__holder{
+.filter__holder {
   overflow: hidden;
 }
 .slide-fade-enter-active {
@@ -372,7 +376,6 @@ onMounted(async () => {
   /* transform: translateY(100%); */
   opacity: 1;
 }
-
 
 .slide-fade-enter-from,
 .slide-fade-leave-to {
@@ -396,8 +399,8 @@ h1 {
   margin: auto;
 }
 .additional__filter ul {
-margin: 0;
-padding: 0;
+  margin: 0;
+  padding: 0;
 }
 .additional__filter ul li {
   text-align: start;

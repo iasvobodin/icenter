@@ -41,10 +41,10 @@
           </td>
           <td>
             <input
-              @input="changePartyalyyTime($event, value._id)"
               class="cabtime__input"
               type="number"
               :value="value.propTime"
+              @input="changePartyalyyTime($event, value._id)"
             />
           </td>
         </tr>
