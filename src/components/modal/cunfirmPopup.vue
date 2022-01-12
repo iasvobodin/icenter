@@ -28,20 +28,19 @@ const props = defineProps({
     default: () => false,
   },
 })
-const hendleKeyDown = (e: KeyboardEvent) => {
-  props.opened && e.key === 'Escape' && closed()
-}
-onMounted(() => {
-  document.addEventListener('keydown', hendleKeyDown)
-})
-onBeforeUnmount(() => {
-  document.removeEventListener('keydown', hendleKeyDown)
-})
+
 const emit = defineEmits({
   confirm: null,
   closed: null,
 })
+
 const { opened } = toRefs(props)
+
+const hendleKeyDown = (e: KeyboardEvent) => {
+  opened.value && e.key === 'Escape' && closed()
+}
+
+
 const confirm = () => {
   emit('confirm', false)
 }
@@ -49,6 +48,14 @@ const closed = () => {
   // opened.value = false
   emit('closed')
 }
+
+onMounted(() => {
+  document.addEventListener('keydown', hendleKeyDown)
+})
+onBeforeUnmount(() => {
+  document.removeEventListener('keydown', hendleKeyDown)
+})
+
 </script>
 
 <style lang="css" scoped>

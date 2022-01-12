@@ -18,7 +18,7 @@
     />
     <task-status
       v-if="ctWithStatus.length !== 0"
-      :input-data="{ body: ctWithStatus }"
+      :input-data="ctWithStatus"
     />
     <teleport to="body">
       <confirm-popup
@@ -96,6 +96,7 @@ const timeStartmod = computed(() =>
 
 const ctWithStatus = computed(() =>
   store.state.cabtimeWithStatus.length !== 0
+    // eslint-disable-next-line vue/no-side-effects-in-computed-properties
     ? store.state.cabtimeWithStatus.sort((a, b) => {
         const x = a.status?.toLowerCase()
         const y = b.status?.toLowerCase()
@@ -110,7 +111,9 @@ function updateInfo() {
 function popupClosed() {
   state.popupOpened = !state.popupOpened
 }
-function popupConfirmed() {}
+function popupConfirmed() {
+  
+}
 
 const CurrentTime = Date.now()
 

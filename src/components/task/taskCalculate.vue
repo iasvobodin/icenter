@@ -27,7 +27,7 @@
       </thead>
       <tbody>
         <tr
-          v-for="(value, index) in inputData.body"
+          v-for="(value, index) in inputData"
           :key="index"
           :class="{
             partially: value.status === 'partially',
@@ -100,7 +100,7 @@ const store = useStore()
 // eslint-disable-next-line no-undef
 const props = defineProps({
   inputData: {
-    type: Object as PropType<cabtimeType>,
+    type: Object as PropType<cabtimeType['body']>,
     required: true,
   },
 })
@@ -120,7 +120,7 @@ const { inputData } = toRefs(props)
 const timeToCalc = computed(() => store.state.passedTime)
 
 // const calculatePartiallySumm = () => {
-//   state.partiallySumm = inputData.value.body.reduce(
+//   state.partiallySumm = inputData.value.reduce(
 //     (acc: number, e) => (acc += e.propTime!),
 //     0
 //   )
@@ -134,7 +134,7 @@ const timeToCalc = computed(() => store.state.passedTime)
 // calculatePartiallySumm()
 
 watchEffect(() => {
-  state.partiallySumm = inputData.value.body.reduce(
+  state.partiallySumm = inputData.value.reduce(
     (acc: number, e) => (acc += e.propTime!),
     0
   )
@@ -149,7 +149,7 @@ watchEffect(() => {
 
 const changePartyalyyTime = (ev: Event, id: string) => {
   if (!(ev.target instanceof HTMLInputElement)) return
-  const item = inputData.value.body.find((e) => e._id === id)
+  const item = inputData.value.find((e) => e._id === id)
   item && (item.propTime = +ev.target.value)
   //   calculatePartiallySumm()
 }

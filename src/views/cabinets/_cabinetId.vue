@@ -1,6 +1,25 @@
 <template>
   <div>
-    <h1>WO {{ $route.params.cabinetId }}</h1>
+    <div>
+      <h2>
+        <span>№ :</span>
+        {{ pInfo['project number'] }}
+      </h2>
+      <h2>
+        <span>Проект :</span>
+        {{ pInfo['Project Name'] }}
+      </h2>
+
+      <h2>
+        <span>Шкаф :</span>
+        {{ pInfo['cab name'] }}
+      </h2>
+      <h2>
+        <span>WO :</span>
+        {{ $route.params.cabinetId }}
+      </h2>
+    </div>
+    <!-- <h1>WO {{ $route.params.cabinetId }}</h1> -->
     <br />
     <button
       v-for="tab in state.cabinetTabs"
@@ -8,18 +27,16 @@
       class="cabinets__category"
       :class="['tab-button', { active: state.currentCabinetTab === tab.title }]"
       @click="state.currentCabinetTab = tab.title"
-    >
-      {{ tab.title }}
-    </button>
+    >{{ tab.title }}</button>
     <br />
     <br />
     <component :is="condition(state.currentCabinetTab)"></component>
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { useFetch } from '@/hooks/fetch'
-import { reactive, onUnmounted } from 'vue'
+import { reactive, computed, onUnmounted } from 'vue'
 import { useRoute } from 'vue-router'
 import Errors from '@/components/cabinetErrors.vue'
 import Cabtime from '@/components/cabinetCabTime.vue'
@@ -37,7 +54,7 @@ const state = reactive({
     { title: 'Ошибки' },
     { title: 'Задачи' },
   ],
-  currentCabinetTab: null,
+  currentCabinetTab: '',
 })
 
 const setState = async () => {
@@ -46,7 +63,9 @@ const setState = async () => {
 }
 setState()
 
-const condition = (a) => {
+const pInfo = computed(() => store.state.projectInfo)
+
+const condition = (a: string) => {
   switch (a) {
     case 'Информация':
       return Info
@@ -71,7 +90,7 @@ const condition = (a) => {
 .tab-button.active {
   background: #0066ff1f;
 }
-[type='radio'] {
+[type="radio"] {
   display: none;
 }
 
@@ -96,7 +115,7 @@ label {
   width: 100%;
 }
 
-[type='radio']:checked ~ label {
+[type="radio"]:checked ~ label {
   background: white;
   background-color: rgb(255, 255, 255);
   /* color: aliceblue; */
@@ -134,5 +153,9 @@ label {
   margin: auto;
   margin-top: 1vh;
   padding-bottom: 1vh;
+}
+h2 span {
+  font-size: 80%;
+  vertical-align: middle;
 }
 </style>
