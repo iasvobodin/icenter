@@ -1,8 +1,6 @@
 <template>
   <div>
-    <button v-if="computedItems" @click="createTask">
-      Приступить к работе
-    </button>
+    <button v-if="computedItems" @click="createTask">Приступить к работе</button>
     <h3 v-else>CabTime по этому шкафу не расчитан.</h3>
     <h3 style="color: red">{{ delay }}</h3>
   </div>
@@ -31,9 +29,8 @@ const state = reactive({
 })
 const delay = computed(() =>
   state.redirectMessage
-    ? `Необходимо остановить предыдущую задачу, переадресация через ${
-        state.second / 1000
-      } сек.`
+    ? `Необходимо остановить предыдущую задачу, переадресация через ${state.second / 1000
+    } сек.`
     : ''
 )
 const id = `task__${Date.now()}`
@@ -45,8 +42,8 @@ const options = {
     info: {
       user: userInfoState.value.info.userDetails.toLowerCase(),
       userId: userInfoState.value.info.userId,
-      Проект: projectInfoState.value['project number'],
-      Шкаф: projectInfoState.value['cab name'],
+      'project number': projectInfoState.value['project number'],
+      'cab name': projectInfoState.value['cab name'],
       wo: projectInfoState.value.wo.toString(),
     },
     type: 'task',

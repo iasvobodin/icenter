@@ -104,7 +104,8 @@ const actualProjects = computed(
   () =>
     <string[]>[
       ...cabinets.value.reduce(
-        (acc, p) => Object.values(p.stats?.cabTime) && acc.add(p.info['project number']),
+        (acc, p) =>//Object.values(p.stats?.cabTime) && 
+          acc.add(p.info['project number']),
         new Set()
       ),
     ]
@@ -124,9 +125,7 @@ const filterCabinets = computed(() =>
         filterProject.value.some((s) => el.info['project number'] === s)
       )
       .filter((f) =>
-        [f.id, f.info['cab name']].some((ss) =>
-          ss.includes(state.searchCabinet)
-        )
+        [f.id, f.info['cab name']].some((ss) => ss.includes(state.searchCabinet))
       )
     : store.state.cabinets.filter((el) =>
       filterProject.value.some((s) => el.info['project number'] === s)

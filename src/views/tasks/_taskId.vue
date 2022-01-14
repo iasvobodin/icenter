@@ -26,7 +26,8 @@
           </h3>
         </template>
         <template #select>
-          <selectWO @selected-wo="state.alteredWO = $event" />
+          <selectWO @selected-wo="emitAlteredWo" />
+          <p class="error">{{ state.errorMessage }}</p>
           <div class="advanced">
             <p>
               Изменить пространтсво и время
@@ -58,6 +59,7 @@ import { cabinetsType } from '@/types/cabinetsType'
 const route = useRoute()
 const store = useStore()
 const state = reactive({
+  errorMessage: '',
   popupOpened: false,
   cabTime: <cabtimeType>{},
   changeCabTime: false,
@@ -91,7 +93,19 @@ const formatDate = (date: Date) => {
 }
 
 const timeToCalc = computed(() => store.state.passedTime)
+const emitAlteredWo = async (e: string) => {
+  const { request, response: cabtime } = useFetch(`/api/cabinetItems?wo=${e}&cabtime=true`)
+  await request()
+  // console.log(response.value);
 
+  if (!cabtime.value) {
+    state.errorMessage = 'По данному WO не расчитан CabTime'
+    return
+  } else {
+    state.errorMessage = ''
+    state.alteredWO = e
+  }
+}
 const timeStartmod = computed(() =>
   state.task?.body?.timeStart
     ? formatDate(new Date(state.task.body.timeStart))
@@ -122,10 +136,20 @@ async function popupConfirmed() {
     await reqCabinets()
     let ttl;
     if (resCabinets.value) {
+      //CHECK CABTIME
+      // const { request, response: cabtime } = useFetch(`/api/cabinetItems?wo=${state.alteredWO}&cabtime=true`)
+      // await request()
+      // // console.log(response.value);
+
+      // if (!cabtime.value) {
+      //   state.errorMessage = 'по данному WO нет CabTime'
+      //   return
+      // }
+
       //DELETE CURRENT TASK
       const del = {
         method: 'post',
-        body: JSON.stringify({ id: state.task.id, ttl: 0, info: { wo: state.task.info.wo } }),
+        body: JSON.stringify({ id: state.task.id, ttl: 1, info: { wo: state.task.info.wo } }),
       }
       const { request: deleteTask, response } = useFetch('/api/post_item', del)
       await deleteTask()
@@ -243,5 +267,9 @@ input {
   text-align: center;
   margin: auto;
   padding: 0px;
+}
+.error {
+  color: red;
+  text-align: center;
 }
 </style>
