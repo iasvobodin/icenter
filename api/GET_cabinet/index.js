@@ -1,17 +1,26 @@
 module.exports = async function (context, req) {
   // import {clearData} from '../extend.js'
-
-  if (req.query.post) {
-    context.bindings.outputWO = req.rawBody
-    return
-  }
-
   const clearData = (el) => {
     const objE = Object.entries(el).filter(
       (entries) => !entries[0].startsWith('_') && !entries[0].startsWith('ttl')
     )
     return Object.fromEntries(objE)
   }
+  if (req.query.wo) {
+    const currentWo = context.bindings.inputWO.find((e) => e.id === req.query.wo)
+    context.res = {
+      body: clearData(currentWo)
+    }
+    return
+  }
+
+
+  if (req.query.post) {
+    context.bindings.outputWO = req.rawBody
+    return
+  }
+
+
   context.res = {
     body: context.bindings.inputWO.map((e) => {
       return clearData(e)

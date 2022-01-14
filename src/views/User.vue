@@ -1,12 +1,12 @@
 <template>
   <div v-if="userFromStore.info" class="holder">
     <h1 class="userHeader">
-      <span>{{
-        userFromStore.info.userDetails.split('@')[0].replace('.', ' ')
-      }}</span>
-      <button v-if="localUser" class="logOut" @click="clearUser">
-        Log out
-      </button>
+      <span>
+        {{
+          userFromStore.info.userDetails.split('@')[0].replace('.', ' ')
+        }}
+      </span>
+      <button v-if="localUser" class="logOut" @click="clearUser">Log out</button>
     </h1>
 
     <!-- <p>в разработке</p> -->
@@ -14,27 +14,22 @@
 
     <div class="profile__settings">
       <h2>Настройки профиля</h2>
-      <label
-        >Choose background color
-        <input
-          type="color"
-          value="#ffffff"
-          @input="checkInput($event)" /></label
-      ><br /><br />
-      <button v-if="color" :disabled="colorChanged" @click="saveColor">
-        Save color
-      </button>
+      <label>
+        Choose background color
+        <input type="color" value="#ffffff" @input="checkInput($event)" />
+      </label>
+      <br />
+      <br />
+      <button v-if="color" :disabled="colorChanged" @click="saveColor">Save color</button>
       <!-- <p class="info">{{userFromStore}}</p> -->
       <!-- <button v-if="localUser" @click="clearUser">Log out</button><br /> -->
       <button
         v-if="!userFromStore.body.photo"
         class="get__access"
         @click="tryToGetToken"
-      >
-        Получить фотографию профиля
-      </button>
+      >Получить фотографию профиля</button>
       <!-- <button class="get__access" @click="tryToSingIn">tryToSingIn</button>
-    <p v-if="state.token">{{ state.token }}</p> -->
+      <p v-if="state.token">{{ state.token }}</p>-->
     </div>
 
     <div class="task">
@@ -52,12 +47,12 @@
                 ? userFromStore.body.photo
                 : '/img/user.png'
             "
-            alt=""
+            alt
           />
         </div>
         <div class="task__description">
-          <p>Проект : {{ state.userTask.info.Проект }}</p>
-          <p>Шкаф : {{ state.userTask.info.Шкаф }}</p>
+          <p>Проект : {{ state.userTask.info['project number'] }}</p>
+          <p>Шкаф : {{ state.userTask.info['cab name'] }}</p>
           <p>Время работы: {{ time }}</p>
         </div>
       </div>
@@ -114,7 +109,7 @@ const tryToSingIn = async () => {
 
   try {
     const loginResponse = await msalInstance.loginPopup(loginRequest)
-  } catch (err) {}
+  } catch (err) { }
 }
 
 const CurrentTime = Date.now()
@@ -149,7 +144,7 @@ const tryToGetToken = async () => {
       const acquireTokenPopup = await msalInstance.acquireTokenPopup(request)
       console.log(acquireTokenPopup, 'NOT exist SILENT')
       state.token = acquireTokenPopup
-    } catch (error) {}
+    } catch (error) { }
   }
   try {
     await updateUser(state.token)
@@ -305,7 +300,7 @@ onMounted(async () => {
 }
 .holder {
   min-height: calc(100vh - 125px);
-  background-color: v-bind('color');
+  background-color: v-bind("color");
 }
 .userHeader {
   width: fit-content;

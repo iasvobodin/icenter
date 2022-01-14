@@ -11,6 +11,7 @@ module.exports = async function (context, req, cabinetItems) {
     )
     return Object.fromEntries(objE)
   }
+  //FILTER ONLY ERROR
   const filterArr = cabinetItems
     .filter((e) => e.type.includes('error'))
     .map((e) => clearData(e))

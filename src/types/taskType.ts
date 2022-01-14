@@ -5,8 +5,8 @@ export interface taskType {
   info: {
     user: string
     userId: string
-    Проект: string
-    Шкаф: string
+    'project number': string
+    'cab name': string
     wo: string
   }
   type: string
@@ -16,5 +16,6 @@ export interface taskType {
     timeEnd: number
     timePassed: number
     completeTask: cabtimeType['body'] | null
-  }
+  },
+  ttl?: number
 }

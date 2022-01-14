@@ -33,6 +33,7 @@ module.exports = {
     // '@vue/typescript',
   ],
   globals: {
+    NodeJS: true,
     defineProps: 'readonly',
     defineEmits: 'readonly',
     defineExpose: 'readonly',

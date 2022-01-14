@@ -16,16 +16,9 @@
       :input-data="state.cabTime"
       @cabtime-with-status="state.ctStatus = $event"
     />
-    <task-status
-      v-if="ctWithStatus.length !== 0"
-      :input-data="ctWithStatus"
-    />
+    <task-status v-if="ctWithStatus.length !== 0" :input-data="ctWithStatus" />
     <teleport to="body">
-      <confirm-popup
-        :opened="state.popupOpened"
-        @closed="popupClosed"
-        @confirm="popupConfirmed"
-      >
+      <confirm-popup :opened="state.popupOpened" @closed="popupClosed" @confirm="popupConfirmed">
         <template #header>
           <h3>
             Выберите другой WO
@@ -33,7 +26,15 @@
           </h3>
         </template>
         <template #select>
-          <selectWO />
+          <selectWO @selected-wo="state.alteredWO = $event" />
+          <div class="advanced">
+            <p>
+              Изменить пространтсво и время
+              <br />
+              <small>(только для опытных пользователей)</small>
+            </p>
+            <input v-model="state.alteredTime" placeholder="время работы в минутах" type="number" />
+          </div>
         </template>
       </confirm-popup>
     </teleport>
@@ -52,6 +53,7 @@ import { useStore } from 'vuex'
 import taskStatus from '@/components/task/taskCalculate.vue'
 import { taskType } from '@/types/taskType'
 import { cabtimeType } from '@/types/cabtimeTypes'
+import { cabinetsType } from '@/types/cabinetsType'
 
 const route = useRoute()
 const store = useStore()
@@ -61,6 +63,8 @@ const state = reactive({
   changeCabTime: false,
   task: <taskType>{},
   passedTime: 0,
+  alteredWO: '',
+  alteredTime: '',
   // timeToCalc: null,
   pps: null,
   ctStatus: null,
@@ -98,10 +102,10 @@ const ctWithStatus = computed(() =>
   store.state.cabtimeWithStatus.length !== 0
     // eslint-disable-next-line vue/no-side-effects-in-computed-properties
     ? store.state.cabtimeWithStatus.sort((a, b) => {
-        const x = a.status?.toLowerCase()
-        const y = b.status?.toLowerCase()
-        return x < y ? -1 : x > y ? 1 : 0
-      })
+      const x = a.status?.toLowerCase()
+      const y = b.status?.toLowerCase()
+      return x < y ? -1 : x > y ? 1 : 0
+    })
     : []
 )
 function updateInfo() {
@@ -111,8 +115,47 @@ function updateInfo() {
 function popupClosed() {
   state.popupOpened = !state.popupOpened
 }
-function popupConfirmed() {
-  
+async function popupConfirmed() {
+  const { request: reqCabinets, response: resCabinets } =
+    useFetch<cabinetsType>(`/api/GET_cabinetById?id=${state.alteredWO}`)
+  if (state.alteredWO) {
+    await reqCabinets()
+    let ttl;
+    if (resCabinets.value) {
+      //DELETE CURRENT TASK
+      const del = {
+        method: 'post',
+        body: JSON.stringify({ id: state.task.id, ttl: 0, info: { wo: state.task.info.wo } }),
+      }
+      const { request: deleteTask, response } = useFetch('/api/post_item', del)
+      await deleteTask()
+
+      //UPDATE CURRENT TASK
+
+      state.task.info.wo = resCabinets.value.info.wo
+      state.task.info['project number'] = resCabinets.value.info['project number']
+      state.task.info['cab name'] = resCabinets.value.info['cab name']
+
+
+    }
+  }
+  if (state.alteredTime) {
+    state.task.body.timeStart = Date.now() - +state.alteredTime * 60000
+    state.passedTime = +state.alteredTime * 60000
+  }
+  const options = {
+    method: 'post',
+    body: JSON.stringify(state.task),
+  }
+  delete state.task.ttl
+
+  const { request: postUpdatedTask } = useFetch('/api/post_item', options)
+  await postUpdatedTask()
+
+
+  state.popupOpened = false;
+  // console.log(resCabinets.value);
+
 }
 
 const CurrentTime = Date.now()
@@ -167,7 +210,7 @@ getCabTime()
 
 onUnmounted(() => {
   store.commit('changePassedTime', 0)
-  store.commit('setCabtimeWithStatus', null)
+  store.commit('setCabtimeWithStatus', [])
 })
 </script>
 
@@ -181,5 +224,24 @@ h1 {
 .info__holder {
   width: min(95vw, 800px);
   margin: 2vh auto;
+}
+.advanced {
+  display: grid;
+}
+.advanced p {
+  text-align: center;
+  margin: 10px;
+  font-size: var(--size-500);
+}
+input {
+  height: 30px;
+  border: 1px solid orange;
+  border-radius: 5px;
+  min-width: 250px;
+  line-height: 30px;
+  font-size: 18px;
+  text-align: center;
+  margin: auto;
+  padding: 0px;
 }
 </style>

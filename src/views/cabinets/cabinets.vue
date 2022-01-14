@@ -5,44 +5,30 @@
       <div class="qr__icon" @click="changeView = !changeView" />
     </div>
     <div v-show="!changeView" class="scanner__holder">
-      <img class="frame" src="/img/scanner.svg" alt="" />
-      <video
-        ref="streamVideo"
-        class="video__stream"
-        playsinline="true"
-        autoplay="true"
-      ></video>
-      <canvas
-        v-show="false"
-        id="canvas"
-        ref="vCanvas"
-        height="auto"
-        width="100%"
-      ></canvas>
+      <img class="frame" src="/img/scanner.svg" alt />
+      <video ref="streamVideo" class="video__stream" playsinline="true" autoplay="true"></video>
+      <canvas v-show="false" id="canvas" ref="vCanvas" height="auto" width="100%"></canvas>
     </div>
   </div>
   <h2
     style="cursor: pointer"
     @click="state.additionalSearch = !state.additionalSearch"
-  >
-    Расширенный поиск {{ state.additionalSearch ? '&#9650;' : '&#9660;' }}
-  </h2>
+  >Расширенный поиск {{ state.additionalSearch ? '&#9650;' : '&#9660;' }}</h2>
   <div class="filter__holder">
     <transition name="slide-fade">
       <div v-show="state.additionalSearch" class="additional__filter">
         <h3>Статус проекта</h3>
         <ul>
           <li v-for="(status, index) in state.actualStatus" :key="index">
-            <input
-              v-model="state.filterStatus"
-              type="checkbox"
-              :value="status"
-            />{{ status }}
+            <input v-model="state.filterStatus" type="checkbox" :value="status" />
+            {{ status }}
           </li>
         </ul>
         <h3>CabTime расчитан</h3>
         <ul>
-          <li><input v-model="state.hasCabTime" type="checkbox" /> CabTime</li>
+          <li>
+            <input v-model="state.hasCabTime" type="checkbox" /> CabTime
+          </li>
         </ul>
         <h3>Поиск</h3>
         <input
@@ -64,18 +50,13 @@
     <h2 class="group__items">Проект {{ val }}</h2>
     <br />
     <div class="errors__holder">
-      <div
-        v-for="(v, k, i) in state.groupCabinets(val)"
-        :key="i"
-        class="error__card__holder"
-      >
+      <div v-for="(v, k, i) in state.groupCabinets(val)" :key="i" class="error__card__holder">
         <div class="item__card" @click="$router.push(`/cabinets/${v.info.wo}`)">
           WO {{ v.info.wo }}
           <br />
-          {{ v.info['cab name'] }} <br />
-          <p v-if="v.stats?.errors?.length > 0">
-            Ошибок - {{ v.stats?.errors?.length }}
-          </p>
+          {{ v.info['cab name'] }}
+          <br />
+          <p v-if="v.stats?.errors?.length > 0">Ошибок - {{ v.stats?.errors?.length }}</p>
           <br />
         </div>
       </div>
@@ -192,7 +173,7 @@ const someUpdate = async () => {
     )
     await request()
     e.stats.errors = cabError.value
-    console.log(e, 'EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE')
+    // console.log(e, 'EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE')
 
     if (e.stats.errors.length > 0) {
       const { request: postCabinets } = useFetch(`/api/GET_cabinet?post=true`, {

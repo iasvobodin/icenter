@@ -13,7 +13,7 @@
   ><br /><br />
   <div :key="index" v-for="(message, index) in state.messages">
     <p>{{ message }}</p>
-  </div> -->
+  </div>-->
 </template>
 
 <script setup>
@@ -192,7 +192,17 @@ watchEffect(() => {
 </script>
 
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400&display=swap");
+:root {
+  --size-300: clamp(0.7rem, 0.66rem + 0.2vw, 0.8rem);
+  --size-400: clamp(0.88rem, 0.83rem + 0.24vw, 1rem);
+  --size-500: clamp(1.09rem, 1rem + 0.47vw, 1.33rem);
+  --size-600: clamp(1.37rem, 1.21rem + 0.8vw, 1.78rem);
+  --size-700: clamp(1.71rem, 1.45rem + 1.29vw, 2.37rem);
+  --size-800: clamp(2.14rem, 1.74rem + 1.99vw, 3.16rem);
+  --size-900: clamp(2.67rem, 2.07rem + 3vw, 4.21rem);
+  --size-1000: clamp(3.34rem, 2.45rem + 4.43vw, 5.61rem);
+}
 *,
 *:before,
 *:after {
@@ -219,8 +229,8 @@ body {
 }
 textarea,
 select,
-input[type='text'],
-input[type='number'] {
+input[type="text"],
+input[type="number"] {
   font-size: 16px;
   font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica,
     Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji;
@@ -228,7 +238,7 @@ input[type='number'] {
 }
 
 button,
-input[type='submit'] {
+input[type="submit"] {
   height: 30px;
   background-color: #ffffff;
   /* border: none; */
@@ -244,11 +254,11 @@ input[type='submit'] {
   margin: 5px 1vw;
 }
 button,
-input[type='submit'] {
+input[type="submit"] {
   width: min(85vw, 350px);
   /* margin: auto; */
 }
-input[type='submit']:hover {
+input[type="submit"]:hover {
   background-color: #00a2ff5b;
 }
 button:hover:enabled {
@@ -295,7 +305,7 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: 'Roboto Slab', serif;
+  font-family: "Roboto Slab", serif;
   font-weight: normal;
 }
 h1 {
