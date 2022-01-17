@@ -19,8 +19,8 @@
       "name": "data",
       "ConnectionStringSetting": "legendstats_DOCUMENTDB",
       "databaseName": "icenter",
-      "collectionName": "icenterErrors",
-      "sqlQuery": "SELECT * from c"
+      "collectionName": "icenterDB",
+      "sqlQuery": "SELECT * FROM c where (c.type = 'f_error' or c.type = 't_error' ) and (c.info.status = 'open' or c.info.status = 'confirmed')"
     },
     {
       "type": "cosmosDB",

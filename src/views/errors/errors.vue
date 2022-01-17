@@ -12,9 +12,9 @@
       <option value="open">Открыто</option>
       <option value="confirmed">Принято</option>
     </select>
-  </div> -->
+  </div>-->
   <!-- <h3 class="search__title">Поиск</h3> -->
-  <label for="search">Поиск: </label>
+  <label for="search">Поиск:</label>
   <input
     id="search"
     v-model="state.search"
@@ -23,7 +23,8 @@
     placeholder="WO или номер проекта"
     @keyup.enter="$event.target.blur()"
   />
-  <br /><br />
+  <br />
+  <br />
   <div v-if="state.errors" class="errors__holder">
     <div
       v-for="(value, key, index) in filter"
@@ -40,15 +41,11 @@
         <h3
           :class="{ error__item__vertical__title: k === 'Описание' }"
           class="error__item__title"
-        >
-          {{ k }}:
-        </h3>
+        >{{ k }}:</h3>
         <p
           :class="{ error__item__vertical__title: k === 'Описание' }"
           class="error__item__desc"
-        >
-          {{ v?.includes('@') ? v.split('@')[0].replace('.', ' ') : v }}
-        </p>
+        >{{ v?.includes('@') ? v.split('@')[0].replace('.', ' ') : v }}</p>
       </div>
     </div>
   </div>
@@ -70,33 +67,61 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import itemPhotoUploader from '@/components/itemPhotoUploader.vue'
 import { reactive, computed, watch, ref } from 'vue'
 import { useFetch } from '@/hooks/fetch'
 import { onBeforeRouteLeave, onBeforeRouteUpdate } from 'vue-router'
+import { errorType } from '@/types/errorType'
 // export default {
+type modType = {
+  "id": string,
+  "info": {
+    "Проект": string,
+    "Шкаф": string,
+    "wo": string,
+    "Добавил": string,
+    "Мастер": string,
+    "status"?: string,
+    "Описание": string
+  },
+  "type": 'f_error' | 't_error',
+}
 
-//   setup() {
 const state = reactive({
-  errors: null,
+  errors: <errorType[]>{},
   phList: [],
+  modErrors: <modType[]>{},
+  search: '',
   // resErrors: null,
   fetchStatus: null,
   // errorMessage: "",
 })
 const selectedStatus = ref('open')
 const getErrors = async () => {
-  const { request, response } = useFetch(`/api/errors`)
-  state.errors = response
+  const { request, response } = useFetch<errorType[]>(`/api/errors`)
   await request()
+  state.errors = response.value!
+
+
+  state.modErrors = state.errors.map(e => {
+    return {
+      "id": e.id,
+      "type": e.type,
+      info: {
+        ...e.info,
+        Описание: e.body.at(-1)!.Открыто.Описание
+      }
+    }
+  });
 }
 
 getErrors()
+
 watch(selectedStatus, () => getErrors())
 
 onBeforeRouteUpdate(async (to, from) => {
-  if (from.contains('error')) {
+  if (from.fullPath.includes('error')) {
     alert('a')
   }
 })
@@ -106,12 +131,12 @@ onBeforeRouteLeave((to, from) => {
 })
 const filter = computed(() => {
   return state.search
-    ? state.errors.filter((e) =>
-        [e?.info.wo, e?.info['Проект']].some(
-          (s) => s && s.toLowerCase().includes(state.search.toLowerCase())
-        )
+    ? state.modErrors.filter((e) =>
+      [e?.info.wo, e?.info['Проект']].some(
+        (s) => s && s.toLowerCase().includes(state.search.toLowerCase())
       )
-    : state.errors
+    )
+    : state.modErrors
 })
 // return {
 //   selectedStatus,

@@ -71,6 +71,43 @@ const state = reactive({
   pps: null,
   ctStatus: null,
 })
+
+const { request: reqTask, response: resTask } = useFetch<taskType>(
+  `/api/errors/${route.params.taskId}`
+)
+
+const getTask = async () => {
+  try {
+    await reqTask()
+    state.task = resTask.value!
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+
+const getCabTime = async (wo: string) => {
+  !state.task && await getTask()
+  const { request: reqCabTime, response: resCabTime } = useFetch<cabtimeType>(
+    `/api/errors/cabtime__${wo}`
+  )
+  try {
+    await reqCabTime()
+    state.cabTime = resCabTime.value!
+    // state.task = resTask.value!
+    state.passedTime = CurrentTime - state.task.body.timeStart
+    return true
+  } catch (error) {
+    console.error(error)
+    return false
+  }
+}
+
+const getData = async () => {
+  await getTask()
+  await getCabTime(state.task.info.wo)
+}
+getData()
 const setStatePassedTime = () => {
   store.commit('changePassedTime', Math.floor(state.passedTime! / 60000)) //- 24200)
   // console.log(store.state) //timeToCalc = state.passedTime
@@ -93,19 +130,19 @@ const formatDate = (date: Date) => {
 }
 
 const timeToCalc = computed(() => store.state.passedTime)
-const emitAlteredWo = async (e: string) => {
-  const { request, response: cabtime } = useFetch(`/api/cabinetItems?wo=${e}&cabtime=true`)
-  await request()
-  // console.log(response.value);
 
-  if (!cabtime.value) {
-    state.errorMessage = 'По данному WO не расчитан CabTime'
+
+const emitAlteredWo = async (e: string) => {
+
+  if (!await getCabTime(e)) {
+    state.errorMessage = 'По данному WO не расчитан CabTime, \n изменения не сохранятся.'
     return
   } else {
     state.errorMessage = ''
     state.alteredWO = e
   }
 }
+
 const timeStartmod = computed(() =>
   state.task?.body?.timeStart
     ? formatDate(new Date(state.task.body.timeStart))
@@ -199,38 +236,9 @@ setInterval(() => {
 // }
 
 //GET DB DATA
-const { request: reqTask, response: resTask } = useFetch<taskType>(
-  `/api/errors/${route.params.taskId}`
-)
 
-const getTask = async () => {
-  try {
-    await reqTask()
-    state.task = resTask.value!
-  } catch (error) {
-    console.error(error)
-  }
 
-  // state.errors = response
-  // state.projects = JSON.parse(JSON.stringify(state.errors))
-}
-const getCabTime = async () => {
-  await getTask()
-  const { request: reqCabTime, response: resCabTime } = useFetch<cabtimeType>(
-    `/api/errors/cabtime__${state.task.info.wo}`
-  )
-  try {
-    await reqCabTime()
-    state.cabTime = resCabTime.value!
-    state.task = resTask.value!
-    state.passedTime = CurrentTime - state.task.body.timeStart
-  } catch (error) {
-    console.error(error)
-  }
 
-  // state.cabTime = resCabTime.value!
-}
-getCabTime()
 
 onUnmounted(() => {
   store.commit('changePassedTime', 0)
@@ -271,5 +279,7 @@ input {
 .error {
   color: red;
   text-align: center;
+  white-space: pre-wrap;
+  word-wrap: break-word;
 }
 </style>
