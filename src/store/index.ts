@@ -7,6 +7,8 @@ import { templateType } from '@/types/templateType'
 import { projectInfoType, projectType } from '@/types/projectInfoType'
 import { cabinetsType } from '@/types/cabinetsType'
 import { cabtimeType } from '@/types/cabtimeTypes'
+import { errorType } from '@/types/errorType'
+import { strictEqual } from 'assert'
 
 // const createName = (clientPrincipal) => {
 //   if (clientPrincipal.identityProvider === 'aad') {
@@ -32,6 +34,7 @@ import { cabtimeType } from '@/types/cabtimeTypes'
 // export const key: InjectionKey<Store<State>> = Symbol()
 
 export interface State {
+  activeErrors: errorType[]
   loader: false
   template: templateType
   projectList: null
@@ -53,6 +56,7 @@ export interface State {
 
 export const store = createStore<State>({
   state: {
+    activeErrors: <errorType[]>{},
     taskResult: {},
     photosToUpload: new FormData(),
     photosToDelete: [],
@@ -72,6 +76,9 @@ export const store = createStore<State>({
     allSumm: 0,
   },
   mutations: {
+    SET_activeErrors(state, payload: errorType[]) {
+      state.activeErrors = payload
+    },
     SET_cabinets(state, payload: cabinetsType[]) {
       state.cabinets = payload
     },
