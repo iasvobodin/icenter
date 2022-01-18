@@ -255,7 +255,7 @@ export const store = createStore<State>({
       }
 
       try {
-        const { request: auth, response } = useFetch<azureAuth>('/api/me')
+        const { request: auth, response } = useFetch<azureAuth>('/.auth/me')
         await auth()
         const user = response.value
 
