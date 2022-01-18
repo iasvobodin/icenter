@@ -96,7 +96,7 @@ const getCabTime = async (wo: string) => {
     state.cabTime = resCabTime.value!
     // state.task = resTask.value!
     state.passedTime = CurrentTime - state.task.body.timeStart
-    return true
+    return resCabTime.value
   } catch (error) {
     console.error(error)
     return false
@@ -238,7 +238,15 @@ setInterval(() => {
 //GET DB DATA
 
 
+const saveTask = async () => {
+  //get actual cabtime
+  const actualCabtime = await getCabTime(state.task.info.wo)
+  //push history in cabtime
+  actualCabtime && actualCabtime.history?.push(...store.state.cabtimeWithStatus)
+  //save task
 
+  //save cabtime
+}
 
 onUnmounted(() => {
   store.commit('changePassedTime', 0)
