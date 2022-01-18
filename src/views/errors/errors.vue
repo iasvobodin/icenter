@@ -21,7 +21,7 @@
     class="choose"
     type="text"
     placeholder="WO или номер проекта"
-    @keyup.enter="$event.target.blur()"
+    @keyup.enter="keyEnter"
   />
   <br />
   <br />
@@ -73,6 +73,7 @@ import { reactive, computed, watch, ref } from 'vue'
 import { useFetch } from '@/hooks/fetch'
 import { onBeforeRouteLeave, onBeforeRouteUpdate } from 'vue-router'
 import { errorType } from '@/types/errorType'
+import { useStore } from 'vuex'
 // export default {
 type modType = {
   "id": string,
@@ -97,6 +98,11 @@ const state = reactive({
   fetchStatus: null,
   // errorMessage: "",
 })
+const store = useStore()
+const keyEnter = (e: Event) => {
+  if (!(e.target instanceof HTMLInputElement)) return
+  e.target.blur()
+}
 const selectedStatus = ref('open')
 const getErrors = async () => {
   const { request, response } = useFetch<errorType[]>(`/api/errors`)
