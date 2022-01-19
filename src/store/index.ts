@@ -137,7 +137,7 @@ export const store = createStore<State>({
     setSummResult(state, payload) {
       state.allSumm = payload
     },
-    SET_cabinetItems(state, payload) {
+    SET_cabinetItems(state, payload: cabItems[]) {
       state.cabinetItems = payload
     },
     changeLoader(state, payload) {
@@ -378,8 +378,8 @@ export const store = createStore<State>({
       const currentInfo = projects.find((e) => e.wo === payload)
       commit('SETcurrentProject', currentInfo)
     },
-    async GET_cabinetItems({ commit }, payload) {
-      const { request, response } = useFetch(`/api/cabinetItems?wo=${payload}`)
+    async GET_cabinetItems({ commit }, payload: string) {
+      const { request, response } = useFetch<cabItems[]>(`/api/cabinetItems?wo=${payload}`)
       await request()
 
       commit('SET_cabinetItems', response.value)
