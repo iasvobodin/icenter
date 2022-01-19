@@ -6,11 +6,12 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { useFetch } from '@/hooks/fetch'
 import { computed, reactive } from '@vue/reactivity'
 import { useRoute, useRouter } from 'vue-router'
 import { useStore } from 'vuex'
+import { taskType } from '@/types/taskType'
 
 const route = useRoute()
 const router = useRouter()
@@ -58,25 +59,31 @@ const options = {
 }
 const { request: postNewTask, response } = useFetch('/api/post_item', options)
 
-const { request: reqUserTask, response: resUserTask } = useFetch(
+const { request: reqUserTask, response: resUserActiveTask } = useFetch<taskType>(
   `/api/GET_userTasks?user=${userInfoState.value.info.userDetails.toLowerCase()}`
 )
 
 const createTask = async () => {
+
+
+
+
   try {
     await reqUserTask()
-    const userTask = resUserTask.value
+    const userTask = resUserActiveTask.value
+    console.log(userTask);
+    debugger
     let delay = 5000
     state.second = delay
     setInterval(() => (state.second = delay -= 1000), 1000)
     state.redirectMessage = 'Необходимо остановить предыдущую задачу'
-    setTimeout(() => router.push(`/tasks/${userTask.id}`), delay)
+    setTimeout(() => router.push(`/tasks/${userTask!.id}`), delay)
   } catch (error) {
     try {
       await postNewTask()
       router.push(`/tasks/${id}`)
     } catch (error) {
-      console.error(error.message, 'post userTask')
+      console.error(error, 'post userTask')
     }
   }
 }

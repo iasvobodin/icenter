@@ -1,6 +1,6 @@
 import { cabtimeType } from '@/types/cabtimeTypes'
 
-export interface taskType {
+export type taskType = {
   id: string
   info: {
     user: string
@@ -10,7 +10,7 @@ export interface taskType {
     wo: string
   }
   type: string
-  status: string
+  status: 'active' | 'completed'
   body: {
     timeStart: number
     timeEnd: number

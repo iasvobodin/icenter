@@ -46,7 +46,6 @@
         </tr>
       </tbody>
     </table>
-
     {{ state.alertMessage ? state.alertMessage : '' }}
     <table class="table__result">
       <thead class="head">
@@ -67,8 +66,8 @@
       </tbody>
     </table>
     <!-- <p v-if="state.difTime">Разница между затраченным и расчетным временем не должна превышать 10 минут. <br> Будьте внимательны при внесении изменений!<br> Расхождение в {{state.difTime}}минут </p> <br> -->
-    <button v-if="!state.wellDone">Сохранить</button>
-    <h3 v-else style="color: red">Время работы должно равнятся расчётному! +- 10минут</h3>
+    <!-- <button v-if="!state.wellDone">Сохранить</button> -->
+    <h3 v-if="state.wellDone" style="color: red">Время работы должно равнятся расчётному! +- 10минут</h3>
   </div>
 </template>
 
@@ -98,6 +97,8 @@ const props = defineProps({
     required: true,
   },
 })
+
+
 const state = reactive({
   alertMessage: '',
   allSumm: 0,
@@ -108,6 +109,7 @@ const state = reactive({
 const emit = defineEmits({
   cabtimeWithStatus: null,
   proportTime: null,
+  wellDone: null
 })
 const { inputData } = toRefs(props)
 
@@ -135,8 +137,12 @@ watchEffect(() => {
   state.difTime = timeToCalc.value - state.partiallySumm
 
   if (state.difTime >= -10 && state.difTime <= 10) {
+    emit('wellDone', false)
     state.wellDone = false
-  } else state.wellDone = true
+  } else {
+    emit('wellDone', true)
+    state.wellDone = true
+  }
 })
 
 // calculatePartiallySumm()

@@ -28,5 +28,5 @@ export type cabtimeType = {
     admin: string
     final: string
   },
-  history?: cabtimeBody[]
+  history?: [cabtimeBody[]]
 }

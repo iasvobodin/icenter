@@ -4,11 +4,47 @@
       <h2>Информация</h2>
       <info-render :info-data="state.task?.info" />
     </div>
-    <div v-if="state.task && !timeToCalc">
-      <h3>Время старта : {{ timeStartmod }}</h3>
-      <h3 v-if="!timeToCalc">Время работы: {{ time }}</h3>
-      <button @click="setStatePassedTime">Завершить работу</button>
-      <button @click="updateInfo">Редактировать задачу</button>
+    <div v-if="state.task.status === 'completed'">
+      <h3>Время работы {{ state.task.body.timePassed }} мин</h3>
+
+      <table>
+        <colgroup>
+          <!-- <col span="1" class="collgroup1" /> -->
+          <col span="1" class="collgroup2" />
+          <col span="1" class="collgroup5" />
+          <col span="1" class="collgroup5" />
+        </colgroup>
+        <thead class="head">
+          <tr>
+            <th rowspan="2">Задача</th>
+
+            <th class="vertical" rowspan="1">Сборщик</th>
+            <th style="text-align: center" class="vertical" rowspan="1">Время</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            v-for="(value, index) in state.task.body.completeTask"
+            :key="index"
+            :class="{
+              partially: value.status === 'partially',
+              done: value.status === 'done',
+            }"
+          >
+            <td class="desc">{{ value.name }}</td>
+            <td class="desc">{{ value.fitter!.split('@')[0].replace('.', ' ') }}</td>
+            <td style="text-align: center">{{ value.propTime }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div v-else>
+      <div v-if="state.task && !timeToCalc">
+        <h3>Время старта : {{ timeStartmod }}</h3>
+        <h3 v-if="!timeToCalc">Время работы: {{ time }}</h3>
+        <button @click="setStatePassedTime">Завершить работу</button>
+        <button @click="updateInfo">Редактировать задачу</button>
+      </div>
     </div>
 
     <task-cab-time
@@ -16,7 +52,11 @@
       :input-data="state.cabTime"
       @cabtime-with-status="state.ctStatus = $event"
     />
-    <task-status v-if="ctWithStatus.length !== 0" :input-data="ctWithStatus" />
+    <task-calculate
+      v-if="ctWithStatus.length !== 0"
+      :input-data="ctWithStatus"
+      @well-done="state.wellDone = $event"
+    />
     <teleport to="body">
       <confirm-popup :opened="state.popupOpened" @closed="popupClosed" @confirm="popupConfirmed">
         <template #header>
@@ -39,6 +79,7 @@
         </template>
       </confirm-popup>
     </teleport>
+    <button v-if="!state.wellDone" @click="saveTask">SaveTask</button>
   </div>
 </template>
 
@@ -48,15 +89,16 @@ import confirmPopup from '@/components/modal/cunfirmPopup.vue'
 import { computed, onUnmounted, reactive } from 'vue'
 import { useFetch } from '@/hooks/fetch'
 import taskCabTime from '@/components/task/taskStatus.vue'
-import { onBeforeRouteUpdate, useRoute } from 'vue-router'
+import { onBeforeRouteUpdate, useRoute, useRouter } from 'vue-router'
 import infoRender from '@/components/infoRender.vue'
 import { useStore } from 'vuex'
-import taskStatus from '@/components/task/taskCalculate.vue'
+import taskCalculate from '@/components/task/taskCalculate.vue'
 import { taskType } from '@/types/taskType'
 import { cabtimeType } from '@/types/cabtimeTypes'
 import { cabinetsType } from '@/types/cabinetsType'
 
 const route = useRoute()
+const router = useRouter()
 const store = useStore()
 const state = reactive({
   errorMessage: '',
@@ -67,16 +109,18 @@ const state = reactive({
   passedTime: 0,
   alteredWO: '',
   alteredTime: '',
+  wellDone: true,
   // timeToCalc: null,
   pps: null,
   ctStatus: null,
 })
 
-const { request: reqTask, response: resTask } = useFetch<taskType>(
-  `/api/errors/${route.params.taskId}`
-)
+
 
 const getTask = async () => {
+  const { request: reqTask, response: resTask } = useFetch<taskType>(
+    `/api/errors/${route.params.taskId}`
+  )
   try {
     await reqTask()
     state.task = resTask.value!
@@ -93,7 +137,35 @@ const getCabTime = async (wo: string) => {
   )
   try {
     await reqCabTime()
-    state.cabTime = resCabTime.value!
+    //add history to cabtime
+    resCabTime.value!.history?.forEach(historyVersion => {
+      historyVersion.map(cabtimeBodyElement => {
+
+        const index = resCabTime.value?.body.findIndex(e => e._id === cabtimeBodyElement._id)
+        console.log(index);
+        resCabTime.value!.body[index!] = cabtimeBodyElement
+      })
+
+    })
+
+    const filterBody = resCabTime.value!.body.reduce((acc: cabtimeType['body'], e) => {
+      if (e.status !== 'done') {
+        acc.push(e)
+      }
+      if (e.status === 'partially') {
+        e.result -= e.propTime!
+        e.status = 'open'
+        acc.push(e)
+      }
+
+
+
+      return acc
+      // e.status !== 'done' && e.status !== 'partially'
+    }, [])
+    const partially =
+
+      state.cabTime = { ...resCabTime.value!, body: filterBody }
     // state.task = resTask.value!
     state.passedTime = CurrentTime - state.task.body.timeStart
     return resCabTime.value
@@ -108,6 +180,7 @@ const getData = async () => {
   await getCabTime(state.task.info.wo)
 }
 getData()
+
 const setStatePassedTime = () => {
   store.commit('changePassedTime', Math.floor(state.passedTime! / 60000)) //- 24200)
   // console.log(store.state) //timeToCalc = state.passedTime
@@ -131,6 +204,21 @@ const formatDate = (date: Date) => {
 
 const timeToCalc = computed(() => store.state.passedTime)
 
+const timeStartmod = computed(() =>
+  state.task?.body?.timeStart
+    ? formatDate(new Date(state.task.body.timeStart))
+    : 0
+)
+
+const time = computed(
+  () =>
+    state.passedTime
+      ? new Date(state.passedTime).toISOString().substr(11, 8)
+      : 0 // time like hors and minutes
+)
+
+const CurrentTime = Date.now()
+
 
 const emitAlteredWo = async (e: string) => {
 
@@ -143,11 +231,7 @@ const emitAlteredWo = async (e: string) => {
   }
 }
 
-const timeStartmod = computed(() =>
-  state.task?.body?.timeStart
-    ? formatDate(new Date(state.task.body.timeStart))
-    : 0
-)
+
 
 const ctWithStatus = computed(() =>
   store.state.cabtimeWithStatus.length !== 0
@@ -219,14 +303,8 @@ async function popupConfirmed() {
 
 }
 
-const CurrentTime = Date.now()
 
-const time = computed(
-  () =>
-    state.passedTime
-      ? new Date(state.passedTime).toISOString().substr(11, 8)
-      : 0 // time like hors and minutes
-)
+
 // state.pps =
 // const startTick = ()=>{
 setInterval(() => {
@@ -241,13 +319,35 @@ setInterval(() => {
 const saveTask = async () => {
   //get actual cabtime
   const actualCabtime = await getCabTime(state.task.info.wo)
+
+
   //push history in cabtime
-  actualCabtime && actualCabtime.history?.push(...store.state.cabtimeWithStatus)
+  // if (actualCabtime) {
+  //   actualCabtime.history = []
+
+  // }
+  actualCabtime && actualCabtime.history?.push(store.state.cabtimeWithStatus)
+  // debugger
+  // console.log(actualCabtime);
+  //mod task
+  state.task.body.completeTask?.push(...store.state.cabtimeWithStatus)
+  state.task.body.timeEnd = Date.now()
+  state.task.body.timePassed = Math.floor(state.passedTime! / 60000)
+  state.task.status = 'completed'
   //save task
-
+  const { request: postUpdateTask } = useFetch('/api/post_item', {
+    method: 'post',
+    body: JSON.stringify(state.task)
+  })
   //save cabtime
+  const { request: postUpdateCabtime } = useFetch('/api/post_item', {
+    method: 'post',
+    body: JSON.stringify(actualCabtime)
+  })
+  await postUpdateCabtime()
+  await postUpdateTask()
+  router.back()
 }
-
 onUnmounted(() => {
   store.commit('changePassedTime', 0)
   store.commit('setCabtimeWithStatus', [])
@@ -289,5 +389,59 @@ input {
   text-align: center;
   white-space: pre-wrap;
   word-wrap: break-word;
+}
+thead tr th {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+table {
+  margin: auto;
+  margin-top: 2vh;
+  border-collapse: collapse;
+  border-radius: 5px;
+  /* overflow: hidden; */
+  box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px,
+    rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+  padding: 2vw;
+  width: min(95vw, 800px);
+}
+
+td,
+th {
+  box-shadow: rgba(0, 0, 0, 0.15) 2.4px 2.4px 3.2px;
+  box-shadow: rgba(0, 0, 0, 0.18) 0px 2px 4px;
+  box-shadow: rgba(9, 30, 66, 0.25) 0px 1px 1px,
+    rgba(9, 30, 66, 0.13) 0px 0px 1px 1px;
+  box-shadow: rgba(17, 17, 26, 0.1) 0px 1px 0px;
+
+  /* padding: 3px; */
+  /* padding-right: 1ch; */
+  /* text-align: start; */
+  font-size: 12px;
+}
+td input {
+  text-align: center;
+}
+
+tbody tr:nth-child(odd) {
+  background: #ececec5d;
+}
+table tbody .partially {
+  background: hsl(252deg 100% 95%);
+}
+table tbody .done {
+  background: hsl(120deg 100% 95%);
+}
+tbody tr {
+  margin-bottom: 10px;
+  height: 40px;
+}
+.head {
+  border-bottom: solid 1px orange;
+  background: white;
+  border-radius: 3px;
+  height: 40px;
+  position: sticky;
+  top: 50px;
 }
 </style>

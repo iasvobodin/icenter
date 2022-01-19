@@ -16,18 +16,14 @@
       <thead class="head">
         <tr>
           <th rowspan="2">Задача</th>
-          <th v-if="statusMark" style="text-align: center" colspan="2">
-            Выполнено
-          </th>
+          <th v-if="statusMark" style="text-align: center" colspan="2">Выполнено</th>
           <th v-if="!statusMark" class="vertical" rowspan="1">CabTime (мин)</th>
           <th
             v-if="!statusMark"
             style="text-align: center"
             class="vertical"
             rowspan="1"
-          >
-            Авто-расчёт (мин)
-          </th>
+          >Авто-расчёт (мин)</th>
         </tr>
         <tr v-if="statusMark">
           <th style="text-align: center" class="vertical">Частично</th>
@@ -46,25 +42,23 @@
           <td class="desc">{{ value.name }}</td>
           <td v-if="statusMark" style="text-align: center">
             <input
-              id=""
+              id
               :checked="value.status === 'partially'"
               type="checkbox"
-              name=""
+              name
               @input="changeStatus($event, value._id, 'partially')"
             />
           </td>
           <td v-if="statusMark" style="text-align: center">
             <input
-              id=""
+              id
               :checked="value.status === 'done'"
               type="checkbox"
-              name=""
+              name
               @input="changeStatus($event, value._id, 'done')"
             />
           </td>
-          <td v-if="!statusMark" style="text-align: center">
-            {{ value.result }}
-          </td>
+          <td v-if="!statusMark" style="text-align: center">{{ value.result }}</td>
           <td v-if="!statusMark">
             <input
               class="cabtime__input"
@@ -82,7 +76,8 @@
       </tbody>
     </table>
     {{ state.alertMessage && !statusMark ? state.alertMessage : '' }}
-    <br /><br />
+    <br />
+    <br />
     <button v-if="statusMark" @click="firstCaptureData">Далее</button>
     <button v-if="statusMark" @click="resetStatus">Сбросить</button>
   </div>
@@ -145,6 +140,10 @@ const firstCaptureData = () => {
     timeAll: number,
     timeDone: number
   ) => {
+    taskArray.forEach((e) => {
+      e.fitter = store.state.user.info.userDetails
+    })
+
     if (spentTime > timeDone && spentTime < timeAll) {
       console.log('ALL OK')
 
@@ -375,6 +374,17 @@ td input {
 tbody tr:nth-child(odd) {
   background: #ececec5d;
 }
+table tbody .partially {
+  background: hsl(252deg 100% 95%);
+}
+table tbody .done {
+  background: hsl(120deg 100% 95%);
+}
+tbody tr {
+  margin-bottom: 10px;
+  height: 40px;
+}
+
 .desc {
   text-align: start;
   padding-left: 1ch;
@@ -398,13 +408,10 @@ label {
   text-align: start;
   /* display: in; */
 }
-input[type='radio'] {
+input[type="radio"] {
   margin: 0;
 }
-tbody tr {
-  margin-bottom: 10px;
-  height: 40px;
-}
+
 .collgroup1 {
   width: 5%;
 }
@@ -419,13 +426,6 @@ tbody tr {
 }
 .collgroup5 {
   width: 15%;
-}
-
-table tbody .partially {
-  background: hsl(252deg 100% 95%);
-}
-table tbody .done {
-  background: hsl(120deg 100% 95%);
 }
 
 @media only screen and (max-width: 600px) {

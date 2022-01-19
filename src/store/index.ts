@@ -43,7 +43,7 @@ export interface State {
   user: userType
   cabinets: cabinetsType[]
   currentError: null
-  cabinetItems: []
+  cabinetItems: [{ type: string }]
   passedTime: number
   cabtimeWithStatus: cabtimeType['body']
   allSumm: number

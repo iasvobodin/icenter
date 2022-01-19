@@ -35,7 +35,7 @@
     <div class="task">
       <h2>Ваша текущая задача.</h2>
       <div
-        v-if="state.userTask"
+        v-if="state.userTask?.status === 'active'"
         style="cursor: pointer"
         class="task_card item__card"
         @click="$router.push(`/tasks/${state.userTask.id}`)"
