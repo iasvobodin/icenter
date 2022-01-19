@@ -1,8 +1,6 @@
 <template>
   <div>
-    <button v-if="computedItems" @click="createTask">
-      Приступить к работе
-    </button>
+    <button v-if="computedItems" @click="createTask">Приступить к работе</button>
     <h3 v-else>CabTime по этому шкафу не расчитан.</h3>
     <h3 style="color: red">{{ delay }}</h3>
   </div>
@@ -22,8 +20,8 @@ const projectInfoState = computed(() => store.state.projectInfo)
 const userInfoState = computed(() => store.state.user)
 
 const computedItems = computed(() =>
-  store.state.cabinetItems.filter((e) => e.type === 'cabtime')[0]
-    ? store.state.cabinetItems.filter((e) => e.type === 'cabtime')[0]
+  store.state.cabinetItems.find((e) => e.type === 'cabtime')
+    ? store.state.cabinetItems.find((e) => e.type === 'cabtime')
     : null
 )
 const state = reactive({
@@ -32,9 +30,8 @@ const state = reactive({
 })
 const delay = computed(() =>
   state.redirectMessage
-    ? `Необходимо остановить предыдущую задачу, переадресация через ${
-        state.second / 1000
-      } сек.`
+    ? `Необходимо остановить предыдущую задачу, переадресация через ${state.second / 1000
+    } сек.`
     : ''
 )
 const id = `task__${Date.now()}`
