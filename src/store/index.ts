@@ -32,7 +32,7 @@ import { strictEqual } from 'assert'
 // }
 
 // export const key: InjectionKey<Store<State>> = Symbol()
-
+type cabItems = { [key: string]: any }
 export interface State {
   activeErrors: errorType[]
   loader: false
@@ -43,7 +43,7 @@ export interface State {
   user: userType
   cabinets: cabinetsType[]
   currentError: null
-  cabinetItems: [{ type: string }]
+  cabinetItems: cabItems[]
   passedTime: number
   cabtimeWithStatus: cabtimeType['body']
   allSumm: number
