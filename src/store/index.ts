@@ -383,7 +383,7 @@ export const store = createStore<State>({
         `/api/cabinetItems?wo=${payload}`
       )
       await request()
-
+      debugger
       commit('SET_cabinetItems', response.value)
     },
     async GET_template({ commit, state }) {
