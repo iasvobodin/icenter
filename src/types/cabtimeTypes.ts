@@ -12,7 +12,7 @@ type cabtimeBody = {
 }
 
 export type cabtimeType = {
-  body: cabtimeBody[],
+  body: cabtimeBody[]
   groupByType: {
     type: string
     total: string
@@ -27,6 +27,6 @@ export type cabtimeType = {
     test: string
     admin: string
     final: string
-  },
+  }
   history?: [cabtimeBody[]]
 }

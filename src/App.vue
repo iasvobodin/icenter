@@ -192,7 +192,7 @@ watchEffect(() => {
 </script>
 
 <style>
-@import url("https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400&display=swap');
 :root {
   --size-300: clamp(0.7rem, 0.66rem + 0.2vw, 0.8rem);
   --size-400: clamp(0.88rem, 0.83rem + 0.24vw, 1rem);
@@ -229,8 +229,8 @@ body {
 }
 textarea,
 select,
-input[type="text"],
-input[type="number"] {
+input[type='text'],
+input[type='number'] {
   font-size: 16px;
   font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica,
     Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji;
@@ -238,7 +238,7 @@ input[type="number"] {
 }
 
 button,
-input[type="submit"] {
+input[type='submit'] {
   height: 30px;
   background-color: #ffffff;
   /* border: none; */
@@ -254,11 +254,11 @@ input[type="submit"] {
   margin: 5px 1vw;
 }
 button,
-input[type="submit"] {
+input[type='submit'] {
   width: min(85vw, 350px);
   /* margin: auto; */
 }
-input[type="submit"]:hover {
+input[type='submit']:hover {
   background-color: #00a2ff5b;
 }
 button:hover:enabled {
@@ -305,7 +305,7 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: "Roboto Slab", serif;
+  font-family: 'Roboto Slab', serif;
   font-weight: normal;
 }
 h1 {

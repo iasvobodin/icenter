@@ -379,7 +379,9 @@ export const store = createStore<State>({
       commit('SETcurrentProject', currentInfo)
     },
     async GET_cabinetItems({ commit }, payload: string) {
-      const { request, response } = useFetch<cabItems[]>(`/api/cabinetItems?wo=${payload}`)
+      const { request, response } = useFetch<cabItems[]>(
+        `/api/cabinetItems?wo=${payload}`
+      )
       await request()
 
       commit('SET_cabinetItems', response.value)

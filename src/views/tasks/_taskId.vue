@@ -19,7 +19,9 @@
             <th rowspan="2">Задача</th>
 
             <th class="vertical" rowspan="1">Сборщик</th>
-            <th style="text-align: center" class="vertical" rowspan="1">Время</th>
+            <th style="text-align: center" class="vertical" rowspan="1">
+              Время
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -32,7 +34,9 @@
             }"
           >
             <td class="desc">{{ value.name }}</td>
-            <td class="desc">{{ value.fitter!.split('@')[0].replace('.', ' ') }}</td>
+            <td class="desc">
+              {{ value.fitter!.split('@')[0].replace('.', ' ') }}
+            </td>
             <td style="text-align: center">{{ value.propTime }}</td>
           </tr>
         </tbody>
@@ -58,7 +62,11 @@
       @well-done="state.wellDone = $event"
     />
     <teleport to="body">
-      <confirm-popup :opened="state.popupOpened" @closed="popupClosed" @confirm="popupConfirmed">
+      <confirm-popup
+        :opened="state.popupOpened"
+        @closed="popupClosed"
+        @confirm="popupConfirmed"
+      >
         <template #header>
           <h3>
             Выберите другой WO
@@ -74,7 +82,11 @@
               <br />
               <small>(только для опытных пользователей)</small>
             </p>
-            <input v-model="state.alteredTime" placeholder="время работы в минутах" type="number" />
+            <input
+              v-model="state.alteredTime"
+              placeholder="время работы в минутах"
+              type="number"
+            />
           </div>
         </template>
       </confirm-popup>
@@ -115,8 +127,6 @@ const state = reactive({
   ctStatus: null,
 })
 
-
-
 const getTask = async () => {
   const { request: reqTask, response: resTask } = useFetch<taskType>(
     `/api/errors/${route.params.taskId}`
@@ -129,43 +139,44 @@ const getTask = async () => {
   }
 }
 
-
 const getCabTime = async (wo: string) => {
-  !state.task && await getTask()
+  !state.task && (await getTask())
   const { request: reqCabTime, response: resCabTime } = useFetch<cabtimeType>(
     `/api/errors/cabtime__${wo}`
   )
   try {
     await reqCabTime()
     //add history to cabtime
-    resCabTime.value!.history?.forEach(historyVersion => {
-      historyVersion.map(cabtimeBodyElement => {
-
-        const index = resCabTime.value?.body.findIndex(e => e._id === cabtimeBodyElement._id)
-        console.log(index);
+    resCabTime.value!.history?.forEach((historyVersion) => {
+      historyVersion.map((cabtimeBodyElement) => {
+        const index = resCabTime.value?.body.findIndex(
+          (e) => e._id === cabtimeBodyElement._id
+        )
+        console.log(index)
         resCabTime.value!.body[index!] = cabtimeBodyElement
       })
-
     })
 
-    const filterBody = resCabTime.value!.body.reduce((acc: cabtimeType['body'], e) => {
-      if (e.status !== 'done') {
-        acc.push(e)
-      }
-      if (e.status === 'partially') {
-        e.result -= e.propTime!
-        e.status = 'open'
-        acc.push(e)
-      }
+    const filterBody = resCabTime.value!.body.reduce(
+      (acc: cabtimeType['body'], e) => {
+        if (e.status !== 'done') {
+          acc.push(e)
+        }
+        if (e.status === 'partially') {
+          e.result -= e.propTime!
+          e.status = 'open'
+          acc.push(e)
+        }
 
-
-
-      return acc
-      // e.status !== 'done' && e.status !== 'partially'
-    }, [])
-    const partially =
-
-      state.cabTime = { ...resCabTime.value!, body: filterBody }
+        return acc
+        // e.status !== 'done' && e.status !== 'partially'
+      },
+      []
+    )
+    const partially = (state.cabTime = {
+      ...resCabTime.value!,
+      body: filterBody,
+    })
     // state.task = resTask.value!
     state.passedTime = CurrentTime - state.task.body.timeStart
     return resCabTime.value
@@ -219,11 +230,10 @@ const time = computed(
 
 const CurrentTime = Date.now()
 
-
 const emitAlteredWo = async (e: string) => {
-
-  if (!await getCabTime(e)) {
-    state.errorMessage = 'По данному WO не расчитан CabTime, \n изменения не сохранятся.'
+  if (!(await getCabTime(e))) {
+    state.errorMessage =
+      'По данному WO не расчитан CabTime, \n изменения не сохранятся.'
     return
   } else {
     state.errorMessage = ''
@@ -231,16 +241,14 @@ const emitAlteredWo = async (e: string) => {
   }
 }
 
-
-
 const ctWithStatus = computed(() =>
   store.state.cabtimeWithStatus.length !== 0
-    // eslint-disable-next-line vue/no-side-effects-in-computed-properties
-    ? store.state.cabtimeWithStatus.sort((a, b) => {
-      const x = a.status?.toLowerCase()
-      const y = b.status?.toLowerCase()
-      return x < y ? -1 : x > y ? 1 : 0
-    })
+    ? // eslint-disable-next-line vue/no-side-effects-in-computed-properties
+      store.state.cabtimeWithStatus.sort((a, b) => {
+        const x = a.status?.toLowerCase()
+        const y = b.status?.toLowerCase()
+        return x < y ? -1 : x > y ? 1 : 0
+      })
     : []
 )
 function updateInfo() {
@@ -255,7 +263,7 @@ async function popupConfirmed() {
     useFetch<cabinetsType>(`/api/GET_cabinetById?id=${state.alteredWO}`)
   if (state.alteredWO) {
     await reqCabinets()
-    let ttl;
+    let ttl
     if (resCabinets.value) {
       //CHECK CABTIME
       // const { request, response: cabtime } = useFetch(`/api/cabinetItems?wo=${state.alteredWO}&cabtime=true`)
@@ -270,7 +278,11 @@ async function popupConfirmed() {
       //DELETE CURRENT TASK
       const del = {
         method: 'post',
-        body: JSON.stringify({ id: state.task.id, ttl: 1, info: { wo: state.task.info.wo } }),
+        body: JSON.stringify({
+          id: state.task.id,
+          ttl: 1,
+          info: { wo: state.task.info.wo },
+        }),
       }
       const { request: deleteTask, response } = useFetch('/api/post_item', del)
       await deleteTask()
@@ -278,10 +290,9 @@ async function popupConfirmed() {
       //UPDATE CURRENT TASK
 
       state.task.info.wo = resCabinets.value.info.wo
-      state.task.info['project number'] = resCabinets.value.info['project number']
+      state.task.info['project number'] =
+        resCabinets.value.info['project number']
       state.task.info['cab name'] = resCabinets.value.info['cab name']
-
-
     }
   }
   if (state.alteredTime) {
@@ -297,13 +308,9 @@ async function popupConfirmed() {
   const { request: postUpdatedTask } = useFetch('/api/post_item', options)
   await postUpdatedTask()
 
-
-  state.popupOpened = false;
+  state.popupOpened = false
   // console.log(resCabinets.value);
-
 }
-
-
 
 // state.pps =
 // const startTick = ()=>{
@@ -315,11 +322,9 @@ setInterval(() => {
 
 //GET DB DATA
 
-
 const saveTask = async () => {
   //get actual cabtime
   const actualCabtime = await getCabTime(state.task.info.wo)
-
 
   //push history in cabtime
   // if (actualCabtime) {
@@ -337,12 +342,12 @@ const saveTask = async () => {
   //save task
   const { request: postUpdateTask } = useFetch('/api/post_item', {
     method: 'post',
-    body: JSON.stringify(state.task)
+    body: JSON.stringify(state.task),
   })
   //save cabtime
   const { request: postUpdateCabtime } = useFetch('/api/post_item', {
     method: 'post',
-    body: JSON.stringify(actualCabtime)
+    body: JSON.stringify(actualCabtime),
   })
   await postUpdateCabtime()
   await postUpdateTask()

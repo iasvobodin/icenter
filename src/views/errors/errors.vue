@@ -41,11 +41,15 @@
         <h3
           :class="{ error__item__vertical__title: k === 'Описание' }"
           class="error__item__title"
-        >{{ k }}:</h3>
+        >
+          {{ k }}:
+        </h3>
         <p
           :class="{ error__item__vertical__title: k === 'Описание' }"
           class="error__item__desc"
-        >{{ v?.includes('@') ? v.split('@')[0].replace('.', ' ') : v }}</p>
+        >
+          {{ v?.includes('@') ? v.split('@')[0].replace('.', ' ') : v }}
+        </p>
       </div>
     </div>
   </div>
@@ -76,17 +80,17 @@ import { errorType } from '@/types/errorType'
 import { useStore } from 'vuex'
 // export default {
 type modType = {
-  "id": string,
-  "info": {
-    "Проект": string,
-    "Шкаф": string,
-    "wo": string,
-    "Добавил": string,
-    "Мастер": string,
-    "status"?: string,
-    "Описание": string
-  },
-  "type": 'f_error' | 't_error',
+  id: string
+  info: {
+    Проект: string
+    Шкаф: string
+    wo: string
+    Добавил: string
+    Мастер: string
+    status?: string
+    Описание: string
+  }
+  type: 'f_error' | 't_error'
 }
 
 const state = reactive({
@@ -113,25 +117,22 @@ const getErrors = async () => {
     if (Object.keys(store.state.activeErrors).length === 0) {
       await request()
       store.commit('SET_activeErrors', response.value!)
-      console.log(store.state.activeErrors);
+      console.log(store.state.activeErrors)
     }
 
-    state.modErrors = store.state.activeErrors.map(e => {
+    state.modErrors = store.state.activeErrors.map((e) => {
       return {
-        "id": e.id,
-        "type": e.type,
+        id: e.id,
+        type: e.type,
         info: {
           ...e.info,
-          Описание: e.body.at(-1)!.Открыто.Описание
-        }
+          Описание: e.body.at(-1)!.Открыто.Описание,
+        },
       }
-    });
-
+    })
   } catch (error) {
-    console.log('err get errors', error);
-
+    console.log('err get errors', error)
   }
-
 }
 
 getErrors()
@@ -141,10 +142,10 @@ watch(selectedStatus, () => getErrors())
 const filter = computed(() => {
   return state.search
     ? state.modErrors.filter((e) =>
-      [e?.info.wo, e?.info['Проект']].some(
-        (s) => s && s.toLowerCase().includes(state.search.toLowerCase())
+        [e?.info.wo, e?.info['Проект']].some(
+          (s) => s && s.toLowerCase().includes(state.search.toLowerCase())
+        )
       )
-    )
     : state.modErrors
 })
 

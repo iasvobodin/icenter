@@ -16,14 +16,18 @@
       <thead class="head">
         <tr>
           <th rowspan="2">Задача</th>
-          <th v-if="statusMark" style="text-align: center" colspan="2">Выполнено</th>
+          <th v-if="statusMark" style="text-align: center" colspan="2">
+            Выполнено
+          </th>
           <th v-if="!statusMark" class="vertical" rowspan="1">CabTime (мин)</th>
           <th
             v-if="!statusMark"
             style="text-align: center"
             class="vertical"
             rowspan="1"
-          >Авто-расчёт (мин)</th>
+          >
+            Авто-расчёт (мин)
+          </th>
         </tr>
         <tr v-if="statusMark">
           <th style="text-align: center" class="vertical">Частично</th>
@@ -58,7 +62,9 @@
               @input="changeStatus($event, value._id, 'done')"
             />
           </td>
-          <td v-if="!statusMark" style="text-align: center">{{ value.result }}</td>
+          <td v-if="!statusMark" style="text-align: center">
+            {{ value.result }}
+          </td>
           <td v-if="!statusMark">
             <input
               class="cabtime__input"
@@ -408,7 +414,7 @@ label {
   text-align: start;
   /* display: in; */
 }
-input[type="radio"] {
+input[type='radio'] {
   margin: 0;
 }
 

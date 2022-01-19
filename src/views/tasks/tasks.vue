@@ -14,7 +14,7 @@ import { taskType } from '@/types/taskType'
 
 const state = reactive({
   ff: true,
-  tasks: <taskType[]>{}
+  tasks: <taskType[]>{},
 })
 const getUserTask = async () => {
   const { request, response } = useFetch<taskType[]>(

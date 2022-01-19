@@ -2,11 +2,11 @@
   <div v-if="userFromStore.info" class="holder">
     <h1 class="userHeader">
       <span>
-        {{
-          userFromStore.info.userDetails.split('@')[0].replace('.', ' ')
-        }}
+        {{ userFromStore.info.userDetails.split('@')[0].replace('.', ' ') }}
       </span>
-      <button v-if="localUser" class="logOut" @click="clearUser">Log out</button>
+      <button v-if="localUser" class="logOut" @click="clearUser">
+        Log out
+      </button>
     </h1>
 
     <!-- <p>в разработке</p> -->
@@ -20,14 +20,18 @@
       </label>
       <br />
       <br />
-      <button v-if="color" :disabled="colorChanged" @click="saveColor">Save color</button>
+      <button v-if="color" :disabled="colorChanged" @click="saveColor">
+        Save color
+      </button>
       <!-- <p class="info">{{userFromStore}}</p> -->
       <!-- <button v-if="localUser" @click="clearUser">Log out</button><br /> -->
       <button
         v-if="!userFromStore.body.photo"
         class="get__access"
         @click="tryToGetToken"
-      >Получить фотографию профиля</button>
+      >
+        Получить фотографию профиля
+      </button>
       <!-- <button class="get__access" @click="tryToSingIn">tryToSingIn</button>
       <p v-if="state.token">{{ state.token }}</p>-->
     </div>
@@ -109,7 +113,7 @@ const tryToSingIn = async () => {
 
   try {
     const loginResponse = await msalInstance.loginPopup(loginRequest)
-  } catch (err) { }
+  } catch (err) {}
 }
 
 const CurrentTime = Date.now()
@@ -144,7 +148,7 @@ const tryToGetToken = async () => {
       const acquireTokenPopup = await msalInstance.acquireTokenPopup(request)
       console.log(acquireTokenPopup, 'NOT exist SILENT')
       state.token = acquireTokenPopup
-    } catch (error) { }
+    } catch (error) {}
   }
   try {
     await updateUser(state.token)
@@ -300,7 +304,7 @@ onMounted(async () => {
 }
 .holder {
   min-height: calc(100vh - 125px);
-  background-color: v-bind("color");
+  background-color: v-bind('color');
 }
 .userHeader {
   width: fit-content;

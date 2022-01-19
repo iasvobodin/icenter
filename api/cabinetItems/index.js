@@ -1,12 +1,11 @@
 module.exports = async function (context, req, cabinetItems) {
-
   const clearData = (el) => {
     const objE = Object.entries(el).filter(
       (entries) => !entries[0].startsWith('_') //&& !entries[0].startsWith('ttl')
     )
     return Object.fromEntries(objE)
   }
-  const cabtime = clearData(cabinetItems.find((e) => e.type = 'cabtime'))
+  const cabtime = clearData(cabinetItems.find((e) => (e.type = 'cabtime')))
 
   if (req.query.cabtime) {
     // const cabtime = cabinetItems.find((e) => e.type = 'cabtime')
@@ -18,7 +17,6 @@ module.exports = async function (context, req, cabinetItems) {
 
     return
   }
-
 
   const modifiedError = cabinetItems
     .filter((e) => e.type.includes('error'))

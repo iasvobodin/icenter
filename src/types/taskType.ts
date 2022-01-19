@@ -16,6 +16,6 @@ export type taskType = {
     timeEnd: number
     timePassed: number
     completeTask: cabtimeType['body'] | null
-  },
+  }
   ttl?: number
 }

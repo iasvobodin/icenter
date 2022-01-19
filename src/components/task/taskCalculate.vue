@@ -5,7 +5,8 @@
       <p>
         Время по отмеченным задачам расчитывается автоматически, проверьте
         столбец результат, и внесите корректировки, если это необходимо.
-        <br />При ручной корректировке время работы, должно соответсвоть расчётному!
+        <br />При ручной корректировке время работы, должно соответсвоть
+        расчётному!
       </p>
     </div>
     <table>
@@ -20,7 +21,9 @@
           <th rowspan="2">Задача</th>
 
           <th class="vertical" rowspan="1">CabTime (мин)</th>
-          <th style="text-align: center" class="vertical" rowspan="1">Авто-расчёт (мин)</th>
+          <th style="text-align: center" class="vertical" rowspan="1">
+            Авто-расчёт (мин)
+          </th>
         </tr>
       </thead>
       <tbody>
@@ -67,7 +70,9 @@
     </table>
     <!-- <p v-if="state.difTime">Разница между затраченным и расчетным временем не должна превышать 10 минут. <br> Будьте внимательны при внесении изменений!<br> Расхождение в {{state.difTime}}минут </p> <br> -->
     <!-- <button v-if="!state.wellDone">Сохранить</button> -->
-    <h3 v-if="state.wellDone" style="color: red">Время работы должно равнятся расчётному! +- 10минут</h3>
+    <h3 v-if="state.wellDone" style="color: red">
+      Время работы должно равнятся расчётному! +- 10минут
+    </h3>
   </div>
 </template>
 
@@ -98,7 +103,6 @@ const props = defineProps({
   },
 })
 
-
 const state = reactive({
   alertMessage: '',
   allSumm: 0,
@@ -109,7 +113,7 @@ const state = reactive({
 const emit = defineEmits({
   cabtimeWithStatus: null,
   proportTime: null,
-  wellDone: null
+  wellDone: null,
 })
 const { inputData } = toRefs(props)
 
@@ -226,7 +230,7 @@ label {
   text-align: start;
   /* display: in; */
 }
-input[type="radio"] {
+input[type='radio'] {
   margin: 0;
 }
 tbody tr {

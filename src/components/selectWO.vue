@@ -1,8 +1,16 @@
 <template>
   <!-- <div @click="state.projectListActive = false" class="overlay"></div> -->
   <div class="choose__project">
-    <div v-if="!state.changeView" class="qr__icon" @click="state.changeView = !state.changeView"></div>
-    <div v-else class="edit__icon" @click="state.changeView = !state.changeView"></div>
+    <div
+      v-if="!state.changeView"
+      class="qr__icon"
+      @click="state.changeView = !state.changeView"
+    ></div>
+    <div
+      v-else
+      class="edit__icon"
+      @click="state.changeView = !state.changeView"
+    ></div>
 
     <qr-scanner v-if="state.changeView" @scanned-wo="scannedEmit"></qr-scanner>
     <div v-if="!state.changeView" class="global__holder">
@@ -16,11 +24,11 @@
           />
           <div class="controls">
             <span class="small__controls" @click="projectActive">
-              {{
-                state.projectListActive ? ' &#128070;' : '&#128071;'
-              }}
+              {{ state.projectListActive ? ' &#128070;' : '&#128071;' }}
             </span>
-            <span class="small__controls" @click="state.searchProject = ''">&#10060;</span>
+            <span class="small__controls" @click="state.searchProject = ''"
+              >&#10060;</span
+            >
           </div>
         </div>
         <div v-if="state.projectListActive" class="project_list_holder">
@@ -51,8 +59,11 @@
             <span
               class="small__controls"
               @click="state.cabinetListActive = !state.cabinetListActive"
-            >{{ state.cabinetListActive ? ' &#128070;' : '&#128071;' }}</span>
-            <span class="small__controls" @click="state.searchCabinet = ''">&#10060;</span>
+              >{{ state.cabinetListActive ? ' &#128070;' : '&#128071;' }}</span
+            >
+            <span class="small__controls" @click="state.searchCabinet = ''"
+              >&#10060;</span
+            >
           </div>
         </div>
         <div v-if="state.cabinetListActive" class="project_list_holder">
@@ -104,8 +115,10 @@ const actualProjects = computed(
   () =>
     <string[]>[
       ...cabinets.value.reduce(
-        (acc, p) =>//Object.values(p.stats?.cabTime) && 
-          acc.add(p.info['project number']),
+        (
+          acc,
+          p //Object.values(p.stats?.cabTime) &&
+        ) => acc.add(p.info['project number']),
         new Set()
       ),
     ]
@@ -113,23 +126,25 @@ const actualProjects = computed(
 const filterProject = computed(() =>
   state.searchProject
     ? actualProjects.value.filter((el) =>
-      el.toLowerCase().includes(state.searchProject.toLowerCase())
-    )
+        el.toLowerCase().includes(state.searchProject.toLowerCase())
+      )
     : actualProjects.value
 )
 
 const filterCabinets = computed(() =>
   state.searchCabinet
     ? store.state.cabinets
-      .filter((el) =>
+        .filter((el) =>
+          filterProject.value.some((s) => el.info['project number'] === s)
+        )
+        .filter((f) =>
+          [f.id, f.info['cab name']].some((ss) =>
+            ss.includes(state.searchCabinet)
+          )
+        )
+    : store.state.cabinets.filter((el) =>
         filterProject.value.some((s) => el.info['project number'] === s)
       )
-      .filter((f) =>
-        [f.id, f.info['cab name']].some((ss) => ss.includes(state.searchCabinet))
-      )
-    : store.state.cabinets.filter((el) =>
-      filterProject.value.some((s) => el.info['project number'] === s)
-    )
 )
 
 async function checkStore() {
@@ -252,7 +267,7 @@ ul {
   border-radius: 5px;
 }
 
-[type="text"] {
+[type='text'] {
   pointer-events: all;
   height: 30px;
   border: 1px solid transparent;

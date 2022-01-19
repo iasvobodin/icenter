@@ -27,7 +27,9 @@
       class="cabinets__category"
       :class="['tab-button', { active: state.currentCabinetTab === tab.title }]"
       @click="state.currentCabinetTab = tab.title"
-    >{{ tab.title }}</button>
+    >
+      {{ tab.title }}
+    </button>
     <br />
     <br />
     <component :is="condition(state.currentCabinetTab)"></component>
@@ -90,7 +92,7 @@ const condition = (a: string) => {
 .tab-button.active {
   background: #0066ff1f;
 }
-[type="radio"] {
+[type='radio'] {
   display: none;
 }
 
@@ -115,7 +117,7 @@ label {
   width: 100%;
 }
 
-[type="radio"]:checked ~ label {
+[type='radio']:checked ~ label {
   background: white;
   background-color: rgb(255, 255, 255);
   /* color: aliceblue; */

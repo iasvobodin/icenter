@@ -1,5 +1,4 @@
 module.exports = async function (context) {
-
   const clearData = (el) => {
     const objE = Object.entries(el).filter(
       (entries) => !entries[0].startsWith('_')

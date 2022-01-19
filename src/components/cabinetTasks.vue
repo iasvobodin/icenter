@@ -1,6 +1,8 @@
 <template>
   <div>
-    <button v-if="computedItems" @click="createTask">Приступить к работе</button>
+    <button v-if="computedItems" @click="createTask">
+      Приступить к работе
+    </button>
     <h3 v-else>CabTime по этому шкафу не расчитан.</h3>
     <h3 style="color: red">{{ delay }}</h3>
   </div>
@@ -30,8 +32,9 @@ const state = reactive({
 })
 const delay = computed(() =>
   state.redirectMessage
-    ? `Необходимо остановить предыдущую задачу, переадресация через ${state.second / 1000
-    } сек.`
+    ? `Необходимо остановить предыдущую задачу, переадресация через ${
+        state.second / 1000
+      } сек.`
     : ''
 )
 const id = `task__${Date.now()}`
@@ -59,19 +62,16 @@ const options = {
 }
 const { request: postNewTask, response } = useFetch('/api/post_item', options)
 
-const { request: reqUserTask, response: resUserActiveTask } = useFetch<taskType>(
-  `/api/GET_userTasks?user=${userInfoState.value.info.userDetails.toLowerCase()}`
-)
+const { request: reqUserTask, response: resUserActiveTask } =
+  useFetch<taskType>(
+    `/api/GET_userTasks?user=${userInfoState.value.info.userDetails.toLowerCase()}`
+  )
 
 const createTask = async () => {
-
-
-
-
   try {
     await reqUserTask()
     const userTask = resUserActiveTask.value
-    console.log(userTask);
+    console.log(userTask)
     debugger
     let delay = 5000
     state.second = delay

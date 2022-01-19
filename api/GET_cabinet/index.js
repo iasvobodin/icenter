@@ -7,19 +7,19 @@ module.exports = async function (context, req) {
     return Object.fromEntries(objE)
   }
   if (req.query.wo) {
-    const currentWo = context.bindings.inputWO.find((e) => e.id === req.query.wo)
+    const currentWo = context.bindings.inputWO.find(
+      (e) => e.id === req.query.wo
+    )
     context.res = {
-      body: clearData(currentWo)
+      body: clearData(currentWo),
     }
     return
   }
-
 
   if (req.query.post) {
     context.bindings.outputWO = req.rawBody
     return
   }
-
 
   context.res = {
     body: context.bindings.inputWO.map((e) => {

@@ -40,7 +40,6 @@ const hendleKeyDown = (e: KeyboardEvent) => {
   opened.value && e.key === 'Escape' && closed()
 }
 
-
 const confirm = () => {
   emit('confirm', false)
 }
@@ -55,7 +54,6 @@ onMounted(() => {
 onBeforeUnmount(() => {
   document.removeEventListener('keydown', hendleKeyDown)
 })
-
 </script>
 
 <style lang="css" scoped>

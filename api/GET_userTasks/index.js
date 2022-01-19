@@ -9,7 +9,7 @@ module.exports = async function (context, req, tasks) {
   }
   //active task
   if (req.query.user) {
-    const task = tasks.find(e => e.status === 'active')
+    const task = tasks.find((e) => e.status === 'active')
 
     if (task) {
       context.res = {
@@ -23,10 +23,9 @@ module.exports = async function (context, req, tasks) {
     }
   }
   if (req.query.all) {
-    tasks.forEach(e => clearData(e))
+    tasks.forEach((e) => clearData(e))
     context.res = {
       body: tasks,
     }
   }
-
 }
