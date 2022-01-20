@@ -32,12 +32,12 @@ module.exports = async function (context, req, cabinetItems) {
           _time: opened._time,
         },
         confirmed: {
-          _changed: confirmed?._changed || '',
-          _time: confirmed?._time || '',
+          _changed: confirmed._changed || '',
+          _time: confirmed._time || '',
         },
         closed: {
-          _changed: closed?._changed || '',
-          _time: closed?._time || '',
+          _changed: closed._changed || '',
+          _time: closed._time || '',
         },
       }
       // delete e.info
