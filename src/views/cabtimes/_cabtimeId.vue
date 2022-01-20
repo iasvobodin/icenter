@@ -2,36 +2,33 @@
   <div>
     <!-- <h1>BETTA VERSION</h1> -->
     <teleport to="body">
-      <confirm-popup
-        :opened="state.popupOpened"
-        @closed="popupClosed"
-        @confirm="popupConfirmed"
-      >
+      <confirm-popup :opened="state.popupOpened" @closed="popupClosed" @confirm="popupConfirmed">
         <template #header>
           <h3>Удалить cabTime?</h3>
         </template>
         <!-- <template #action>
           <button class="cancel" @click="popupClosed">Отмена</button>
           <button class="confirm" @click="confirm">Да</button>
-        </template> -->
+        </template>-->
       </confirm-popup>
     </teleport>
     <div>
       <h2>
-        <i> № : </i>
+        <i>№ :</i>
         {{ pInfo['project number'] }}
       </h2>
       <h2>
-        <i> Проект : </i>
+        <i>Проект :</i>
         {{ pInfo['Project Name'] }}
       </h2>
 
-      <h2><i>Шкаф : </i>{{ pInfo['cab name'] }}</h2>
-      <h2
-        class="wo__clicked"
-        @click="$router.push(`/cabinets/${$route.params.cabtimeId}`)"
-      >
-        <i>WO : </i>{{ $route.params.cabtimeId }}
+      <h2>
+        <i>Шкаф :</i>
+        {{ pInfo['cab name'] }}
+      </h2>
+      <h2 class="wo__clicked" @click="$router.push(`/cabinets/${$route.params.cabtimeId}`)">
+        <i>WO :</i>
+        {{ $route.params.cabtimeId }}
       </h2>
     </div>
     <cab-time-view
@@ -54,31 +51,23 @@
       @updated-photos="updatePhotoCollection"
     />
     <!-- @resized-blob="addPhotos($event)"
-      @delete-blob="delPhotos($event)" -->
+    @delete-blob="delPhotos($event)"-->
     <router-link
       v-if="
         !state.cabTime && $store.state.user.info.userRoles.includes('admin')
       "
       to="/cabtimes/addnewcabtime"
     >
-      <img
-        class="add__button"
-        src="/img/add.svg"
-        alt="Добавить новый CabTime"
-      />
+      <img class="add__button" src="/img/add.svg" alt="Добавить новый CabTime" />
     </router-link>
     <br />
     <br />
     <button
       v-if="state.cabTime && $store.state.user.info.userRoles.includes('admin')"
       @click="state.changeCabTime = !state.changeCabTime"
-    >
-      {{ state.changeCabTime ? 'Cancel' : 'Change' }}
-    </button>
+    >{{ state.changeCabTime ? 'Cancel' : 'Change' }}</button>
     <button v-if="state.changeCabTime" @click="postCabtime">Save</button>
-    <button v-if="state.changeCabTime" @click="state.popupOpened = true">
-      Delete
-    </button>
+    <button v-if="state.changeCabTime" @click="state.popupOpened = true">Delete</button>
     <br />
     <br />
   </div>
@@ -106,8 +95,9 @@ const route = useRoute()
 const router = useRouter()
 
 const setState = async () => {
+  debugger
   await store.dispatch('getCabinetsInfo', route.params.cabtimeId)
-  await store.dispatch('GET_cabinetItems', route.params.cabtimeId)
+  // await store.dispatch('GET_cabinetItems', route.params.cabtimeId)
 }
 setState()
 const pInfo = computed(() =>

@@ -9,7 +9,9 @@ export type taskType = {
     'cab name': string
     wo: string
   }
+  timeStart?: number
   type: string
+  version: number
   status: 'active' | 'completed'
   body: {
     timeStart: number

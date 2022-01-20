@@ -136,39 +136,31 @@ const getCabTime = async (wo: string) => {
     await reqCabTime()
     //add history to cabtime
     resCabTime.value!.history?.forEach((historyVersion, i) => {
-      console.log('qty iteration version', i);
+      // console.log('qty iteration version', i);
       historyVersion.map((cabtimeBodyElement, i) => {
-        console.log('qty iteration elements', i);
+        // console.log('qty iteration elements', i);
         const index = resCabTime.value?.body.findIndex(
           (e) => e._id === cabtimeBodyElement._id
         )
-        console.log(index)
+        // console.log(index)
         resCabTime.value!.body[index!] = cabtimeBodyElement
       })
     })
-    console.log(resCabTime.value!.body, 'AFTER MERGE');
 
     const filterBody = resCabTime.value!.body.reduce(
       (acc: cabtimeType['body'], e) => {
         if (e.status !== 'done') {
           if (e.status === 'partially') {
-            console.log('partially', e);
-
             e.result -= e.propTime!
             e.status = 'open'
-            // acc.push(e)
           }
           acc.push(e)
         }
-
-
         return acc
-        // e.status !== 'done' && e.status !== 'partially'
       },
       []
     )
 
-    console.log(filterBody, 'AFTER FILTER');
 
     state.cabTime = {
       ...resCabTime.value!,
@@ -322,15 +314,12 @@ setInterval(() => {
 const saveTask = async () => {
   //get actual cabtime
   const actualCabtime = await getCabTime(state.task.info.wo)
-
-  //push history in cabtime
-  // if (actualCabtime) {
-  //   actualCabtime.history = []
-
-  // }
+  // add history and version
+  let version = 1;
   if (actualCabtime) {
     if (actualCabtime.history) {
       actualCabtime.history.push(store.state.cabtimeWithStatus)
+      version = actualCabtime.history.length + 1
     } else {
       actualCabtime.history = [store.state.cabtimeWithStatus]
     }
@@ -341,6 +330,7 @@ const saveTask = async () => {
   state.task.body.timeEnd = Date.now()
   state.task.body.timePassed = Math.floor(state.passedTime! / 60000)
   state.task.status = 'completed'
+  state.task.version = version
   //save task
   const { request: postUpdateTask } = useFetch('/api/post_item', {
     method: 'post',

@@ -8,9 +8,9 @@
       <option value="open">Открыто</option>
       <option value="confirmed">Принято</option>
     </select>
-  </div> -->
+  </div>-->
   <!-- <h3 class="search__title">Поиск</h3> -->
-  <label for="search">Поиск: </label>
+  <label for="search">Поиск:</label>
   <input
     id="search"
     v-model="state.search"
@@ -18,7 +18,8 @@
     type="text"
     placeholder="WO или номер проекта"
   />
-  <br /><br />
+  <br />
+  <br />
   <div v-if="state.errors" class="errors__holder">
     <div
       v-for="(value, key, index) in filter"
@@ -35,15 +36,11 @@
         <h3
           :class="{ cabtime__item__vertical__title: k === 'Описание' }"
           class="cabtime__item__title"
-        >
-          {{ k }}:
-        </h3>
+        >{{ k }}:</h3>
         <p
           :class="{ cabtime__item__vertical__title: k === 'Описание' }"
           class="cabtime__item__desc"
-        >
-          {{ v?.includes('@') ? v.split('@')[0].replace('.', ' ') : v }}
-        </p>
+        >{{ v?.includes('@') ? v.split('@')[0].replace('.', ' ') : v }}</p>
       </div>
     </div>
   </div>
@@ -68,6 +65,24 @@ const state = reactive({
   fetchStatus: null,
   // errorMessage: "",
 })
+
+const getCabTimesss = async () => {
+  const { request, response } = useFetch(`/api/cabtimess`)
+  await request()
+  response.value.map(async (e) => {
+    e.history = []
+    const { request: postUpdateCabtime } = useFetch('/api/post_item', {
+      method: 'post',
+      body: JSON.stringify(e),
+    })
+    await postUpdateCabtime()
+    console.log('posted');
+  })
+
+
+}
+// getCabTimesss()
+
 // const selectedStatus = ref('open')
 const getCabTimes = async () => {
   const { request, response } = useFetch(`/api/cabTimes`)
@@ -105,10 +120,10 @@ onBeforeRouteLeave((to, from) => {
 const filter = computed(() => {
   return state.search
     ? state.errors.filter((e) =>
-        [e?.info.wo, e?.info['Проект']].some(
-          (s) => s && s.toLowerCase().includes(state.search.toLowerCase())
-        )
+      [e?.info.wo, e?.info['Проект']].some(
+        (s) => s && s.toLowerCase().includes(state.search.toLowerCase())
       )
+    )
     : state.errors
 })
 // return {

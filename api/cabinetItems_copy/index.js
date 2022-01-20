@@ -6,6 +6,11 @@ module.exports = async function (context, req, cabinetItems) {
     return Object.fromEntries(objE)
   }
   const cabtime = clearData(cabinetItems.find((e) => (e.type = 'cabtime')))
+  const allElements = cabinetItems.filter((e) => !e.type.includes('error'))
+  context.log(allElements);
+  allElements.forEach(e => clearData(e))
+
+
 
   if (req.query.cabtime) {
     // const cabtime = cabinetItems.find((e) => e.type = 'cabtime')
@@ -55,9 +60,9 @@ module.exports = async function (context, req, cabinetItems) {
       // return //e
       // }
     })
-  context.log([...modifiedError, cabtime])
+  // context.log([...modifiedError, cabtime])
   context.res = {
     // status: 200, /* Defaults to 200 */
-    body: [...modifiedError, cabtime],
+    body: [...modifiedError, ...allElements],
   }
 }

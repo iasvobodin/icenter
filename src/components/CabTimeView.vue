@@ -1,10 +1,6 @@
 <template>
   <section v-if="state.ctv3.groupByType">
-    <div
-      v-for="(t, i) in state.ctv3.groupByType"
-      :key="i"
-      class="table__wrapper"
-    >
+    <div v-for="(t, i) in state.ctv3.groupByType" :key="i" class="table__wrapper">
       <table>
         <colgroup>
           <col span="1" class="collgroup1" />
@@ -60,9 +56,7 @@
             </td>
             <td>{{ value.result }}</td>
           </tr>
-          <div v-if="changeData" class="add__row" @click="addNewRow(t.type)">
-            +
-          </div>
+          <div v-if="changeData" class="add__row" @click="addNewRow(t.type)">+</div>
         </tbody>
       </table>
     </div>
@@ -116,9 +110,7 @@
           <th>Сборка + Админ</th>
         </tr>
         <tr>
-          <td v-for="(val, index) in cabtimeResult" :key="index">
-            {{ val ? val : 0 }}
-          </td>
+          <td v-for="(val, index) in cabtimeResult" :key="index">{{ val ? val : 0 }}</td>
         </tr>
       </tbody>
     </table>
@@ -130,14 +122,14 @@
       :current-photos="inputData.photos"
       @resized-blob="addPhotos($event)"
       @delete-blob="delPhotos($event)"
-    /> -->
+    />-->
   </div>
 
   <!-- 
-        @resized-blob="errorPhotosBlob($event)" -->
+  @resized-blob="errorPhotosBlob($event)"-->
 </template>
 
-<script setup>
+<script setup >
 import itemPhotoUploader from '@/components/itemPhotoUploader.vue'
 import conditionalRender from '@/components/conditionalRender.vue'
 import chooseWoNumber from '@/components/chooseWoNumber.vue'
@@ -347,16 +339,16 @@ const cabtimeResult = computed(() => {
     admin: Math.round(
       Math.round(
         (+finalResult.value * +state.ctv3.control.adminCoef) / 100 +
-          +state.ctv3.control.documents
+        +state.ctv3.control.documents
       ) / 60
     ),
     final: Math.round(
       (+finalResult.value +
         Math.round(
           (+finalResult.value * +state.ctv3.control.adminCoef) / 100 +
-            +state.ctv3.control.documents
+          +state.ctv3.control.documents
         )) /
-        60
+      60
     ),
   }
 })
@@ -548,7 +540,7 @@ label {
   text-align: start;
   /* display: in; */
 }
-input[type='radio'] {
+input[type="radio"] {
   margin: 0;
 }
 .collgroup1 {
