@@ -380,7 +380,7 @@ export const store = createStore<State>({
     },
     async GET_cabinetItems({ commit }, payload: string) {
       const { request, response } = useFetch<cabItems[]>(
-        `/api/cabinetItems?wo=${payload}`
+        `/api/cabinetItems_copy?wo=${payload}`
       )
       await request()
       debugger

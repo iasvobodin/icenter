@@ -19,9 +19,7 @@
             <th rowspan="2">Задача</th>
 
             <th class="vertical" rowspan="1">Сборщик</th>
-            <th style="text-align: center" class="vertical" rowspan="1">
-              Время
-            </th>
+            <th style="text-align: center" class="vertical" rowspan="1">Время</th>
           </tr>
         </thead>
         <tbody>
@@ -34,9 +32,7 @@
             }"
           >
             <td class="desc">{{ value.name }}</td>
-            <td class="desc">
-              {{ value.fitter!.split('@')[0].replace('.', ' ') }}
-            </td>
+            <td class="desc">{{ value.fitter!.split('@')[0].replace('.', ' ') }}</td>
             <td style="text-align: center">{{ value.propTime }}</td>
           </tr>
         </tbody>
@@ -62,11 +58,7 @@
       @well-done="state.wellDone = $event"
     />
     <teleport to="body">
-      <confirm-popup
-        :opened="state.popupOpened"
-        @closed="popupClosed"
-        @confirm="popupConfirmed"
-      >
+      <confirm-popup :opened="state.popupOpened" @closed="popupClosed" @confirm="popupConfirmed">
         <template #header>
           <h3>
             Выберите другой WO
@@ -82,11 +74,7 @@
               <br />
               <small>(только для опытных пользователей)</small>
             </p>
-            <input
-              v-model="state.alteredTime"
-              placeholder="время работы в минутах"
-              type="number"
-            />
+            <input v-model="state.alteredTime" placeholder="время работы в минутах" type="number" />
           </div>
         </template>
       </confirm-popup>
@@ -244,11 +232,11 @@ const emitAlteredWo = async (e: string) => {
 const ctWithStatus = computed(() =>
   store.state.cabtimeWithStatus.length !== 0
     ? // eslint-disable-next-line vue/no-side-effects-in-computed-properties
-      store.state.cabtimeWithStatus.sort((a, b) => {
-        const x = a.status?.toLowerCase()
-        const y = b.status?.toLowerCase()
-        return x < y ? -1 : x > y ? 1 : 0
-      })
+    store.state.cabtimeWithStatus.sort((a, b) => {
+      const x = a.status?.toLowerCase()
+      const y = b.status?.toLowerCase()
+      return x < y ? -1 : x > y ? 1 : 0
+    })
     : []
 )
 function updateInfo() {
@@ -266,7 +254,7 @@ async function popupConfirmed() {
     let ttl
     if (resCabinets.value) {
       //CHECK CABTIME
-      // const { request, response: cabtime } = useFetch(`/api/cabinetItems?wo=${state.alteredWO}&cabtime=true`)
+      // const { request, response: cabtime } = useFetch(`/api/cabinetItems_copy?wo=${state.alteredWO}&cabtime=true`)
       // await request()
       // // console.log(response.value);
 
