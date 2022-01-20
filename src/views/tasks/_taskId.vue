@@ -135,8 +135,10 @@ const getCabTime = async (wo: string) => {
   try {
     await reqCabTime()
     //add history to cabtime
-    resCabTime.value!.history?.forEach((historyVersion) => {
-      historyVersion.map((cabtimeBodyElement) => {
+    resCabTime.value!.history?.forEach((historyVersion, i) => {
+      console.log('qty iteration version', i);
+      historyVersion.map((cabtimeBodyElement, i) => {
+        console.log('qty iteration elements', i);
         const index = resCabTime.value?.body.findIndex(
           (e) => e._id === cabtimeBodyElement._id
         )
@@ -144,27 +146,34 @@ const getCabTime = async (wo: string) => {
         resCabTime.value!.body[index!] = cabtimeBodyElement
       })
     })
+    console.log(resCabTime.value!.body, 'AFTER MERGE');
 
     const filterBody = resCabTime.value!.body.reduce(
       (acc: cabtimeType['body'], e) => {
         if (e.status !== 'done') {
+          if (e.status === 'partially') {
+            console.log('partially', e);
+
+            e.result -= e.propTime!
+            e.status = 'open'
+            // acc.push(e)
+          }
           acc.push(e)
         }
-        if (e.status === 'partially') {
-          e.result -= e.propTime!
-          e.status = 'open'
-          acc.push(e)
-        }
+
 
         return acc
         // e.status !== 'done' && e.status !== 'partially'
       },
       []
     )
-    const partially = (state.cabTime = {
+
+    console.log(filterBody, 'AFTER FILTER');
+
+    state.cabTime = {
       ...resCabTime.value!,
       body: filterBody,
-    })
+    }
     // state.task = resTask.value!
     state.passedTime = CurrentTime - state.task.body.timeStart
     return resCabTime.value
@@ -319,9 +328,14 @@ const saveTask = async () => {
   //   actualCabtime.history = []
 
   // }
-  actualCabtime && actualCabtime.history?.push(store.state.cabtimeWithStatus)
-  // debugger
-  // console.log(actualCabtime);
+  if (actualCabtime) {
+    if (actualCabtime.history) {
+      actualCabtime.history.push(store.state.cabtimeWithStatus)
+    } else {
+      actualCabtime.history = [store.state.cabtimeWithStatus]
+    }
+  }
+
   //mod task
   state.task.body.completeTask?.push(...store.state.cabtimeWithStatus)
   state.task.body.timeEnd = Date.now()
@@ -337,8 +351,17 @@ const saveTask = async () => {
     method: 'post',
     body: JSON.stringify(actualCabtime),
   })
-  await postUpdateCabtime()
-  await postUpdateTask()
+  try {
+    await postUpdateCabtime()
+  } catch (error) {
+    console.error('postCabtime', error)
+  }
+  try {
+    await postUpdateTask()
+  } catch (error) {
+    console.error('postTask', error)
+  }
+
   router.back()
 }
 onUnmounted(() => {
