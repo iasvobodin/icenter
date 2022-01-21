@@ -9,7 +9,18 @@ import { cabinetsType } from '@/types/cabinetsType'
 import { cabtimeType } from '@/types/cabtimeTypes'
 import { errorType } from '@/types/errorType'
 import { strictEqual } from 'assert'
-
+// import { cabinetInfo } from '@/types/cabinetsType'
+type cabinetInfo = {
+  "id": string,
+  "type": string,
+  "info": {
+    "wo": string,
+    "cab name": string,
+    "project number": string,
+    "Project Name": string,
+    "status": string
+  },
+}
 // const createName = (clientPrincipal) => {
 //   if (clientPrincipal.identityProvider === 'aad') {
 //     const splitName = clientPrincipal.userDetails.split('@')[0].split('.')
@@ -359,24 +370,57 @@ export const store = createStore<State>({
     //   // console.log(projects);
     // },
     async getCabinetsInfo({ commit }, payload: string) {
-      const projects: projectInfoType[] = []
-      const { request, response } = useFetch<projectType[]>(
-        '/api/projects?status=open'
+
+
+      const { request: reqCabinetInfo, response: resCabinetInfo } = useFetch<cabinetInfo>(
+        `/api/errors/info__${payload}`
       )
-      await request()
-      response.value!.forEach((p) => {
-        p.cabinets.forEach((c) => {
-          const payload: projectInfoType = {
-            ...c,
-            ...p.info.base,
-            ...p.info.extends,
-            'project number': p.id,
-          }
-          projects.push(payload)
-        })
-      })
-      const currentInfo = projects.find((e) => e.wo === payload)
-      commit('SETcurrentProject', currentInfo)
+      await reqCabinetInfo()
+
+
+      // const projects: projectInfoType[] = []
+      // const { request, response } = useFetch<projectType[]>(
+      //   '/api/projects?status=open'
+      // )
+      // await request()
+
+      // response.value!.forEach((p) => {
+      //   p.cabinets.forEach((c) => {
+
+
+      //     const { request, response } = useFetch('/api/post_item', {
+      //       method: 'POST', // или 'PUT'
+      //       body: JSON.stringify({
+      //         id: `info__${c.wo}`,
+      //         type: 'info',
+      //         info: {
+      //           wo: c.wo,
+      //           'cab name': c['cab name'],
+      //           'project number': p.id,
+      //           "Project Name": p.info.base['Project Name'],
+      //           status: p.status
+      //         }
+      //       }),
+      //     })
+      //     if (c.wo) {
+      //       // request()
+      //     }
+
+
+      //     const payload: projectInfoType = {
+      //       ...c,
+      //       ...p.info.base,
+      //       ...p.info.extends,
+      //       'project number': p.id,
+      //     }
+      //     projects.push(payload)
+      //   })
+      // })
+      // const currentInfo = projects.find((e) => e.wo === payload)
+
+
+      // commit('SETcurrentProject', currentInfo)
+      commit('SETcurrentProject', resCabinetInfo.value?.info)
     },
     async GET_cabinetItems({ commit }, payload: string) {
       const { request, response } = useFetch<cabItems[]>(

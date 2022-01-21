@@ -1,18 +1,18 @@
 <template>
   <div>
-    <div>
+    <div v-if="state.cabinetInfo">
       <h2>
         <span>№ :</span>
-        {{ pInfo['project number'] }}
+        {{ state.cabinetInfo.info['project number'] }}
       </h2>
       <h2>
         <span>Проект :</span>
-        {{ pInfo['Project Name'] }}
+        {{ state.cabinetInfo.info['Project Name'] }}
       </h2>
 
       <h2>
         <span>Шкаф :</span>
-        {{ pInfo['cab name'] }}
+        {{ state.cabinetInfo.info['cab name'] }}
       </h2>
       <h2>
         <span>WO :</span>
@@ -27,9 +27,7 @@
       class="cabinets__category"
       :class="['tab-button', { active: state.currentCabinetTab === tab.title }]"
       @click="state.currentCabinetTab = tab.title"
-    >
-      {{ tab.title }}
-    </button>
+    >{{ tab.title }}</button>
     <br />
     <br />
     <component :is="condition(state.currentCabinetTab)"></component>
@@ -44,11 +42,24 @@ import Errors from '@/components/cabinetErrors.vue'
 import Cabtime from '@/components/cabinetCabTime.vue'
 import Info from '@/components/cabinetInfo.vue'
 import Tasks from '@/components/cabinetTasks.vue'
+// import { cabinetInfo } from '@/types/cabinetsType'
 import { useStore } from 'vuex'
 
+type cabinetInfo = {
+  "id": string,
+  "type": string,
+  "info": {
+    "wo": string,
+    "cab name": string,
+    "project number": string,
+    "Project Name": string,
+    "status": string
+  },
+}
 const route = useRoute()
 const store = useStore()
 const state = reactive({
+  cabinetInfo: <cabinetInfo | null>null,
   cabinetItems: null,
   cabinetTabs: [
     { title: 'Информация' },
@@ -59,13 +70,27 @@ const state = reactive({
   currentCabinetTab: '',
 })
 
+const getCabinetInfo = async () => {
+  // try {
+  const { request: reqCabinetInfo, response: resCabinetInfo } = useFetch<cabinetInfo>(
+    `/api/errors/info__${route.params.cabinetId}`
+  )
+  await reqCabinetInfo()
+  state.cabinetInfo = resCabinetInfo.value!
+}
+
 const setState = async () => {
-  await store.dispatch('getCabinetsInfo', route.params.cabinetId)
+  // await store.dispatch('getCabinetsInfo', route.params.cabinetId)
+  await getCabinetInfo()
   await store.dispatch('GET_cabinetItems', route.params.cabinetId)
 }
 setState()
 
-const pInfo = computed(() => store.state.projectInfo)
+const pInfo = computed(() => state.cabinetInfo.id ? state.cabinetInfo : {})
+
+
+
+
 
 const condition = (a: string) => {
   switch (a) {
@@ -92,7 +117,7 @@ const condition = (a: string) => {
 .tab-button.active {
   background: #0066ff1f;
 }
-[type='radio'] {
+[type="radio"] {
   display: none;
 }
 
@@ -117,7 +142,7 @@ label {
   width: 100%;
 }
 
-[type='radio']:checked ~ label {
+[type="radio"]:checked ~ label {
   background: white;
   background-color: rgb(255, 255, 255);
   /* color: aliceblue; */

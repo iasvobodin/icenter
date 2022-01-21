@@ -42,6 +42,11 @@
           class="cabtime__item__desc"
         >{{ v?.includes('@') ? v.split('@')[0].replace('.', ' ') : v }}</p>
       </div>
+      <div class="cabtime__item">
+        <h3 class="cabtime__item__title">Время</h3>
+        <p class="cabtime__item__desc">{{ value.result.final }} ч.</p>
+      </div>
+      <!-- <p>Время {{ value.result.final }}</p> -->
     </div>
   </div>
   <!-- <div v-if="errorMessage">{{ errorMessage }}</div> -->
@@ -69,14 +74,13 @@ const state = reactive({
 const getCabTimesss = async () => {
   const { request, response } = useFetch(`/api/cabtimess`)
   await request()
-  response.value.map(async (e) => {
+  response.value.map(async (e, i) => {
     e.history = []
     const { request: postUpdateCabtime } = useFetch('/api/post_item', {
       method: 'post',
       body: JSON.stringify(e),
     })
-    await postUpdateCabtime()
-    console.log('posted');
+    setTimeout(() => postUpdateCabtime(), 5000 * i)
   })
 
 
