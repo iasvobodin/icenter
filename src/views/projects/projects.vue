@@ -5,12 +5,7 @@
     проектам ICenter.
   </p>
   <br />
-  <input
-    id="select__filter"
-    v-model="search"
-    type="text"
-    placeholder="SF, PM, №"
-  />
+  <input id="select__filter" v-model="state.search" type="text" placeholder="SF, PM, №" />
   <br />
   <button class="my__projects" @click="myProjects">Мои проекты</button>
   <br />
@@ -19,12 +14,7 @@
       <h3>Открытые</h3>
     </div>
     <div class="switch">
-      <input
-        id="switch-1"
-        v-model="selectedStatus"
-        type="checkbox"
-        class="switch-input"
-      />
+      <input id="switch-1" v-model="selectedStatus" type="checkbox" class="switch-input" />
       <label for="switch-1" class="switch-label">Switch</label>
     </div>
     <div class="close" :class="{ isactive: selectedStatus }">
@@ -33,9 +23,9 @@
   </div>
 
   <br />
-  <div v-if="errors">
+  <div v-if="state.errors">
     <div
-      v-for="status in actualStatus"
+      v-for="status in state.actualStatus"
       v-show="groupProjects(status).length != 0"
       :key="status"
     >
@@ -92,7 +82,7 @@
     </router-link>
   </div>
 
-  <section v-if="changeAllFlag" class="table">
+  <section v-if="state.changeAllFlag" class="table">
     <table style="width: 100%">
       <colgroup>
         <col span="1" style="width: 6%" />
@@ -106,26 +96,16 @@
       </colgroup>
       <tr style="border: solid 2px orange">
         <th>№</th>
-        <th
-          v-for="(vv, kk) in extendTemplate"
-          :key="kk"
-          @click="sortBy(kk, 'extends')"
-        >
-          {{ kk }}
-        </th>
+        <th v-for="(vv, kk) in extendTemplate" :key="kk" @click="sortBy(kk, 'extends')">{{ kk }}</th>
       </tr>
       <tbody>
-        <tr
-          v-for="(value, key, index) in projects"
-          :key="index"
-          @click="getIndex(key)"
-        >
+        <tr v-for="(value, key, index) in state.projects" :key="index" @click="getIndex(key)">
           <td>
             <h2 class="project__number">{{ value.id }}</h2>
           </td>
           <td v-for="(v, k) in extendTemplate" :key="k">
             <render-inputs
-              v-model="projects[key].info.extends"
+              v-model="state.projects[key].info.extends"
               :data-render="extendTemplate[k]"
             />
           </td>
@@ -137,169 +117,196 @@
   <br />
   <button
     v-if="
-      !changeAllFlag &&
-      errors &&
+      !state.changeAllFlag &&
+      state.errors &&
       $store.state.user.info.userRoles.includes('admin')
     "
-    @click="changeAllFlag = !changeAllFlag"
-  >
-    Change ALL
-  </button>
-  <button v-if="changeAllFlag && errors" @click="updateChangedProjects">
-    Update
-  </button>
+    @click="state.changeAllFlag = !state.changeAllFlag"
+  >Change ALL</button>
+  <button v-if="state.changeAllFlag && state.errors" @click="updateChangedProjects">Update</button>
   <br />
   <br />
 </template>
 
-<script>
-// import infoRender from '@/components/infoRender.vue'
+<script setup lang="ts">
 import { reactive, toRefs, watch, computed, ref } from 'vue'
 import { useFetch } from '@/hooks/fetch'
 import infoRender from '@/components/infoRender.vue'
 import { useStore } from 'vuex'
 import { onBeforeRouteLeave, onBeforeRouteUpdate, useRouter } from 'vue-router'
-// import conditionalRender from '@/components/conditionalRender.vue'
 import renderInputs from '@/components/renderInputs'
-export default {
-  components: {
-    // conditionalRender,
-    renderInputs,
-    infoRender,
-  },
-  setup() {
-    const state = reactive({
-      changeAllFlag: false,
-      errors: null,
-      resErrors: null,
-      fetchStatus: null,
-      errorMessage: '',
-      actualStatus: null,
-      search: '',
-      testStatus: {},
-      projects: null,
-      updateIndex: new Set(),
-    })
-    const getIndex = (i) => state.updateIndex.add(i)
-    const router = useRouter()
-    const filterProjects = computed(() => {
-      //  debugger
-      return state.search
-        ? state.errors.filter((e) =>
-            [e?.id, e.info.base?.PM, e.info.extends?.['senior fitter']].some(
-              (s) => s && s.toLowerCase().includes(state.search.toLowerCase())
-            )
-          )
-        : state.errors
-    })
-    const store = useStore()
-    // store.dispatch('extendProject')
-    const extendTemplate = computed(() => store.state.template.template.extend)
-    const groupProjects = (status) =>
-      filterProjects.value &&
-      filterProjects.value.filter(
-        (f) => f.info?.extends['status project'] === status
-      )
+// import { projectType } from '@/projectType'
 
-    router.beforeEach(async (to, from) => {
-      !store.state.template && (await store.dispatch('extendProject'))
-      // reject the navigation
-      return true
-      // only fetch the user if the id changed as maybe only the query or the hash changed
-      // console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
-      // return false
-    })
 
-    const getErrors = async (status) => {
-      const { request, response } = useFetch(`/api/projects?status=${status}`)
-      await request()
-      state.errors = response
-      state.projects = JSON.parse(JSON.stringify(state.errors))
-
-      state.actualStatus = [
-        ...state.errors.reduce(
-          (acc, pr) => acc.add(pr.info?.extends['status project']),
-          new Set()
-        ),
-      ].sort()
-
-      state.errors.sort(function (a, b) {
-        const nameA = a.info?.extends['status project']?.toLowerCase()
-        const nameB = b.info?.extends['status project']?.toLowerCase()
-        if (nameA < nameB) {
-          return -1
-        }
-        if (nameA > nameB) {
-          return 1
-        }
-        return 0
-      })
-    }
-    getErrors('open')
-
-    const selectedStatus = ref(false)
-    watch(selectedStatus, (newValue, oldValue) => {
-      if (newValue === true) {
-        getErrors('closed')
-      }
-      if (newValue === false) {
-        getErrors('open')
-      }
-    })
-    // console.log(Array.from({ length: 20 }).map(()=> ));
-    const postProject = async (index) => {
-      const { request: postProject } = useFetch('/api/POST_project', {
-        method: 'POST', // или 'PUT'
-        body: JSON.stringify({
-          ...state.projects[index],
-        }),
-      })
-      await postProject()
-    }
-    const updateChangedProjects = async () => {
-      await Promise.all(
-        [...state.updateIndex].map(async (e) => {
-          await postProject(e)
-        })
-      )
-      state.changeAllFlag = !state.changeAllFlag
-      selectedStatus.value === true ? getErrors('closed') : getErrors('open')
-    }
-    const sortBy = (el, p) => {
-      // console.log(el,p);
-      // debugger
-      state.projects.sort(function (a, b) {
-        const nameA = a.info[p][el]?.toString().toLowerCase()
-        const nameB = b.info[p][el]?.toString().toLowerCase()
-        if (nameA < nameB) {
-          return -1
-        }
-        if (nameA > nameB) {
-          return 1
-        }
-        return 0
-      })
-    }
-    const myProjects = () => {
-      if (state.search !== store.state.user.info.userDetails.toLowerCase()) {
-        state.search = store.state.user.info.userDetails.toLowerCase()
-      } else {
-        state.search = ''
-      }
-    }
-    return {
-      myProjects,
-      extendTemplate,
-      updateChangedProjects,
-      getIndex,
-      sortBy,
-      groupProjects,
-      selectedStatus,
-      filterProjects,
-      ...toRefs(state),
+type projectType = {
+  "id": string,
+  "status": "open" | 'closed',
+  "info": {
+    "base": {
+      "Project Name": string,
+      "SZ №": number,
+      "PM": string,
+      "Buyer": string,
+      "Contract Administrator": string,
+      "Buyout Administrator": string,
+      "Lead Engineer"?: string
+    },
+    "extends": {
+      "Specific requirement field": string,
+      "senior fitter": string,
+      "status project": string,
+      "Hours calculated": string,
+      "Hours actual": string,
+      "Comments field": string,
+      "Shipping date": string
     }
   },
+  "cabinets": [
+    {
+      "wo": string,
+      "cab name": string
+    } | null
+  ],
 }
+
+const router = useRouter()
+const store = useStore()
+
+// store.dispatch('createProjectInfo')
+router.beforeEach(async (to, from) => {
+  !store.state.template && (await store.dispatch('extendProject'))
+  return true
+})
+
+const selectedStatus = ref(false)
+
+
+const state = reactive({
+  changeAllFlag: false,
+  errors: <projectType[]>{},
+  actualStatus: <string[]>{},
+  search: '',
+  projects: <projectType[]>{},
+  updateIndex: new Set() as Set<number>,
+})
+
+const getIndex = (i: number) => state.updateIndex.add(i)
+
+const filterProjects = computed(() => {
+  //  debugger
+  return state.search
+    ? state.errors.filter((e) =>
+      [e?.id, e.info.base?.PM, e.info.extends?.['senior fitter']].some(
+        (s) => s && s.toLowerCase().includes(state.search.toLowerCase())
+      )
+    )
+    : state.errors
+})
+// store.dispatch('extendProject')
+const extendTemplate = computed(() => store.state.template.template.extend)
+
+watch(selectedStatus, (newValue, oldValue) => {
+  if (newValue === true) {
+    getErrors('closed')
+  }
+  if (newValue === false) {
+    getErrors('open')
+  }
+})
+
+const groupProjects = (status: string) =>
+  filterProjects.value &&
+  filterProjects.value.filter(
+    (f) => f.info?.extends['status project'] === status
+  )
+
+
+
+const getErrors = async (status: 'open' | 'closed') => {
+  const { request: reqProjects, response: resProjects } = useFetch<projectType[]>(`/api/projects?status=${status}`)
+  await reqProjects()
+  state.errors = resProjects.value!
+
+  state.projects = JSON.parse(JSON.stringify(resProjects.value))
+
+  state.actualStatus = [
+    ...resProjects.value!.reduce(
+      (acc, pr) => acc.add(pr.info?.extends['status project']),
+      new Set() as Set<string>
+    ),
+  ].sort()
+
+  state.errors.sort(function (a, b) {
+    const nameA = a.info?.extends['status project']?.toLowerCase()
+    const nameB = b.info?.extends['status project']?.toLowerCase()
+    if (nameA < nameB) {
+      return -1
+    }
+    if (nameA > nameB) {
+      return 1
+    }
+    return 0
+  })
+}
+getErrors('open')
+
+
+// console.log(Array.from({ length: 20 }).map(()=> ));
+const postProject = async (index: number) => {
+  const { request: postProject } = useFetch('/api/POST_project', {
+    method: 'POST', // или 'PUT'
+    body: JSON.stringify({
+      ...state.projects[index],
+    }),
+  })
+  await postProject()
+}
+const updateChangedProjects = async () => {
+  await Promise.all(
+    [...state.updateIndex].map(async (e) => {
+      await postProject(e)
+    })
+  )
+  state.changeAllFlag = !state.changeAllFlag
+  selectedStatus.value === true ? getErrors('closed') : getErrors('open')
+}
+
+
+const sortBy = (el: keyof projectType['info']['extends'], p: 'extends') => {
+
+  state.projects.sort(function (a, b) {
+    const nameA = a.info[p][el]?.toString().toLowerCase()
+    const nameB = b.info[p][el]?.toString().toLowerCase()
+    if (nameA < nameB) {
+      return -1
+    }
+    if (nameA > nameB) {
+      return 1
+    }
+    return 0
+  })
+}
+
+const myProjects = () => {
+  if (state.search !== store.state.user.info.userDetails.toLowerCase()) {
+    state.search = store.state.user.info.userDetails.toLowerCase()
+  } else {
+    state.search = ''
+  }
+}
+    // return {
+    //   myProjects,
+    //   extendTemplate,
+    //   updateChangedProjects,
+    //   getIndex,
+    //   sortBy,
+    //   groupProjects,
+    //   selectedStatus,
+    //   filterProjects,
+    //   ...toRefs(state),
+    // }
+  // },
+// }
 </script>
 
 <style lang="css" scoped>
@@ -347,7 +354,7 @@ h3 {
 }
 .switch-label::before,
 .switch-label::after {
-  content: '';
+  content: "";
   display: block;
   position: absolute;
   cursor: pointer;
@@ -383,7 +390,7 @@ h3 {
   word-wrap: break-word;
 }
 .add__button::after {
-  content: '';
+  content: "";
   width: 100%;
   height: 100%;
   position: absolute;
@@ -530,8 +537,8 @@ th {
 tr > th {
   cursor: pointer;
 }
-input[type='number'],
-input[type='text'] {
+input[type="number"],
+input[type="text"] {
   width: 100%;
   text-align: center;
 }

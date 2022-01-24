@@ -1,36 +1,36 @@
 <template>
   <div class="wrapper">
     <h1 class="project__header">Номер проекта {{ $route.params.projectId }}</h1>
-    <main v-if="project" class="project">
+    <main v-if="Object.keys(state.project).length !== 0" class="project">
       <section class="project__info">
         <h3>Основная информация</h3>
-        <info-render :info-data="project.info.base" />
+        <info-render :info-data="state.project.info.base" />
       </section>
       <section class="project__extends">
         <h3>Дополнительные сведения</h3>
-        <info-render v-if="!changeData" :info-data="project.info.extends" />
+        <info-render v-if="!state.changeData" :info-data="state.project.info.extends" />
         <conditional-render
           v-else
-          v-model="project.info.extends"
+          v-model="state.project.info.extends"
           :data-render="$store.state.template.template.extend"
           :required="!$store.state.user.info.userRoles.includes('admin')"
         />
       </section>
       <section class="project__cabinets">
         <h3>Шкафы</h3>
-        <table v-if="!updateWOFlag">
+        <table v-if="!state.updateWOFlag">
           <tr style="border: solid 2px orange">
             <th>WO</th>
             <th>Наименование</th>
           </tr>
           <tbody>
             <tr
-              v-for="(value, i) in project.cabinets"
+              v-for="(value, i) in state.project.cabinets"
               :key="i"
-              @click="$router.push(`/cabinets/${value.wo}`)"
+              @click="$router.push(`/cabinets/${value!.wo}`)"
             >
-              <td>{{ value.wo }}</td>
-              <td class="tg-0lax">{{ value['cab name'] }}</td>
+              <td>{{ value!.wo }}</td>
+              <td class="tg-0lax">{{ value!['cab name'] }}</td>
             </tr>
           </tbody>
         </table>
@@ -39,46 +39,45 @@
           <p>{{cab['cab name']}} {{cab.wo}}</p>
           
         </div>
-      </div> -->
+        </div>-->
         <choose-wo-number
-          v-if="updateWOFlag"
+          v-if="state.updateWOFlag"
           :multiple-permission="false"
-          :cabinet-list="newWO.cabinets"
-          @checked-wo="($event) => (project.cabinets = $event)"
+          :cabinet-list="state.newWO.cabinets"
+          @checked-wo="state.project.cabinets = $event"
         />
       </section>
     </main>
-    <section class="project__controls">
+    <section v-if="$route.query.status !== 'closed'" class="project__controls">
       <br />
       <button
-        v-if="!changeData && $store.state.user.info.userRoles.includes('admin')"
-        @click="changeData = !changeData"
-      >
-        Редактировать
-      </button>
+        v-if="!state.changeData && $store.state.user.info.userRoles.includes('admin')"
+        @click="state.changeData = !state.changeData"
+      >Редактировать</button>
       <button v-else @click="updateProject">Сохранить</button>
       <button
         v-if="
-          project?.info.extends['status project'] ===
+          state.project?.info?.extends['status project'] ===
           '10-Отгружено Заказчику/Shipped to Customer'
         "
         @click="closeProject"
-      >
-        Перевести в закрытые
-      </button>
-      <button v-if="changeData" @click="updateWO">Обновить данные</button>
+      >Перевести в закрытые</button>
+      <button v-if="state.changeData" @click="updateWO">Обновить данные</button>
       <button
         v-if="$store.state.user.info.userRoles.includes('admin')"
-        @click="generatedQR = !generatedQR"
-      >
-        Сгенерировать QR
-      </button>
+        @click="state.generatedQR = !state.generatedQR"
+      >Сгенерировать QR</button>
       <br />
       <br />
     </section>
-    <section v-if="generatedQR" class="qrs">
+
+    <h2 v-else>
+      <br />
+      <br />Нельзя просто взять, и изменить закрытый проект.
+    </h2>
+    <section v-if="state.generatedQR" class="qrs">
       <generate-qr-code
-        v-for="(value, i) in project.cabinets"
+        v-for="(value, i) in state.project.cabinets"
         :key="i"
         :generate-data="value"
       />
@@ -86,7 +85,7 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
 import chooseWoNumber from '@/components/chooseWoNumber.vue'
 import generateQrCode from '@/components/generateQrCode.vue'
 import { reactive, toRefs } from 'vue'
@@ -94,121 +93,192 @@ import { useFetch } from '@/hooks/fetch'
 import { useRouter, useRoute } from 'vue-router'
 import conditionalRender from '@/components/conditionalRender.vue'
 import infoRender from '@/components/infoRender.vue'
-export default {
-  components: {
-    conditionalRender,
-    infoRender,
-    chooseWoNumber,
-    generateQrCode,
-  },
-  setup() {
-    const route = useRoute()
-    const router = useRouter()
-    const state = reactive({
-      project: null,
-      newWO: null,
-      changeData: false,
-      updateWOFlag: false,
-      resCabinets: {},
-      generatedQR: false,
-    })
-    const getProject = async () => {
-      const { request, response } = useFetch(
-        `/api/projects?status=${
-          route.query.status ? 'closed' : 'open'
-        }&project=${route.params.projectId}`
-      )
-      if (!state.project) {
-        await request()
-        state.project = response
-        state.resCabinets = response.value.cabinets
-      }
+import { useStore } from 'vuex'
 
-      // state.selected = state.project
-    }
-    const updateWO = async () => {
-      const { request, response } = useFetch(
-        `/api/cabinetList?updateWO=true&project=${
-          route.params.projectId.includes(',')
-            ? route.params.projectId.replace(',', '.')
-            : route.params.projectId
-        }`
-      )
-      if (!state.newWO) {
-        await request()
-        // const {cabinets} = JSON.parse(response)
-        state.newWO = response
-        state.project.info.base = response.value.info
-      }
-      state.updateWOFlag = !state.updateWOFlag
-    }
-    getProject()
 
-    const updateProject = async () => {
-      const updateOptions = {
-        method: 'POST', // или 'PUT'
-        body: JSON.stringify({
-          ...state.project,
-          id: state.project.id.includes('.')
-            ? state.project.id.replace('.', ',')
-            : state.project.id,
-        }),
-      }
-      const { request, response } = useFetch(
-        `/api/projects?updateProject=true`,
-        updateOptions
-      )
-      await request()
-      state.changeData = !state.changeData
-      state.updateWOFlag = false
-    }
-    const closeProject = async () => {
-      const updateOptions = {
-        method: 'POST', // или 'PUT'
-        body: JSON.stringify({
-          ...state.project,
-          id: state.project.id.includes('.')
-            ? state.project.id.replace('.', ',')
-            : state.project.id,
-          status: 'closed',
-        }),
-      }
-      const deleteOptions = {
-        method: 'POST', // или 'PUT'
-        body: JSON.stringify({
-          id: state.project.id.includes('.')
-            ? state.project.id.replace('.', ',')
-            : state.project.id,
-          status: 'open',
-          ttl: 1,
-        }),
-      }
-      const { request: updateProject } = useFetch(
-        `/api/projects?updateProject=true`,
-        updateOptions
-      )
-      const { request: deleteProject } = useFetch(
-        `/api/projects?updateProject=true`,
-        deleteOptions
-      )
-
-      await deleteProject()
-      setTimeout(async () => {
-        await updateProject()
-        console.log('UPDATE PROJECT')
-      }, 1)
-
-      router.push('/projects/')
-      // state.changeData = !state.changeData
-      // state.updateWOFlag = false
-    }
-    return {
-      updateWO,
-      updateProject,
-      closeProject,
-      ...toRefs(state),
+type projectType = {
+  "id": string,
+  "status": "open" | 'closed',
+  "info": {
+    "base": {
+      "Project Name": string,
+      "SZ №": number,
+      "PM": string,
+      "Buyer": string,
+      "Contract Administrator": string,
+      "Buyout Administrator": string,
+      "Lead Engineer"?: string
+    },
+    "extends": {
+      "Specific requirement field": string,
+      "senior fitter": string,
+      "status project": string,
+      "Hours calculated": string,
+      "Hours actual": string,
+      "Comments field": string,
+      "Shipping date": string
     }
   },
+  "cabinets": [
+    {
+      "wo": string,
+      "cab name": string
+    } | null
+  ],
+}
+
+type updatedWo = {
+  Cabinets: string
+  Project: string
+  cabinets: projectType['cabinets'][]
+  id: string
+  info: {
+    Buyer: string
+    'Buyout Administrator': string
+    'Contract Administrator': string
+    'Lead Engineer': string
+    PM: string
+    'Project Name': string
+    'SZ №': number
+  }
+}
+
+// export default {
+//   components: {
+//     conditionalRender,
+//     infoRender,
+//     chooseWoNumber,
+//     generateQrCode,
+//   },
+//   setup() {
+const route = useRoute()
+const router = useRouter()
+const store = useStore()
+const state = reactive({
+  project: <projectType>{},
+  newWO: <updatedWo>{},
+  changeData: false,
+  updateWOFlag: false,
+  resCabinets: {},
+  generatedQR: false,
+})
+const getProject = async () => {
+  const { request, response } = useFetch<projectType>(
+    `/api/projects?status=${route.query.status ? 'closed' : 'open'
+    }&project=${route.params.projectId}`
+  )
+  if (Object.keys(state.project).length === 0) {
+    await request()
+    state.project = response.value!
+    state.resCabinets = response.value!.cabinets
+  }
+
+  // state.selected = state.project
+}
+const updateCabinetInfo = async (payload: projectType) => {
+
+  payload.cabinets.forEach((c) => {
+    if (c) {
+      const { request, response } = useFetch('/api/post_item', {
+        method: 'POST',
+        body: JSON.stringify({
+          id: `info__${c.wo}`,
+          type: 'info',
+          info: {
+            wo: c.wo,
+            'cab name': c['cab name'],
+            'project number': payload.id,
+            "Project Name": payload.info.base['Project Name'],
+            status: payload.status
+          }
+        }),
+      })
+      if (c.wo) {
+        console.log('updateWOINFO');
+        request()
+      }
+    }
+  })
+}
+
+const updateWO = async () => {
+  const { request, response } = useFetch<updatedWo>(
+    `/api/cabinetList?updateWO=true&project=${typeof route.params.projectId === 'string' && route.params.projectId.includes(',')
+      ? route.params.projectId.replace(',', '.')
+      : route.params.projectId
+    }`
+  )
+  if (Object.keys(state.newWO).length === 0) {
+    await request()
+    // const {cabinets} = JSON.parse(response)
+    state.newWO = response.value!
+    state.project.info.base = response.value!.info
+  }
+  state.updateWOFlag = !state.updateWOFlag
+}
+
+getProject()
+
+const updateProject = async () => {
+  const updateOptions = {
+    method: 'POST', // или 'PUT'
+    body: JSON.stringify({
+      ...state.project,
+      id: state.project.id.includes('.')
+        ? state.project.id.replace('.', ',')
+        : state.project.id,
+    }),
+  }
+  const { request, response } = useFetch(
+    `/api/projects?updateProject=true`,
+    updateOptions
+  )
+  await request()
+  await updateCabinetInfo(state.project)
+  state.changeData = !state.changeData
+  state.updateWOFlag = false
+}
+
+const closeProject = async () => {
+  const updateOptions = {
+    method: 'POST', // или 'PUT'
+    body: JSON.stringify({
+      ...state.project,
+      id: state.project.id.includes('.')
+        ? state.project.id.replace('.', ',')
+        : state.project.id,
+      status: 'closed',
+    }),
+  }
+  const deleteOptions = {
+    method: 'POST', // или 'PUT'
+    body: JSON.stringify({
+      id: state.project.id.includes('.')
+        ? state.project.id.replace('.', ',')
+        : state.project.id,
+      status: 'open',
+      ttl: 5,
+    }),
+  }
+  const { request: updateProject } = useFetch(
+    `/api/projects?updateProject=true`,
+    updateOptions
+  )
+  const { request: deleteProject } = useFetch(
+    `/api/projects?updateProject=true`,
+    deleteOptions
+  )
+
+  await deleteProject()
+  // setTimeout(async () => {
+  await updateProject()
+
+  await updateCabinetInfo({ ...state.project, status: 'closed' })// store.dispatch('createProjectInfo', )
+  // console.log('UPDATE PROJECT')
+  // }, 1)
+
+  router.push('/projects/')
+
 }
 </script>
 
@@ -254,7 +324,7 @@ tbody tr:hover {
 }
 .project:last-child {
   border-right: 1px solid white;
-  background-color: lime;
+  /* background-color: lime; */
 }
 .project__controls {
   /* position: absolute; */
