@@ -369,6 +369,37 @@ export const store = createStore<State>({
     //   commit('SETcurrentProject', currentInfo)
     //   // console.log(projects);
     // },
+    // async createProjectInfo(payload:projectType) {
+    //   const projects: projectInfoType[] = []
+    //   const { request, response } = useFetch<projectType[]>(
+    //     '/api/projects?status=open'
+    //   )
+    //   await request()
+
+    //   // response.value!.forEach((p) => {
+    //     payload.cabinets.forEach((c) => {
+    //       const { request, response } = useFetch('/api/post_item', {
+    //         method: 'POST', // или 'PUT'
+    //         body: JSON.stringify({
+    //           id: `info__${c.wo}`,
+    //           type: 'info',
+    //           info: {
+    //             wo: c.wo,
+    //             'cab name': c['cab name'],
+    //             'project number': payload.id,
+    //             "Project Name": payload.info.base['Project Name'],
+    //             status: payload.status
+    //           }
+    //         }),
+    //       })
+    //       if (c.wo) {
+    //         console.log('createProjectInfo');
+
+    //         request()
+    //       }
+    //     })
+    //   // })
+    // },
     async getCabinetsInfo({ commit }, payload: string) {
 
 
@@ -407,20 +438,22 @@ export const store = createStore<State>({
       //     }
 
 
-      //     const payload: projectInfoType = {
-      //       ...c,
-      //       ...p.info.base,
-      //       ...p.info.extends,
-      //       'project number': p.id,
-      //     }
-      //     projects.push(payload)
+      // //     const payload: projectInfoType = {
+      // //       ...c,
+      // //       ...p.info.base,
+      // //       ...p.info.extends,
+      // //       'project number': p.id,
+      // //     }
+      // //     projects.push(payload)
       //   })
       // })
       // const currentInfo = projects.find((e) => e.wo === payload)
 
 
       // commit('SETcurrentProject', currentInfo)
-      commit('SETcurrentProject', resCabinetInfo.value?.info)
+      console.log(resCabinetInfo.value!.info, 'resCabinetInfo.value!.info');
+
+      commit('SETcurrentProject', resCabinetInfo.value!.info)
     },
     async GET_cabinetItems({ commit }, payload: string) {
       const { request, response } = useFetch<cabItems[]>(

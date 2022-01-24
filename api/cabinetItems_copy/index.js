@@ -1,18 +1,21 @@
 module.exports = async function (context, req, cabinetItems) {
   const clearData = (el) => {
-    const objE = Object.entries(el).filter(
-      (entries) => !entries[0].startsWith('_') //&& !entries[0].startsWith('ttl')
-    )
+    const objE = Object.entries(el).filter((entries) => !entries[0].startsWith('_'))
+    // context.log('inside clearData', Object.fromEntries(objE))
     return Object.fromEntries(objE)
   }
-  const cabtime = clearData(cabinetItems.find((e) => (e.type = 'cabtime')))
-  const allElements = cabinetItems.filter((e) => !e.type.includes('error'))
-  context.log(allElements);
-  allElements.forEach(e => clearData(e))
 
+  const allElements = cabinetItems.reduce((acc, e) => {
+    if (!e.type.includes('error')) {
+      acc.push(clearData(e))
+    }
+    return acc
+  }, [])
 
 
   if (req.query.cabtime) {
+    const cabtime = clearData(cabinetItems.find((e) => (e.type = 'cabtime')))
+
     // const cabtime = cabinetItems.find((e) => e.type = 'cabtime')
     if (cabtime) {
       context.res = {

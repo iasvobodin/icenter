@@ -1,18 +1,18 @@
 <template>
   <div>
-    <div v-if="state.cabinetInfo">
+    <div v-if="pInfo">
       <h2>
         <span>№ :</span>
-        {{ state.cabinetInfo.info['project number'] }}
+        {{ pInfo['project number'] }}
       </h2>
       <h2>
         <span>Проект :</span>
-        {{ state.cabinetInfo.info['Project Name'] }}
+        {{ pInfo['Project Name'] }}
       </h2>
 
       <h2>
         <span>Шкаф :</span>
-        {{ state.cabinetInfo.info['cab name'] }}
+        {{ pInfo['cab name'] }}
       </h2>
       <h2>
         <span>WO :</span>
@@ -80,13 +80,13 @@ const getCabinetInfo = async () => {
 }
 
 const setState = async () => {
-  // await store.dispatch('getCabinetsInfo', route.params.cabinetId)
-  await getCabinetInfo()
+  await store.dispatch('getCabinetsInfo', route.params.cabinetId)
+  // await getCabinetInfo()
   await store.dispatch('GET_cabinetItems', route.params.cabinetId)
 }
 setState()
 
-const pInfo = computed(() => state.cabinetInfo.id ? state.cabinetInfo : {})
+const pInfo = computed(() => store.state.projectInfo.wo ? store.state.projectInfo : null)
 
 
 

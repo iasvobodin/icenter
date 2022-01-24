@@ -7,7 +7,28 @@ export type Extend = {
   min?: number
   max?: number
 }
+type Extends = {
+  "Specific requirement field": string,
+  "senior fitter": string,
+  "status project": string,
+  "Hours calculated": string,
+  "Hours actual": string,
+  "Comments field": string,
+  "Shipping date": string
+}
 
+type Base = {
+  "Project Name": string,
+  "SZ №": number,
+  "PM": string,
+  "Buyer": string,
+  "Contract Administrator": string,
+  "Buyout Administrator": string,
+  "Lead Engineer"?: string
+}
+
+
+type a = keyof Extends
 export type templateType = {
   id: 'ver1'
   type: 'templateProject'
@@ -20,7 +41,7 @@ export type templateType = {
       [index: string]: Extend
     }
     extend: {
-      [index: string]: Extend
+      [key in keyof Extends]: Extend
     }
   }
   CabTimeV3: cabtimeType
