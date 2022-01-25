@@ -1,4 +1,5 @@
 import { cabtimeType } from './cabtimeTypes'
+import { projectInfoType } from '@/types/projectInfoType'
 
 export type Extend = {
   _field: string
@@ -6,6 +7,7 @@ export type Extend = {
   value: string | string[]
   min?: number
   max?: number
+  search?: [{ id: string, userPrincipalName: string }]
 }
 type Extends = {
   "Specific requirement field": string,
@@ -38,7 +40,7 @@ export type templateType = {
       'status project': string[]
     }
     extendManual: {
-      [index: string]: Extend
+      [key in keyof projectInfoType]: Extend
     }
     extend: {
       [key in keyof Extends]: Extend

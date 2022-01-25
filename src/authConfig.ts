@@ -6,7 +6,7 @@ const CLIENT_ID = import.meta.env.VITE_CLIENT_ID as string
 export const msalConfig = {
   auth: {
     clientId: CLIENT_ID!,
-    redirectUri: `${baseUrl}/user`, //defaults to application start page
+    redirectUri: `${baseUrl}/user`,// || `${baseUrl}/projects/addnewprojectManual`, // http://localhost:4280/projects/addnewprojectManual//defaults to application start page
     postLogoutRedirectUri: `${baseUrl}/user`,
   },
   cache: {

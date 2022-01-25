@@ -1,5 +1,5 @@
-export interface projectInfoType {
-  'project number': string
+export type projectInfoType = {
+  'Project Number': string
   wo: string
   'cab name': string
   'Project Name': string

@@ -7,26 +7,51 @@
       :key="i"
       class="error__item"
     >
-      <h4>
-        {{ k }}
-      </h4>
-      <render-inputs
-        v-model.lazy="selected.extend"
-        :required="true"
-        :data-render="v"
-      />
+      <h4>{{ k }}</h4>
+      <div v-if="v._field === 'search'">
+        <div class="error__item">
+          <!-- <h4>{{ k }}</h4> -->
+          <input :value="v.value" type="text" @input="searchPeople(k, $event)" />
+          <!-- <div class="searchRes">
+            <p
+              v-for="(user, index) in selected.extend[k].search"
+              :key="index"
+              class="search__result"
+              @click="choosePeople(k, user.userPrincipalName)"
+            >{{ user.userPrincipalName }}</p>
+          </div>-->
+        </div>
+      </div>
+      <render-inputs v-else v-model.lazy="selected.extend" :required="true" :data-render="v" />
     </div>
 
+    <!-- <div v-for="(v, k, i) in selected.projectSearchReople" :key="i" class="error__item">
+      <h4>{{ k }}</h4>
+      <input
+        :value="selected.projectSearchReople[k].value"
+        type="text"
+        @input="searchPeople(k, $event)"
+      />
+      <div class="searchRes">
+        <p
+          v-for="(user, index) in selected.projectSearchReople[k].search"
+          :key="index"
+          class="search__result"
+          @click="choosePeople(k, user.userPrincipalName)"
+        >{{ user.userPrincipalName }}</p>
+      </div>
+    </div>-->
+
     <div class="cabinets">
-      <br /><br />
+      <br />
+      <br />
       <div v-for="(item, i) in selected.cabinets" :key="i">
-        wo <input v-model="selected.cabinets[i].wo" required type="text" /> cab
+        wo
+        <input v-model="selected.cabinets[i].wo" required type="text" /> cab
         name
-        <input
-          v-model="selected.cabinets[i]['cab name']"
-          required
-          type="text"
-        /><br /><br />
+        <input v-model="selected.cabinets[i]['cab name']" required type="text" />
+        <br />
+        <br />
       </div>
       <div class="add__row" @click="addNewRow">+</div>
     </div>
@@ -34,31 +59,112 @@
   </form>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { useFetch } from '@/hooks/fetch'
 import { useRouter } from 'vue-router'
-import { watch, ref, reactive } from '@vue/runtime-core'
+import { watch, computed, ref, reactive } from '@vue/runtime-core'
 import renderInputs from '@/components/renderInputs'
+import { projectInfoType } from '@/types/projectInfoType'
+import { getAuthGraph } from '@/hooks/useGraph'
+import { templateType } from '@/types/templateType'
+import { useStore } from 'vuex'
+
 
 const router = useRouter()
-
+const store = useStore()
 const selected = reactive({
-  extend: {},
+  search: "",
+  resSearch: null as any,
+  extend: <templateType['template']['extendManual']>{},
   cabinets: [
     {
       wo: '',
       'cab name': '',
     },
   ],
+  token: '',
+  projectSearchReople: {
+    'PM': { search: [{ id: "", userPrincipalName: "" }], value: '' },
+    'Buyer': { search: [{ id: "", userPrincipalName: "" }], value: '' },
+    'Contract Administrator': { search: [{ id: "", userPrincipalName: "" }], value: '' },
+    'Buyout Administrator': { search: [{ id: "", userPrincipalName: "" }], value: '' },
+    'Lead Engineer': { search: [{ id: "", userPrincipalName: "" }], value: '' },
+  }
+})
+const extendStore = computed(() => store.state.template.template.extendManual)
+const copy = computed(() => JSON.parse(JSON.stringify(extendStore.value)))
+
+
+const { getToken, token } = getAuthGraph()
+
+const searchPeople = async (key: keyof projectInfoType, event: Event) => {
+  if (!(event.target instanceof HTMLInputElement)) return
+
+  copy[key].value = event.target.value
+  // selected.projectSearchReople[key].value = event.target.value
+
+  copy[key].search = (await reqGraph(selected.token, `https://graph.microsoft.com/v1.0/me/people/?$search=${event.target.value}&Select=userPrincipalName`)).value
+
+}
+const choosePeople = (k: keyof projectInfoType, el: string) => {
+  selected.extend[k].value = el
+  selected.extend[k].search = [{ id: "", userPrincipalName: "" }]
+}
+const tryGetToken = async () => {
+
+  await getToken()
+  selected.token = token.value!.accessToken
+}
+!selected.token && tryGetToken()
+
+
+// eslint-disable-next-line no-undef
+const reqGraph = async (token: string, url: RequestInfo) => {
+
+  const headers = new Headers();
+  const bearer = `Bearer ${token}`;
+
+  headers.append("Authorization", bearer);
+
+  // eslint-disable-next-line no-undef
+  const options: RequestInit = {
+    method: "GET",
+    headers: headers,
+    redirect: 'follow'
+  };
+
+
+  // const myHeaders = new Headers()
+  // myHeaders.append('Authorization', `Bearer ${token}`)
+
+  // // eslint-disable-next-line no-undef
+  // const requestOptions: RequestInit = {
+  //   method: 'GET',
+  //   headers: myHeaders,
+  //   redirect: 'follow',
+  // }
+
+  const resGraph = await fetch(
+    url,
+    options
+  )
+  const rrr = await resGraph.json()
+  return rrr
+}
+
+
+watch(() => selected.search, async (newValue, oldValue) => {
+  selected.resSearch = await reqGraph(selected.token, `https://graph.microsoft.com/v1.0/me/people/?$search=${newValue}&Select=userPrincipalName`)
+
 })
 
 const postProject = async () => {
   const { request, response } = useFetch('/api/POST_project', {
     method: 'POST', // или 'PUT'
     body: JSON.stringify({
-      id: selected.extend['Project Number'].includes('.')
-        ? selected.extend['Project Number'].replace('.', ',')
-        : selected.extend['Project Number'],
+      id: selected.extend['Project Number'].value.includes('.') && typeof selected.extend['Project Number'].value === 'string'
+        ? selected.extend['Project Number'].value.replace('.', ',')
+        : selected.extend['Project Number'].value,
       status: 'open',
       info: {
         base: {
@@ -83,19 +189,30 @@ const postProject = async () => {
     }),
   })
   await request()
-  selected.extend = {}
+  selected.extend = <templateType['template']['extendManual']>{}
   selected.cabinets = []
   router.push('/projects')
 }
 const addNewRow = () => {
   selected.cabinets.push({
     wo: '',
-    'cabinet name': '',
+    'cab name': '',
   })
 }
 </script>
 
 <style lang="css" scoped>
+.searchRes {
+  grid-area: 2/2/3/3;
+  width: 100%;
+}
+.searchRes p {
+  cursor: pointer;
+  display: block;
+}
+.searchRes p:hover {
+  background-color: rgb(233, 233, 233);
+}
 .add__row {
   display: inline-block;
   border: 1px solid orange;

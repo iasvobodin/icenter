@@ -11,6 +11,7 @@ import { Ref, ref, watch } from 'vue'
 import { useMsal } from './useMsal'
 
 export type MsalAuthenticationResult = {
+  // eslint-disable-next-line @typescript-eslint/ban-types
   acquireToken: Function
   result: Ref<AuthenticationResult | null>
   error: Ref<AuthError | null>

@@ -59,13 +59,14 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { useStore } from 'vuex'
 import { computed, reactive, onMounted, watch, ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useFetch } from '@/hooks/fetch'
 import { msalInstance } from '@/authConfig'
 import taskCard from '@/components/task/taskCard.vue'
+import { AuthenticationResult } from '@azure/msal-browser'
 
 const router = useRouter()
 const route = useRoute()
@@ -76,7 +77,7 @@ const colorChanged = ref(true)
 
 const state = reactive({
   userTask: null,
-  token: null,
+  token: <AuthenticationResult>{},
   passedTime: 0,
 })
 
@@ -101,14 +102,20 @@ url.searchParams.append('response_mode', 'query')
 console.log(url, 'TEST SECRET')
 
 const tryToSingIn = async () => {
+  const account = msalInstance.getAllAccounts()
+  console.log(account, 'ACCOUNT')
+  // debugger
   var loginRequest = {
-    scopes: ['User.ReadWrite'],
+    scopes: ['user.read'],
   }
 
-  try {
-    const loginResponse = await msalInstance.loginPopup(loginRequest)
-  } catch (err) { }
+  // try {
+  //   const loginResponse = await msalInstance.loginPopup(loginRequest)
+  // } catch (err) {
+  //   console.log('err');
+  // }
 }
+tryToSingIn()
 
 const CurrentTime = Date.now()
 
@@ -122,11 +129,12 @@ setInterval(() => {
   // console.log(state.passedTime)
 }, 1000)
 
-const tryToGetToken = async () => {
+
+const getAuthGraph = async () => {
   const account = msalInstance.getAllAccounts()[0]
   console.log(account, 'ACCOUNT')
-  var request = {
-    scopes: ['offline_access User.Read User.ReadWrite'],
+  const request = {
+    scopes: ['offline_access People.Read User.Read User.ReadWrite'],
     account: account,
   }
 
@@ -137,13 +145,43 @@ const tryToGetToken = async () => {
     state.token = acquireTokenSilent
     // })(acquireTokenSilent)
   } catch (error) {
-    console.log(error)
+    console.log(error, 'error get token in silent mode')
     try {
       const acquireTokenPopup = await msalInstance.acquireTokenPopup(request)
       console.log(acquireTokenPopup, 'NOT exist SILENT')
       state.token = acquireTokenPopup
-    } catch (error) { }
+    } catch (error) {
+      console.log(error, 'error in get token');
+    }
   }
+}
+// getAuthGraph()
+const tryToGetToken = async () => {
+
+  await getAuthGraph()
+  // const account = msalInstance.getAllAccounts()[0]
+  // console.log(account, 'ACCOUNT')
+  // const request = {
+  //   scopes: ['offline_access People.Read User.Read User.ReadWrite'],
+  //   account: account,
+  // }
+
+  // try {
+  //   const acquireTokenSilent = await msalInstance.acquireTokenSilent(request)
+  //   console.log(acquireTokenSilent, 'exist SILENT')
+  //   //  ((acquireTokenSilent)=>{
+  //   state.token = acquireTokenSilent
+  //   // })(acquireTokenSilent)
+  // } catch (error) {
+  //   console.log(error, 'error get token in silent mode')
+  //   try {
+  //     const acquireTokenPopup = await msalInstance.acquireTokenPopup(request)
+  //     console.log(acquireTokenPopup, 'NOT exist SILENT')
+  //     state.token = acquireTokenPopup
+  //   } catch (error) {
+  //     console.log(error, 'error in get token');
+  //   }
+  // }
   try {
     await updateUser(state.token)
     await getPhoto(state.token.accessToken)
@@ -161,20 +199,44 @@ const savePhoto = async () => {
 
   await store.dispatch('CHECK_AUTH_SERVER', updateUser)
 }
-const getPhoto = async (token) => {
-  var myHeaders = new Headers()
+
+// eslint-disable-next-line no-undef
+const reqGraph = async (token: string, url: RequestInfo) => {
+  const myHeaders = new Headers()
   myHeaders.append('Authorization', `Bearer ${token}`)
 
-  var requestOptions = {
+  // eslint-disable-next-line no-undef
+  const requestOptions: RequestInit = {
     method: 'GET',
     headers: myHeaders,
     redirect: 'follow',
   }
 
-  const resPhoto = await fetch(
-    'https://graph.microsoft.com/v1.0/me/photo/$value',
+  const resGraph = await fetch(
+    url,
     requestOptions
   )
+  return resGraph
+}
+
+const getPhoto = async (token: string) => {
+  // const myHeaders = new Headers()
+  // myHeaders.append('Authorization', `Bearer ${token}`)
+
+  // // eslint-disable-next-line no-undef
+  // const requestOptions: RequestInit = {
+  //   method: 'GET',
+  //   headers: myHeaders,
+  //   redirect: 'follow',
+  // }
+
+  // const resPhoto = await fetch(
+  //   'https://graph.microsoft.com/v1.0/me/photo/$value',
+  //   requestOptions
+  // )
+
+  const resPhoto = await reqGraph(token, 'https://graph.microsoft.com/v1.0/me/photo/$value')
+
   const photo = await resPhoto.blob()
 
   const formData = new FormData()

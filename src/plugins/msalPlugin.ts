@@ -67,6 +67,7 @@ export const msalPlugin = {
         case EventType.LOGOUT_END:
         case EventType.ACQUIRE_TOKEN_SUCCESS:
         case EventType.ACQUIRE_TOKEN_FAILURE:
+          // eslint-disable-next-line no-case-declarations
           const currentAccounts = msalInstance.getAllAccounts()
           if (!accountArraysAreEqual(currentAccounts, state.accounts)) {
             state.accounts = currentAccounts
