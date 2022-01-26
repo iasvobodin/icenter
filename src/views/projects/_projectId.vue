@@ -171,6 +171,8 @@ const getProject = async () => {
     await request()
     state.project = response.value!
     state.resCabinets = response.value!.cabinets
+
+
   }
 
   // state.selected = state.project
@@ -218,6 +220,7 @@ const updateWO = async () => {
 }
 
 getProject()
+
 
 const updateProject = async () => {
   const updateOptions = {

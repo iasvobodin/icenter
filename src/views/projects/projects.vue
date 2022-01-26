@@ -104,10 +104,7 @@
             <h2 class="project__number">{{ value.id }}</h2>
           </td>
           <td v-for="(v, k) in extendTemplate" :key="k">
-            <render-inputs
-              v-model="state.projects[key].info.extends"
-              :data-render="extendTemplate[k]"
-            />
+            <render-inputs v-model="state.projects[key].info.extends" :data-render="v" />
           </td>
         </tr>
       </tbody>

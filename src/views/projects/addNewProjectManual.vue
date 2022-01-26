@@ -2,58 +2,40 @@
   <form class="project__info project__holder" @submit.prevent="postProject">
     <h1>Adding a project manually</h1>
     <br />
-    <div
-      v-for="(v, k, i) in $store.state.template.template.extendManual"
-      :key="i"
-      class="error__item"
-    >
+    <div v-for="(v, k, i) in selected.extend" :key="i" class="error__item">
       <h4>{{ k }}</h4>
       <div v-if="v._field === 'search'">
-        <div class="error__item">
-          <!-- <h4>{{ k }}</h4> -->
-          <input :value="v.value" type="text" @input="searchPeople(k, $event)" />
-          <!-- <div class="searchRes">
-            <p
-              v-for="(user, index) in selected.extend[k].search"
-              :key="index"
-              class="search__result"
-              @click="choosePeople(k, user.userPrincipalName)"
-            >{{ user.userPrincipalName }}</p>
-          </div>-->
+        <input
+          required
+          style="width: 100%;"
+          :value="selected.modelObject[k]"
+          type="text"
+          @input="searchPeople(k, $event)"
+        />
+        <div class="searchRes">
+          <p
+            v-for="(user, index) in selected.extend[k].search"
+            :key="index"
+            class="search__result"
+            @click="choosePeople(k, user.userPrincipalName)"
+          >{{ user.userPrincipalName }}</p>
         </div>
       </div>
-      <render-inputs v-else v-model.lazy="selected.extend" :required="true" :data-render="v" />
+      <render-inputs v-else v-model.lazy="selected.modelObject" :required="true" :data-render="v" />
     </div>
-
-    <!-- <div v-for="(v, k, i) in selected.projectSearchReople" :key="i" class="error__item">
-      <h4>{{ k }}</h4>
-      <input
-        :value="selected.projectSearchReople[k].value"
-        type="text"
-        @input="searchPeople(k, $event)"
-      />
-      <div class="searchRes">
-        <p
-          v-for="(user, index) in selected.projectSearchReople[k].search"
-          :key="index"
-          class="search__result"
-          @click="choosePeople(k, user.userPrincipalName)"
-        >{{ user.userPrincipalName }}</p>
-      </div>
-    </div>-->
-
     <div class="cabinets">
       <br />
       <br />
       <div v-for="(item, i) in selected.cabinets" :key="i">
         wo
-        <input v-model="selected.cabinets[i].wo" required type="text" /> cab
+        <input v-model="selected.cabinets[i].wo" type="text" /> cab
         name
         <input v-model="selected.cabinets[i]['cab name']" required type="text" />
         <br />
         <br />
       </div>
       <div class="add__row" @click="addNewRow">+</div>
+      <div class="add__row" @click="deleteRow">-</div>
     </div>
     <input class="add__button" type="submit" value="submit" />
   </form>
@@ -62,7 +44,7 @@
 <script setup lang="ts">
 import { useFetch } from '@/hooks/fetch'
 import { useRouter } from 'vue-router'
-import { watch, computed, ref, reactive } from '@vue/runtime-core'
+import { watch, ComputedRef, computed, ref, reactive } from '@vue/runtime-core'
 import renderInputs from '@/components/renderInputs'
 import { projectInfoType } from '@/types/projectInfoType'
 import { getAuthGraph } from '@/hooks/useGraph'
@@ -75,6 +57,7 @@ const store = useStore()
 const selected = reactive({
   search: "",
   resSearch: null as any,
+  modelObject: <Record<keyof templateType['template']['extendManual'], string>>{},
   extend: <templateType['template']['extendManual']>{},
   cabinets: [
     {
@@ -83,39 +66,56 @@ const selected = reactive({
     },
   ],
   token: '',
-  projectSearchReople: {
-    'PM': { search: [{ id: "", userPrincipalName: "" }], value: '' },
-    'Buyer': { search: [{ id: "", userPrincipalName: "" }], value: '' },
-    'Contract Administrator': { search: [{ id: "", userPrincipalName: "" }], value: '' },
-    'Buyout Administrator': { search: [{ id: "", userPrincipalName: "" }], value: '' },
-    'Lead Engineer': { search: [{ id: "", userPrincipalName: "" }], value: '' },
-  }
+  // projectSearchReople: {
+  //   'PM': { search: [{ id: "", userPrincipalName: "" }], value: '' },
+  //   'Buyer': { search: [{ id: "", userPrincipalName: "" }], value: '' },
+  //   'Contract Administrator': { search: [{ id: "", userPrincipalName: "" }], value: '' },
+  //   'Buyout Administrator': { search: [{ id: "", userPrincipalName: "" }], value: '' },
+  //   'Lead Engineer': { search: [{ id: "", userPrincipalName: "" }], value: '' },
+  // }
 })
-const extendStore = computed(() => store.state.template.template.extendManual)
-const copy = computed(() => JSON.parse(JSON.stringify(extendStore.value)))
+
+//DEEP COPY
+selected.extend = JSON.parse(JSON.stringify(store.state.template.template.extendManual))
+//MOD OBJECT TO V-MODEL
+let arr = []
+for (const key in selected.extend) {
+
+  arr.push([key, ''])
+}
+selected.modelObject = Object.fromEntries(arr)
+
+
+// const extendStore = computed(() => store.state.template.template.extendManual)
+// const copy: ComputedRef<templateType['template']['extendManual']> = computed(() => JSON.parse(JSON.stringify(extendStore.value)))
 
 
 const { getToken, token } = getAuthGraph()
 
-const searchPeople = async (key: keyof projectInfoType, event: Event) => {
-  if (!(event.target instanceof HTMLInputElement)) return
-
-  copy[key].value = event.target.value
-  // selected.projectSearchReople[key].value = event.target.value
-
-  copy[key].search = (await reqGraph(selected.token, `https://graph.microsoft.com/v1.0/me/people/?$search=${event.target.value}&Select=userPrincipalName`)).value
-
-}
-const choosePeople = (k: keyof projectInfoType, el: string) => {
-  selected.extend[k].value = el
-  selected.extend[k].search = [{ id: "", userPrincipalName: "" }]
-}
 const tryGetToken = async () => {
 
   await getToken()
   selected.token = token.value!.accessToken
 }
 !selected.token && tryGetToken()
+
+
+const searchPeople = async (key: keyof projectInfoType, event: Event) => {
+
+  if (!(event.target instanceof HTMLInputElement)) return
+
+  selected.modelObject[key] = event.target.value
+
+  selected.extend[key].search = (await reqGraph(selected.token, `https://graph.microsoft.com/v1.0/me/people/?$search=${event.target.value}&Select=userPrincipalName`)).value
+
+}
+const choosePeople = (key: keyof projectInfoType, el: string) => {
+  selected.modelObject[key] = el
+  selected.extend[key].search = [{ id: "", userPrincipalName: "" }]
+}
+
+
+
 
 
 // eslint-disable-next-line no-undef
@@ -133,59 +133,40 @@ const reqGraph = async (token: string, url: RequestInfo) => {
     redirect: 'follow'
   };
 
-
-  // const myHeaders = new Headers()
-  // myHeaders.append('Authorization', `Bearer ${token}`)
-
-  // // eslint-disable-next-line no-undef
-  // const requestOptions: RequestInit = {
-  //   method: 'GET',
-  //   headers: myHeaders,
-  //   redirect: 'follow',
-  // }
-
   const resGraph = await fetch(
     url,
     options
   )
-  const rrr = await resGraph.json()
-  return rrr
+  const response = await resGraph.json()
+  return response
 }
-
-
-watch(() => selected.search, async (newValue, oldValue) => {
-  selected.resSearch = await reqGraph(selected.token, `https://graph.microsoft.com/v1.0/me/people/?$search=${newValue}&Select=userPrincipalName`)
-
-})
 
 const postProject = async () => {
   const { request, response } = useFetch('/api/POST_project', {
     method: 'POST', // или 'PUT'
     body: JSON.stringify({
-      id: selected.extend['Project Number'].value.includes('.') && typeof selected.extend['Project Number'].value === 'string'
-        ? selected.extend['Project Number'].value.replace('.', ',')
-        : selected.extend['Project Number'].value,
+      id: selected.modelObject['Project Number'],
       status: 'open',
       info: {
         base: {
-          'Project Name': selected.extend['Project Name'],
-          'SZ №': selected.extend['SZ №'],
-          PM: selected.extend['PM'],
-          Buyer: selected.extend['Buyer'],
-          'Contract Administrator': selected.extend['Contract Administrator'],
-          'Buyout Administrator': selected.extend['Buyout Administrator'],
-          'Lead Engineer': selected.extend['Lead Engineer'],
+          'Project Name': selected.modelObject['Project Name'],
+          'SZ №': selected.modelObject['SZ №'],
+          PM: selected.modelObject['PM'],
+          Buyer: selected.modelObject['Buyer'],
+          'Contract Administrator': selected.modelObject['Contract Administrator'],
+          'Buyout Administrator': selected.modelObject['Buyout Administrator'],
+          'Lead Engineer': selected.modelObject['Lead Engineer'],
         },
         extends: {
           'Specific requirement field':
-            selected.extend['Specific requirement field'],
-          'status project': selected.extend['status project'],
-          'senior fitter': selected.extend['senior fitter'],
-          'Comments field': selected.extend['Comments field'],
-          'Shipping date': selected.extend['Shipping date'],
+            selected.modelObject['Specific requirement field'],
+          'status project': selected.modelObject['status project'],
+          'senior fitter': selected.modelObject['senior fitter'],
+          'Comments field': selected.modelObject['Comments field'],
+          'Shipping date': selected.modelObject['Shipping date'],
         },
       },
-      cabinets: selected.cabinets.filter((f) => f.wo),
+      cabinets: selected.cabinets,
     }),
   })
   await request()
@@ -198,6 +179,11 @@ const addNewRow = () => {
     wo: '',
     'cab name': '',
   })
+}
+const deleteRow = () => {
+  console.log('ddd');
+
+  selected.cabinets.splice(-1)
 }
 </script>
 
