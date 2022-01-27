@@ -49,7 +49,7 @@
       </section>
     </main>
     <section
-      v-if="$route.query.status !== 'closed' && $store.state.user.info.userRoles.includes('God \'mode')"
+      v-if="$route.query.status !== 'closed' && $store.state.user.info.userRoles.includes('godmode')"
       class="project__controls"
     >
       <br />
