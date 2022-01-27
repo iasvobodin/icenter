@@ -221,6 +221,8 @@ const postProject = async () => {
           'senior fitter': state.modelObject['senior fitter'],
           'Comments field': state.modelObject['Comments field'],
           'Shipping date': state.modelObject['Shipping date'],
+          "Hours calculated": state.modelObject['Hours calculated'],
+          "Hours actual": state.modelObject['Hours actual'],
         },
       },
       cabinets: state.cabinets,
