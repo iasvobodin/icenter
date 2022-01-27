@@ -1,21 +1,19 @@
 export type projectInfoType = {
   'Project Number': string
-  wo: string
-  'cab name': string
-  'Project Name': string
-  'SZ №': number
-  PM: string
-  Buyer: string
-  'Contract Administrator': string
-  'Buyout Administrator': string
-  'Lead Engineer': string | null
-  'status project': string
-  'senior fitter': string
-  'Comments field': string
-  'Hours calculated': string
-  'Hours actual': string
+  'Project Name': string,
+  'SZ №': string,
+  'PM': string,
+  'Buyer': string,
+  'Contract Administrator': string,
+  'Buyout Administrator': string,
+  'Lead Engineer': string
+  'Specific requirement field': string,
+  'senior fitter': string,
+  'status project': string,
+  'Hours calculated': string,
+  'Hours actual': string,
+  'Comments field': string,
   'Shipping date': string
-  'Specific requirement field': string
 }
 type cabinet = { wo: string; 'cab name': string }
 

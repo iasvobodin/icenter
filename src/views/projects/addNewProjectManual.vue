@@ -2,40 +2,88 @@
   <form class="project__info project__holder" @submit.prevent="postProject">
     <h1>Adding a project manually</h1>
     <br />
-    <div v-for="(v, k, i) in selected.extend" :key="i" class="error__item">
-      <h4>{{ k }}</h4>
-      <div v-if="v._field === 'search'">
-        <input
-          required
-          style="width: 100%;"
-          :value="selected.modelObject[k]"
-          type="text"
-          @input="searchPeople(k, $event)"
-        />
-        <div class="searchRes">
-          <p
-            v-for="(user, index) in selected.extend[k].search"
-            :key="index"
-            class="search__result"
-            @click="choosePeople(k, user.userPrincipalName)"
-          >{{ user.userPrincipalName }}</p>
+    <div v-for="(v, k, i) in state.extend" :key="i" class="error__item">
+      <h4 style="text-align: start;">{{ k }}</h4>
+      <div v-if="!state.changeData" class="editable">
+        <div v-if="v._field === 'search'">
+          <input
+            required
+            style="width: 100%;"
+            :value="state.modelObject[k]"
+            type="text"
+            @input="searchPeople(k, $event)"
+          />
+          <div class="searchRes">
+            <p
+              v-for="(user, index) in state.extend[k].search"
+              :key="index"
+              class="search__result"
+              @click="choosePeople(k, `${user.surname} ${user.givenName}`)"
+            >{{ user.surname }} {{ user.givenName }}</p>
+          </div>
         </div>
+        <render-inputs
+          v-else
+          v-model.lazy="state.modelObject"
+          style="width: 100%;"
+          :required="true"
+          :data-render="v"
+        />
       </div>
-      <render-inputs v-else v-model.lazy="selected.modelObject" :required="true" :data-render="v" />
+      <div v-else class="value">
+        <p style="text-align: start;">{{ state.modelObject[k] }}</p>
+      </div>
     </div>
     <div class="cabinets">
       <br />
       <br />
-      <div v-for="(item, i) in selected.cabinets" :key="i">
+      <table>
+        <colgroup>
+          <col span="1" class="collgroup1" />
+          <col span="1" class="collgroup2" />
+          <col v-if="!state.changeData" span="1" class="collgroup3" />
+        </colgroup>
+        <tbody>
+          <tr class="head">
+            <th>WO</th>
+            <th>cab name</th>
+            <th v-if="!state.changeData">del</th>
+          </tr>
+          <tr v-for="(value, index) in state.cabinets" :key="index">
+            <td v-if="!state.changeData">
+              <input v-model="state.cabinets[index]!.wo" type="text" />
+            </td>
+
+            <td v-else>{{ value!.wo }}</td>
+
+            <td v-if="!state.changeData">
+              <input v-model="state.cabinets[index]!['cab name']" required type="text" />
+            </td>
+
+            <td v-else class="cabtime__name">
+              <div>
+                <p>{{ value!['cab name'] }}</p>
+              </div>
+            </td>
+
+            <td v-if="!state.changeData">
+              <div class="close" @click="deleteRow(index)">&#10060;</div>
+            </td>
+          </tr>
+          <div v-if="!state.changeData" class="add__row" @click="addNewRow">+</div>
+        </tbody>
+      </table>
+
+      <!-- <div v-for="(item, i) in state.cabinets" :key="i">
         wo
-        <input v-model="selected.cabinets[i].wo" type="text" /> cab
+        <input v-model="state.cabinets[i]!.wo" type="text" /> cab
         name
-        <input v-model="selected.cabinets[i]['cab name']" required type="text" />
+        <input v-model="state.cabinets[i]!['cab name']" required type="text" />
         <br />
         <br />
       </div>
       <div class="add__row" @click="addNewRow">+</div>
-      <div class="add__row" @click="deleteRow">-</div>
+      <div class="add__row" @click="deleteRow">-</div>-->
     </div>
     <input class="add__button" type="submit" value="submit" />
   </form>
@@ -43,47 +91,42 @@
 
 <script setup lang="ts">
 import { useFetch } from '@/hooks/fetch'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { watch, ComputedRef, computed, ref, reactive } from '@vue/runtime-core'
 import renderInputs from '@/components/renderInputs'
 import { projectInfoType } from '@/types/projectInfoType'
 import { getAuthGraph } from '@/hooks/useGraph'
 import { templateType } from '@/types/templateType'
 import { useStore } from 'vuex'
+import { projectType } from '@/types/projectType'
+
 
 
 const router = useRouter()
+const route = useRoute()
 const store = useStore()
-const selected = reactive({
-  search: "",
-  resSearch: null as any,
-  modelObject: <Record<keyof templateType['template']['extendManual'], string>>{},
+const state = reactive({
+  project: <projectType>{},
+  modelObject: <projectInfoType>{},
   extend: <templateType['template']['extendManual']>{},
-  cabinets: [
-    {
-      wo: '',
-      'cab name': '',
-    },
-  ],
-  token: '',
-  // projectSearchReople: {
-  //   'PM': { search: [{ id: "", userPrincipalName: "" }], value: '' },
-  //   'Buyer': { search: [{ id: "", userPrincipalName: "" }], value: '' },
-  //   'Contract Administrator': { search: [{ id: "", userPrincipalName: "" }], value: '' },
-  //   'Buyout Administrator': { search: [{ id: "", userPrincipalName: "" }], value: '' },
-  //   'Lead Engineer': { search: [{ id: "", userPrincipalName: "" }], value: '' },
-  // }
+  changeData: false,
+  cabinets: <projectType['cabinets']>[]
 })
 
+if (route.query.projectID) {
+  // state.changeData = false
+  getProject()
+}
+
 //DEEP COPY
-selected.extend = JSON.parse(JSON.stringify(store.state.template.template.extendManual))
+state.extend = JSON.parse(JSON.stringify(store.state.template.template.extendManual))
 //MOD OBJECT TO V-MODEL
 let arr = []
-for (const key in selected.extend) {
+for (const key in state.extend) {
 
   arr.push([key, ''])
 }
-selected.modelObject = Object.fromEntries(arr)
+state.modelObject = Object.fromEntries(arr)
 
 
 // const extendStore = computed(() => store.state.template.template.extendManual)
@@ -93,25 +136,39 @@ selected.modelObject = Object.fromEntries(arr)
 const { getToken, token } = getAuthGraph()
 
 const tryGetToken = async () => {
-
   await getToken()
-  selected.token = token.value!.accessToken
 }
-!selected.token && tryGetToken()
+token && tryGetToken()
+
+
+async function getProject() {
+  const { request, response } = useFetch<projectType>(
+    `/api/projects?status=${route.query.status ? 'closed' : 'open'
+    }&project=${route.query.projectID}`
+  )
+  if (Object.keys(state.project).length === 0) {
+    await request()
+    state.project = response.value!
+    state.modelObject = { ...state.project.info.base, ...state.project.info.extends, 'Project Number': state.project.id }
+    state.cabinets = state.project.cabinets
+    // state.resCabinets = response.value!.cabinets
+  }
+}
+
 
 
 const searchPeople = async (key: keyof projectInfoType, event: Event) => {
 
   if (!(event.target instanceof HTMLInputElement)) return
 
-  selected.modelObject[key] = event.target.value
+  state.modelObject[key] = event.target.value
 
-  selected.extend[key].search = (await reqGraph(selected.token, `https://graph.microsoft.com/v1.0/me/people/?$search=${event.target.value}&Select=userPrincipalName`)).value
+  state.extend[key].search = (await reqGraph(token.value!.accessToken, `https://graph.microsoft.com/v1.0/me/people/?$search=${event.target.value}`)).value
 
 }
 const choosePeople = (key: keyof projectInfoType, el: string) => {
-  selected.modelObject[key] = el
-  selected.extend[key].search = [{ id: "", userPrincipalName: "" }]
+  state.modelObject[key] = el
+  state.extend[key].search = undefined
 }
 
 
@@ -145,45 +202,45 @@ const postProject = async () => {
   const { request, response } = useFetch('/api/POST_project', {
     method: 'POST', // или 'PUT'
     body: JSON.stringify({
-      id: selected.modelObject['Project Number'],
+      id: state.modelObject['Project Number'],
       status: 'open',
       info: {
         base: {
-          'Project Name': selected.modelObject['Project Name'],
-          'SZ №': selected.modelObject['SZ №'],
-          PM: selected.modelObject['PM'],
-          Buyer: selected.modelObject['Buyer'],
-          'Contract Administrator': selected.modelObject['Contract Administrator'],
-          'Buyout Administrator': selected.modelObject['Buyout Administrator'],
-          'Lead Engineer': selected.modelObject['Lead Engineer'],
+          'Project Name': state.modelObject['Project Name'],
+          'SZ №': state.modelObject['SZ №'],
+          PM: state.modelObject['PM'],
+          Buyer: state.modelObject['Buyer'],
+          'Contract Administrator': state.modelObject['Contract Administrator'],
+          'Buyout Administrator': state.modelObject['Buyout Administrator'],
+          'Lead Engineer': state.modelObject['Lead Engineer'],
         },
         extends: {
           'Specific requirement field':
-            selected.modelObject['Specific requirement field'],
-          'status project': selected.modelObject['status project'],
-          'senior fitter': selected.modelObject['senior fitter'],
-          'Comments field': selected.modelObject['Comments field'],
-          'Shipping date': selected.modelObject['Shipping date'],
+            state.modelObject['Specific requirement field'],
+          'status project': state.modelObject['status project'],
+          'senior fitter': state.modelObject['senior fitter'],
+          'Comments field': state.modelObject['Comments field'],
+          'Shipping date': state.modelObject['Shipping date'],
         },
       },
-      cabinets: selected.cabinets,
+      cabinets: state.cabinets,
     }),
   })
   await request()
-  selected.extend = <templateType['template']['extendManual']>{}
-  selected.cabinets = []
-  router.push('/projects')
+  state.extend = <templateType['template']['extendManual']>{}
+  state.cabinets = []
+  router.back()
 }
 const addNewRow = () => {
-  selected.cabinets.push({
+  state.cabinets.push({
     wo: '',
     'cab name': '',
   })
 }
-const deleteRow = () => {
+const deleteRow = (index: number) => {
   console.log('ddd');
 
-  selected.cabinets.splice(-1)
+  state.cabinets.splice(index, 1)
 }
 </script>
 
@@ -195,9 +252,13 @@ const deleteRow = () => {
 .searchRes p {
   cursor: pointer;
   display: block;
+  margin-top: 4px;
+  padding: 2px 0px;
+  border: 1px solid darkgray;
+  border-radius: 3px;
 }
 .searchRes p:hover {
-  background-color: rgb(233, 233, 233);
+  background-color: rgb(242 246 255);
 }
 .add__row {
   display: inline-block;
@@ -304,5 +365,21 @@ const deleteRow = () => {
   display: grid;
   align-items: center;
   grid-template-columns: 2fr 3fr;
+}
+td input {
+  width: 90%;
+  margin: auto;
+}
+.close {
+  cursor: pointer;
+}
+.collgroup1 {
+  width: 30%;
+}
+.collgroup2 {
+  width: 60%;
+}
+.collgroup3 {
+  width: 10%;
 }
 </style>

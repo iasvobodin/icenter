@@ -77,7 +77,7 @@
       </div>
       <br />
     </div>
-    <router-link to="/projects/addnewproject">
+    <router-link to="/projects/addnewprojectManual">
       <img class="add__button" src="/img/add.svg" alt="Добавить новый проект" />
     </router-link>
   </div>

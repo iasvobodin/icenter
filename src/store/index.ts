@@ -43,6 +43,7 @@ type cabinetInfo = {
 // }
 
 // export const key: InjectionKey<Store<State>> = Symbol()
+type assign = projectInfoType & { wo: string, 'cab name': string }
 type cabItems = { [key: string]: any }
 export interface State {
   activeErrors: errorType[]
@@ -50,7 +51,7 @@ export interface State {
   template: templateType
   projectList: null
   selectedProjectNumber: string
-  projectInfo: projectInfoType
+  projectInfo: assign
   user: userType
   cabinets: cabinetsType[]
   currentError: null
@@ -77,7 +78,7 @@ export const store = createStore<State>({
     template: <templateType>{},
     projectList: null,
     selectedProjectNumber: '',
-    projectInfo: <projectInfoType>{},
+    projectInfo: <assign>{},
     user: <userType>{},
     currentError: null,
     cabinetItems: [],
@@ -168,7 +169,7 @@ export const store = createStore<State>({
     SETprojectNumber(state, payload) {
       state.selectedProjectNumber = payload
     },
-    SETcurrentProject(state, payload: projectInfoType) {
+    SETcurrentProject(state, payload: assign) {
       state.projectInfo = payload
       // console.log(state.projectInfo, "state.projectInfo");
     },
@@ -180,7 +181,7 @@ export const store = createStore<State>({
       }
       // console.log(state.projectInfo, "state.projectInfo");
     },
-    SETcabinetInfo(state, payload) {
+    SETcabinetInfo(state, payload: string) {
       state.projectInfo = {
         ...state.projectInfo,
         wo: payload.split('   ')[0],

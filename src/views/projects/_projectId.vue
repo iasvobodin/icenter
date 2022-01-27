@@ -48,11 +48,14 @@
         />
       </section>
     </main>
-    <section v-if="$route.query.status !== 'closed'" class="project__controls">
+    <section
+      v-if="$route.query.status !== 'closed' && $store.state.user.info.userRoles.includes('God \'mode')"
+      class="project__controls"
+    >
       <br />
       <button
         v-if="!state.changeData && $store.state.user.info.userRoles.includes('admin')"
-        @click="state.changeData = !state.changeData"
+        @click="$router.push(`/projects/addnewprojectManual?projectID=${$route.params.projectId}`)"
       >Редактировать</button>
       <button v-else @click="updateProject">Сохранить</button>
       <button
@@ -73,7 +76,7 @@
 
     <h2 v-else>
       <br />
-      <br />Нельзя просто взять, и изменить закрытый проект.
+      <br />Нельзя просто взять, и изменить проект.
     </h2>
     <section v-if="state.generatedQR" class="qrs">
       <generate-qr-code
@@ -170,7 +173,7 @@ const getProject = async () => {
   if (Object.keys(state.project).length === 0) {
     await request()
     state.project = response.value!
-    state.resCabinets = response.value!.cabinets
+    state.resCabinets = state.project.cabinets
 
 
   }

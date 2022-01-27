@@ -192,7 +192,7 @@ watchEffect(() => {
 </script>
 
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400&display=swap");
 :root {
   --size-300: clamp(0.7rem, 0.66rem + 0.2vw, 0.8rem);
   --size-400: clamp(0.88rem, 0.83rem + 0.24vw, 1rem);
@@ -229,8 +229,8 @@ body {
 }
 textarea,
 select,
-input[type='text'],
-input[type='number'] {
+input[type="text"],
+input[type="number"] {
   font-size: 16px;
   font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica,
     Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji;
@@ -238,7 +238,7 @@ input[type='number'] {
 }
 
 button,
-input[type='submit'] {
+input[type="submit"] {
   height: 30px;
   background-color: #ffffff;
   /* border: none; */
@@ -254,11 +254,11 @@ input[type='submit'] {
   margin: 5px 1vw;
 }
 button,
-input[type='submit'] {
+input[type="submit"] {
   width: min(85vw, 350px);
   /* margin: auto; */
 }
-input[type='submit']:hover {
+input[type="submit"]:hover {
   background-color: #00a2ff5b;
 }
 button:hover:enabled {
@@ -305,7 +305,7 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: 'Roboto Slab', serif;
+  font-family: "Roboto Slab", serif;
   font-weight: normal;
 }
 h1 {
@@ -348,5 +348,60 @@ h1 {
 }
 .gap {
   height: 50px;
+}
+
+thead tr th {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+table {
+  margin: auto;
+  margin-top: 2vh;
+  border-collapse: collapse;
+  border-radius: 5px;
+  /* overflow: hidden; */
+  box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px,
+    rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+  padding: 2vw;
+  width: min(95vw, 800px);
+}
+
+td,
+th {
+  box-shadow: rgba(0, 0, 0, 0.15) 2.4px 2.4px 3.2px;
+  box-shadow: rgba(0, 0, 0, 0.18) 0px 2px 4px;
+  box-shadow: rgba(9, 30, 66, 0.25) 0px 1px 1px,
+    rgba(9, 30, 66, 0.13) 0px 0px 1px 1px;
+  box-shadow: rgba(17, 17, 26, 0.1) 0px 1px 0px;
+
+  /* padding: 3px; */
+  /* padding-right: 1ch; */
+  /* text-align: start; */
+  font-size: 12px;
+}
+td input {
+  text-align: center;
+}
+
+tbody tr:nth-child(odd) {
+  background: #ececec5d;
+}
+table tbody .partially {
+  background: hsl(252deg 100% 95%);
+}
+table tbody .done {
+  background: hsl(120deg 100% 95%);
+}
+tbody tr {
+  margin-bottom: 10px;
+  height: 40px;
+}
+.head {
+  border-bottom: solid 1px orange;
+  background: white;
+  border-radius: 3px;
+  height: 40px;
+  position: sticky;
+  top: 50px;
 }
 </style>

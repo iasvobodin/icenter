@@ -7,7 +7,7 @@ export type Extend = {
   value: string | string[]
   min?: number
   max?: number
-  search?: [{ id: string, userPrincipalName: string }]
+  search?: [{ id: string, givenName: string, surname: string }]
 }
 type Extends = {
   "Specific requirement field": string,
