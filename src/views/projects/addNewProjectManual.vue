@@ -289,7 +289,7 @@ const postProject = async () => {
           "Hours actual": state.modelObject['Hours actual'],
         },
       },
-      cabinets: state.cabinets,
+      cabinets: [...state.cabinets, ...state.newCabinets]
     }),
   })
   await request()
