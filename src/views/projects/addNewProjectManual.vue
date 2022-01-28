@@ -182,6 +182,7 @@ if (route.query.projectID) {
   getProject()
 }
 let choosenIndex = 0
+let choosenWOcopy = ''
 //DEEP COPY
 state.extend = JSON.parse(JSON.stringify(store.state.template.template.extendManual))
 //MOD OBJECT TO V-MODEL
@@ -312,8 +313,9 @@ const deleteRowAttention = async (wo: string, index: number) => {
   // debugger
   state.popupOpened = true
   state.choosenWO = state.cabinets.find(e => e.wo === wo)!
+  //DEEP COPY
   choosenIndex = index
-
+  choosenWOcopy = wo
 
   // state.cabinets.splice(index, 1)
 }
@@ -337,7 +339,7 @@ const deleteElements = async (wo: string) => {
         body: JSON.stringify(e),
       })
       await postDeleteEl()
-      return e
+      // return e
     }))
   } catch (error) {
     console.log(error);
@@ -347,6 +349,8 @@ const deleteElements = async (wo: string) => {
 
 
 const updateElements = async (wo: string) => {
+  console.log(wo);
+
   //check if wo is exist
 
   const { request: reqCabinetInfo, response: resCabinetInfo } = useFetch<cabinetInfo>(
@@ -361,8 +365,8 @@ const updateElements = async (wo: string) => {
   } catch (error) {
     console.log('first check paste');
     try {
-      await store.dispatch('GET_cabinetItemsPure', wo)
-
+      await store.dispatch('GET_cabinetItemsPure', choosenWOcopy)
+      debugger
       Promise.all(store.state.cabinetItems.map(async e => {
         e.info.wo = wo
         e.info.Шкаф = state.choosenWO['cab name']
@@ -379,7 +383,7 @@ const updateElements = async (wo: string) => {
         } catch (error) {
           console.log(error, 'error in update elements');
         }
-        return e
+        // return e
       }))
       //replace our object
       state.cabinets.splice(choosenIndex, 1)
