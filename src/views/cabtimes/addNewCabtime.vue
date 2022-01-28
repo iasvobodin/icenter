@@ -21,7 +21,10 @@
   <section v-else>
     <h3>
       Номер проекта {{ projectInfoState['project number'] }}
-      <span style="cursor: pointer" @click="clearstate">&#10060;</span>
+      <span
+        style="cursor: pointer"
+        @click="clearstate"
+      >&#10060;</span>
     </h3>
     <h3>Номер WO {{ projectInfoState['wo'] }}</h3>
 
@@ -90,7 +93,7 @@ const state = reactive({
   updatedPhotos: [],
 })
 const getCabTime = async (wo) => {
-  const { request, response } = useFetch(`/api/errors/cabtime__${wo}`)
+  const { request, response } = useFetch(`/api/getitembyid/cabtime__${wo}`)
   try {
     await request()
     state.cabTime = response

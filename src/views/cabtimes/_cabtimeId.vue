@@ -105,7 +105,7 @@ const pInfo = computed(() =>
 )
 const getCabTime = async () => {
   const { request, response } = useFetch(
-    `/api/errors/cabtime__${route.params.cabtimeId}`
+    `/api/getitembyid/cabtime__${route.params.cabtimeId}`
   )
   try {
     await request()

@@ -117,7 +117,7 @@ const state = reactive({
 
 const getTask = async () => {
   const { request: reqTask, response: resTask } = useFetch<taskType>(
-    `/api/errors/${route.params.taskId}`
+    `/api/getitembyid/${route.params.taskId}`
   )
   try {
     await reqTask()
@@ -130,7 +130,7 @@ const getTask = async () => {
 const getCabTime = async (wo: string) => {
   !state.task && (await getTask())
   const { request: reqCabTime, response: resCabTime } = useFetch<cabtimeType>(
-    `/api/errors/cabtime__${wo}`
+    `/api/getitembyid/cabtime__${wo}`
   )
   try {
     await reqCabTime()

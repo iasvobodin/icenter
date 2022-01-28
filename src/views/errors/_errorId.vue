@@ -9,11 +9,7 @@
       <section class="information">
         <info-render :info-data="state.error.info" />
       </section>
-      <section
-        v-for="(val, key) in state.error.body[0]"
-        :key="key"
-        class="eror__body"
-      >
+      <section v-for="(val, key) in state.error.body[0]" :key="key" class="eror__body">
         <div v-if="val && Object.values(val)[1] && !key.startsWith('_')">
           <!-- {{key}} -->
           <div v-if="!returnRender(key)">
@@ -41,9 +37,7 @@
                 <h4
                   :class="{ error__item__vertical__title: k === 'Описание' }"
                   class="error__item__title"
-                >
-                  {{ k }}
-                </h4>
+                >{{ k }}</h4>
                 <render-inputs
                   v-model="state.error.body[0][key]"
                   :required="
@@ -61,9 +55,7 @@
                 "
               >
                 <div class="error__item">
-                  <h4 class="error__item__title">
-                    {{ state.error.body[0][key]['Ответственный'] }}
-                  </h4>
+                  <h4 class="error__item__title">{{ state.error.body[0][key]['Ответственный'] }}</h4>
                   <select
                     v-if="
                       typeof state.error.body[0].Открыто['Ответственный'] ===
@@ -80,9 +72,7 @@
                         state.error.body[0].Открыто['Ответственный']
                       ]"
                       :key="index2"
-                    >
-                      {{ value2 }}
-                    </option>
+                    >{{ value2 }}</option>
                   </select>
                 </div>
               </div>
@@ -116,27 +106,17 @@
           $store.state.user.info.userRoles.includes('admin'))
       "
       @click="changeData"
-    >
-      {{ !state.changeInfo ? 'Редактировать' : 'Отмена' }}
-    </button>
+    >{{ !state.changeInfo ? 'Редактировать' : 'Отмена' }}</button>
     <button
       v-if="
         state.changeInfo && $store.state.user.info.userRoles.includes('admin')
       "
       @click="state.popupOpened = true"
-    >
-      Удалить
-    </button>
-    <button v-if="state.changeInfo" type="submit" form="errorData">
-      Сохранить
-    </button>
+    >Удалить</button>
+    <button v-if="state.changeInfo" type="submit" form="errorData">Сохранить</button>
   </div>
   <teleport to="body">
-    <confirm-popup
-      :opened="state.popupOpened"
-      @closed="popupClosed"
-      @confirm="popupConfirmed"
-    >
+    <confirm-popup :opened="state.popupOpened" @closed="popupClosed" @confirm="popupConfirmed">
       <template #header>
         <h3 class="popText">Удалить ошибку?</h3>
       </template>
@@ -192,7 +172,7 @@ const errorHeader = () => {
 const getCurrentError = async (): UsableError => {
   // try {
   const { request, response: errorFromServer } = useFetch<errorType>(
-    `/api/errors/${route.params.errorId}`
+    `/api/getitembyid/${route.params.errorId}`
   )
 
   await request()
@@ -353,7 +333,7 @@ const popupConfirmed = async () => {
 }
 .custom-file-input:active::before {
   background: -webkit-linear-gradient(top, #e3e3e3, #f9f9f9);
-  background-image: url('/img/add__image.svg');
+  background-image: url("/img/add__image.svg");
 }
 .back__image {
   position: fixed;

@@ -8,10 +8,10 @@
       <div class="select">
         <slot name="select"></slot>
       </div>
-      <div class="buttons">
+      <div class="popup__buttons">
         <slot name="buttons">
-          <button class="cancel" @click="closed">Отмена</button>
-          <button class="confirm" @click="confirm">Да</button>
+          <button class="popup__cancel__button" @click="closed">Отмена</button>
+          <button class="popup__confirm__button" @click="confirm">Да</button>
         </slot>
       </div>
     </div>
@@ -82,7 +82,7 @@ onBeforeUnmount(() => {
   position: relative;
   background-color: white;
   border-radius: 15px;
-  min-width: 250px;
+  width: min(500px, 95vw);
   min-height: 150px;
 }
 .select {
@@ -90,7 +90,12 @@ onBeforeUnmount(() => {
   /* grid-area: 1/1/2/2; */
   /* max-height: 200px; */
 }
-.buttons {
+
+.header {
+  text-align: center;
+}
+
+.popup__buttons {
   /* width: 90%; */
   display: grid;
   grid-auto-flow: column;
@@ -98,23 +103,23 @@ onBeforeUnmount(() => {
   min-height: 60px;
   align-content: center;
 }
-.cancel:hover {
+</style>
+
+<style>
+.popup__cancel__button:hover {
   background-color: rgba(0, 128, 0, 0.4);
 }
-.confirm:hover {
+.popup__confirm__button:hover {
   background-color: rgba(255, 0, 0, 0.4);
 }
-.cancel {
+.popup__cancel__button {
   min-width: 100px;
   width: fit-content;
   border: 1px solid green;
 }
-.confirm {
+.popup__confirm__button {
   min-width: 100px;
   width: fit-content;
   border: 1px solid red;
-}
-.header {
-  text-align: center;
 }
 </style>

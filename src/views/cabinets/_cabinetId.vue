@@ -3,7 +3,7 @@
     <div v-if="pInfo">
       <h2>
         <span>№ :</span>
-        {{ pInfo['project number'] }}
+        {{ pInfo['Project Number'] }}
       </h2>
       <h2>
         <span>Проект :</span>
@@ -73,7 +73,7 @@ const state = reactive({
 const getCabinetInfo = async () => {
   // try {
   const { request: reqCabinetInfo, response: resCabinetInfo } = useFetch<cabinetInfo>(
-    `/api/errors/info__${route.params.cabinetId}`
+    `/api/getitembyid/info__${route.params.cabinetId}`
   )
   await reqCabinetInfo()
   state.cabinetInfo = resCabinetInfo.value!

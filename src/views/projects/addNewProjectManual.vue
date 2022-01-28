@@ -37,6 +37,7 @@
     <div class="cabinets">
       <br />
       <br />
+      <h3>Шкафы</h3>
       <table>
         <colgroup>
           <col span="1" class="collgroup1" />
@@ -50,22 +51,49 @@
             <th v-if="!state.changeData">del</th>
           </tr>
           <tr v-for="(value, index) in state.cabinets" :key="index">
-            <td v-if="!state.changeData">
+            <!-- <td v-if="!state.changeData">
               <input v-model="state.cabinets[index]!.wo" type="text" />
-            </td>
+            </td>-->
 
-            <td v-else>{{ value!.wo }}</td>
+            <td>{{ value!.wo }}</td>
 
-            <td v-if="!state.changeData">
+            <!-- <td v-if="!state.changeData">
               <input v-model="state.cabinets[index]!['cab name']" required type="text" />
-            </td>
+            </td>-->
 
-            <td v-else class="cabtime__name">
+            <td class="cabtime__name">
               <div>
                 <p>{{ value!['cab name'] }}</p>
               </div>
             </td>
 
+            <td v-if="!state.changeData">
+              <div class="close" @click="deleteRowAttention(value.wo, index)">&#x270D;</div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Добавить WO</h3>
+      <table>
+        <colgroup>
+          <col span="1" class="collgroup1" />
+          <col span="1" class="collgroup2" />
+          <col v-if="!state.changeData" span="1" class="collgroup3" />
+        </colgroup>
+        <tbody>
+          <tr class="head">
+            <th>WO</th>
+            <th>cab name</th>
+            <th v-if="!state.changeData">del</th>
+          </tr>
+          <tr v-for="(value, index) in state.newCabinets" :key="index">
+            <td>
+              <input v-model="state.newCabinets[index]!.wo" type="text" />
+            </td>
+            <td>
+              <input v-model="state.newCabinets[index]!['cab name']" required type="text" />
+            </td>
             <td v-if="!state.changeData">
               <div class="close" @click="deleteRow(index)">&#10060;</div>
             </td>
@@ -73,20 +101,41 @@
           <div v-if="!state.changeData" class="add__row" @click="addNewRow">+</div>
         </tbody>
       </table>
-
-      <!-- <div v-for="(item, i) in state.cabinets" :key="i">
-        wo
-        <input v-model="state.cabinets[i]!.wo" type="text" /> cab
-        name
-        <input v-model="state.cabinets[i]!['cab name']" required type="text" />
-        <br />
-        <br />
-      </div>
-      <div class="add__row" @click="addNewRow">+</div>
-      <div class="add__row" @click="deleteRow">-</div>-->
     </div>
     <input class="add__button" type="submit" value="submit" />
   </form>
+  <teleport to="body">
+    <confirm-popup :opened="state.popupOpened" @closed="popupClosed" @confirm="popupConfirmed">
+      <template #header>
+        <h3>Редактировать WO</h3>
+        <p
+          class="popup__description"
+        >Если к WO уже привязан CabTime или добавлены ошибки, они так же будут удалены.</p>
+      </template>
+      <template #select>
+        <div class="popup__change">
+          <p>WO</p>
+          <input v-model="state.choosenWO.wo" type="text" />
+          <p>Cab name</p>
+          <input v-model="state.choosenWO['cab name']" required type="text" />
+        </div>
+
+        <!-- state.choosenWO -->
+        <!-- <button class="cancel" @click="popupClosed">Отмена</button>
+        <button class="confirm" @click="confirm">Да</button>-->
+      </template>
+      <template #buttons>
+        <button
+          class="popup__cancel__button"
+          @click="updateElements(state.choosenWO.wo)"
+        >Обновить WO</button>
+        <button
+          class="popup__confirm__button"
+          @click="deleteElements(state.choosenWO.wo)"
+        >Удалить WO</button>
+      </template>
+    </confirm-popup>
+  </teleport>
 </template>
 
 <script setup lang="ts">
@@ -99,25 +148,40 @@ import { getAuthGraph } from '@/hooks/useGraph'
 import { templateType } from '@/types/templateType'
 import { useStore } from 'vuex'
 import { projectType } from '@/types/projectType'
+import confirmPopup from '@/components/modal/cunfirmPopup.vue'
 
-
+type cabinetInfo = {
+  "id": string,
+  "type": string,
+  "info": {
+    "wo": string,
+    "cab name": string,
+    "project number": string,
+    "Project Name": string,
+    "status": string
+  },
+}
 
 const router = useRouter()
 const route = useRoute()
 const store = useStore()
 const state = reactive({
+  errorMessage: '',
+  popupOpened: false,
   project: <projectType>{},
+  choosenWO: <projectType['cabinets'][0]>{},
   modelObject: <projectInfoType>{},
   extend: <templateType['template']['extendManual']>{},
   changeData: false,
-  cabinets: <projectType['cabinets']>[]
+  cabinets: <projectType['cabinets']>[],
+  newCabinets: <projectType['cabinets']>[]
 })
 
 if (route.query.projectID) {
   // state.changeData = false
   getProject()
 }
-
+let choosenIndex = 0
 //DEEP COPY
 state.extend = JSON.parse(JSON.stringify(store.state.template.template.extendManual))
 //MOD OBJECT TO V-MODEL
@@ -234,15 +298,109 @@ const postProject = async () => {
   router.back()
 }
 const addNewRow = () => {
-  state.cabinets.push({
+  state.newCabinets.push({
     wo: '',
     'cab name': '',
   })
 }
 const deleteRow = (index: number) => {
-  console.log('ddd');
 
-  state.cabinets.splice(index, 1)
+  state.newCabinets.splice(index, 1)
+}
+
+const deleteRowAttention = async (wo: string, index: number) => {
+  // debugger
+  state.popupOpened = true
+  state.choosenWO = state.cabinets.find(e => e.wo === wo)!
+  choosenIndex = index
+
+
+  // state.cabinets.splice(index, 1)
+}
+
+const popupClosed = () => {
+  state.popupOpened = false
+}
+const popupConfirmed = async () => {
+  // await deleteCabTime()
+  state.popupOpened = false
+  // state.popupOpened = false
+}
+const deleteElements = async (wo: string) => {
+  try {
+    await store.dispatch('GET_cabinetItemsPure', wo)
+
+    Promise.all(store.state.cabinetItems.map(async e => {
+      e.ttl = 2
+      const { request: postDeleteEl } = useFetch('/api/post_item', {
+        method: 'post',
+        body: JSON.stringify(e),
+      })
+      await postDeleteEl()
+      return e
+    }))
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+
+
+const updateElements = async (wo: string) => {
+  //check if wo is exist
+
+  const { request: reqCabinetInfo, response: resCabinetInfo } = useFetch<cabinetInfo>(
+    `/api/getitembyid/info__${wo}`
+  )
+  try {
+    await reqCabinetInfo()
+    //here wo with this number already exists
+    alert('WO already exist')
+    state.errorMessage = 'WO already exist'
+    return
+  } catch (error) {
+    console.log('first check paste');
+    try {
+      await store.dispatch('GET_cabinetItemsPure', wo)
+
+      Promise.all(store.state.cabinetItems.map(async e => {
+        e.info.wo = wo
+        e.info.Шкаф = state.choosenWO['cab name']
+        if (e.type === 'info') {
+          e.info['cab name'] = state.choosenWO['cab name']
+        }
+        const { request: postUpdateEl } = useFetch('/api/post_item', {
+          method: 'post',
+          body: JSON.stringify(e),
+        })
+        //UPDATE ELEMENTS
+        try {
+          await postUpdateEl()
+        } catch (error) {
+          console.log(error, 'error in update elements');
+        }
+        return e
+      }))
+      //replace our object
+      state.cabinets.splice(choosenIndex, 1)
+      state.cabinets.push(state.choosenWO)
+      //UPDATE PROJECT
+      const { request: postProject, response } = useFetch('/api/POST_project', {
+        method: 'POST', // или 'PUT'
+        body: JSON.stringify({ ...state.project, cabinets: state.cabinets })
+      })
+      try {
+        await postProject()
+      } catch (error) {
+        console.log(error, 'postProjectError');
+
+      }
+
+    } catch (error) {
+      console.log(error, 'Oops, fatalError');
+    }
+  }
+
 }
 </script>
 
@@ -383,5 +541,27 @@ td input {
 }
 .collgroup3 {
   width: 10%;
+}
+.popup__description {
+  padding: 10px 1vw;
+  color: red;
+  width: max(25vw, 250px);
+  margin: auto;
+}
+.popup__change {
+  display: grid;
+  width: 95%;
+  margin: auto;
+  grid-template-columns: auto 3fr;
+  place-items: center;
+  gap: 0.5vw;
+  padding: 10px 0;
+}
+.popup__change input {
+  width: 100%;
+  margin-top: 5px;
+}
+.popup__change p {
+  justify-self: end;
 }
 </style>

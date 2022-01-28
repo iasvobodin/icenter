@@ -405,7 +405,7 @@ export const store = createStore<State>({
 
 
       const { request: reqCabinetInfo, response: resCabinetInfo } = useFetch<cabinetInfo>(
-        `/api/errors/info__${payload}`
+        `/api/getitembyid/info__${payload}`
       )
       await reqCabinetInfo()
 
@@ -459,6 +459,14 @@ export const store = createStore<State>({
     async GET_cabinetItems({ commit }, payload: string) {
       const { request, response } = useFetch<cabItems[]>(
         `/api/cabinetItems_copy?wo=${payload}`
+      )
+      await request()
+      // debugger
+      commit('SET_cabinetItems', response.value)
+    },
+    async GET_cabinetItemsPure({ commit }, payload: string) {
+      const { request, response } = useFetch<cabItems[]>(
+        `/api/cabinetItems?wo=${payload}`
       )
       await request()
       // debugger
