@@ -82,7 +82,7 @@ onBeforeUnmount(() => {
   position: relative;
   background-color: white;
   border-radius: 15px;
-  width: min(500px, 95vw);
+  width: min(500px, 100vw - 10px);
   min-height: 150px;
 }
 .select {

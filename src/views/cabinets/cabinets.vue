@@ -188,6 +188,40 @@ const someUpdate = async () => {
 
 // someUpdate()
 
+const getCabinets2 = async () => {
+  const { request, response } = useFetch('/api/projects?status=open')
+  await request()
+  const projects = response.value
+
+  projects.map(project => {
+
+    const modCab = project.cabinets.map(async cabinet => {
+
+      //GET CABINET ITEMS
+      const { request, response: cabError } = useFetch(
+        `/api/cabinetItems_copy?wo=${cabinet.wo}`
+      )
+      await request()
+
+      const cabinetItems = response.value
+
+      return {
+        wo: cabinet.wo,
+        'cab name': cabinet['cab name'],
+        cabTime: cabinetItems.filter(e => e.type === 'cabtime').length,
+        errors: cabinetItems.filter(e => e.type.includes('error')).length
+      }
+
+    })
+
+    return //someph
+  })
+
+}
+
+
+
+
 // const getCabinets = async () => {
 //   const { request, response } = useFetch('/api/projects?status=open')
 //   await request()

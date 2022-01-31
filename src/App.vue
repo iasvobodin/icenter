@@ -384,7 +384,7 @@ td input {
 }
 
 tbody tr:nth-child(odd) {
-  background: #ececec5d;
+  background: #f3f3f3;
 }
 table tbody .partially {
   background: hsl(252deg 100% 95%);

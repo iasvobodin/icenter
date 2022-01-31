@@ -73,7 +73,7 @@ const router = useRouter()
 router.beforeEach((to, from) => {
   console.log(from.fullPath)
   if (from.fullPath === '/cabtimes') {
-    store.commit('SETcurrentProject', null)
+    store.commit('SETcurrentProject', {})
   }
 })
 const state = reactive({

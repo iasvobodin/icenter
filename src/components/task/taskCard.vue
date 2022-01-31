@@ -40,10 +40,9 @@ const state = reactive({
 const userFromStore = computed(() =>
     JSON.parse(JSON.stringify(store.state.user))
 )
-state.passedTime = Date.now() - userTask.value.timeStart!
-const time = computed(
-    () => new Date(state.passedTime).toISOString().substr(11, 8) // time like hors and minutes
-)
+state.passedTime = Date.now() - userTask.value.body.timeStart!
+
+const time = computed(() => new Date(state.passedTime).toISOString().substr(11, 8))
 // state.pps =
 // const startTick = ()=>{
 setInterval(() => {

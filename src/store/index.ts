@@ -452,7 +452,7 @@ export const store = createStore<State>({
 
 
       // commit('SETcurrentProject', currentInfo)
-      console.log(resCabinetInfo.value!.info, 'resCabinetInfo.value!.info');
+      // console.log(resCabinetInfo.value!.info, 'resCabinetInfo.value!.info');
 
       commit('SETcurrentProject', resCabinetInfo.value!.info)
     },

@@ -23,7 +23,10 @@
     <div v-else>
       <h3>
         Номер проекта {{ projectInfoState['project number'] }}
-        <span style="cursor: pointer" @click="clearstate">&#10060;</span>
+        <span
+          style="cursor: pointer"
+          @click="clearstate"
+        >&#10060;</span>
       </h3>
       <h3>Номер WO {{ projectInfoState['wo'] }}</h3>
       <set-error />
@@ -51,7 +54,7 @@ const state = reactive({
 // console.log(router, 'router');
 router.afterEach((to, from) => {
   if (from.fullPath === '/errors') {
-    store.commit('SETcurrentProject', null)
+    store.commit('SETcurrentProject', {})
   }
 })
 // onUnmounted(()=> store.commit('SETcurrentProject', null))

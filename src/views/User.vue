@@ -67,16 +67,17 @@ import { useFetch } from '@/hooks/fetch'
 import { msalInstance } from '@/authConfig'
 import taskCard from '@/components/task/taskCard.vue'
 import { AuthenticationResult } from '@azure/msal-browser'
+import { taskType } from '@/types/taskType'
 
 const router = useRouter()
 const route = useRoute()
 const store = useStore()
-const localUser = ref(false)
+const localUser = ref('')
 const color = ref('')
 const colorChanged = ref(true)
 
 const state = reactive({
-  userTask: null,
+  userTask: <taskType | null>null,
   token: <AuthenticationResult>{},
   passedTime: 0,
 })
@@ -85,21 +86,21 @@ const userFromStore = computed(() =>
   JSON.parse(JSON.stringify(store.state.user))
 )
 
-const CLIENT_ID = import.meta.env.VITE_CLIENT_ID
-const CLIENT_SECRET = import.meta.env.VITE_CLIENT_SECRET
+// const CLIENT_ID = import.meta.env.VITE_CLIENT_ID
+// const CLIENT_SECRET = import.meta.env.VITE_CLIENT_SECRET
 
-const redirectUri = `${location.origin}/user`
-const scope = 'offline_access User.Read User.ReadWrite'
+// const redirectUri = `${location.origin}/user`
+// const scope = 'offline_access User.Read User.ReadWrite'
 
-const url = new URL(
-  'https://login.microsoftonline.com/common/oauth2/v2.0/authorize'
-)
-url.searchParams.append('client_id', CLIENT_ID)
-url.searchParams.append('response_type', 'code')
-url.searchParams.append('redirect_uri', redirectUri)
-url.searchParams.append('scope', scope)
-url.searchParams.append('response_mode', 'query')
-console.log(url, 'TEST SECRET')
+// const url = new URL(
+//   'https://login.microsoftonline.com/common/oauth2/v2.0/authorize'
+// )
+// url.searchParams.append('client_id', CLIENT_ID)
+// url.searchParams.append('response_type', 'code')
+// url.searchParams.append('redirect_uri', redirectUri)
+// url.searchParams.append('scope', scope)
+// url.searchParams.append('response_mode', 'query')
+// console.log(url, 'TEST SECRET')
 
 const tryToSingIn = async () => {
   const account = msalInstance.getAllAccounts()
@@ -253,15 +254,15 @@ const getPhoto = async (token: string) => {
 
 // console.log(import.meta.env.VITE_CLIENT_ID,"test env");
 const getUserTask = async () => {
-  const { request, response } = useFetch(
+  const { request, response } = useFetch<taskType>(
     `/api/GET_userTasks?user=${userFromStore.value.info.userDetails.toLowerCase()}`
   )
   try {
     userFromStore.value && (await request())
-    state.userTask = response.value
+    state.userTask = response.value!
     state.passedTime = CurrentTime - state.userTask.body.timeStart
   } catch (error) {
-    console.log(error.message)
+    console.log(error)
   }
 }
 getUserTask()
@@ -284,33 +285,34 @@ const saveColor = async () => {
   }
   // document.documentElement.style.setProperty('--cursor', `${userFromLocal.body?.customCursor}`)
 }
-const checkInput = (e) => {
+const checkInput = (e: Event) => {
   colorChanged.value = false
+  if (!(e.target instanceof HTMLInputElement)) return
   color.value = e.target.value
 }
 const clearUser = () => {
   window.localStorage.removeItem('user')
   window.location.href = '/.auth/logout?post_logout_redirect_uri=/login'
 }
-async function updateUser(token) {
+async function updateUser(token: AuthenticationResult) {
   const clone = JSON.parse(JSON.stringify(store.state.user))
   clone.token = token
   await store.dispatch('CHECK_AUTH_SERVER', clone)
 }
 onMounted(async () => {
-  localUser.value = window.localStorage.getItem('user')
+  localUser.value = window.localStorage.getItem('user')!
   // store.dispatch('checkUser')
 
-  if (route.query.code) {
-    console.log('FETCH!!!')
-    const { request, response } = useFetch(
-      `api/GET_token?code=${route.query.code}&redirect=${redirectUri}&scope=${scope}&client_id=${CLIENT_ID}&client_secret=${CLIENT_SECRET}`
-    )
-    await request()
-    console.log(response.value)
-    await updateUser(response.value)
-    router.replace({ path: '/user' })
-  }
+  // if (route.query.code) {
+  //   console.log('FETCH!!!')
+  //   const { request, response } = useFetch(
+  //     `api/GET_token?code=${route.query.code}&redirect=${redirectUri}&scope=${scope}&client_id=${CLIENT_ID}&client_secret=${CLIENT_SECRET}`
+  //   )
+  //   await request()
+  //   console.log(response.value)
+  //   await updateUser(response.value)
+  //   router.replace({ path: '/user' })
+  // }
   !userFromStore.value.body.photo &&
     userFromStore.value.token?.access_token &&
     (await getPhoto(userFromStore.value.token.access_token))
@@ -370,9 +372,5 @@ onMounted(async () => {
   color: #ffffff;
   white-space: pre-wrap;
   word-wrap: break-word;
-}
-.get__access {
-  /* position: relative; */
-  /* bottom: 2vh; */
 }
 </style>
