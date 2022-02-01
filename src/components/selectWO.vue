@@ -268,6 +268,7 @@ ul {
   width: 100%;
   display: inline-block;
   padding: 0px;
+  padding-left: 60px;
 }
 input:focus-visible {
   outline: transparent;

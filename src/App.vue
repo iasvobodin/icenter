@@ -18,7 +18,7 @@
 
 <script setup>
 import fetchLoader from '@/components/fetchLoader.vue'
-import appHeader from '@/components/header.vue'
+import appHeader from '@/components/appHeader.vue'
 import * as signalR from '@microsoft/signalr'
 import { useRoute, onBeforeRouteUpdate } from 'vue-router'
 import { useStore } from 'vuex'

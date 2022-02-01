@@ -9,6 +9,7 @@ import { cabinetsType } from '@/types/cabinetsType'
 import { cabtimeType } from '@/types/cabtimeTypes'
 import { errorType } from '@/types/errorType'
 import { strictEqual } from 'assert'
+import { taskType } from '@/types/taskType'
 // import { cabinetInfo } from '@/types/cabinetsType'
 type cabinetInfo = {
   "id": string,
@@ -43,7 +44,7 @@ type cabinetInfo = {
 // }
 
 // export const key: InjectionKey<Store<State>> = Symbol()
-type assign = projectInfoType & { wo: string, 'cab name': string }
+type assign = projectInfoType & { wo: string, 'cab name': string, 'project number'?: string }
 type cabItems = { [key: string]: any }
 export interface State {
   activeErrors: errorType[]
@@ -53,6 +54,7 @@ export interface State {
   selectedProjectNumber: string
   projectInfo: assign
   user: userType
+  userTask: taskType | null
   cabinets: cabinetsType[]
   currentError: null
   cabinetItems: cabItems[]
@@ -80,6 +82,7 @@ export const store = createStore<State>({
     selectedProjectNumber: '',
     projectInfo: <assign>{},
     user: <userType>{},
+    userTask: <taskType | null>null,
     currentError: null,
     cabinetItems: [],
     cabinets: [],
@@ -88,6 +91,9 @@ export const store = createStore<State>({
     allSumm: 0,
   },
   mutations: {
+    SET_userTask(state, payload: taskType) {
+      state.userTask = payload
+    },
     SET_activeErrors(state, payload: errorType[]) {
       state.activeErrors = payload
     },
@@ -534,6 +540,17 @@ export const store = createStore<State>({
 
       // }
     },
+    async GET_userTask({ commit }, payload) {
+      const { request, response } = useFetch<taskType>(
+        `/api/GET_userTasks?user=${payload}`
+      )
+      try {
+        await request()
+        commit('SET_userTask', response.value)
+      } catch (error) {
+        console.log(error)
+      }
+    }
     // async GET_auth({ commit, state }) {
     //   let clientPrincipal = null
     //   let responseUserAuth

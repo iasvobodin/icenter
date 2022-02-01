@@ -30,7 +30,7 @@
 
     <div class="task">
       <h2>Ваша текущая задача.</h2>
-      <task-card v-if="state.userTask?.status === 'active'" :user-task="state.userTask" />
+      <task-card v-if="storeUserTask" :user-task="storeUserTask" />
       <!-- <div
         v-if="state.userTask?.status === 'active'"
         style="cursor: pointer"
@@ -68,11 +68,12 @@ import { msalInstance } from '@/authConfig'
 import taskCard from '@/components/task/taskCard.vue'
 import { AuthenticationResult } from '@azure/msal-browser'
 import { taskType } from '@/types/taskType'
+import { userType } from '@/types/userType'
 
 const router = useRouter()
 const route = useRoute()
 const store = useStore()
-const localUser = ref('')
+const localUser = ref<userType | null>(null)
 const color = ref('')
 const colorChanged = ref(true)
 
@@ -85,6 +86,15 @@ const state = reactive({
 const userFromStore = computed(() =>
   JSON.parse(JSON.stringify(store.state.user))
 )
+const lUser = window.localStorage.getItem('user')
+lUser && (localUser.value = JSON.parse(lUser))
+
+
+const storeUserTask = computed(() => store.state.userTask)
+
+//GET TASK
+// console.log('user run');
+// !store.state.userTask && localUser.value && store.dispatch('GET_userTask', localUser.value.info.userDetails.toLowerCase())
 
 // const CLIENT_ID = import.meta.env.VITE_CLIENT_ID
 // const CLIENT_SECRET = import.meta.env.VITE_CLIENT_SECRET
@@ -253,19 +263,23 @@ const getPhoto = async (token: string) => {
 }
 
 // console.log(import.meta.env.VITE_CLIENT_ID,"test env");
-const getUserTask = async () => {
-  const { request, response } = useFetch<taskType>(
-    `/api/GET_userTasks?user=${userFromStore.value.info.userDetails.toLowerCase()}`
-  )
-  try {
-    userFromStore.value && (await request())
-    state.userTask = response.value!
-    state.passedTime = CurrentTime - state.userTask.body.timeStart
-  } catch (error) {
-    console.log(error)
-  }
-}
-getUserTask()
+
+
+
+
+// const getUserTask = async () => {
+//   const { request, response } = useFetch<taskType>(
+//     `/api/GET_userTasks?user=${userFromStore.value.info.userDetails.toLowerCase()}`
+//   )
+//   try {
+//     userFromStore.value && (await request())
+//     state.userTask = response.value!
+//     state.passedTime = CurrentTime - state.userTask.body.timeStart
+//   } catch (error) {
+//     console.log(error)
+//   }
+// }
+// getUserTask()
 
 const saveColor = async () => {
   const updateUser = JSON.parse(JSON.stringify(store.state.user))
@@ -300,7 +314,6 @@ async function updateUser(token: AuthenticationResult) {
   await store.dispatch('CHECK_AUTH_SERVER', clone)
 }
 onMounted(async () => {
-  localUser.value = window.localStorage.getItem('user')!
   // store.dispatch('checkUser')
 
   // if (route.query.code) {
@@ -313,9 +326,9 @@ onMounted(async () => {
   //   await updateUser(response.value)
   //   router.replace({ path: '/user' })
   // }
-  !userFromStore.value.body.photo &&
-    userFromStore.value.token?.access_token &&
-    (await getPhoto(userFromStore.value.token.access_token))
+  // !userFromStore.value.body.photo &&
+  //   userFromStore.value.token?.access_token &&
+  //   (await getPhoto(userFromStore.value.token.access_token))
 })
 </script>
 

@@ -1,6 +1,6 @@
 <template>
     <div
-        v-if="userTask?.status === 'active'"
+        v-if="userTask?.status === 'active' && !minifyView"
         style="cursor: pointer"
         class="task_card item__card"
         @click="$router.push(`/tasks/${userTask.id}`)"
@@ -17,6 +17,9 @@
             <p>Время работы: {{ time }}</p>
         </div>
     </div>
+    <div v-if="minifyView" class="minify" @click="$router.push(`/tasks/${userTask.id}`)">
+        <p>Текущая задача {{ time }}</p>
+    </div>
 </template>
 <script setup lang="ts">
 import { computed, PropType, reactive, toRefs } from 'vue';
@@ -27,9 +30,13 @@ const props = defineProps({
     userTask: {
         type: Object as PropType<taskType>,
         required: true
+    },
+    minifyView: {
+        type: Boolean,
+        default: false
     }
 })
-const { userTask } = toRefs(props)
+const { minifyView, userTask } = toRefs(props)
 const linkPhoto = 'https://icaenter.blob.core.windows.net/user-photo/'
 const store = useStore()
 
@@ -52,6 +59,17 @@ setInterval(() => {
 
 </script>
 <style lang="css">
+.minify {
+    color: white;
+    padding: 0px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    border: 2px solid white;
+    min-height: 36px;
+}
+.minify p {
+    line-height: 36px;
+}
 .task_card {
     max-height: 150px;
     width: min(450px, 95vw);
