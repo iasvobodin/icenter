@@ -65,7 +65,7 @@ const state = reactive({
     { title: 'Информация' },
     { title: 'CabTime' },
     { title: 'Ошибки' },
-    { title: 'Задачи' },
+    // { title: 'Задачи' },
   ],
   currentCabinetTab: '',
 })
