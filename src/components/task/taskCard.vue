@@ -18,7 +18,7 @@
         </div>
     </div>
     <div v-if="minifyView" class="minify" @click="$router.push(`/tasks/${userTask.id}`)">
-        <p>Текущая задача {{ time }}</p>
+        <p>Задача {{ time }}</p>
     </div>
 </template>
 <script setup lang="ts">

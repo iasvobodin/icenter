@@ -28,6 +28,7 @@
       </template>
       <template #select>
         <selectWO @selected-wo="emitAlteredWo" />
+        <p class="message">{{ state.message }}</p>
       </template>
       <template #buttons>
         <button
@@ -56,7 +57,8 @@ const storeUserTask = computed(() => store.state.userTask)
 
 const state = reactive({
   popupOpened: false,
-  wo: false
+  wo: false,
+  message: 'По выбранному WO должен быть расчитан CabTime'
 })
 
 const projectInfoState = computed(() => store.state.projectInfo)
@@ -74,17 +76,21 @@ async function emitAlteredWo(wo: string) {
   const { request: reqCabTime, response: resCabTime } = useFetch(
     `/api/getitembyid/cabtime__${wo}`
   )
+  state.message = `Проверка CabTime для ${wo}`
   try {
     await reqCabTime()
     state.wo = true
+    state.message = `CabTime для ${wo} расчитан, можно запускать задачу.`
   } catch (error) {
-
+    state.message = `CabTime для ${wo} не расчитан, выберите другой WO.`
+    state.wo = false
     console.log(error, "ERRROR");
   }
 
 }
 function popupClosed() {
   state.popupOpened = !state.popupOpened
+  state.message = 'По выбранному WO должен быть расчитан CabTime'
 }
 async function popupConfirmed() {
   console.log();
@@ -123,6 +129,9 @@ async function createTask() {
 </script>
 
 <style lang="css" scoped>
+.message {
+  text-align: center;
+}
 .holder {
   height: inherit;
   display: grid;
