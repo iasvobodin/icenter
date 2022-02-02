@@ -90,6 +90,10 @@
           <tr v-for="(value, index) in state.newCabinets" :key="index">
             <td>
               <input v-model="state.newCabinets[index]!.wo" type="text" />
+              <p v-if="state.verificationWO">need to check</p>
+              <p
+                v-else
+              >{{ state.checkNewWOStatus[state.newCabinets[index]!.wo] ? 'already exists' : 'everything is fine' }}</p>
             </td>
             <td>
               <input v-model="state.newCabinets[index]!['cab name']" required type="text" />
@@ -102,7 +106,12 @@
         </tbody>
       </table>
     </div>
-    <input class="add__button" type="submit" value="submit" />
+    <!-- <button
+      v-if="state.newCabinets.length > 0"
+      class="add__button"
+      @click="checkNewWo"
+    >Проверить новые WO</button>-->
+    <input class="add__button" type="submit" value="Сохранить" />
   </form>
   <teleport to="body">
     <confirm-popup :opened="state.popupOpened" @closed="popupClosed" @confirm="popupConfirmed">
@@ -119,10 +128,7 @@
           <p>Cab name</p>
           <input v-model="state.choosenWO['cab name']" required type="text" />
         </div>
-
-        <!-- state.choosenWO -->
-        <!-- <button class="cancel" @click="popupClosed">Отмена</button>
-        <button class="confirm" @click="confirm">Да</button>-->
+        <p style=" color: red; text-align: center;">{{ state.errorMessage }}</p>
       </template>
       <template #buttons>
         <button
@@ -139,33 +145,29 @@
 </template>
 
 <script setup lang="ts">
-import { useFetch } from '@/hooks/fetch'
-import { useRoute, useRouter } from 'vue-router'
 import { watch, ComputedRef, computed, ref, reactive } from '@vue/runtime-core'
-import renderInputs from '@/components/renderInputs'
-import { projectInfoType } from '@/types/projectInfoType'
-import { getAuthGraph } from '@/hooks/useGraph'
-import { templateType } from '@/types/templateType'
+import { useRoute, useRouter } from 'vue-router'
 import { useStore } from 'vuex'
-import { projectType } from '@/types/projectType'
+//COMPONENTS
+import renderInputs from '@/components/renderInputs'
 import confirmPopup from '@/components/modal/cunfirmPopup.vue'
+//HOOKS
+import { useFetch } from '@/hooks/fetch'
+import { getAuthGraph } from '@/hooks/useGraph'
+//TYPES
+import { projectInfoType } from '@/types/projectInfoType'
+import { templateType } from '@/types/templateType'
+import { projectType } from '@/types/projectType'
+import { cabinetInfo } from '@/types/cabinetsType'
 
-type cabinetInfo = {
-  "id": string,
-  "type": string,
-  "info": {
-    "wo": string,
-    "cab name": string,
-    "project number": string,
-    "Project Name": string,
-    "status": string
-  },
-}
 
 const router = useRouter()
 const route = useRoute()
 const store = useStore()
+
 const state = reactive({
+  checkCabinetErrorMessage: '',
+  verificationWO: true,
   errorMessage: '',
   popupOpened: false,
   project: <projectType>{},
@@ -174,37 +176,26 @@ const state = reactive({
   extend: <templateType['template']['extendManual']>{},
   changeData: false,
   cabinets: <projectType['cabinets']>[],
-  newCabinets: <projectType['cabinets']>[]
+  newCabinets: <projectType['cabinets']>[],
+  checkNewWOStatus: <Record<string, boolean>>{}
 })
 
-if (route.query.projectID) {
-  // state.changeData = false
-  getProject()
-}
 let choosenIndex = 0
 let choosenWOcopy = ''
+let arr = []
+
+
+if (route.query.projectID) {
+  getProject()
+}
+
 //DEEP COPY
 state.extend = JSON.parse(JSON.stringify(store.state.template.template.extendManual))
 //MOD OBJECT TO V-MODEL
-let arr = []
 for (const key in state.extend) {
-
   arr.push([key, ''])
 }
 state.modelObject = Object.fromEntries(arr)
-
-
-// const extendStore = computed(() => store.state.template.template.extendManual)
-// const copy: ComputedRef<templateType['template']['extendManual']> = computed(() => JSON.parse(JSON.stringify(extendStore.value)))
-
-
-const { getToken, token } = getAuthGraph()
-
-const tryGetToken = async () => {
-  await getToken()
-}
-token && tryGetToken()
-
 
 async function getProject() {
   const { request, response } = useFetch<projectType>(
@@ -220,25 +211,23 @@ async function getProject() {
   }
 }
 
+const { getToken, token } = getAuthGraph()
 
+const tryToGetToken = async () => {
+  await getToken()
+}
+token && tryToGetToken()
 
 const searchPeople = async (key: keyof projectInfoType, event: Event) => {
-
   if (!(event.target instanceof HTMLInputElement)) return
-
   state.modelObject[key] = event.target.value
-
   state.extend[key].search = (await reqGraph(token.value!.accessToken, `https://graph.microsoft.com/v1.0/me/people/?$search=${event.target.value}`)).value
-
 }
+
 const choosePeople = (key: keyof projectInfoType, el: string) => {
   state.modelObject[key] = el
   state.extend[key].search = undefined
 }
-
-
-
-
 
 // eslint-disable-next-line no-undef
 const reqGraph = async (token: string, url: RequestInfo) => {
@@ -263,44 +252,10 @@ const reqGraph = async (token: string, url: RequestInfo) => {
   return response
 }
 
-const postProject = async () => {
-  const { request, response } = useFetch('/api/POST_project', {
-    method: 'POST', // или 'PUT'
-    body: JSON.stringify({
-      id: state.modelObject['Project Number'],
-      status: 'open',
-      info: {
-        base: {
-          'Project Name': state.modelObject['Project Name'],
-          'SZ №': state.modelObject['SZ №'],
-          PM: state.modelObject['PM'],
-          Buyer: state.modelObject['Buyer'],
-          'Contract Administrator': state.modelObject['Contract Administrator'],
-          'Buyout Administrator': state.modelObject['Buyout Administrator'],
-          'Lead Engineer': state.modelObject['Lead Engineer'],
-        },
-        extends: {
-          'Specific requirement field':
-            state.modelObject['Specific requirement field'],
-          'status project': state.modelObject['status project'],
-          'senior fitter': state.modelObject['senior fitter'],
-          'Comments field': state.modelObject['Comments field'],
-          'Shipping date': state.modelObject['Shipping date'],
-          "Hours calculated": state.modelObject['Hours calculated'],
-          "Hours actual": state.modelObject['Hours actual'],
-        },
-      },
-      cabinets: [...state.cabinets, ...state.newCabinets]
-    }),
-  })
-  await request()
-  state.extend = <templateType['template']['extendManual']>{}
-  state.cabinets = []
-  router.back()
-}
+
 const addNewRow = () => {
   state.newCabinets.push({
-    wo: '',
+    wo: Date.now().toString(),
     'cab name': '',
   })
 }
@@ -320,6 +275,24 @@ const deleteRowAttention = async (wo: string, index: number) => {
   // state.cabinets.splice(index, 1)
 }
 
+async function checkNewWo() {
+
+  if (state.newCabinets.length > 0) {
+    await Promise.all(state.newCabinets.map(async cab => {
+      state.newCabinets.filter(e => e.wo === cab.wo)
+      try {
+        await checkTheExistenceOfWO(cab.wo)
+        state.checkNewWOStatus[cab.wo] = true
+        //WO ALLREADY EXIST
+        state.verificationWO = false
+      } catch (error) {
+        console.log(error);
+        state.checkNewWOStatus[cab.wo] = false
+      }
+    }))
+  }
+}
+
 const popupClosed = () => {
   state.popupOpened = false
 }
@@ -328,41 +301,28 @@ const popupConfirmed = async () => {
   state.popupOpened = false
   // state.popupOpened = false
 }
-const deleteElements = async (wo: string) => {
-  try {
-    await store.dispatch('GET_cabinetItemsPure', wo)
-
-    Promise.all(store.state.cabinetItems.map(async e => {
-      e.ttl = 2
-      const { request: postDeleteEl } = useFetch('/api/post_item', {
-        method: 'post',
-        body: JSON.stringify(e),
-      })
-      await postDeleteEl()
-      // return e
-    }))
-  } catch (error) {
-    console.log(error);
-  }
-}
 
 
-
-const updateElements = async (wo: string) => {
-  console.log(wo);
-
-  //check if wo is exist
-
+async function checkTheExistenceOfWO(wo: string) {
   const { request: reqCabinetInfo, response: resCabinetInfo } = useFetch<cabinetInfo>(
     `/api/getitembyid/info__${wo}`
   )
   try {
     await reqCabinetInfo()
     //here wo with this number already exists
-    alert('WO already exist')
-    state.errorMessage = 'WO already exist'
+    state.errorMessage = 'Данный WO уже существует'
     return
   } catch (error) {
+    throw new Error("All OK");
+  }
+}
+
+const updateElements = async (wo: string) => {
+  try {
+    await checkTheExistenceOfWO(wo)
+    return
+  } catch (error) {
+    state.errorMessage = ''
     console.log('first check paste');
     try {
       await store.dispatch('GET_cabinetItemsPure', choosenWOcopy)
@@ -406,6 +366,89 @@ const updateElements = async (wo: string) => {
   }
 
 }
+const deleteElements = async (wo: string) => {
+  try {
+    await store.dispatch('GET_cabinetItemsPure', wo)
+
+    if (store.state.cabinetItems.length > 0) {
+      await Promise.all(store.state.cabinetItems.map(async e => {
+        e.ttl = 2
+        const { request: postDeleteEl } = useFetch('/api/post_item', {
+          method: 'post',
+          body: JSON.stringify(e),
+        })
+        await postDeleteEl()
+        // return e
+      }))
+    }
+
+  } catch (error) {
+    console.log(error);
+  }
+  state.cabinets.splice(choosenIndex, 1)
+  state.popupOpened = !state.popupOpened
+}
+
+const postProject = async () => {
+
+  await checkNewWo()
+  // verification failed
+  if (!state.verificationWO) {
+    return
+  }
+  debugger
+  //CHECL DOUBLES
+  const sanitizeCabinets = state.newCabinets.reduce((acc, cab) => {
+    if (acc.map[cab.wo])
+      return acc;
+
+    acc.map[cab.wo] = true;
+    acc.sanitizeCabinets.push(cab);
+    return acc;
+  }, {
+    map: <Record<string, boolean>>{},
+    sanitizeCabinets: <projectType['cabinets']>[]
+  })
+    .sanitizeCabinets;
+  // console.log(sanitizeCabinets);
+
+
+
+  const { request, response } = useFetch('/api/POST_project', {
+    method: 'POST', // или 'PUT'
+    body: JSON.stringify({
+      id: state.modelObject['Project Number'],
+      status: 'open',
+      info: {
+        base: {
+          'Project Name': state.modelObject['Project Name'],
+          'SZ №': state.modelObject['SZ №'],
+          PM: state.modelObject['PM'],
+          Buyer: state.modelObject['Buyer'],
+          'Contract Administrator': state.modelObject['Contract Administrator'],
+          'Buyout Administrator': state.modelObject['Buyout Administrator'],
+          'Lead Engineer': state.modelObject['Lead Engineer'],
+        },
+        extends: {
+          'Specific requirement field':
+            state.modelObject['Specific requirement field'],
+          'status project': state.modelObject['status project'],
+          'senior fitter': state.modelObject['senior fitter'],
+          'Comments field': state.modelObject['Comments field'],
+          'Shipping date': state.modelObject['Shipping date'],
+          "Hours calculated": state.modelObject['Hours calculated'],
+          "Hours actual": state.modelObject['Hours actual'],
+        },
+      },
+      cabinets: [...state.cabinets, ...sanitizeCabinets]
+    }),
+  })
+  await request()
+  state.extend = <templateType['template']['extendManual']>{}
+  state.cabinets = []
+  router.back()
+}
+
 </script>
 
 <style lang="css" scoped>
@@ -445,7 +488,7 @@ const updateElements = async (wo: string) => {
   height: 30px;
   margin-top: 15px;
   margin-bottom: 15px;
-  background-color: rgb(255, 164, 59);
+  background-color: rgb(255, 255, 255);
 }
 
 .project__info__row {

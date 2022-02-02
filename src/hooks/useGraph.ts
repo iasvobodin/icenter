@@ -19,16 +19,8 @@ const loginPop = async (request: { scopes: string[] }) => {
     }
 }
 export const getAuthGraph = () => {
-
-
-
     const token = ref<AuthenticationResult>();
-
-
-
     const getToken = async () => {
-
-
         if (!account) {
             await loginPop(request)
             console.log('try to auth popup');
