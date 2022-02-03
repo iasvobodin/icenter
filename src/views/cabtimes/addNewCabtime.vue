@@ -51,7 +51,11 @@
     />
   </section>
   <br />
-  <button v-if="projectInfoState?.wo" @click="postCabTime">SEND</button>
+  <button
+    v-if="projectInfoState?.wo"
+    :disabled="state.sandingCabTime"
+    @click="postCabTime"
+  >Сохранить</button>
   <br />
   <br />
 </template>
@@ -77,6 +81,7 @@ router.beforeEach((to, from) => {
   }
 })
 const state = reactive({
+  sandingCabTime: false,
   adminCoef: '12',
   documents: '240',
   type: null,
@@ -136,6 +141,7 @@ const em = (e) => {
 }
 
 const postCabTime = async () => {
+  state.sandingCabTime = true
   const photos = state.updatedPhotos
   const { request } = useFetch('/api/post_item', {
     method: 'POST', // или 'PUT'
@@ -143,6 +149,7 @@ const postCabTime = async () => {
       ...state.ctv3,
       body: state.ctv3.body.filter((e) => e.value),
       photos,
+      "history": [],
     }),
   })
   await request()

@@ -1,5 +1,5 @@
 <template>
-  <section v-if="state.ctv3.groupByType">
+  <section v-if="state.ctv3 && state.ctv3.groupByType">
     <div v-for="(t, i) in state.ctv3.groupByType" :key="i" class="table__wrapper">
       <table>
         <colgroup>
@@ -129,7 +129,7 @@
   @resized-blob="errorPhotosBlob($event)"-->
 </template>
 
-<script setup >
+<script setup lang="ts">
 import itemPhotoUploader from '@/components/itemPhotoUploader.vue'
 import conditionalRender from '@/components/conditionalRender.vue'
 import chooseWoNumber from '@/components/chooseWoNumber.vue'
@@ -142,9 +142,12 @@ import {
   computed,
   nextTick,
   onMounted,
+  PropType,
   watchEffect,
 } from 'vue'
 import { useFetch } from '@/hooks/fetch'
+import { cabtimeType } from '@/types/cabtimeTypes'
+import { templateType } from '@/types/templateType'
 
 const store = useStore()
 const router = useRouter()
@@ -159,7 +162,7 @@ const router = useRouter()
 // eslint-disable-next-line no-undef
 const props = defineProps({
   inputData: {
-    type: Object,
+    type: Object as PropType<cabtimeType>,
     required: true,
   },
   changeData: {
@@ -171,7 +174,7 @@ const props = defineProps({
     default: () => false,
   },
   templateData: {
-    type: Object,
+    type: Object as PropType<templateType['CabTimeV3']>,
     required: true,
   },
 })
@@ -186,7 +189,7 @@ const state = reactive({
 // const { inputData } = props
 const { inputData, changeData, templateData, taskEdit } = toRefs(props)
 
-const mergeObject = (templateObj, cabTimeObj) => {
+const mergeObject = (templateObj: templateType['CabTimeV3'], cabTimeObj: cabtimeType) => {
   const bodyResult = [
     ...cabTimeObj.body,
     ...templateObj.body.filter(

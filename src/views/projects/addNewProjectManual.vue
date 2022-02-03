@@ -68,7 +68,7 @@
             </td>
 
             <td v-if="!state.changeData">
-              <div class="close" @click="deleteRowAttention(value.wo, index)">&#x270D;</div>
+              <div class="close" @click="changeWoManualy(value.wo, index)">&#x270D;</div>
             </td>
           </tr>
         </tbody>
@@ -159,6 +159,7 @@ import { projectInfoType } from '@/types/projectInfoType'
 import { templateType } from '@/types/templateType'
 import { projectType } from '@/types/projectType'
 import { cabinetInfo } from '@/types/cabinetsType'
+import { stat } from 'fs'
 
 
 const router = useRouter()
@@ -264,7 +265,7 @@ const deleteRow = (index: number) => {
   state.newCabinets.splice(index, 1)
 }
 
-const deleteRowAttention = async (wo: string, index: number) => {
+const changeWoManualy = async (wo: string, index: number) => {
   // debugger
   state.popupOpened = true
   state.choosenWO = state.cabinets.find(e => e.wo === wo)!
@@ -318,51 +319,62 @@ async function checkTheExistenceOfWO(wo: string) {
 }
 
 const updateElements = async (wo: string) => {
-  try {
-    await checkTheExistenceOfWO(wo)
-    return
-  } catch (error) {
-    state.errorMessage = ''
-    console.log('first check paste');
+  //CHECK IF WO IS CHANGED
+  if (choosenWOcopy !== wo) {
+    //WO HAS BEEN CHANGED
     try {
-      await store.dispatch('GET_cabinetItemsPure', choosenWOcopy)
-      debugger
-      Promise.all(store.state.cabinetItems.map(async e => {
-        e.info.wo = wo
-        e.info.Шкаф = state.choosenWO['cab name']
-        if (e.type === 'info') {
-          e.info['cab name'] = state.choosenWO['cab name']
-        }
-        const { request: postUpdateEl } = useFetch('/api/post_item', {
-          method: 'post',
-          body: JSON.stringify(e),
-        })
-        //UPDATE ELEMENTS
-        try {
-          await postUpdateEl()
-        } catch (error) {
-          console.log(error, 'error in update elements');
-        }
-        // return e
-      }))
-      //replace our object
-      state.cabinets.splice(choosenIndex, 1)
-      state.cabinets.push(state.choosenWO)
-      //UPDATE PROJECT
-      const { request: postProject, response } = useFetch('/api/POST_project', {
-        method: 'POST', // или 'PUT'
-        body: JSON.stringify({ ...state.project, cabinets: state.cabinets })
-      })
-      try {
-        await postProject()
-      } catch (error) {
-        console.log(error, 'postProjectError');
-
-      }
-
+      await checkTheExistenceOfWO(wo)
+      return
     } catch (error) {
-      console.log(error, 'Oops, fatalError');
+      state.errorMessage = ''
+      console.log('first check paste');
+      try {
+        await store.dispatch('GET_cabinetItemsPure', choosenWOcopy)
+        debugger
+        Promise.all(store.state.cabinetItems.map(async e => {
+          e.info.wo = wo
+          e.info.Шкаф = state.choosenWO['cab name']
+          if (e.type === 'info') {
+            e.info['cab name'] = state.choosenWO['cab name']
+          }
+          const { request: postUpdateEl } = useFetch('/api/post_item', {
+            method: 'post',
+            body: JSON.stringify(e),
+          })
+          //UPDATE ELEMENTS
+          try {
+            await postUpdateEl()
+          } catch (error) {
+            console.log(error, 'error in update elements');
+          }
+          // return e
+        }))
+        //replace our object
+        state.cabinets.splice(choosenIndex, 1)
+        state.cabinets.push(state.choosenWO)
+        //UPDATE PROJECT
+        const { request: postProject, response } = useFetch('/api/POST_project', {
+          method: 'POST', // или 'PUT'
+          body: JSON.stringify({ ...state.project, cabinets: state.cabinets })
+        })
+        try {
+          await postProject()
+        } catch (error) {
+          console.log(error, 'postProjectError');
+
+        }
+
+      } catch (error) {
+        console.log(error, 'Oops, fatalError');
+      }
     }
+  } else {
+    state.cabinets.forEach((cab) => {
+      if (cab.wo === wo) {
+        cab['cab name'] = state.choosenWO['cab name']
+      }
+    })
+    state.popupOpened = !state.popupOpened
   }
 
 }
@@ -397,7 +409,7 @@ const postProject = async () => {
     return
   }
   debugger
-  //CHECL DOUBLES
+  //CHECK DOUBLES
   const sanitizeCabinets = state.newCabinets.reduce((acc, cab) => {
     if (acc.map[cab.wo])
       return acc;

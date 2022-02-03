@@ -135,14 +135,13 @@ const getCabTime = async (wo: string) => {
   try {
     await reqCabTime()
     //add history to cabtime
-    resCabTime.value!.history?.forEach((historyVersion, i) => {
-      // console.log('qty iteration version', i);
-      historyVersion.map((cabtimeBodyElement, i) => {
-        // console.log('qty iteration elements', i);
+    resCabTime.value!.history?.forEach((historyVersion) => {
+
+      historyVersion.map((cabtimeBodyElement) => {
+
         const index = resCabTime.value?.body.findIndex(
           (e) => e._id === cabtimeBodyElement._id
         )
-        // console.log(index)
         resCabTime.value!.body[index!] = cabtimeBodyElement
       })
     })

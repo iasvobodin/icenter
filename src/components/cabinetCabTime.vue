@@ -9,7 +9,6 @@
       :template-data="
         JSON.parse(JSON.stringify(store.state.template.CabTimeV3))
       "
-      @final="em($event)"
     />
     <router-link
       v-if="
@@ -17,33 +16,18 @@
       "
       to="/cabtimes/addnewcabtime"
     >
-      <img
-        class="add__button"
-        src="/img/add.svg"
-        alt="Добавить новый CabTime"
-      />
+      <img class="add__button" src="/img/add.svg" alt="Добавить новый CabTime" />
     </router-link>
     <br />
     <br />
     <button
       v-if="computedItems && $store.state.user.info.userRoles.includes('admin')"
       @click="$router.push(`/cabtimes/${$route.params.cabinetId}`)"
-    >
-      Редактировать
-    </button>
-    <button v-if="state.changeCabTime" @click="postCabTime">Save</button>
-    <!-- <button
-      v-if="$store.state.user.info.userRoles.includes('admin')"
-      @click="state.taskEdit = !state.taskEdit"
-    >
-      TestTask
-    </button> -->
-    <br />
-    <br />
+    >Редактировать</button>
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import CabTimeView from '@/components/CabTimeView.vue'
 import { useFetch } from '@/hooks/fetch'
 import { useStore } from 'vuex'
@@ -60,20 +44,22 @@ const route = useRoute()
 const computedItems = computed(
   () => store.state.cabinetItems.filter((e) => e.type === 'cabtime')[0]
 )
-const em = (e) => (state.cabTime = e)
 
-const postCabTime = async () => {
-  const { request } = useFetch('/api/post_item', {
-    method: 'POST', // или 'PUT'
-    body: JSON.stringify({
-      ...state.cabTime,
-    }),
-  })
-  await request()
-  await store.dispatch('getCabinetsInfo', route.params.cabinetId)
-  await store.dispatch('GET_cabinetItems', route.params.cabinetId)
-  state.changeCabTime = !state.changeCabTime
-}
+
+// const em = (e) => (state.cabTime = e)
+
+// const postCabTime = async () => {
+//   const { request } = useFetch('/api/post_item', {
+//     method: 'POST', // или 'PUT'
+//     body: JSON.stringify({
+//       ...state.cabTime,
+//     }),
+//   })
+//   await request()
+//   await store.dispatch('getCabinetsInfo', route.params.cabinetId)
+//   await store.dispatch('GET_cabinetItems', route.params.cabinetId)
+//   state.changeCabTime = !state.changeCabTime
+// }
 </script>
 
 <style lang="css" scoped>
