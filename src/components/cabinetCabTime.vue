@@ -18,12 +18,12 @@
     >
       <img class="add__button" src="/img/add.svg" alt="Добавить новый CabTime" />
     </router-link>
-    <br />
+    <!-- <br />
     <br />
     <button
       v-if="computedItems && $store.state.user.info.userRoles.includes('admin')"
       @click="$router.push(`/cabtimes/${$route.params.cabinetId}`)"
-    >Редактировать</button>
+    >Редактировать</button>-->
   </div>
 </template>
 
@@ -33,6 +33,7 @@ import { useFetch } from '@/hooks/fetch'
 import { useStore } from 'vuex'
 import { computed, reactive } from 'vue'
 import { useRoute } from 'vue-router'
+import { cabtimeType } from '@/types/cabtimeTypes'
 const store = useStore()
 const state = reactive({
   cabTime: null,
@@ -42,7 +43,7 @@ const state = reactive({
 const route = useRoute()
 
 const computedItems = computed(
-  () => store.state.cabinetItems.filter((e) => e.type === 'cabtime')[0]
+  () => store.state.cabinetItems.filter((e): e is cabtimeType => e.type === 'cabTime')[0]
 )
 
 

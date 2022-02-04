@@ -183,7 +183,7 @@ const emit = defineEmits(['final'])
 const state = reactive({
   blobFiles: null,
   projectInformation: null,
-  ctv3: null,
+  ctv3: <cabtimeType>{},
 })
 // DEEP COPY OBJECT
 // const { inputData } = props
@@ -221,9 +221,10 @@ const inputDataComputed = computed(() =>
 )
 const projectInfoState = computed(() => store.state.projectInfo)
 
-const calculateLogic = ($event, key, val) => {
+const calculateLogic = ($event: Event, key: string, val: keyof cabtimeType['body'][0]) => {
   // console.log($event, key, val)
-  let arr, coef, arr2, coef2
+  if (!($event.target instanceof HTMLInputElement)) return
+  let arr: Array<string>, coef: number, arr2: Array<string>, coef2: number
   switch (key) {
     case '1.3':
       arr = ['2.3', '2.4']
@@ -274,7 +275,7 @@ const calculateLogic = ($event, key, val) => {
     arr &&
       arr.forEach((el) => {
         if (e._id === el) {
-          e[val] = $event.target.value * coef
+          e[val] = $event.target!.value * coef
           e.result = Math.round(e.value * e._const)
         }
       })
@@ -282,13 +283,13 @@ const calculateLogic = ($event, key, val) => {
       arr2.forEach((el) => {
         if (e._id === el) {
           e[val] = $event.target.value * coef2
-          e.result = Math.round(e.value * e._const)
+          e.result = Math.round(+e.value * +e._const)
         }
       })
     if (e._id === key) {
       console.log('tada', e._id, key)
       e[val] = $event.target.value
-      e.result = Math.round(e.value * e._const)
+      e.result = Math.round(+e.value * +e._const)
     }
   })
   state.ctv3.groupByType.map((e) => {

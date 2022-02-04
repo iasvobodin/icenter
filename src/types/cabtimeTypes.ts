@@ -29,4 +29,5 @@ export type cabtimeType = {
     final: string
   }
   history?: [cabtimeBody[]]
+  type: 'cabTime'
 }

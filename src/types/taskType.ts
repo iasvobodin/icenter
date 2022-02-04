@@ -10,7 +10,7 @@ export type taskType = {
     wo: string
   }
   timeStart?: number
-  type: string
+  type: 'task'
   version: number
   status: 'active' | 'completed'
   body: {

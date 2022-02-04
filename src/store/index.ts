@@ -13,7 +13,7 @@ import { taskType } from '@/types/taskType'
 // import { cabinetInfo } from '@/types/cabinetsType'
 type cabinetInfo = {
   "id": string,
-  "type": string,
+  "type": 'info',
   "info": {
     "wo": string,
     "cab name": string,
@@ -45,7 +45,10 @@ type cabinetInfo = {
 
 // export const key: InjectionKey<Store<State>> = Symbol()
 type assign = projectInfoType & { wo: string, 'cab name': string, 'project number'?: string }
-type cabItems = { [key: string]: any }
+type cabItems = Array<cabinetInfo | errorType | cabtimeType | taskType>
+
+
+
 export interface State {
   activeErrors: errorType[]
   loader: false
@@ -57,7 +60,7 @@ export interface State {
   userTask: taskType | null
   cabinets: cabinetsType[]
   currentError: null
-  cabinetItems: cabItems[]
+  cabinetItems: cabItems | null
   passedTime: number
   cabtimeWithStatus: cabtimeType['body']
   allSumm: number
@@ -84,7 +87,7 @@ export const store = createStore<State>({
     user: <userType>{},
     userTask: <taskType | null>null,
     currentError: null,
-    cabinetItems: [],
+    cabinetItems: null,
     cabinets: [],
     passedTime: 0,
     cabtimeWithStatus: [],
@@ -155,7 +158,7 @@ export const store = createStore<State>({
     setSummResult(state, payload) {
       state.allSumm = payload
     },
-    SET_cabinetItems(state, payload: cabItems[]) {
+    SET_cabinetItems(state, payload: cabItems) {
       state.cabinetItems = payload
     },
     changeLoader(state, payload) {
