@@ -146,7 +146,7 @@ import {
   watchEffect,
 } from 'vue'
 import { useFetch } from '@/hooks/fetch'
-import { cabtimeType } from '@/types/cabtimeTypes'
+import { cabtimeType, cabtimeBody } from '@/types/cabtimeTypes'
 import { templateType } from '@/types/templateType'
 
 const store = useStore()
@@ -177,6 +177,10 @@ const props = defineProps({
     type: Object as PropType<templateType['CabTimeV3']>,
     required: true,
   },
+  showHistory: {
+    type: Boolean,
+    default: () => false,
+  },
 })
 // eslint-disable-next-line no-undef
 const emit = defineEmits(['final'])
@@ -187,7 +191,7 @@ const state = reactive({
 })
 // DEEP COPY OBJECT
 // const { inputData } = props
-const { inputData, changeData, templateData, taskEdit } = toRefs(props)
+const { inputData, changeData, templateData, taskEdit, showHistory } = toRefs(props)
 
 const mergeObject = (templateObj: templateType['CabTimeV3'], cabTimeObj: cabtimeType) => {
   const bodyResult = [
@@ -221,9 +225,9 @@ const inputDataComputed = computed(() =>
 )
 const projectInfoState = computed(() => store.state.projectInfo)
 
-const calculateLogic = ($event: Event, key: string, val: keyof cabtimeType['body'][0]) => {
+const calculateLogic = ($event: Event, key: string, val: 'name' | 'value' | '_const') => {
   // console.log($event, key, val)
-  if (!($event.target instanceof HTMLInputElement)) return
+  // if (!($event.target instanceof HTMLInputElement)) return
   let arr: Array<string>, coef: number, arr2: Array<string>, coef2: number
   switch (key) {
     case '1.3':
@@ -271,33 +275,35 @@ const calculateLogic = ($event: Event, key: string, val: keyof cabtimeType['body
     default:
       break
   }
+
   state.ctv3.body.map((e) => {
     arr &&
       arr.forEach((el) => {
         if (e._id === el) {
-          e[val] = $event.target!.value * coef
-          e.result = Math.round(e.value * e._const)
+          e[val] = (+(<HTMLInputElement>$event.target).value * coef).toString()
+          e.result = Math.round(+e.value * +e._const)
         }
       })
     arr2 &&
       arr2.forEach((el) => {
         if (e._id === el) {
-          e[val] = $event.target.value * coef2
+          e[val] = (+(<HTMLInputElement>$event.target).value * coef2).toString()
           e.result = Math.round(+e.value * +e._const)
         }
       })
     if (e._id === key) {
       console.log('tada', e._id, key)
-      e[val] = $event.target.value
+      e[val] = (<HTMLInputElement>$event.target).value
       e.result = Math.round(+e.value * +e._const)
     }
   })
+
   state.ctv3.groupByType.map((e) => {
     return (e.total = state.ctv3.body
       .filter((f) => f._type === e.type)
       .reduce((acc, m) => {
         return m.result ? (acc += +m.result) : acc
-      }, 0))
+      }, 0).toString())
   })
 
   updateEmit()
@@ -305,6 +311,7 @@ const calculateLogic = ($event: Event, key: string, val: keyof cabtimeType['body
 
 const updateEmit = () => {
   const cabTimeToEmit = {
+    ...state.ctv3,
     id: `cabtime__${projectInfoState.value.wo}`,
     info: {
       Проект: projectInfoState.value['project number'],
@@ -312,7 +319,6 @@ const updateEmit = () => {
       wo: projectInfoState.value.wo.toString(),
     },
     type: 'cabtime',
-    ...state.ctv3,
     groupByType: state.ctv3.groupByType.filter((e) => e.total),
     // body: state.ctv3.body.filter((e) => e.value),
     result: cabtimeResult.value,
@@ -329,7 +335,7 @@ const updateEmit = () => {
 // }
 const finalResult = computed(() =>
   state.ctv3.groupByType.reduce(
-    (acc, e) => (e.type === 'Тестирование и Поверка' ? acc : (acc += e.total)),
+    (acc, e) => (e.type === 'Тестирование и Поверка' ? acc : (acc += +e.total)),
     0
   )
 )
@@ -337,8 +343,7 @@ const cabtimeResult = computed(() => {
   return {
     assemble: Math.round(finalResult.value / 60),
     test: Math.round(
-      state.ctv3.groupByType.find((e) => e.type === 'Тестирование и Поверка')
-        ?.total / 60
+      +(state.ctv3.groupByType.find((e) => e.type === 'Тестирование и Поверка')!.total) / 60
     ),
     admin: Math.round(
       Math.round(
@@ -356,27 +361,27 @@ const cabtimeResult = computed(() => {
     ),
   }
 })
-const groupBy = (t) =>
+const groupBy = (t: string) =>
   state.ctv3?.body
     .filter((g) => g._type === t)
-    .sort((a, b) => a._id.split('.')[1] - b._id.split('.')[1])
+    .sort((a, b) => +a._id.split('.')[1] - +b._id.split('.')[1])
 
-const chooseCabinet = (e) => {
-  // state.cabinet = e.split('   ')[0];
-  store.commit('SETcabinetInfo', e)
-  //   this.woState = true;
-}
-const choose = ($event) => {
-  if (!$event) {
-    state.projectInformation = false
-    return
-  }
-  state.projectInformation = state.fetchProject.filter(
-    (e) => e.id === $event
-  )[0]
-  //   console.log(this.projectInformation, "this.projectInformation");
-  store.commit('SETprojectInfo', state.projectInformation)
-}
+// const chooseCabinet = (e) => {
+//   // state.cabinet = e.split('   ')[0];
+//   store.commit('SETcabinetInfo', e)
+//   //   this.woState = true;
+// }
+// const choose = ($event) => {
+//   if (!$event) {
+//     state.projectInformation = false
+//     return
+//   }
+//   state.projectInformation = state.fetchProject.filter(
+//     (e) => e.id === $event
+//   )[0]
+//   //   console.log(this.projectInformation, "this.projectInformation");
+//   store.commit('SETprojectInfo', state.projectInformation)
+// }
 
 // const postCabTime = async () => {
 //   const cabTime = {
@@ -426,12 +431,12 @@ const choose = ($event) => {
 //   await request()
 // }
 
-const addNewRow = (e) => {
+const addNewRow = (e: string) => {
   console.log(e)
   //filter by type
   const ff = state.ctv3.body
     .filter((g) => g._type === e)
-    .sort((a, b) => a._id.split('.')[1] - b._id.split('.')[1])
+    .sort((a, b) => +a._id.split('.')[1] - +b._id.split('.')[1])
   //take last and create array by dot
   const id = ff[ff.length - 1]._id.split('.')
   // increese the last element and joy
@@ -445,6 +450,8 @@ const addNewRow = (e) => {
     _type: e,
     _field: '',
     value: '',
+    status: '',
+    result: 0
   })
   // console.log(e)
 }
@@ -453,9 +460,9 @@ const clearstate = () => {
   state.projectInformation = null
   state.ctv3 = JSON.parse(JSON.stringify(store.state.template.CabTimeV3))
 }
-const deleteRow = (id) => {
+const deleteRow = (id: string) => {
   const currentArrow = state.ctv3.body.find((e) => e._id === id)
-  const index = state.ctv3.body.indexOf(currentArrow)
+  const index = state.ctv3.body.indexOf(currentArrow!)
   state.ctv3.body.splice(index, 1)
   updateEmit()
 }

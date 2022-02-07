@@ -1,4 +1,4 @@
-type cabtimeBody = {
+export type cabtimeBody = {
   _id: string
   _const: string
   _type: string
@@ -9,9 +9,15 @@ type cabtimeBody = {
   status: string
   propTime?: number
   fitter?: string
+  new?: boolean
 }
 
 export type cabtimeType = {
+  info: {
+    Проект: string
+    Шкаф: string
+    wo: string
+  }
   body: cabtimeBody[]
   groupByType: {
     type: string
@@ -30,4 +36,5 @@ export type cabtimeType = {
   }
   history?: [cabtimeBody[]]
   type: 'cabTime'
+  ttl?: number
 }

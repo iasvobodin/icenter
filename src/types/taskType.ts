@@ -6,7 +6,7 @@ export type taskType = {
     user: string
     userId: string
     'project number': string
-    'cab name': string
+    Шкаф: string
     wo: string
   }
   timeStart?: number

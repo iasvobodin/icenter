@@ -4,7 +4,7 @@ import { errorType } from '@/types/errorType'
 
 export type cabinetInfo = {
   "id": string,
-  "type": string,
+  "type": 'info',
   "info": {
     "wo": string,
     "cab name": string,
@@ -12,6 +12,7 @@ export type cabinetInfo = {
     "Project Name": string,
     "status": string
   },
+  "ttl"?: number
 }
 export interface cabinetsType {
   id: string

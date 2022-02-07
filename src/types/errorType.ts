@@ -37,4 +37,5 @@ export interface errorType {
   body: errorBodyType[]
   confirmedTime: number
   confirmedChanged: string
+  ttl?: number
 }

@@ -10,18 +10,18 @@ import { cabtimeType } from '@/types/cabtimeTypes'
 import { errorType } from '@/types/errorType'
 import { strictEqual } from 'assert'
 import { taskType } from '@/types/taskType'
-// import { cabinetInfo } from '@/types/cabinetsType'
-type cabinetInfo = {
-  "id": string,
-  "type": 'info',
-  "info": {
-    "wo": string,
-    "cab name": string,
-    "project number": string,
-    "Project Name": string,
-    "status": string
-  },
-}
+import { cabinetInfo } from '@/types/cabinetsType'
+// type cabinetInfo = {
+//   "id": string,
+//   "type": 'info',
+//   "info": {
+//     "wo": string,
+//     "cab name": string,
+//     "project number": string,
+//     "Project Name": string,
+//     "status": string
+//   },
+// }
 // const createName = (clientPrincipal) => {
 //   if (clientPrincipal.identityProvider === 'aad') {
 //     const splitName = clientPrincipal.userDetails.split('@')[0].split('.')
