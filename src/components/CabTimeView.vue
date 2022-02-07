@@ -8,7 +8,8 @@
           <col span="1" class="collgroup3" />
           <col span="1" class="collgroup4" />
           <col span="1" class="collgroup5" />
-          <!-- <col span="1" class="collgroup6" /> -->
+          <col v-if="showHistory" span="1" class="collgroup6" />
+          <col v-if="showHistory" span="1" class="collgroup7" />
         </colgroup>
         <tbody>
           <tr class="head">
@@ -59,12 +60,17 @@
             </td>
             <td>{{ value.result }}</td>
             <td v-if="showHistory">
-              <span v-if="value.fitter" class="stamp">{{ value.fitter.split('@')[0].split('.')[1] }}</span>
+              <span
+                v-if="value.fitter"
+                :style="randomIntFromInterval(0, 4)"
+                class="stamp"
+              >{{ value.fitter.split('@')[0].split('.')[1] }}</span>
             </td>
             <td v-if="showHistory">
               <span
                 v-if="value.date"
                 class="stamp date"
+                :style="randomIntFromInterval(1, 3)"
               >{{ new Date(value.date).toLocaleString().split(',')[0] }}</span>
             </td>
           </tr>
@@ -443,6 +449,12 @@ const groupBy = (t: string) =>
 //   await request()
 // }
 
+function randomIntFromInterval(min: number, max: number) { // min and max included 
+  // Math.floor(Math.random() * (max - min + 1) + min)
+  const random = ((Math.random() < 0.5) ? -1 : 1) * Math.floor(Math.random() * (max - min + 1) + min)
+  return { transform: ` translateX(${random}px)  translateY(${random}px) rotate(${random}deg)` }
+}
+
 const addNewRow = (e: string) => {
   console.log(e)
   //filter by type
@@ -570,7 +582,7 @@ input[type="radio"] {
   width: 5%;
 }
 .collgroup2 {
-  width: 65%;
+  width: 35%;
 }
 .collgroup3 {
   width: 10%;
@@ -580,6 +592,12 @@ input[type="radio"] {
 }
 .collgroup5 {
   width: 10%;
+}
+.collgroup6 {
+  width: 15%;
+}
+.collgroup7 {
+  width: 15%;
 }
 
 @media only screen and (max-width: 600px) {
@@ -613,21 +631,21 @@ input[type="radio"] {
 }
 /* url("/img/stamp.png"); */
 .stamp {
-  transform: rotate(2deg);
+  /* transform: rotate(2deg); */
   color: rgb(47, 96, 168);
   font-size: 16px;
   font-weight: 700;
-  border: 3px solid rgb(5, 67, 160);
+  border: 2px solid rgb(5, 67, 160);
   display: inline-block;
   padding: 2px 5px;
   text-transform: uppercase;
-  border-radius: 5px;
+  border-radius: 2px;
   /* font-family: "Courier"; */
-  /* -webkit-mask-image: url("/img/stamp.png");
+  /*  url("/img/stamp.png");
   -webkit-mask-size: 200px 604px; */
-  /* mix-blend-mode: multiply; */
+  mix-blend-mode: multiply;
 }
-.date {
+/* .date {
   transform: rotate(-4deg);
-}
+} */
 </style>

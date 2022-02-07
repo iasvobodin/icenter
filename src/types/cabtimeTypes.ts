@@ -14,6 +14,7 @@ export type cabtimeBody = {
 }
 
 export type cabtimeType = {
+  id: string
   info: {
     Проект: string
     Шкаф: string
@@ -38,4 +39,5 @@ export type cabtimeType = {
   history?: [cabtimeBody[]]
   type: 'cabTime'
   ttl?: number
+  photos?: Array<string>
 }

@@ -79,7 +79,10 @@
         </template>
       </confirm-popup>
     </teleport>
-    <button v-if="!state.wellDone" @click="saveTask">SaveTask</button>
+    <button
+      v-if="!state.wellDone && $store.state.cabtimeWithStatus.length > 0"
+      @click="saveTask"
+    >SaveTask</button>
   </div>
 </template>
 

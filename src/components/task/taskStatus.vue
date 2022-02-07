@@ -6,26 +6,16 @@
     </div>
     <table>
       <colgroup>
-        <!-- <col span="1" class="collgroup1" /> -->
         <col span="1" class="collgroup2" />
-        <col v-if="statusMark" span="1" class="collgroup3" />
-        <col v-if="statusMark" span="1" class="collgroup4" />
-        <col v-if="!statusMark" span="1" class="collgroup5" />
-        <col v-if="!statusMark" span="1" class="collgroup5" />
+        <col span="1" class="collgroup3" />
+        <col span="1" class="collgroup4" />
       </colgroup>
       <thead class="head">
         <tr>
           <th rowspan="2">Задача</th>
-          <th v-if="statusMark" style="text-align: center" colspan="2">Выполнено</th>
-          <th v-if="!statusMark" class="vertical" rowspan="1">CabTime (мин)</th>
-          <th
-            v-if="!statusMark"
-            style="text-align: center"
-            class="vertical"
-            rowspan="1"
-          >Авто-расчёт (мин)</th>
+          <th style="text-align: center" colspan="2">Выполнено</th>
         </tr>
-        <tr v-if="statusMark">
+        <tr>
           <th style="text-align: center" class="vertical">Частично</th>
           <th style="text-align: center" class="vertical">Полностью</th>
         </tr>
@@ -40,43 +30,32 @@
           }"
         >
           <td class="desc">{{ value.name }}</td>
-          <td v-if="statusMark" style="text-align: center">
+          <td style="text-align: center">
             <input
               :checked="value.status === 'partially'"
               type="checkbox"
               @input="changeStatus($event, value._id, 'partially')"
             />
           </td>
-          <td v-if="statusMark" style="text-align: center">
+          <td style="text-align: center">
             <input
               :checked="value.status === 'done'"
               type="checkbox"
               @input="changeStatus($event, value._id, 'done')"
             />
           </td>
-          <td v-if="!statusMark" style="text-align: center">{{ value.result }}</td>
-          <td v-if="!statusMark">
-            <input
-              class="cabtime__input"
-              type="number"
-              :value="value.propTime"
-              @input="changePartyalyyTime($event, value._id)"
-            />
-          </td>
-        </tr>
-        <tr v-if="!statusMark">
-          <td>Суммарно</td>
-          <td>{{ state.allSumm }}</td>
-          <td>{{ state.partiallySumm }}</td>
         </tr>
       </tbody>
     </table>
-    {{ state.alertMessage && !statusMark ? state.alertMessage : '' }}
     <br />
     <br />
-    <button v-if="statusMark" @click="firstCaptureData">Далее</button>
-    <button v-if="statusMark" @click="resetStatus">Сбросить</button>
+    <button @click="firstCaptureData">Далее</button>
+    <button @click="resetStatus">Сбросить</button>
   </div>
+  <div
+    v-if="state.alertMessage && $store.state.cabtimeWithStatus.length > 0"
+    class="message"
+  >{{ state.alertMessage }}</div>
 </template>
 
 <script setup lang="ts">
@@ -144,7 +123,7 @@ const firstCaptureData = () => {
     if (spentTime > timeDone && spentTime < timeAll) {
       console.log('ALL OK')
 
-      state.alertMessage = 'Статус "ok"'
+      state.alertMessage = 'Время на полностью закрытые задачи будет списано согласно CabTime, а на частично выполненные задачи, пропорционально.(ok)'
       const difTime = spentTime - timeDone
       const partiallyTime = timeAll - timeDone
       taskArray.forEach((e) => {
@@ -158,7 +137,7 @@ const firstCaptureData = () => {
     }
 
     if (spentTime < timeDone) {
-      state.alertMessage = 'Статус "cлишком быстро"'
+      state.alertMessage = 'Сумма минут на полностью закрытые задачи, превышает время работы, автоматический расчёт будет меньше чем по CadTime.(Быстро)'
       //CALCULATE ONLY DONE
       console.log('TO FAST')
       taskArray.forEach((e) => {
@@ -172,7 +151,7 @@ const firstCaptureData = () => {
     }
 
     if (spentTime > timeAll) {
-      state.alertMessage = 'Статус "cлишком медленно"'
+      state.alertMessage = 'Списываемое время, меньше чем сумма минут на полностью закрытые задачи, автоматический расчёт будет больше чем по CadTime.(Медленно)'
       console.log('TO SLOW')
       taskArray.forEach((e) => {
         e.propTime = Math.round((e.result / timeAll) * spentTime)
@@ -446,5 +425,13 @@ input[type="radio"] {
     transform: rotate(-180deg);
     min-height: 110px;
   } */
+}
+.message {
+  width: min(95vw, 800px);
+  margin: auto;
+  margin-top: 2vh;
+  border: 1px solid orange;
+  border-radius: 5px;
+  padding: 10px;
 }
 </style>

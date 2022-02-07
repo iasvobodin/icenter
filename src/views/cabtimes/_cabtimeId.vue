@@ -6,13 +6,9 @@
         <template #header>
           <h3>Удалить cabTime?</h3>
         </template>
-        <!-- <template #action>
-          <button class="cancel" @click="popupClosed">Отмена</button>
-          <button class="confirm" @click="confirm">Да</button>
-        </template>-->
       </confirm-popup>
     </teleport>
-    <div>
+    <div v-if="pInfo">
       <h2>
         <i>№ :</i>
         {{ pInfo['project number'] }}
@@ -73,7 +69,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import itemPhotoUploader from '@/components/itemPhotoUploader.vue'
 import CabTimeView from '@/components/CabTimeView.vue'
 import confirmPopup from '@/components/modal/cunfirmPopup.vue'
@@ -81,15 +77,16 @@ import { useFetch } from '@/hooks/fetch'
 import { useStore } from 'vuex'
 import { computed, onMounted, reactive, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { cabtimeType, cabtimeBody } from '@/types/cabtimeTypes'
 const store = useStore()
 const state = reactive({
   mainEmitFromPhotos2: null,
   saveChanges: false,
   popupOpened: false,
-  cabTime: null,
+  cabTime: <cabtimeType | null>null,
   changeCabTime: false,
   taskEdit: false,
-  updatedPhotos: [],
+  updatedPhotos: [] as Array<string>,
 })
 const route = useRoute()
 const router = useRouter()
@@ -101,15 +98,21 @@ const setState = async () => {
 }
 setState()
 const pInfo = computed(() =>
-  store.state.projectInfo ? store.state.projectInfo : {}
+  store.state.projectInfo ? store.state.projectInfo : null
 )
 const getCabTime = async () => {
-  const { request, response } = useFetch(
+  const { request, response } = useFetch<cabtimeType>(
     `/api/getitembyid/cabtime__${route.params.cabtimeId}`
   )
   try {
     await request()
-    state.cabTime = response
+
+
+
+
+
+
+    state.cabTime = response.value!
   } catch (error) {
     console.log('cant get cabTime request')
   }
@@ -118,45 +121,10 @@ const getCabTime = async () => {
 }
 getCabTime()
 
-// const computedItems = computed(
-//   () => store.state.cabinetItems.filter((e) => e.type === 'cabtime')[0]
-// )
-const em = (e) => (state.cabTime = e)
 
-// const photosFromEmit = []
+const em = (e: cabtimeType) => (state.cabTime = e)
 
-// const photo = async () => {
-//   if (state.cabTime.blobFiles?.length > 0) {
-//     // !state.cabTime.photos && (state.cabTime.photos = [])
-//     const formData = new FormData()
-//     state.cabTime.blobFiles?.forEach((e, i) => {
-//       const unic = Date.now()
-//       const imageName = `${
-//         state.cabTime.id
-//       }__${store.state.user.info.userDetails.toLowerCase()}__${unic + i}.jpg`
-
-//       // state.cabTime.photos
-//       photosFromEmit.push(imageName)
-
-//       formData.set(`photo${unic + i}`, e, imageName)
-//     })
-
-//     // UPLOAD PHOTOS
-//     const { request, response } = useFetch(
-//       '/api/blob?container=cabtime-photo&test=true',
-//       {
-//         method: 'POST',
-//         body: formData,
-//       }
-//     )
-//     await request()
-//   }
-// }
-// const mainEmitFromPhotos = async (e) => {
-//   state.cabTime.photos = await e
-//   postCabtime()
-// }
-const updatePhotoCollection = (e) => {
+const updatePhotoCollection = (e: Array<string>) => {
   state.updatedPhotos = e
 }
 const postCabtime = async () => {
@@ -165,7 +133,7 @@ const postCabtime = async () => {
     method: 'POST', // или 'PUT'
     body: JSON.stringify({
       ...state.cabTime,
-      body: state.cabTime.body.filter((e) => e.value),
+      body: state.cabTime!.body.filter((e) => e.value),
       photos,
     }),
   })
@@ -188,9 +156,9 @@ const deleteCabTime = async () => {
   //     })
   //   ))
 
-  if (state.cabTime.photos?.length > 0) {
+  if (state.cabTime!.photos!.length > 0) {
     store.commit('PreparePhotosToDelete', {
-      photos: state.cabTime.photos,
+      photos: state.cabTime!.photos,
       container: 'cabtime-photo',
     })
     await store.dispatch('DELETE_PHOTOS')
@@ -199,8 +167,8 @@ const deleteCabTime = async () => {
   const { request: deleteCabTimeReq } = useFetch('/api/post_item', {
     method: 'POST', // или 'PUT'
     body: JSON.stringify({
-      ttl: 10,
       ...state.cabTime,
+      ttl: 10,
     }),
   })
   await deleteCabTimeReq()
