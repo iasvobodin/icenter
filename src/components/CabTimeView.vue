@@ -17,8 +17,8 @@
             <th>Кол-во</th>
             <th>Норма</th>
             <th>{{ state.ctv3.groupByType[i].total }}</th>
-            <th>Фамилия</th>
-            <th>Дата</th>
+            <th v-if="showHistory">Фамилия</th>
+            <th v-if="showHistory">Дата</th>
           </tr>
           <tr v-for="(value, index) in groupBy(t.type)" :key="index">
             <td>{{ value._id }}</td>
@@ -58,10 +58,10 @@
               <p v-else>{{ value._const }}</p>
             </td>
             <td>{{ value.result }}</td>
-            <td>
+            <td v-if="showHistory">
               <span v-if="value.fitter" class="stamp">{{ value.fitter.split('@')[0].split('.')[1] }}</span>
             </td>
-            <td>
+            <td v-if="showHistory">
               <span
                 v-if="value.date"
                 class="stamp date"

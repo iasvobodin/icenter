@@ -5,6 +5,7 @@
       v-if="state.cabTime"
       :task-edit="state.taskEdit"
       :input-data="state.cabTime"
+      :show-history="true"
       :change-data="state.changeCabTime"
       :template-data="
         JSON.parse(JSON.stringify(store.state.template.CabTimeV3))
