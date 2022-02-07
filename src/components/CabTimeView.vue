@@ -61,7 +61,12 @@
             <td>
               <span v-if="value.fitter" class="stamp">{{ value.fitter.split('@')[0].split('.')[1] }}</span>
             </td>
-            <td>{{ value.date ? new Date(value.date).toLocaleString().split(',')[0] : '' }}</td>
+            <td>
+              <span
+                v-if="value.date"
+                class="stamp date"
+              >{{ new Date(value.date).toLocaleString().split(',')[0] }}</span>
+            </td>
           </tr>
           <div v-if="changeData" class="add__row" @click="addNewRow(t.type)">+</div>
         </tbody>
@@ -606,21 +611,23 @@ input[type="radio"] {
   margin: 2vh auto;
   width: min(800px, 95vw);
 }
+/* url("/img/stamp.png"); */
 .stamp {
-  transform: rotate(6deg);
-  color: rgb(33, 98, 172);
-  font-size: 1rem;
+  transform: rotate(2deg);
+  color: rgb(47, 96, 168);
+  font-size: 20px;
   font-weight: 700;
-  border: 2px solid rgb(36, 64, 126);
+  border: 3px solid rgb(5, 67, 160);
   display: inline-block;
-  padding: 3px 7px;
+  padding: 2px 5px;
   text-transform: uppercase;
   border-radius: 5px;
-  font-family: "Courier";
-  mask-image: url("https://i.imgur.com/5O74VI6.jpg");
-  mask-size: 944px 604px;
-  -webkit-mask-image: url("https://i.imgur.com/5O74VI6.jpg");
-  -webkit-mask-size: 944px 604px;
+  /* font-family: "Courier"; */
+  /* -webkit-mask-image: url("/img/stamp.png");
+  -webkit-mask-size: 200px 604px; */
   mix-blend-mode: multiply;
+}
+.date {
+  transform: rotate(-4deg);
 }
 </style>
