@@ -615,7 +615,7 @@ input[type="radio"] {
 .stamp {
   transform: rotate(2deg);
   color: rgb(47, 96, 168);
-  font-size: 20px;
+  font-size: 16px;
   font-weight: 700;
   border: 3px solid rgb(5, 67, 160);
   display: inline-block;
@@ -625,7 +625,7 @@ input[type="radio"] {
   /* font-family: "Courier"; */
   /* -webkit-mask-image: url("/img/stamp.png");
   -webkit-mask-size: 200px 604px; */
-  mix-blend-mode: multiply;
+  /* mix-blend-mode: multiply; */
 }
 .date {
   transform: rotate(-4deg);
