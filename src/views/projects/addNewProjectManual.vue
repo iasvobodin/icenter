@@ -331,11 +331,13 @@ const updateElements = async (wo: string) => {
       try {
         await store.dispatch('GET_cabinetItemsPure', choosenWOcopy)
         debugger
-        Promise.all(store.state.cabinetItems.map(async e => {
+        Promise.all(store.state.cabinetItems!.map(async e => {
           e.info.wo = wo
-          e.info.Шкаф = state.choosenWO['cab name']
+
           if (e.type === 'info') {
             e.info['cab name'] = state.choosenWO['cab name']
+          } else {
+            e.info.Шкаф = state.choosenWO['cab name']
           }
           const { request: postUpdateEl } = useFetch('/api/post_item', {
             method: 'post',
@@ -382,7 +384,7 @@ const deleteElements = async (wo: string) => {
   try {
     await store.dispatch('GET_cabinetItemsPure', wo)
 
-    if (store.state.cabinetItems.length > 0) {
+    if (store.state.cabinetItems && store.state.cabinetItems.length > 0) {
       await Promise.all(store.state.cabinetItems.map(async e => {
         e.ttl = 2
         const { request: postDeleteEl } = useFetch('/api/post_item', {

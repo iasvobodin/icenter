@@ -8,14 +8,17 @@
           <col span="1" class="collgroup3" />
           <col span="1" class="collgroup4" />
           <col span="1" class="collgroup5" />
+          <!-- <col span="1" class="collgroup6" /> -->
         </colgroup>
         <tbody>
           <tr class="head">
             <th>№</th>
             <th>{{ t.type }}</th>
             <th>Кол-во</th>
-            <th>Const</th>
+            <th>Норма</th>
             <th>{{ state.ctv3.groupByType[i].total }}</th>
+            <th>Фамилия</th>
+            <th>Дата</th>
           </tr>
           <tr v-for="(value, index) in groupBy(t.type)" :key="index">
             <td>{{ value._id }}</td>
@@ -55,6 +58,10 @@
               <p v-else>{{ value._const }}</p>
             </td>
             <td>{{ value.result }}</td>
+            <td>
+              <span v-if="value.fitter" class="stamp">{{ value.fitter.split('@')[0].split('.')[1] }}</span>
+            </td>
+            <td>{{ value.date ? new Date(value.date).toLocaleString().split(',')[0] : '' }}</td>
           </tr>
           <div v-if="changeData" class="add__row" @click="addNewRow(t.type)">+</div>
         </tbody>
@@ -598,5 +605,22 @@ input[type="radio"] {
 .error-photos {
   margin: 2vh auto;
   width: min(800px, 95vw);
+}
+.stamp {
+  transform: rotate(6deg);
+  color: rgb(33, 98, 172);
+  font-size: 1rem;
+  font-weight: 700;
+  border: 2px solid rgb(36, 64, 126);
+  display: inline-block;
+  padding: 3px 7px;
+  text-transform: uppercase;
+  border-radius: 5px;
+  font-family: "Courier";
+  mask-image: url("https://i.imgur.com/5O74VI6.jpg");
+  mask-size: 944px 604px;
+  -webkit-mask-image: url("https://i.imgur.com/5O74VI6.jpg");
+  -webkit-mask-size: 944px 604px;
+  mix-blend-mode: multiply;
 }
 </style>

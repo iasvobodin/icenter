@@ -280,7 +280,7 @@ async function popupConfirmed() {
       state.task.info.wo = resCabinets.value.info.wo
       state.task.info['project number'] =
         resCabinets.value.info['project number']
-      state.task.info['cab name'] = resCabinets.value.info['cab name']
+      state.task.info['Шкаф'] = resCabinets.value.info['cab name']
     }
   }
   if (state.alteredTime) {

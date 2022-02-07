@@ -16,18 +16,14 @@
       <thead class="head">
         <tr>
           <th rowspan="2">Задача</th>
-          <th v-if="statusMark" style="text-align: center" colspan="2">
-            Выполнено
-          </th>
+          <th v-if="statusMark" style="text-align: center" colspan="2">Выполнено</th>
           <th v-if="!statusMark" class="vertical" rowspan="1">CabTime (мин)</th>
           <th
             v-if="!statusMark"
             style="text-align: center"
             class="vertical"
             rowspan="1"
-          >
-            Авто-расчёт (мин)
-          </th>
+          >Авто-расчёт (мин)</th>
         </tr>
         <tr v-if="statusMark">
           <th style="text-align: center" class="vertical">Частично</th>
@@ -46,25 +42,19 @@
           <td class="desc">{{ value.name }}</td>
           <td v-if="statusMark" style="text-align: center">
             <input
-              id
               :checked="value.status === 'partially'"
               type="checkbox"
-              name
               @input="changeStatus($event, value._id, 'partially')"
             />
           </td>
           <td v-if="statusMark" style="text-align: center">
             <input
-              id
               :checked="value.status === 'done'"
               type="checkbox"
-              name
               @input="changeStatus($event, value._id, 'done')"
             />
           </td>
-          <td v-if="!statusMark" style="text-align: center">
-            {{ value.result }}
-          </td>
+          <td v-if="!statusMark" style="text-align: center">{{ value.result }}</td>
           <td v-if="!statusMark">
             <input
               class="cabtime__input"
@@ -148,12 +138,13 @@ const firstCaptureData = () => {
   ) => {
     taskArray.forEach((e) => {
       e.fitter = store.state.user.info.userDetails
+      e.date = Date.now()
     })
 
     if (spentTime > timeDone && spentTime < timeAll) {
       console.log('ALL OK')
 
-      // state.alertMessage = 'all ok'
+      state.alertMessage = 'Статус "ok"'
       const difTime = spentTime - timeDone
       const partiallyTime = timeAll - timeDone
       taskArray.forEach((e) => {
@@ -167,7 +158,7 @@ const firstCaptureData = () => {
     }
 
     if (spentTime < timeDone) {
-      // state.alertMessage = 'to fast'
+      state.alertMessage = 'Статус "cлишком быстро"'
       //CALCULATE ONLY DONE
       console.log('TO FAST')
       taskArray.forEach((e) => {
@@ -181,7 +172,7 @@ const firstCaptureData = () => {
     }
 
     if (spentTime > timeAll) {
-      // state.alertMessage = 'to slow'
+      state.alertMessage = 'Статус "cлишком медленно"'
       console.log('TO SLOW')
       taskArray.forEach((e) => {
         e.propTime = Math.round((e.result / timeAll) * spentTime)
@@ -414,7 +405,7 @@ label {
   text-align: start;
   /* display: in; */
 }
-input[type='radio'] {
+input[type="radio"] {
   margin: 0;
 }
 

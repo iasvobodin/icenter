@@ -13,7 +13,7 @@
         </div>
         <div class="task__description">
             <p>Проект : {{ userTask.info['project number'] }}</p>
-            <p>Шкаф : {{ userTask.info['cab name'] }}</p>
+            <p>Шкаф : {{ userTask.info['Шкаф'] }}</p>
             <p>Время работы: {{ time }}</p>
         </div>
     </div>

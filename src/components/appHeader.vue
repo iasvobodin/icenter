@@ -50,8 +50,10 @@ import navigationPanel from '@/components/adminNavigation.vue'
 import { useStore } from 'vuex'
 import taskCard from '@/components/task/taskCard.vue'
 import { useFetch } from '@/hooks/fetch'
+import { useRouter } from 'vue-router'
 
 const store = useStore()
+const router = useRouter()
 const userInfo = computed(() => store.state.user.info)
 const storeUserTask = computed(() => store.state.userTask)
 
@@ -108,7 +110,7 @@ async function createTask() {
         user: userInfoState.value.info.userDetails.toLowerCase(),
         userId: userInfoState.value.info.userId,
         'project number': projectInfoState.value['project number'],
-        'cab name': projectInfoState.value['cab name'],
+        'Шкаф': projectInfoState.value['cab name'],
         wo: projectInfoState.value.wo.toString(),
       },
       type: 'task',
@@ -123,6 +125,7 @@ async function createTask() {
   }
   const { request: postNewTask, response } = useFetch('/api/post_item', options)
   await postNewTask()
+  router.push(`/tasks/${id}`)
   state.popupOpened = !state.popupOpened
 
 }

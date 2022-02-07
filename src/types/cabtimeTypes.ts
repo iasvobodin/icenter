@@ -10,6 +10,7 @@ export type cabtimeBody = {
   propTime?: number
   fitter?: string
   new?: boolean
+  date?: number
 }
 
 export type cabtimeType = {
