@@ -17,7 +17,6 @@
         <i>Проект :</i>
         {{ pInfo['Project Name'] }}
       </h2>
-
       <h2>
         <i>Шкаф :</i>
         {{ pInfo['cab name'] }}

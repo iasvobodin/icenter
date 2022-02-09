@@ -51,15 +51,37 @@
             <hr style="margin: 0" />
             <!-- <info-render :info-data="{[value.id]: value.info.base['Project Name']}" /> -->
             <div class="double">
-              <info-render :info-data="{ PM: value.info?.base?.PM }" />
-              <info-render
+              <div class="cabinet__info__item">
+                <p>
+                  <b>PM:</b>
+                </p>
+                <p>{{ value.info?.base?.PM }}</p>
+              </div>
+              <div class="cabinet__info__item">
+                <p>
+                  <b>SF:</b>
+                </p>
+                <p>{{ value.info?.extends?.['senior fitter']?.includes('@') ? value.info?.extends?.['senior fitter']?.split('@')[0].split('.')[1] : value.info?.extends?.['senior fitter']?.split('.')[0] }}</p>
+                <!-- <hr style="margin: 0" /> -->
+              </div>
+              <!-- <info-render :info-data="{ PM: value.info?.base?.PM }" /> -->
+              <!-- <info-render
+                v-if="value.info?.extends?.['senior fitter']
+                ?.includes('@')"
                 :info-data="{
                   SF: value.info?.extends?.['senior fitter']
                     ?.split('@')[0]
                     .split('.')[1],
                 }"
-              />
+              />-->
             </div>
+            <hr style="margin: 0" />
+
+            <!-- <info-render
+              :info-data="{
+                SF: value.info?.extends?.['senior fitter']
+              }"
+            />-->
             <div class="double">
               <info-render
                 :info-data="{
@@ -170,10 +192,10 @@ const router = useRouter()
 const store = useStore()
 
 // store.dispatch('createProjectInfo')
-router.beforeEach(async (to, from) => {
-  !store.state.template && (await store.dispatch('extendProject'))
-  return true
-})
+// router.beforeEach(async (to, from) => {
+//   !store.state.template && (await store.dispatch('extendProject'))
+//   return true
+// })
 
 const selectedStatus = ref(false)
 
@@ -307,6 +329,13 @@ const myProjects = () => {
 </script>
 
 <style lang="css" scoped>
+.cabinet__info__item {
+  /* border-bottom: 1px solid rgb(102, 102, 102); */
+  padding: 5px;
+  /* width: 100%; */
+  display: grid;
+  grid-template-columns: 2fr 5fr;
+}
 .my__projects {
   position: absolute;
   right: 1vw;

@@ -1,12 +1,12 @@
 <template>
-  <div class="wrapper">
+  <div v-if="!state.generatedQR" class="wrapper">
     <h1 class="project__header">Номер проекта {{ $route.params.projectId }}</h1>
     <main v-if="Object.keys(state.project).length !== 0" class="project">
       <section class="project__info">
         <h3>Основная информация</h3>
         <info-render :info-data="state.project.info.base" />
-      </section>
-      <section class="project__extends">
+        <!-- </section>
+        <section class="project__extends">-->
         <h3>Дополнительные сведения</h3>
         <info-render v-if="!state.changeData" :info-data="state.project.info.extends" />
         <conditional-render
@@ -68,8 +68,9 @@
       <button v-if="state.changeData" @click="updateWO">Обновить данные</button>
       <button
         v-if="$store.state.user.info.userRoles.includes('admin')"
-        @click="state.generatedQR = !state.generatedQR"
-      >Сгенерировать QR</button>
+        class="print__button"
+        @click="printQR"
+      >Распечатать QR</button>
       <br />
       <br />
     </section>
@@ -78,20 +79,17 @@
       <br />
       <br />Нельзя просто взять, и изменить проект.
     </h2>
-    <section v-if="state.generatedQR" class="qrs">
-      <generate-qr-code
-        v-for="(value, i) in state.project.cabinets"
-        :key="i"
-        :generate-data="value"
-      />
-    </section>
   </div>
+
+  <section class="qrs">
+    <generate-qr-code v-for="(value, i) in state.project.cabinets" :key="i" :generate-data="value" />
+  </section>
 </template>
 
 <script setup lang="ts">
 import chooseWoNumber from '@/components/chooseWoNumber.vue'
 import generateQrCode from '@/components/generateQrCode.vue'
-import { reactive, toRefs } from 'vue'
+import { nextTick, onBeforeUnmount, onMounted, reactive, toRefs } from 'vue'
 import { useFetch } from '@/hooks/fetch'
 import { useRouter, useRoute } from 'vue-router'
 import conditionalRender from '@/components/conditionalRender.vue'
@@ -126,7 +124,7 @@ type projectType = {
     {
       "wo": string,
       "cab name": string
-    } | null
+    }
   ],
 }
 
@@ -165,6 +163,34 @@ const state = reactive({
   resCabinets: {},
   generatedQR: false,
 })
+
+const printQR = async () => {
+  // state.generatedQR = !state.generatedQR
+  await nextTick()
+  window.print()
+}
+// onMounted(() => {
+
+// })
+
+const hendleKeyDown = (e: KeyboardEvent) => {
+  console.log('key');
+
+  e.key === 'Escape' && (state.generatedQR = false)
+}
+
+
+onMounted(() => {
+  document.addEventListener('keydown', hendleKeyDown)
+  document.addEventListener('afterprint', (event) => {
+    console.log('After print');
+    state.generatedQR = !state.generatedQR
+  });
+})
+onBeforeUnmount(() => {
+  document.removeEventListener('keydown', hendleKeyDown)
+})
+
 const getProject = async () => {
   const { request, response } = useFetch<projectType>(
     `/api/projects?status=${route.query.status ? 'closed' : 'open'
@@ -286,6 +312,7 @@ const closeProject = async () => {
   router.push('/projects/')
 
 }
+
 </script>
 
 <style lang="css" scoped>
@@ -324,9 +351,14 @@ tbody tr:hover {
   display: grid;
   width: 95%;
   margin: auto;
-  grid-template-columns: repeat(auto-fit, minmax(max(30%, 300px), 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(95vw, 600px), 1fr));
   column-gap: 1vw;
   justify-content: center;
+  justify-items: center;
+}
+.project__cabinets,
+.project__info {
+  width: min(95vw, 600px);
 }
 .project:last-child {
   border-right: 1px solid white;
@@ -346,21 +378,50 @@ tbody tr:hover {
 /* .holder:last-child {
   border: 0px;
 } */
+</style>
+<style>
 .qrs {
-  padding-bottom: 20vh;
+  display: none;
+  /* padding-bottom: 20vh; */
 }
 @media print {
+  html,
+  body {
+    border: 1px solid white;
+    height: 99%;
+    page-break-after: avoid;
+    page-break-before: avoid;
+  }
+
+  .qrs {
+    display: block;
+    position: absolute;
+    top: 0;
+    overflow: hidden;
+  }
+  #view {
+    padding: 0;
+  }
   .page {
     width: 29.7cm;
     margin: 0;
     height: 21cm;
-    padding: 1cm;
+    display: grid;
+    align-content: center;
+    page-break-after: avoid;
+    /* padding: 1cm; */
   }
+  /* .page:last-child {
+    page-break-after: auto;
+  } */
+
   @page {
     /* margin: 1cm; */
     size: A4 landscape;
+    overflow: hidden;
   }
   .project,
+  .print__button,
   .project__header,
   .project__controls,
   .user,

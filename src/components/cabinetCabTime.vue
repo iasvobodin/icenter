@@ -32,7 +32,7 @@
 import CabTimeView from '@/components/CabTimeView.vue'
 import { useFetch } from '@/hooks/fetch'
 import { useStore } from 'vuex'
-import { computed, reactive } from 'vue'
+import { computed, reactive, watchEffect } from 'vue'
 import { useRoute } from 'vue-router'
 import { cabtimeType } from '@/types/cabtimeTypes'
 const store = useStore()
@@ -48,7 +48,50 @@ const route = useRoute()
 // )
 // state.cabTime = typeof route.params.cabinetId === 'string' && getCabTime(route.params.cabinetId)
 
-typeof route.params.cabinetId === 'string' && getCabTime(route.params.cabinetId)
+watchEffect(() => {
+  const storeCabTime = store.state.cabinetItems && store.state.cabinetItems.find((e): e is cabtimeType => e.type === 'cabtime')
+  if (storeCabTime) {
+
+    storeCabTime.history.length > 0 &&
+      storeCabTime.history.forEach((historyVersion) => {
+
+        historyVersion.map((cabtimeBodyElement) => {
+
+          const index = storeCabTime?.body.findIndex(
+            (e) => e._id === cabtimeBodyElement._id
+          )
+          storeCabTime!.body[index!] = cabtimeBodyElement
+        })
+      })
+
+    const filterBody = storeCabTime!.body.reduce(
+      (acc: cabtimeType['body'], e) => {
+        // if (e.status !== 'done') {
+        if (e.status === 'partially') {
+          e.result -= e.propTime!
+          e.fitter = ''
+          e.date = 0
+          e.status = 'open'
+        }
+        acc.push(e)
+        // }
+        return acc
+      },
+      []
+    )
+
+    const cabTimeWithHistory = {
+      ...storeCabTime!,
+      body: filterBody,
+    }
+    // state.task = resTask.value!
+    // state.passedTime = CurrentTime - state.task.body.timeStart
+    state.cabTime = cabTimeWithHistory
+  }
+
+})
+
+// typeof route.params.cabinetId === 'string' && getCabTime(route.params.cabinetId)
 
 async function getCabTime(wo: string) {
   // !state.task && (await getTask())

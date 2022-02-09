@@ -5,7 +5,7 @@ import { ref, Ref } from 'vue'
 
 const account = msalInstance.getAllAccounts()[0]
 const request = {
-    scopes: ['offline_access People.Read User.Read User.ReadWrite'],
+    scopes: ['offline_access People.Read User.Read User.ReadWrite Sites.Read.All Sites.ReadWrite.All'],
 }
 const loginPop = async (request: { scopes: string[] }) => {
 

@@ -142,6 +142,7 @@
       </template>
     </confirm-popup>
   </teleport>
+  <button @click="getList">getList</button>
 </template>
 
 <script setup lang="ts">
@@ -159,7 +160,6 @@ import { projectInfoType } from '@/types/projectInfoType'
 import { templateType } from '@/types/templateType'
 import { projectType } from '@/types/projectType'
 import { cabinetInfo } from '@/types/cabinetsType'
-import { stat } from 'fs'
 
 
 const router = useRouter()
@@ -192,11 +192,17 @@ if (route.query.projectID) {
 
 //DEEP COPY
 state.extend = JSON.parse(JSON.stringify(store.state.template.template.extendManual))
+
 //MOD OBJECT TO V-MODEL
 for (const key in state.extend) {
   arr.push([key, ''])
 }
 state.modelObject = Object.fromEntries(arr)
+
+
+
+
+
 
 async function getProject() {
   const { request, response } = useFetch<projectType>(
@@ -228,6 +234,16 @@ const searchPeople = async (key: keyof projectInfoType, event: Event) => {
 const choosePeople = (key: keyof projectInfoType, el: string) => {
   state.modelObject[key] = el
   state.extend[key].search = undefined
+}
+
+const getList = async () => {
+  const a = 'https://graph.microsoft.com/v1.0/sites/emerson.sharepoint.com,31994536-83b5-4389-9b4f-6e0df9fb880c,f0e148bf-955b-487e-88bb-7887526d01a1/sites'
+  const f = 'https://graph.microsoft.com/v1.0/sites/emerson.sharepoint.com,31994536-83b5-4389-9b4f-6e0df9fb880c,6acefead-54c6-4140-9d77-c1de64d1de73/lists/b8bf5498-99ef-49ef-8c9e-72488210c792/items?expand=fields'
+  const b = `https://graph.microsoft.com/v1.0/sites/emerson.sharepoint.com,31994536-83b5-4389-9b4f-6e0df9fb880c,f0e148bf-955b-487e-88bb-7887526d01a1/lists`
+  await reqGraph(token.value!.accessToken, f)
+
+  // GET https://graph.microsoft.com/v1.0/sites/{site-id}/lists/{list-id}
+
 }
 
 // eslint-disable-next-line no-undef

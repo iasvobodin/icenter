@@ -68,7 +68,7 @@
         <template #select>
           <selectWO @selected-wo="emitAlteredWo" />
           <p class="error">{{ state.errorMessage }}</p>
-          <div class="advanced">
+          <div v-if="$store.state.user.info.userRoles.includes('godmode')" class="advanced">
             <p>
               Изменить пространтсво и время
               <br />

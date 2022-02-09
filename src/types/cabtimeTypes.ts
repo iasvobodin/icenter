@@ -36,8 +36,8 @@ export type cabtimeType = {
     admin: string
     final: string
   }
-  history?: [cabtimeBody[]]
-  type: 'cabTime'
+  history: [cabtimeBody[]]
+  type: 'cabtime'
   ttl?: number
   photos?: Array<string>
 }
