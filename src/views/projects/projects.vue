@@ -21,9 +21,18 @@
       <h3>Закрытые</h3>
     </div>
   </div>
-
+  <div class="ddiv" data-tid="f22fdef8">
+    <label class="llable">
+      <input v-model="view" type="radio" class="iinput" value="table" name="viewType" checked />
+      <span class="sspan" :class="{ activetable: view === 'table' }"></span>
+    </label>
+    <label class="llable">
+      <input v-model="view" type="radio" class="iinput" value="grid" name="viewType" />
+      <span class="sspan2" :class="{ activegrid: view === 'grid' }"></span>
+    </label>
+  </div>
   <br />
-  <div v-if="state.errors">
+  <div v-if="state.errors && view === 'grid'">
     <div
       v-for="status in state.actualStatus"
       v-show="groupProjects(status).length != 0"
@@ -46,54 +55,48 @@
           <div class="item__card" :class="{ closed__card: selectedStatus }">
             <div class="double">
               <h2>{{ value.id }}:</h2>
-              <p>{{ value.info?.base?.['Project Name'] }}</p>
+              <p class="over">{{ value.info?.base?.['Project Name'] }}</p>
             </div>
             <hr style="margin: 0" />
-            <!-- <info-render :info-data="{[value.id]: value.info.base['Project Name']}" /> -->
             <div class="double">
               <div class="cabinet__info__item">
                 <p>
                   <b>PM:</b>
                 </p>
-                <p>{{ value.info?.base?.PM }}</p>
+                <p class="over">{{ value.info?.base?.PM }}</p>
               </div>
               <div class="cabinet__info__item">
                 <p>
                   <b>SF:</b>
                 </p>
-                <p>{{ value.info?.extends?.['senior fitter']?.includes('@') ? value.info?.extends?.['senior fitter']?.split('@')[0].split('.')[1] : value.info?.extends?.['senior fitter']?.split('.')[0] }}</p>
-                <!-- <hr style="margin: 0" /> -->
+                <p
+                  class="over"
+                >{{ value.info?.extends?.['senior fitter']?.includes('@') ? value.info?.extends?.['senior fitter']?.split('@')[0].split('.')[1] : value.info?.extends?.['senior fitter']?.split('.')[0] }}</p>
               </div>
-              <!-- <info-render :info-data="{ PM: value.info?.base?.PM }" /> -->
-              <!-- <info-render
-                v-if="value.info?.extends?.['senior fitter']
-                ?.includes('@')"
-                :info-data="{
-                  SF: value.info?.extends?.['senior fitter']
-                    ?.split('@')[0]
-                    .split('.')[1],
-                }"
-              />-->
             </div>
             <hr style="margin: 0" />
 
-            <!-- <info-render
-              :info-data="{
-                SF: value.info?.extends?.['senior fitter']
-              }"
-            />-->
             <div class="double">
-              <info-render
-                :info-data="{
-                  Отгрузка: value.info?.extends?.['Shipping date'],
-                }"
-              />
-              <info-render :info-data="{ QTY: value.cabinets?.length }" />
+              <div class="cabinet__info__item">
+                <p>
+                  <b>Отгрузка:</b>
+                </p>
+                <p class="over">{{ value.info?.extends?.['Shipping date'] }}</p>
+              </div>
+              <div class="cabinet__info__item">
+                <p>
+                  <b>QTY:</b>
+                </p>
+                <p class="over">{{ value.cabinets?.length }}</p>
+              </div>
             </div>
-            <info-render
-              :hr="false"
-              :info-data="{ Comments: value.info?.extends?.['Comments field'] }"
-            />
+            <hr style="margin: 0" />
+            <div class="vertical">
+              <p>
+                <b>Comments:</b>
+                {{ value.info?.extends?.['Comments field'] }}
+              </p>
+            </div>
           </div>
         </div>
       </div>
@@ -104,8 +107,8 @@
     </router-link>
   </div>
 
-  <section v-if="state.changeAllFlag" class="table">
-    <table style="width: 100%">
+  <section v-if="view === 'table'" class="table">
+    <table>
       <colgroup>
         <col span="1" style="width: 6%" />
         <col span="1" style="width: 10%" />
@@ -116,17 +119,29 @@
         <col span="1" style="width: 6%" />
         <col span="1" style="width: 6%" />
       </colgroup>
-      <tr style="border: solid 2px orange">
+      <tr class="head">
         <th>№</th>
         <th v-for="(vv, kk) in extendTemplate" :key="kk" @click="sortBy(kk, 'extends')">{{ kk }}</th>
       </tr>
       <tbody>
         <tr v-for="(value, key, index) in state.projects" :key="index" @click="getIndex(key)">
-          <td>
+          <td
+            style="cursor: pointer;"
+            @click="
+              !selectedStatus
+                ? $router.push(`/projects/${value.id}`)
+                : $router.push(`/projects/${value.id}?status=closed`)
+            "
+          >
             <h2 class="project__number">{{ value.id }}</h2>
           </td>
           <td v-for="(v, k) in extendTemplate" :key="k">
-            <render-inputs v-model="state.projects[key].info.extends" :data-render="v" />
+            <render-inputs
+              v-if="state.changeTable"
+              v-model="state.projects[key].info.extends"
+              :data-render="v"
+            />
+            <p v-else>{{ state.projects[key].info.extends[k] }}</p>
           </td>
         </tr>
       </tbody>
@@ -136,13 +151,12 @@
   <br />
   <button
     v-if="
-      !state.changeAllFlag &&
-      state.errors &&
-      $store.state.user.info.userRoles.includes('admin')
+      state.errors && view === 'table' && !state.changeTable &&
+      $store.state.user.info.userRoles.includes('godmode')
     "
-    @click="state.changeAllFlag = !state.changeAllFlag"
+    @click="state.changeTable = !state.changeTable"
   >Change ALL</button>
-  <button v-if="state.changeAllFlag && state.errors" @click="updateChangedProjects">Update</button>
+  <button v-if="state.changeTable && state.errors" @click="updateChangedProjects">Update</button>
   <br />
   <br />
 </template>
@@ -198,6 +212,7 @@ const store = useStore()
 // })
 
 const selectedStatus = ref(false)
+const view = ref('grid')
 
 
 const state = reactive({
@@ -207,6 +222,7 @@ const state = reactive({
   search: '',
   projects: <projectType[]>{},
   updateIndex: new Set() as Set<number>,
+  changeTable: false
 })
 
 const getIndex = (i: number) => state.updateIndex.add(i)
@@ -237,7 +253,17 @@ const groupProjects = (status: string) =>
   filterProjects.value &&
   filterProjects.value.filter(
     (f) => f.info?.extends['status project'] === status
-  )
+  ).sort(function (a, b) {
+    const nameA = a.id.toLowerCase()
+    const nameB = b.id.toLowerCase()
+    if (nameA < nameB) {
+      return -1
+    }
+    if (nameA > nameB) {
+      return 1
+    }
+    return 0
+  })
 
 
 
@@ -334,7 +360,16 @@ const myProjects = () => {
   padding: 5px;
   /* width: 100%; */
   display: grid;
+  align-items: center;
   grid-template-columns: 2fr 5fr;
+
+  /* width: 200px; */
+}
+.over {
+  overflow: hidden;
+  /* padding: 2em; */
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .my__projects {
   position: absolute;
@@ -530,8 +565,10 @@ h3 {
   white-space: pre-wrap;
   word-wrap: break-word;
 }
-
 table {
+  width: max(95vw, 1200px);
+}
+/* table {
   margin-top: 2vh;
   border-collapse: collapse;
   border-radius: 5px;
@@ -562,7 +599,7 @@ th {
 }
 tr > th {
   cursor: pointer;
-}
+} */
 input[type="number"],
 input[type="text"] {
   width: 100%;
@@ -617,7 +654,9 @@ textarea {
   column-gap: 1vw;
   grid-template-columns: 5fr 4fr;
   justify-content: space-between;
+  align-items: center;
 }
+
 .double:first-child {
   display: grid;
   grid-auto-flow: column;
@@ -627,8 +666,109 @@ textarea {
   margin-bottom: 1vh;
 }
 .double:first-child > p {
-  place-self: center;
+  /* place-self: center;
   white-space: pre-wrap;
-  word-wrap: break-word;
+  word-wrap: break-word; */
+}
+.vertical {
+  grid-auto-flow: row;
+  grid-template-columns: 1fr;
+  row-gap: 5px;
+  padding: 5px;
+}
+.vertical p {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-align: left;
+  line-height: 1.3;
+}
+
+.ddiv {
+  font-size: 0.8em;
+  color: #2b2b2b;
+  -webkit-font-smoothing: antialiased;
+  box-sizing: border-box;
+  display: flex;
+  line-height: 28px;
+  justify-content: flex-end;
+  width: 95%;
+  margin: auto;
+}
+.llable {
+  /* font: 0.8em YS Text, Arial, Helvetica, sans-serif; */
+  color: #2b2b2b;
+  -webkit-font-smoothing: antialiased;
+  line-height: 28px;
+  box-sizing: border-box;
+  z-index: 2;
+  display: inline-block;
+  margin: 0 -1px 0 0;
+  user-select: none;
+  text-align: center;
+  outline: 0;
+  touch-action: manipulation;
+  cursor: pointer;
+  position: relative;
+  background-position: 6px 1px;
+  background-repeat: no-repeat;
+}
+.iinput {
+  -webkit-font-smoothing: antialiased;
+  user-select: none;
+  box-sizing: border-box;
+  /* font-family: Arial, Helvetica, sans-serif; */
+  position: absolute;
+  cursor: pointer;
+  opacity: 0;
+}
+.sspan {
+  /* font: 0.8em YS Text, Arial, Helvetica, sans-serif; */
+  color: #2b2b2b;
+  -webkit-font-smoothing: antialiased;
+  line-height: 28px;
+  user-select: none;
+  text-align: center;
+  cursor: pointer;
+  box-sizing: border-box;
+  position: relative;
+  background-position: 6px 1px;
+  background-repeat: no-repeat;
+  z-index: 1;
+  padding: 0 1em;
+  pointer-events: none;
+  background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMyIgaGVpZ2h0PSIxMyIgZmlsbD0iI2IyYjJiMiI+PHBhdGggZD0iTTAgMTBoM3YzSDB6bTUgMGg4djNINXpNMCA1aDN2M0gwem01IDBoOHYzSDV6TTAgMGgzdjNIMHptNSAwaDh2M0g1eiIvPjwvc3ZnPg==);
+}
+.sspan2 {
+  /* font: 0.8em YS Text, Arial, Helvetica, sans-serif; */
+  color: #2b2b2b;
+  -webkit-font-smoothing: antialiased;
+  line-height: 28px;
+  user-select: none;
+  text-align: center;
+  cursor: pointer;
+  box-sizing: border-box;
+  position: relative;
+  background-position: 6px 1px;
+  background-repeat: no-repeat;
+  z-index: 1;
+  padding: 0 1em;
+  pointer-events: none;
+  background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMyIgaGVpZ2h0PSIxMyIgZmlsbD0iI2IyYjJiMiI+PHBhdGggZD0iTTAgMGg2djZIMHptNyAwaDZ2Nkg3em0wIDdoNnY2SDd6TTAgN2g2djZIMHoiLz48L3N2Zz4=);
+}
+
+.activegrid {
+  background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMyIgaGVpZ2h0PSIxMyIgZmlsbD0iIzJiMmIyYiI+PHBhdGggZD0iTTAgMGg2djZIMHptNyAwaDZ2Nkg3em0wIDdoNnY2SDd6TTAgN2g2djZIMHoiLz48L3N2Zz4=);
+}
+.activetable {
+  background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMyIgaGVpZ2h0PSIxMyIgZmlsbD0iIzJiMmIyYiI+PHBhdGggZD0iTTAgMTBoM3YzSDB6bTUgMGg4djNINXpNMCA1aDN2M0gwem01IDBoOHYzSDV6TTAgMGgzdjNIMHptNSAwaDh2M0g1eiIvPjwvc3ZnPg==);
+}
+tbody tr td {
+  padding: 6px;
+  /* padding-bottom: 6px; */
+}
+tbody tr td p {
+  text-align: left;
 }
 </style>

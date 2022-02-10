@@ -404,4 +404,11 @@ tbody tr {
   position: sticky;
   top: 50px;
 }
+tbody tr:hover {
+  /* background: rgba(255, 166, 0, 0.1); */
+  border-radius: 3px;
+  box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
+  box-shadow: rgba(14, 30, 37, 0.12) 0px 2px 4px 0px,
+    rgba(14, 30, 37, 0.32) 0px 2px 16px 0px;
+}
 </style>
