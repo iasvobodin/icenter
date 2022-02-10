@@ -108,7 +108,7 @@
   </div>
 
   <section v-if="view === 'table'" class="table">
-    <table>
+    <table :class="{ closed__card: selectedStatus }">
       <colgroup>
         <col span="1" style="width: 6%" />
         <col span="1" style="width: 10%" />
@@ -151,7 +151,7 @@
   <br />
   <button
     v-if="
-      state.errors && view === 'table' && !state.changeTable &&
+      state.errors && view === 'table' && !selectedStatus &&
       $store.state.user.info.userRoles.includes('godmode')
     "
     @click="state.changeTable = !state.changeTable"
@@ -494,13 +494,22 @@ h3 {
 }
 
 .closed__card {
-  border: 1px solid red;
-  border-radius: 4px;
-  padding: 5px;
-  cursor: auto;
-  min-height: 150px;
+  position: relative;
+}
+.closed__card::after {
+  content: "closed";
+  position: absolute;
+  top: 0;
+  left: 0;
+  font-size: 6vw;
+  opacity: 0.3;
+  display: grid;
+  width: 100%;
   height: 100%;
-  overflow: hidden;
+  align-items: center;
+  justify-items: center;
+  color: tomato;
+  transform: rotate(-8deg);
 }
 
 .error__card__holder {
@@ -568,38 +577,7 @@ h3 {
 table {
   width: max(95vw, 1200px);
 }
-/* table {
-  margin-top: 2vh;
-  border-collapse: collapse;
-  border-radius: 5px;
-}
-td,
-th {
-  border: 1px solid #999;
-  padding: 5px;
-  font-size: 12px;
-}
-tbody tr:nth-child(odd) {
-  background: #eee;
-}
-tbody tr {
-  height: 80px;
-}
 
-tbody tr:hover {
-  background: rgba(0, 132, 255, 0.07);
-}
-th {
-  position: sticky;
-  top: 50px;
-  color: white;
-  background-color: rgb(0, 68, 129);
-  border: solid 2px orange;
-  box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
-}
-tr > th {
-  cursor: pointer;
-} */
 input[type="number"],
 input[type="text"] {
   width: 100%;
