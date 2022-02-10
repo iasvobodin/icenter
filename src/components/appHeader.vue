@@ -31,11 +31,8 @@
         <p class="message">{{ state.message }}</p>
       </template>
       <template #buttons>
-        <button
-          :disabled="!state.wo"
-          class="popup__cancel__button"
-          @click="createTask"
-        >Запустить задачу</button>
+        <!-- :disabled="!state.wo" -->
+        <button disabled class="popup__cancel__button" @click="createTask">Запустить задачу</button>
         <button class="popup__confirm__button" @click="popupClosed">Отмена</button>
       </template>
     </confirm-popup>

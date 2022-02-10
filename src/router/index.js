@@ -141,8 +141,8 @@ const routes = [
     path: '/projects/addNewProjectManual',
     component: () => import('@/views/projects/addNewProjectManual.vue'),
     beforeEnter: async (to, from) => {
-      Object.keys(store.state.template).length === 0 &&
-        (await store.dispatch('extendProject'))
+      // Object.keys(store.state.template).length === 0 &&
+      (await store.dispatch('GET_template'))
       return true
     },
   },

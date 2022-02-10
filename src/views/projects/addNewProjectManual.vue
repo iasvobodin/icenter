@@ -51,22 +51,12 @@
             <th v-if="!state.changeData">del</th>
           </tr>
           <tr v-for="(value, index) in state.cabinets" :key="index">
-            <!-- <td v-if="!state.changeData">
-              <input v-model="state.cabinets[index]!.wo" type="text" />
-            </td>-->
-
             <td>{{ value!.wo }}</td>
-
-            <!-- <td v-if="!state.changeData">
-              <input v-model="state.cabinets[index]!['cab name']" required type="text" />
-            </td>-->
-
             <td class="cabtime__name">
               <div>
                 <p>{{ value!['cab name'] }}</p>
               </div>
             </td>
-
             <td v-if="!state.changeData">
               <div class="close" @click="changeWoManualy(value.wo, index)">&#x270D;</div>
             </td>
@@ -106,11 +96,6 @@
         </tbody>
       </table>
     </div>
-    <!-- <button
-      v-if="state.newCabinets.length > 0"
-      class="add__button"
-      @click="checkNewWo"
-    >Проверить новые WO</button>-->
     <input class="add__button" type="submit" value="Сохранить" />
   </form>
   <teleport to="body">
@@ -142,7 +127,7 @@
       </template>
     </confirm-popup>
   </teleport>
-  <button @click="getList">getList</button>
+  <!-- <button @click="getList">getList</button> -->
 </template>
 
 <script setup lang="ts">
@@ -191,6 +176,9 @@ if (route.query.projectID) {
 }
 
 //DEEP COPY
+
+
+
 state.extend = JSON.parse(JSON.stringify(store.state.template.template.extendManual))
 
 //MOD OBJECT TO V-MODEL
