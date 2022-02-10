@@ -2,7 +2,7 @@
   <div v-if="showMenu" v-click-away="onClickAway" class="navigation">
     <nav>
       <ul>
-        <li>
+        <li v-if="$store.state.user.info.userRoles.includes('godmode')">
           <router-link :to="`/projects`">Проекты</router-link>
         </li>
         <li>
@@ -11,24 +11,19 @@
         <li>
           <router-link :to="`/errors`">Ошибки</router-link>
         </li>
-        <li>
+        <li v-if="$store.state.user.info.userRoles.includes('godmode')">
           <router-link :to="`/tasks`">Задачи</router-link>
         </li>
-        <li>
+        <li v-if="$store.state.user.info.userRoles.includes('godmode')">
           <router-link :to="`/cabtimes`">CabTimes</router-link>
         </li>
-        <li>
+        <li v-if="$store.state.user.info.userRoles.includes('godmode')">
           <router-link :to="`/admin/reports`">Отчёты</router-link>
         </li>
       </ul>
     </nav>
   </div>
-  <img
-    class="menu_button"
-    src="/img/menu.svg"
-    alt=""
-    @click="showMenu = !showMenu"
-  />
+  <img class="menu_button" src="/img/menu.svg" alt @click="showMenu = !showMenu" />
   <!-- <button class="menu_button" @click="showMenu = !showMenu">{{!showMenu?'Menu':'Close'}}</button> -->
 </template>
 

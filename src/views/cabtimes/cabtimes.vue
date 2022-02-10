@@ -8,9 +8,9 @@
       <option value="open">Открыто</option>
       <option value="confirmed">Принято</option>
     </select>
-  </div> -->
+  </div>-->
   <!-- <h3 class="search__title">Поиск</h3> -->
-  <label for="search">Поиск: </label>
+  <label for="search">Поиск:</label>
   <input
     id="search"
     v-model="state.search"
@@ -19,7 +19,8 @@
     @keyup.enter="$event.target.blur()"
     placeholder="WO или номер проекта"
   />
-  <br /><br />
+  <br />
+  <br />
   <div v-if="state.errors" class="errors__holder">
     <div
       v-for="(value, key, index) in filter"
@@ -36,16 +37,17 @@
         <h3
           :class="{ cabtime__item__vertical__title: k === 'Описание' }"
           class="cabtime__item__title"
-        >
-          {{ k }}:
-        </h3>
+        >{{ k }}:</h3>
         <p
           :class="{ cabtime__item__vertical__title: k === 'Описание' }"
           class="cabtime__item__desc"
-        >
-          {{ v?.includes('@') ? v.split('@')[0].replace('.', ' ') : v }}
-        </p>
+        >{{ v?.includes('@') ? v.split('@')[0].replace('.', ' ') : v }}</p>
       </div>
+      <div class="cabtime__item">
+        <h3 class="cabtime__item__title">Время</h3>
+        <p class="cabtime__item__desc">{{ value.result.final }} ч.</p>
+      </div>
+      <!-- <p>Время {{ value.result.final }}</p> -->
     </div>
   </div>
   <!-- <div v-if="errorMessage">{{ errorMessage }}</div> -->
@@ -69,21 +71,53 @@ const state = reactive({
   fetchStatus: null,
   // errorMessage: "",
 })
-const selectedStatus = ref('open')
-const getErrors = async () => {
-  const { request, response } = useFetch(`/api/cabTimes`)
-  state.errors = response
+
+const getCabTimesss = async () => {
+  const { request, response } = useFetch(`/api/cabtimess`)
   await request()
+  response.value.map(async (e, i) => {
+    e.history = []
+    const { request: postUpdateCabtime } = useFetch('/api/post_item', {
+      method: 'post',
+      body: JSON.stringify(e),
+    })
+    setTimeout(() => postUpdateCabtime(), 5000 * i)
+  })
+
+
+}
+// getCabTimesss()
+
+// const selectedStatus = ref('open')
+const getCabTimes = async () => {
+  const { request, response } = useFetch(`/api/cabTimes`)
+  await request()
+  state.errors = response
+
+  // state.errors
+  // .map(async (e) => {
+  // e.id //currentCabtime
+
+  // const { request: reqCurrentCabTime, response: resCurrentCabTime } =
+  //   useFetch(`/api/GET_cabinet?wo=${state.errors[0].info.wo}&cabtimeid=${state.errors[0].id}`)
+  // await reqCurrentCabTime()
+
+  // const currentCabTime = resCurrentCabTime.value
+
+  //     const { request: reqCurrentWO, response: resCurrentWO } =
+  //       useFetch(`/api/getitembyid/${e.id}`,{method: 'post',body:JSON.stringify(...)})
+  //     await reqCurrentWO()
+  // })
 }
 
-getErrors()
-watch(selectedStatus, () => getErrors())
+getCabTimes()
+// watch(selectedStatus, () => getCabTimes())
 
-onBeforeRouteUpdate(async (to, from) => {
-  if (from.contains('error')) {
-    alert('a')
-  }
-})
+// onBeforeRouteUpdate(async (to, from) => {
+//   if (from.contains('error')) {
+//     alert('a')
+//   }
+// })
 onBeforeRouteLeave((to, from) => {
   console.log(to, 'onBeforeRouteLeave')
   console.log(from, 'onBeforeRouteLeave')
@@ -91,10 +125,10 @@ onBeforeRouteLeave((to, from) => {
 const filter = computed(() => {
   return state.search
     ? state.errors.filter((e) =>
-        [e?.info.wo, e?.info['Проект']].some(
-          (s) => s && s.toLowerCase().includes(state.search.toLowerCase())
-        )
+      [e?.info.wo, e?.info['Проект']].some(
+        (s) => s && s.toLowerCase().includes(state.search.toLowerCase())
       )
+    )
     : state.errors
 })
 // return {

@@ -1,15 +1,26 @@
-export interface cabtimeType {
-  body: {
-    _id: string
-    _const: string
-    _type: string
-    _field: string
-    name: string
-    value: string
-    result: number
-    status: string
-    propTime?: number
-  }[]
+export type cabtimeBody = {
+  _id: string
+  _const: string
+  _type: string
+  _field: string
+  name: string
+  value: string
+  result: number
+  status: string
+  propTime?: number
+  fitter?: string
+  new?: boolean
+  date?: number
+}
+
+export type cabtimeType = {
+  id: string
+  info: {
+    Проект: string
+    Шкаф: string
+    wo: string
+  }
+  body: cabtimeBody[]
   groupByType: {
     type: string
     total: string
@@ -25,4 +36,8 @@ export interface cabtimeType {
     admin: string
     final: string
   }
+  history: [cabtimeBody[]]
+  type: 'cabtime'
+  ttl?: number
+  photos?: Array<string>
 }

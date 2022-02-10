@@ -5,13 +5,7 @@
     проектам ICenter.
   </p>
   <br />
-  <input
-    id="select__filter"
-    v-model="search"
-    type="text"
-    @keyup.enter="$event.target.blur()"
-    placeholder="SF, PM, №"
-  />
+  <input id="select__filter" v-model="state.search" type="text" placeholder="SF, PM, №" />
   <br />
   <button class="my__projects" @click="myProjects">Мои проекты</button>
   <br />
@@ -20,23 +14,27 @@
       <h3>Открытые</h3>
     </div>
     <div class="switch">
-      <input
-        id="switch-1"
-        v-model="selectedStatus"
-        type="checkbox"
-        class="switch-input"
-      />
+      <input id="switch-1" v-model="selectedStatus" type="checkbox" class="switch-input" />
       <label for="switch-1" class="switch-label">Switch</label>
     </div>
     <div class="close" :class="{ isactive: selectedStatus }">
       <h3>Закрытые</h3>
     </div>
   </div>
-
+  <div class="ddiv" data-tid="f22fdef8">
+    <label class="llable">
+      <input v-model="view" type="radio" class="iinput" value="table" name="viewType" checked />
+      <span class="sspan" :class="{ activetable: view === 'table' }"></span>
+    </label>
+    <label class="llable">
+      <input v-model="view" type="radio" class="iinput" value="grid" name="viewType" />
+      <span class="sspan2" :class="{ activegrid: view === 'grid' }"></span>
+    </label>
+  </div>
   <br />
-  <div v-if="errors">
+  <div v-if="state.errors && view === 'grid'">
     <div
-      v-for="status in actualStatus"
+      v-for="status in state.actualStatus"
       v-show="groupProjects(status).length != 0"
       :key="status"
     >
@@ -57,44 +55,60 @@
           <div class="item__card" :class="{ closed__card: selectedStatus }">
             <div class="double">
               <h2>{{ value.id }}:</h2>
-              <p>{{ value.info?.base?.['Project Name'] }}</p>
+              <p class="over">{{ value.info?.base?.['Project Name'] }}</p>
             </div>
             <hr style="margin: 0" />
-            <!-- <info-render :info-data="{[value.id]: value.info.base['Project Name']}" /> -->
             <div class="double">
-              <info-render :info-data="{ PM: value.info?.base?.PM }" />
-              <info-render
-                :info-data="{
-                  SF: value.info?.extends?.['senior fitter']
-                    ?.split('@')[0]
-                    .split('.')[1],
-                }"
-              />
+              <div class="cabinet__info__item">
+                <p>
+                  <b>PM:</b>
+                </p>
+                <p class="over">{{ value.info?.base?.PM }}</p>
+              </div>
+              <div class="cabinet__info__item">
+                <p>
+                  <b>SF:</b>
+                </p>
+                <p
+                  class="over"
+                >{{ value.info?.extends?.['senior fitter']?.includes('@') ? value.info?.extends?.['senior fitter']?.split('@')[0].split('.')[1] : value.info?.extends?.['senior fitter']?.split('.')[0] }}</p>
+              </div>
             </div>
+            <hr style="margin: 0" />
+
             <div class="double">
-              <info-render
-                :info-data="{
-                  Отгрузка: value.info?.extends?.['Shipping date'],
-                }"
-              />
-              <info-render :info-data="{ QTY: value.cabinets?.length }" />
+              <div class="cabinet__info__item">
+                <p>
+                  <b>Отгрузка:</b>
+                </p>
+                <p class="over">{{ value.info?.extends?.['Shipping date'] }}</p>
+              </div>
+              <div class="cabinet__info__item">
+                <p>
+                  <b>QTY:</b>
+                </p>
+                <p class="over">{{ value.cabinets?.length }}</p>
+              </div>
             </div>
-            <info-render
-              :hr="false"
-              :info-data="{ Comments: value.info?.extends?.['Comments field'] }"
-            />
+            <hr style="margin: 0" />
+            <div class="vertical">
+              <p>
+                <b>Comments:</b>
+                {{ value.info?.extends?.['Comments field'] }}
+              </p>
+            </div>
           </div>
         </div>
       </div>
       <br />
     </div>
-    <router-link to="/projects/addnewproject">
+    <router-link to="/projects/addnewprojectManual">
       <img class="add__button" src="/img/add.svg" alt="Добавить новый проект" />
     </router-link>
   </div>
 
-  <section v-if="changeAllFlag" class="table">
-    <table style="width: 100%">
+  <section v-if="view === 'table'" class="table">
+    <table :class="{ closed__card: selectedStatus }">
       <colgroup>
         <col span="1" style="width: 6%" />
         <col span="1" style="width: 10%" />
@@ -105,30 +119,29 @@
         <col span="1" style="width: 6%" />
         <col span="1" style="width: 6%" />
       </colgroup>
-      <tr style="border: solid 2px orange">
+      <tr class="head">
         <th>№</th>
-        <th
-          v-for="(vv, kk) in extendTemplate"
-          :key="kk"
-          @click="sortBy(kk, 'extends')"
-        >
-          {{ kk }}
-        </th>
+        <th v-for="(vv, kk) in extendTemplate" :key="kk" @click="sortBy(kk, 'extends')">{{ kk }}</th>
       </tr>
       <tbody>
-        <tr
-          v-for="(value, key, index) in projects"
-          :key="index"
-          @click="getIndex(key)"
-        >
-          <td>
+        <tr v-for="(value, key, index) in state.projects" :key="index" @click="getIndex(key)">
+          <td
+            style="cursor: pointer;"
+            @click="
+              !selectedStatus
+                ? $router.push(`/projects/${value.id}`)
+                : $router.push(`/projects/${value.id}?status=closed`)
+            "
+          >
             <h2 class="project__number">{{ value.id }}</h2>
           </td>
           <td v-for="(v, k) in extendTemplate" :key="k">
             <render-inputs
-              v-model="projects[key].info.extends"
-              :data-render="extendTemplate[k]"
+              v-if="state.changeTable"
+              v-model="state.projects[key].info.extends"
+              :data-render="v"
             />
+            <p v-else>{{ state.projects[key].info.extends[k] }}</p>
           </td>
         </tr>
       </tbody>
@@ -138,168 +151,227 @@
   <br />
   <button
     v-if="
-      !changeAllFlag &&
-      errors &&
-      $store.state.user.info.userRoles.includes('admin')
+      state.errors && view === 'table' && !selectedStatus &&
+      $store.state.user.info.userRoles.includes('godmode')
     "
-    @click="changeAllFlag = !changeAllFlag"
-  >
-    Change ALL
-  </button>
-  <button v-if="changeAllFlag && errors" @click="updateChangedProjects">
-    Update
-  </button>
+    @click="state.changeTable = !state.changeTable"
+  >Change ALL</button>
+  <button v-if="state.changeTable && state.errors" @click="updateChangedProjects">Update</button>
   <br />
   <br />
 </template>
 
-<script>
-// import infoRender from '@/components/infoRender.vue'
+<script setup lang="ts">
 import { reactive, toRefs, watch, computed, ref } from 'vue'
 import { useFetch } from '@/hooks/fetch'
 import infoRender from '@/components/infoRender.vue'
 import { useStore } from 'vuex'
 import { onBeforeRouteLeave, onBeforeRouteUpdate, useRouter } from 'vue-router'
-// import conditionalRender from '@/components/conditionalRender.vue'
 import renderInputs from '@/components/renderInputs'
-export default {
-  components: {
-    // conditionalRender,
-    renderInputs,
-    infoRender,
-  },
-  setup() {
-    const state = reactive({
-      changeAllFlag: false,
-      errors: null,
-      resErrors: null,
-      fetchStatus: null,
-      errorMessage: '',
-      actualStatus: null,
-      search: '',
-      testStatus: {},
-      projects: null,
-      updateIndex: new Set(),
-    })
-    const getIndex = (i) => state.updateIndex.add(i)
-    const router = useRouter()
-    const filterProjects = computed(() => {
-      //  debugger
-      return state.search
-        ? state.errors.filter((e) =>
-            [e?.id, e.info.base?.PM, e.info.extends?.['senior fitter']].some(
-              (s) => s && s.toLowerCase().includes(state.search.toLowerCase())
-            )
-          )
-        : state.errors
-    })
-    const store = useStore()
-    // store.dispatch('extendProject')
-    const extendTemplate = computed(() => store.state.template.template.extend)
-    const groupProjects = (status) =>
-      filterProjects.value &&
-      filterProjects.value.filter(
-        (f) => f.info?.extends['status project'] === status
-      )
+// import { projectType } from '@/projectType'
 
-    router.beforeEach(async (to, from) => {
-      !store.state.template && (await store.dispatch('extendProject'))
-      // reject the navigation
-      return true
-      // only fetch the user if the id changed as maybe only the query or the hash changed
-      // console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
-      // return false
-    })
 
-    const getErrors = async (status) => {
-      const { request, response } = useFetch(`/api/projects?status=${status}`)
-      await request()
-      state.errors = response
-      state.projects = JSON.parse(JSON.stringify(state.errors))
-
-      state.actualStatus = [
-        ...state.errors.reduce(
-          (acc, pr) => acc.add(pr.info?.extends['status project']),
-          new Set()
-        ),
-      ].sort()
-
-      state.errors.sort(function (a, b) {
-        const nameA = a.info?.extends['status project']?.toLowerCase()
-        const nameB = b.info?.extends['status project']?.toLowerCase()
-        if (nameA < nameB) {
-          return -1
-        }
-        if (nameA > nameB) {
-          return 1
-        }
-        return 0
-      })
-    }
-    getErrors('open')
-
-    const selectedStatus = ref(false)
-    watch(selectedStatus, (newValue, oldValue) => {
-      if (newValue === true) {
-        getErrors('closed')
-      }
-      if (newValue === false) {
-        getErrors('open')
-      }
-    })
-    // console.log(Array.from({ length: 20 }).map(()=> ));
-    const postProject = async (index) => {
-      const { request: postProject } = useFetch('/api/POST_project', {
-        method: 'POST', // или 'PUT'
-        body: JSON.stringify({
-          ...state.projects[index],
-        }),
-      })
-      await postProject()
-    }
-    const updateChangedProjects = async () => {
-      await Promise.all(
-        [...state.updateIndex].map(async (e) => {
-          await postProject(e)
-        })
-      )
-      state.changeAllFlag = !state.changeAllFlag
-      selectedStatus.value === true ? getErrors('closed') : getErrors('open')
-    }
-    const sortBy = (el, p) => {
-      // console.log(el,p);
-      // debugger
-      state.projects.sort(function (a, b) {
-        const nameA = a.info[p][el]?.toString().toLowerCase()
-        const nameB = b.info[p][el]?.toString().toLowerCase()
-        if (nameA < nameB) {
-          return -1
-        }
-        if (nameA > nameB) {
-          return 1
-        }
-        return 0
-      })
-    }
-    const myProjects = () => {
-      state.search = store.state.user.info.userDetails.toLowerCase()
-    }
-    return {
-      myProjects,
-      extendTemplate,
-      updateChangedProjects,
-      getIndex,
-      sortBy,
-      groupProjects,
-      selectedStatus,
-      filterProjects,
-      ...toRefs(state),
+type projectType = {
+  "id": string,
+  "status": "open" | 'closed',
+  "info": {
+    "base": {
+      "Project Name": string,
+      "SZ №": number,
+      "PM": string,
+      "Buyer": string,
+      "Contract Administrator": string,
+      "Buyout Administrator": string,
+      "Lead Engineer"?: string
+    },
+    "extends": {
+      "Specific requirement field": string,
+      "senior fitter": string,
+      "status project": string,
+      "Hours calculated": string,
+      "Hours actual": string,
+      "Comments field": string,
+      "Shipping date": string
     }
   },
+  "cabinets": [
+    {
+      "wo": string,
+      "cab name": string
+    } | null
+  ],
 }
+
+const router = useRouter()
+const store = useStore()
+
+// store.dispatch('createProjectInfo')
+// router.beforeEach(async (to, from) => {
+//   !store.state.template && (await store.dispatch('extendProject'))
+//   return true
+// })
+
+const selectedStatus = ref(false)
+const view = ref('grid')
+
+
+const state = reactive({
+  changeAllFlag: false,
+  errors: <projectType[]>{},
+  actualStatus: <string[]>{},
+  search: '',
+  projects: <projectType[]>{},
+  updateIndex: new Set() as Set<number>,
+  changeTable: false
+})
+
+const getIndex = (i: number) => state.updateIndex.add(i)
+
+const filterProjects = computed(() => {
+  //  debugger
+  return state.search
+    ? state.errors.filter((e) =>
+      [e?.id, e.info.base?.PM, e.info.extends?.['senior fitter']].some(
+        (s) => s && s.toLowerCase().includes(state.search.toLowerCase())
+      )
+    )
+    : state.errors
+})
+// store.dispatch('extendProject')
+const extendTemplate = computed(() => store.state.template.template.extend)
+
+watch(selectedStatus, (newValue, oldValue) => {
+  if (newValue === true) {
+    state.changeTable = false
+    getErrors('closed')
+  }
+  if (newValue === false) {
+    getErrors('open')
+  }
+})
+
+const groupProjects = (status: string) =>
+  filterProjects.value &&
+  filterProjects.value.filter(
+    (f) => f.info?.extends['status project'] === status
+  ).sort(function (a, b) {
+    const nameA = a.id.toLowerCase()
+    const nameB = b.id.toLowerCase()
+    if (nameA < nameB) {
+      return -1
+    }
+    if (nameA > nameB) {
+      return 1
+    }
+    return 0
+  })
+
+
+
+const getErrors = async (status: 'open' | 'closed') => {
+  const { request: reqProjects, response: resProjects } = useFetch<projectType[]>(`/api/projects?status=${status}`)
+  await reqProjects()
+  state.errors = resProjects.value!
+
+  state.projects = JSON.parse(JSON.stringify(resProjects.value))
+
+  state.actualStatus = [
+    ...resProjects.value!.reduce(
+      (acc, pr) => acc.add(pr.info?.extends['status project']),
+      new Set() as Set<string>
+    ),
+  ].sort()
+
+  state.errors.sort(function (a, b) {
+    const nameA = a.info?.extends['status project']?.toLowerCase()
+    const nameB = b.info?.extends['status project']?.toLowerCase()
+    if (nameA < nameB) {
+      return -1
+    }
+    if (nameA > nameB) {
+      return 1
+    }
+    return 0
+  })
+}
+getErrors('open')
+
+
+// console.log(Array.from({ length: 20 }).map(()=> ));
+const postProject = async (index: number) => {
+  const { request: postProject } = useFetch('/api/POST_project', {
+    method: 'POST', // или 'PUT'
+    body: JSON.stringify({
+      ...state.projects[index],
+    }),
+  })
+  await postProject()
+}
+const updateChangedProjects = async () => {
+  await Promise.all(
+    [...state.updateIndex].map(async (e) => {
+      await postProject(e)
+    })
+  )
+  state.changeAllFlag = !state.changeAllFlag
+  selectedStatus.value === true ? getErrors('closed') : getErrors('open')
+}
+
+
+const sortBy = (el: keyof projectType['info']['extends'], p: 'extends') => {
+
+  state.projects.sort(function (a, b) {
+    const nameA = a.info[p][el]?.toString().toLowerCase()
+    const nameB = b.info[p][el]?.toString().toLowerCase()
+    if (nameA < nameB) {
+      return -1
+    }
+    if (nameA > nameB) {
+      return 1
+    }
+    return 0
+  })
+}
+
+const myProjects = () => {
+  if (state.search !== store.state.user.info.userDetails.toLowerCase().split('@')[0].split('.')[1]) {
+    state.search = store.state.user.info.userDetails.toLowerCase().split('@')[0].split('.')[1]
+  } else {
+    state.search = ''
+  }
+}
+    // return {
+    //   myProjects,
+    //   extendTemplate,
+    //   updateChangedProjects,
+    //   getIndex,
+    //   sortBy,
+    //   groupProjects,
+    //   selectedStatus,
+    //   filterProjects,
+    //   ...toRefs(state),
+    // }
+  // },
+// }
 </script>
 
 <style lang="css" scoped>
+.cabinet__info__item {
+  /* border-bottom: 1px solid rgb(102, 102, 102); */
+  padding: 5px;
+  /* width: 100%; */
+  display: grid;
+  align-items: center;
+  grid-template-columns: 2fr 5fr;
+
+  /* width: 200px; */
+}
+.over {
+  overflow: hidden;
+  /* padding: 2em; */
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 .my__projects {
   position: absolute;
   right: 1vw;
@@ -344,7 +416,7 @@ h3 {
 }
 .switch-label::before,
 .switch-label::after {
-  content: '';
+  content: "";
   display: block;
   position: absolute;
   cursor: pointer;
@@ -380,7 +452,7 @@ h3 {
   word-wrap: break-word;
 }
 .add__button::after {
-  content: '';
+  content: "";
   width: 100%;
   height: 100%;
   position: absolute;
@@ -400,18 +472,6 @@ h3 {
   cursor: pointer;
 }
 
-.selectStatus > h3 {
-  display: inline;
-}
-
-.change__status {
-  width: auto;
-}
-
-.update__button {
-  margin-top: 1vh;
-}
-
 .errors__holder {
   display: grid;
   align-items: stretch;
@@ -423,13 +483,22 @@ h3 {
 }
 
 .closed__card {
-  border: 1px solid red;
-  border-radius: 4px;
-  padding: 5px;
-  cursor: auto;
-  min-height: 150px;
+  position: relative;
+}
+.closed__card::after {
+  content: "closed";
+  position: absolute;
+  top: 0;
+  left: 0;
+  font-size: 6vw;
+  opacity: 0.3;
+  display: grid;
+  width: 100%;
   height: 100%;
-  overflow: hidden;
+  align-items: center;
+  justify-items: center;
+  color: tomato;
+  transform: rotate(-8deg);
 }
 
 .error__card__holder {
@@ -437,103 +506,18 @@ h3 {
   height: 100%;
 }
 
-/* .item__card:hover {
-  border: 1px solid black;
-  background: rgba(245, 254, 255, 0.356);
-} */
-
-.error__item {
-  border-bottom: 1px solid black;
-  padding: 2px;
-  display: grid;
-  grid-template-columns: 2fr 3fr;
-}
-
-.error__item__title {
-  justify-self: start;
-  align-self: center;
-  text-align: start;
-  margin: 0;
-}
-
-.error__item__desc {
-  height: inherit;
-  display: block;
-  justify-self: end;
-  text-align: end;
-  align-self: center;
-  margin: 0;
-  border-bottom: none;
-}
-
-.loading {
-  margin: auto;
-  width: 30px;
-  height: 30px;
-  background: url(/img/loading.gif) no-repeat center bottom;
-}
-
-.error__desc {
-  border-bottom: none;
-  padding: 2px;
-  display: grid;
-  grid-template-rows: 1fr 1fr;
-  grid-template-columns: 1fr;
-  border-bottom: none;
-}
-
-.error__item__vertical__title {
-  width: inherit;
-  text-align: center;
-  margin: 5px;
-  white-space: pre-wrap;
-  word-wrap: break-word;
-}
-
-.project__name {
-  white-space: pre-wrap;
-  word-wrap: break-word;
-}
-
 table {
-  margin-top: 2vh;
-  border-collapse: collapse;
-  border-radius: 5px;
-}
-td,
-th {
-  border: 1px solid #999;
-  padding: 5px;
-  font-size: 12px;
-}
-tbody tr:nth-child(odd) {
-  background: #eee;
-}
-tbody tr {
-  height: 80px;
+  width: max(95vw, 1200px);
 }
 
-tbody tr:hover {
-  background: rgba(0, 132, 255, 0.07);
-}
-th {
-  position: sticky;
-  top: 50px;
-  color: white;
-  background-color: rgb(0, 68, 129);
-  border: solid 2px orange;
-  box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
-}
-tr > th {
-  cursor: pointer;
-}
-input[type='number'],
-input[type='text'] {
+input[type="number"],
+input[type="text"] {
   width: 100%;
   text-align: center;
 }
 textarea {
   height: 90px;
+  border-radius: 1px;
 }
 #select__filter {
   height: 30px;
@@ -567,21 +551,15 @@ textarea {
 .group__items h3 {
   line-height: 50px;
 }
-.props {
-  margin-top: 5px;
-  border-bottom: 1px solid black;
-}
-.props:last-child {
-  border-bottom: 1px solid white;
-  text-align: left;
-}
 .double {
   display: grid;
   grid-auto-flow: column;
   column-gap: 1vw;
   grid-template-columns: 5fr 4fr;
   justify-content: space-between;
+  align-items: center;
 }
+
 .double:first-child {
   display: grid;
   grid-auto-flow: column;
@@ -591,8 +569,106 @@ textarea {
   margin-bottom: 1vh;
 }
 .double:first-child > p {
-  place-self: center;
+  /* place-self: center;
   white-space: pre-wrap;
-  word-wrap: break-word;
+  word-wrap: break-word; */
+}
+.vertical {
+  grid-auto-flow: row;
+  grid-template-columns: 1fr;
+  row-gap: 5px;
+  padding: 5px;
+}
+.vertical p {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-align: left;
+  line-height: 1.3;
+}
+
+.ddiv {
+  font-size: 0.8em;
+  color: #2b2b2b;
+  -webkit-font-smoothing: antialiased;
+  box-sizing: border-box;
+  display: flex;
+  line-height: 28px;
+  justify-content: flex-end;
+  width: 95%;
+  margin: auto;
+}
+.llable {
+  color: #2b2b2b;
+  -webkit-font-smoothing: antialiased;
+  line-height: 28px;
+  display: inline-block;
+  margin: 0 -1px 0 0;
+  user-select: none;
+  text-align: center;
+  outline: 0;
+  touch-action: manipulation;
+  cursor: pointer;
+  position: relative;
+  background-position: 6px 1px;
+  background-repeat: no-repeat;
+}
+.iinput {
+  -webkit-font-smoothing: antialiased;
+  user-select: none;
+  box-sizing: border-box;
+  /* font-family: Arial, Helvetica, sans-serif; */
+  position: absolute;
+  cursor: pointer;
+  opacity: 0;
+}
+.sspan {
+  /* font: 0.8em YS Text, Arial, Helvetica, sans-serif; */
+  color: #2b2b2b;
+  -webkit-font-smoothing: antialiased;
+  line-height: 28px;
+  user-select: none;
+  text-align: center;
+  cursor: pointer;
+  box-sizing: border-box;
+  position: relative;
+  background-position: 6px 1px;
+  background-repeat: no-repeat;
+  /* z-index: 1; */
+  padding: 0 1em;
+  pointer-events: none;
+  background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMyIgaGVpZ2h0PSIxMyIgZmlsbD0iI2IyYjJiMiI+PHBhdGggZD0iTTAgMTBoM3YzSDB6bTUgMGg4djNINXpNMCA1aDN2M0gwem01IDBoOHYzSDV6TTAgMGgzdjNIMHptNSAwaDh2M0g1eiIvPjwvc3ZnPg==);
+}
+.sspan2 {
+  /* font: 0.8em YS Text, Arial, Helvetica, sans-serif; */
+  color: #2b2b2b;
+  -webkit-font-smoothing: antialiased;
+  line-height: 28px;
+  user-select: none;
+  text-align: center;
+  cursor: pointer;
+  box-sizing: border-box;
+  position: relative;
+  background-position: 6px 1px;
+  background-repeat: no-repeat;
+  /* z-index: 1; */
+  padding: 0 1em;
+  pointer-events: none;
+  background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMyIgaGVpZ2h0PSIxMyIgZmlsbD0iI2IyYjJiMiI+PHBhdGggZD0iTTAgMGg2djZIMHptNyAwaDZ2Nkg3em0wIDdoNnY2SDd6TTAgN2g2djZIMHoiLz48L3N2Zz4=);
+}
+
+.activegrid {
+  background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMyIgaGVpZ2h0PSIxMyIgZmlsbD0iIzJiMmIyYiI+PHBhdGggZD0iTTAgMGg2djZIMHptNyAwaDZ2Nkg3em0wIDdoNnY2SDd6TTAgN2g2djZIMHoiLz48L3N2Zz4=);
+}
+.activetable {
+  background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMyIgaGVpZ2h0PSIxMyIgZmlsbD0iIzJiMmIyYiI+PHBhdGggZD0iTTAgMTBoM3YzSDB6bTUgMGg4djNINXpNMCA1aDN2M0gwem01IDBoOHYzSDV6TTAgMGgzdjNIMHptNSAwaDh2M0g1eiIvPjwvc3ZnPg==);
+}
+tbody tr td {
+  padding: 6px;
+  /* padding-bottom: 6px; */
+}
+tbody tr td p {
+  text-align: left;
 }
 </style>

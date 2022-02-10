@@ -1,6 +1,25 @@
 <template>
   <div>
-    <h1>WO {{ $route.params.cabinetId }}</h1>
+    <div v-if="state.cabinetInfo">
+      <h2>
+        <span>№ :</span>
+        {{ state.cabinetInfo?.info['project number'] }}
+      </h2>
+      <h2>
+        <span>Проект :</span>
+        {{ state.cabinetInfo?.info['Project Name'] }}
+      </h2>
+
+      <h2>
+        <span>Шкаф :</span>
+        {{ state.cabinetInfo?.info['cab name'] }}
+      </h2>
+      <h2>
+        <span>WO :</span>
+        {{ $route.params.cabinetId }}
+      </h2>
+    </div>
+    <!-- <h1>WO {{ $route.params.cabinetId }}</h1> -->
     <br />
     <button
       v-for="tab in state.cabinetTabs"
@@ -8,47 +27,72 @@
       class="cabinets__category"
       :class="['tab-button', { active: state.currentCabinetTab === tab.title }]"
       @click="state.currentCabinetTab = tab.title"
-    >
-      {{ tab.title }}
-    </button>
+    >{{ tab.title }}</button>
     <br />
     <br />
     <component :is="condition(state.currentCabinetTab)"></component>
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { useFetch } from '@/hooks/fetch'
-import { reactive, onUnmounted } from 'vue'
+import { reactive, computed, onUnmounted } from 'vue'
 import { useRoute } from 'vue-router'
 import Errors from '@/components/cabinetErrors.vue'
 import Cabtime from '@/components/cabinetCabTime.vue'
 import Info from '@/components/cabinetInfo.vue'
 import Tasks from '@/components/cabinetTasks.vue'
+// import { cabinetInfo } from '@/types/cabinetsType'
 import { useStore } from 'vuex'
 
+type cabinetInfo = {
+  "id": string,
+  "type": string,
+  "info": {
+    "wo": string,
+    "cab name": string,
+    "project number": string,
+    "Project Name": string,
+    "status": string
+  },
+}
 const route = useRoute()
 const store = useStore()
 const state = reactive({
+  cabinetInfo: <cabinetInfo | null>null,
   cabinetItems: null,
   cabinetTabs: [
     { title: 'Информация' },
     { title: 'CabTime' },
     { title: 'Ошибки' },
-    { title: 'Задачи' },
+    // { title: 'Задачи' },
   ],
-  currentCabinetTab: null,
+  currentCabinetTab: '',
 })
 
-// onUnmounted(()=> store.commit('SETcurrentProject', null))
+const getCabinetInfo = async () => {
+  // try {
+  const { request: reqCabinetInfo, response: resCabinetInfo } = useFetch<cabinetInfo>(
+    `/api/getitembyid/info__${route.params.cabinetId}`
+  )
+  await reqCabinetInfo()
+  state.cabinetInfo = resCabinetInfo.value!
+}
 
 const setState = async () => {
   await store.dispatch('getCabinetsInfo', route.params.cabinetId)
+  await getCabinetInfo()
   await store.dispatch('GET_cabinetItems', route.params.cabinetId)
 }
 setState()
 
-const condition = (a) => {
+const pInfo = computed(() => store.state.projectInfo.wo ? store.state.projectInfo : null)
+
+
+
+
+
+const condition = (a: string) => {
   switch (a) {
     case 'Информация':
       return Info
@@ -73,7 +117,7 @@ const condition = (a) => {
 .tab-button.active {
   background: #0066ff1f;
 }
-[type='radio'] {
+[type="radio"] {
   display: none;
 }
 
@@ -98,7 +142,7 @@ label {
   width: 100%;
 }
 
-[type='radio']:checked ~ label {
+[type="radio"]:checked ~ label {
   background: white;
   background-color: rgb(255, 255, 255);
   /* color: aliceblue; */
@@ -136,5 +180,9 @@ label {
   margin: auto;
   margin-top: 1vh;
   padding-bottom: 1vh;
+}
+h2 span {
+  font-size: 80%;
+  vertical-align: middle;
 }
 </style>

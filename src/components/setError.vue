@@ -1,6 +1,6 @@
 <template>
   <div v-if="$store.state.template">
-    <form id="postError" name="postError" @submit.prevent="postForm">
+    <form id="postError" name="postError" @submit.prevent="postError">
       <div
         v-if="$store.state.user.info.userRoles.includes('admin')"
         class="error__item"
@@ -63,11 +63,11 @@
       </div>
       <br />
       <item-photo-uploader
-        :change-photos="true"
+        :change-photos-flag="true"
         container="errors-photo"
         :object-id="id"
         :save-changes-photo="saveChanges"
-        @uploadChanges="mainEmitFromPhotos"
+        @updated-photos="updatePhotoCollection"
       />
       <br />
       <br />
@@ -120,21 +120,24 @@ export default {
       role: 'f_error',
       statusConfirmed: false,
       statusClosed: false,
+      photos: [],
     }
   },
   methods: {
-    async postForm(e) {
-      // const ff =  new FormData(e.target)
-      // // const ff = serializeForm(e.target)
-      // console.log(Array.from(ff.entries()))
-      // console.log(e);
-      this.saveChanges = true
+    // async postForm(e) {
+    //   // const ff =  new FormData(e.target)
+    //   // // const ff = serializeForm(e.target)
+    //   // console.log(Array.from(ff.entries()))
+    //   // console.log(e);
+    //   this.saveChanges = true
+    // },
+    // async mainEmitFromPhotos(e) {
+    //   this.error.photos = await e
+    //   // this.postError()
+    // },
+    updatePhotoCollection(e) {
+      this.photos = e
     },
-    async mainEmitFromPhotos(e) {
-      this.error.photos = await e
-      this.postError()
-    },
-
     firedFileInput() {
       this.$refs.fileInput.click()
     },
@@ -155,7 +158,7 @@ export default {
       }
     },
     async postError(e) {
-      this.$store.commit('changeLoader', true)
+      // this.$store.commit('changeLoader', true)
 
       const error = {
         id: this.id,
@@ -171,7 +174,7 @@ export default {
             ? 'confirmed'
             : 'open',
         },
-        photos: this.error.photos,
+        photos: this.photos,
         type: this.role,
 
         body: [
@@ -183,6 +186,8 @@ export default {
         ],
       }
       try {
+        await this.$store.dispatch('UPLOAD_PHOTOS', 'errors-photo')
+        // await $store.dispatch('DELETE_PHOTOS')
         await fetch('/api/post_item', {
           method: 'POST', // или 'PUT'
           body: JSON.stringify({
@@ -196,7 +201,7 @@ export default {
           Устранено: {},
         }
         this.$router.back()
-        this.$store.commit('changeLoader', false)
+        // this.$store.commit('changeLoader', false)
       }
     },
   },

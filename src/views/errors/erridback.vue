@@ -8,11 +8,7 @@
       <section class="information">
         <info-render :info-data="error.info" />
       </section>
-      <section
-        v-for="(val, key, index) in error.body"
-        :key="index"
-        class="eror__body"
-      >
+      <section v-for="(val, key, index) in error.body" :key="index" class="eror__body">
         <div v-if="!key.startsWith('_') && Object.values(val)[1]">
           <!-- {{key}} -->
           <div v-if="!returnRender(key, val)">
@@ -42,7 +38,7 @@
       </section>
       <h3 v-if="error.photos[0]">Фотографии</h3>
       <item-photo-uploader
-        :change-photos="changeInfo"
+        :change-photos-flag="changeInfo"
         :current-photos="error.photos"
         @delete-blob="setPH"
         @resized-blob="errorPhotosBlob($event)"
@@ -62,9 +58,7 @@
         $store.state.user.info.userRoles.includes('admin')
       "
       @click="changeData"
-    >
-      {{ !changeInfo ? 'Редактировать' : 'Отмена' }}
-    </button>
+    >{{ !changeInfo ? 'Редактировать' : 'Отмена' }}</button>
     <button v-if="changeInfo" @click="deleteError">Удалить</button>
     <button v-if="changeInfo" type="submit" form="errorData">Сохранить</button>
   </div>
@@ -312,7 +306,7 @@ export default {
     async getCurrentError() {
       try {
         const responsError = await fetch(
-          `/api/errors/${this.$route.params.errorId}`
+          `/api/getitembyid/${this.$route.params.errorId}`
         )
         const error = await responsError.json()
         if (!responsError.ok) {
@@ -342,7 +336,7 @@ export default {
 }
 .custom-file-input:active::before {
   background: -webkit-linear-gradient(top, #e3e3e3, #f9f9f9);
-  background-image: url('/img/add__image.svg');
+  background-image: url("/img/add__image.svg");
 }
 .back__image {
   position: fixed;

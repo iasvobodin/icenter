@@ -3,17 +3,22 @@
     <div class="overlay" role="button" tabindex="0" @click="closed" />
     <div class="dialog">
       <div class="header">
-        <slot></slot>
+        <slot name="header"></slot>
       </div>
-      <div class="buttons">
-        <button class="cancel" @click="closed">Отмена</button>
-        <button class="confirm" @click="confirm">Да</button>
+      <div class="select">
+        <slot name="select"></slot>
+      </div>
+      <div class="popup__buttons">
+        <slot name="buttons">
+          <button class="popup__cancel__button" @click="closed">Отмена</button>
+          <button class="popup__confirm__button" @click="confirm">Да</button>
+        </slot>
       </div>
     </div>
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { toRefs } from '@vue/reactivity'
 import { onBeforeUnmount, onMounted } from '@vue/runtime-core'
 
@@ -23,20 +28,18 @@ const props = defineProps({
     default: () => false,
   },
 })
-const hendleKeyDown = (e) => {
-  props.opened && e.key === 'Escape' && closed()
-}
-onMounted(() => {
-  document.addEventListener('keydown', hendleKeyDown)
-})
-onBeforeUnmount(() => {
-  document.removeEventListener('keydown', hendleKeyDown)
-})
+
 const emit = defineEmits({
   confirm: null,
   closed: null,
 })
+
 const { opened } = toRefs(props)
+
+const hendleKeyDown = (e: KeyboardEvent) => {
+  opened.value && e.key === 'Escape' && closed()
+}
+
 const confirm = () => {
   emit('confirm', false)
 }
@@ -44,6 +47,13 @@ const closed = () => {
   // opened.value = false
   emit('closed')
 }
+
+onMounted(() => {
+  document.addEventListener('keydown', hendleKeyDown)
+})
+onBeforeUnmount(() => {
+  document.removeEventListener('keydown', hendleKeyDown)
+})
 </script>
 
 <style lang="css" scoped>
@@ -67,37 +77,49 @@ const closed = () => {
 }
 .dialog {
   display: grid;
-  grid-template-rows: 1fr 1fr;
+  /* grid-template-rows: 1fr 1fr; */
   place-self: center;
   position: relative;
   background-color: white;
   border-radius: 15px;
-  width: min(95vw, 400px);
+  width: min(500px, 100vw - 10px);
   min-height: 150px;
 }
-.buttons {
-  width: 90%;
+.select {
+  /* position: absolute; */
+  /* grid-area: 1/1/2/2; */
+  /* max-height: 200px; */
+}
+
+.header {
+  text-align: center;
+}
+
+.popup__buttons {
+  /* width: 90%; */
   display: grid;
   grid-auto-flow: column;
   margin: auto;
+  min-height: 60px;
+  align-content: center;
 }
-.cancel:hover {
+</style>
+
+<style>
+.popup__cancel__button:hover {
   background-color: rgba(0, 128, 0, 0.4);
 }
-.confirm:hover {
+.popup__confirm__button:hover {
   background-color: rgba(255, 0, 0, 0.4);
 }
-.cancel {
+.popup__cancel__button {
   min-width: 100px;
   width: fit-content;
   border: 1px solid green;
 }
-.confirm {
+.popup__confirm__button {
   min-width: 100px;
   width: fit-content;
   border: 1px solid red;
-}
-.header {
-  text-align: center;
 }
 </style>

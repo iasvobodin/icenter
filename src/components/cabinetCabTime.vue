@@ -2,78 +2,163 @@
   <div>
     <!-- <h1>BETTA VERSION</h1> -->
     <cab-time-view
-      v-if="computedItems"
+      v-if="state.cabTime"
       :task-edit="state.taskEdit"
-      :input-data="computedItems"
+      :input-data="state.cabTime"
+      :show-history="true"
       :change-data="state.changeCabTime"
       :template-data="
         JSON.parse(JSON.stringify(store.state.template.CabTimeV3))
       "
-      @final="em($event)"
     />
     <router-link
       v-if="
-        !computedItems && $store.state.user.info.userRoles.includes('admin')
+        !state.cabTime && $store.state.user.info.userRoles.includes('admin')
       "
       to="/cabtimes/addnewcabtime"
     >
-      <img
-        class="add__button"
-        src="/img/add.svg"
-        alt="Добавить новый CabTime"
-      />
+      <img class="add__button" src="/img/add.svg" alt="Добавить новый CabTime" />
     </router-link>
-    <br />
+    <!-- <br />
     <br />
     <button
       v-if="computedItems && $store.state.user.info.userRoles.includes('admin')"
       @click="$router.push(`/cabtimes/${$route.params.cabinetId}`)"
-    >
-      Редактировать
-    </button>
-    <button v-if="state.changeCabTime" @click="postCabTime">Save</button>
-    <!-- <button
-      v-if="$store.state.user.info.userRoles.includes('admin')"
-      @click="state.taskEdit = !state.taskEdit"
-    >
-      TestTask
-    </button> -->
-    <br />
-    <br />
+    >Редактировать</button>-->
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import CabTimeView from '@/components/CabTimeView.vue'
 import { useFetch } from '@/hooks/fetch'
 import { useStore } from 'vuex'
-import { computed, reactive } from 'vue'
+import { computed, reactive, watchEffect } from 'vue'
 import { useRoute } from 'vue-router'
+import { cabtimeType } from '@/types/cabtimeTypes'
 const store = useStore()
 const state = reactive({
-  cabTime: null,
+  cabTime: <cabtimeType | null>null,
   changeCabTime: false,
   taskEdit: false,
 })
 const route = useRoute()
 
-const computedItems = computed(
-  () => store.state.cabinetItems.filter((e) => e.type === 'cabtime')[0]
-)
-const em = (e) => (state.cabTime = e)
+// const computedItems = computed(
+//   () => store.state.cabinetItems!.filter((e): e is cabtimeType => e.type === 'cabTime')[0]
+// )
+// state.cabTime = typeof route.params.cabinetId === 'string' && getCabTime(route.params.cabinetId)
 
-const postCabTime = async () => {
-  const { request } = useFetch('/api/post_item', {
-    method: 'POST', // или 'PUT'
-    body: JSON.stringify({
-      ...state.cabTime,
-    }),
-  })
-  await request()
-  await store.dispatch('getCabinetsInfo', route.params.cabinetId)
-  await store.dispatch('GET_cabinetItems', route.params.cabinetId)
-  state.changeCabTime = !state.changeCabTime
+watchEffect(() => {
+  const storeCabTime = store.state.cabinetItems && store.state.cabinetItems.find((e): e is cabtimeType => e.type === 'cabtime')
+  if (storeCabTime) {
+
+    storeCabTime.history.length > 0 &&
+      storeCabTime.history.forEach((historyVersion) => {
+
+        historyVersion.map((cabtimeBodyElement) => {
+
+          const index = storeCabTime?.body.findIndex(
+            (e) => e._id === cabtimeBodyElement._id
+          )
+          storeCabTime!.body[index!] = cabtimeBodyElement
+        })
+      })
+
+    const filterBody = storeCabTime!.body.reduce(
+      (acc: cabtimeType['body'], e) => {
+        // if (e.status !== 'done') {
+        if (e.status === 'partially') {
+          e.result -= e.propTime!
+          e.fitter = ''
+          e.date = 0
+          e.status = 'open'
+        }
+        acc.push(e)
+        // }
+        return acc
+      },
+      []
+    )
+
+    const cabTimeWithHistory = {
+      ...storeCabTime!,
+      body: filterBody,
+    }
+    // state.task = resTask.value!
+    // state.passedTime = CurrentTime - state.task.body.timeStart
+    state.cabTime = cabTimeWithHistory
+  }
+
+})
+
+// typeof route.params.cabinetId === 'string' && getCabTime(route.params.cabinetId)
+
+async function getCabTime(wo: string) {
+  // !state.task && (await getTask())
+  const { request: reqCabTime, response: resCabTime } = useFetch<cabtimeType>(
+    `/api/getitembyid/cabtime__${wo}`
+  )
+  try {
+    await reqCabTime()
+    // add history to cabtime
+    resCabTime.value &&
+      resCabTime.value.history &&
+      resCabTime.value.history.length > 0 &&
+      resCabTime.value.history.forEach((historyVersion) => {
+
+        historyVersion.map((cabtimeBodyElement) => {
+
+          const index = resCabTime.value?.body.findIndex(
+            (e) => e._id === cabtimeBodyElement._id
+          )
+          resCabTime.value!.body[index!] = cabtimeBodyElement
+        })
+      })
+
+    const filterBody = resCabTime.value!.body.reduce(
+      (acc: cabtimeType['body'], e) => {
+        // if (e.status !== 'done') {
+        if (e.status === 'partially') {
+          e.result -= e.propTime!
+          e.fitter = ''
+          e.date = 0
+          e.status = 'open'
+        }
+        acc.push(e)
+        // }
+        return acc
+      },
+      []
+    )
+
+
+    const cabTimeWithHistory = {
+      ...resCabTime.value!,
+      body: filterBody,
+    }
+    // state.task = resTask.value!
+    // state.passedTime = CurrentTime - state.task.body.timeStart
+    state.cabTime = cabTimeWithHistory
+    return cabTimeWithHistory
+  } catch (error) {
+    console.error(error)
+    return null
+  }
 }
+// const em = (e) => (state.cabTime = e)
+
+// const postCabTime = async () => {
+//   const { request } = useFetch('/api/post_item', {
+//     method: 'POST', // или 'PUT'
+//     body: JSON.stringify({
+//       ...state.cabTime,
+//     }),
+//   })
+//   await request()
+//   await store.dispatch('getCabinetsInfo', route.params.cabinetId)
+//   await store.dispatch('GET_cabinetItems', route.params.cabinetId)
+//   state.changeCabTime = !state.changeCabTime
+// }
 </script>
 
 <style lang="css" scoped>

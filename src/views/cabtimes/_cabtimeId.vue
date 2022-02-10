@@ -2,30 +2,28 @@
   <div>
     <!-- <h1>BETTA VERSION</h1> -->
     <teleport to="body">
-      <confirm-popup
-        :opened="state.popupOpened"
-        @closed="popupClosed"
-        @confirm="popupConfirmed"
-      >
-        <h3>Удалить cabTime?</h3>
+      <confirm-popup :opened="state.popupOpened" @closed="popupClosed" @confirm="popupConfirmed">
+        <template #header>
+          <h3>Удалить cabTime?</h3>
+        </template>
       </confirm-popup>
     </teleport>
-    <div>
+    <div v-if="pInfo">
       <h2>
-        Номер проекта
+        <i>№ :</i>
         {{ pInfo['project number'] }}
       </h2>
       <h2>
-        Название проекта
+        <i>Проект :</i>
         {{ pInfo['Project Name'] }}
       </h2>
-
-      <h2>Название шкафа {{ pInfo['cab name'] }}</h2>
-      <h2
-        class="wo__clicked"
-        @click="$router.push(`/cabinets/${$route.params.cabtimeId}`)"
-      >
-        WO {{ $route.params.cabtimeId }}
+      <h2>
+        <i>Шкаф :</i>
+        {{ pInfo['cab name'] }}
+      </h2>
+      <h2 class="wo__clicked" @click="$router.push(`/cabinets/${$route.params.cabtimeId}`)">
+        <i>WO :</i>
+        {{ $route.params.cabtimeId }}
       </h2>
     </div>
     <cab-time-view
@@ -40,47 +38,37 @@
     />
     <item-photo-uploader
       v-if="state.cabTime"
-      :change-photos="state.changeCabTime"
+      :change-photos-flag="state.changeCabTime"
       container="cabtime-photo"
       :current-photos="state.cabTime.photos"
       :object-id="state.cabTime.id"
       :save-changes-photo="state.saveChanges"
-      @uploadChanges="mainEmitFromPhotos"
+      @updated-photos="updatePhotoCollection"
     />
     <!-- @resized-blob="addPhotos($event)"
-      @delete-blob="delPhotos($event)" -->
+    @delete-blob="delPhotos($event)"-->
     <router-link
       v-if="
         !state.cabTime && $store.state.user.info.userRoles.includes('admin')
       "
       to="/cabtimes/addnewcabtime"
     >
-      <img
-        class="add__button"
-        src="/img/add.svg"
-        alt="Добавить новый CabTime"
-      />
+      <img class="add__button" src="/img/add.svg" alt="Добавить новый CabTime" />
     </router-link>
     <br />
     <br />
     <button
       v-if="state.cabTime && $store.state.user.info.userRoles.includes('admin')"
       @click="state.changeCabTime = !state.changeCabTime"
-    >
-      {{ state.changeCabTime ? 'Cancel' : 'Change' }}
-    </button>
-    <button v-if="state.changeCabTime" @click="state.saveChanges = true">
-      Save
-    </button>
-    <button v-if="state.changeCabTime" @click="state.popupOpened = true">
-      Delete
-    </button>
+    >{{ state.changeCabTime ? 'Cancel' : 'Change' }}</button>
+    <button v-if="state.changeCabTime" @click="postCabtime">Save</button>
+    <button v-if="state.changeCabTime" @click="state.popupOpened = true">Delete</button>
     <br />
     <br />
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import itemPhotoUploader from '@/components/itemPhotoUploader.vue'
 import CabTimeView from '@/components/CabTimeView.vue'
 import confirmPopup from '@/components/modal/cunfirmPopup.vue'
@@ -88,33 +76,42 @@ import { useFetch } from '@/hooks/fetch'
 import { useStore } from 'vuex'
 import { computed, onMounted, reactive, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { cabtimeType, cabtimeBody } from '@/types/cabtimeTypes'
 const store = useStore()
 const state = reactive({
   mainEmitFromPhotos2: null,
   saveChanges: false,
   popupOpened: false,
-  cabTime: null,
+  cabTime: <cabtimeType | null>null,
   changeCabTime: false,
   taskEdit: false,
+  updatedPhotos: [] as Array<string>,
 })
 const route = useRoute()
 const router = useRouter()
 
 const setState = async () => {
+  debugger
   await store.dispatch('getCabinetsInfo', route.params.cabtimeId)
-  await store.dispatch('GET_cabinetItems', route.params.cabtimeId)
+  // await store.dispatch('GET_cabinetItems', route.params.cabtimeId)
 }
 setState()
 const pInfo = computed(() =>
-  store.state.projectInfo ? store.state.projectInfo : {}
+  store.state.projectInfo ? store.state.projectInfo : null
 )
 const getCabTime = async () => {
-  const { request, response } = useFetch(
-    `/api/errors/cabtime__${route.params.cabtimeId}`
+  const { request, response } = useFetch<cabtimeType>(
+    `/api/getitembyid/cabtime__${route.params.cabtimeId}`
   )
   try {
     await request()
-    state.cabTime = response
+
+
+
+
+
+
+    state.cabTime = response.value!
   } catch (error) {
     console.log('cant get cabTime request')
   }
@@ -123,54 +120,25 @@ const getCabTime = async () => {
 }
 getCabTime()
 
-// const computedItems = computed(
-//   () => store.state.cabinetItems.filter((e) => e.type === 'cabtime')[0]
-// )
-const em = (e) => (state.cabTime = e)
 
-// const photosFromEmit = []
+const em = (e: cabtimeType) => (state.cabTime = e)
 
-// const photo = async () => {
-//   if (state.cabTime.blobFiles?.length > 0) {
-//     // !state.cabTime.photos && (state.cabTime.photos = [])
-//     const formData = new FormData()
-//     state.cabTime.blobFiles?.forEach((e, i) => {
-//       const unic = Date.now()
-//       const imageName = `${
-//         state.cabTime.id
-//       }__${store.state.user.info.userDetails.toLowerCase()}__${unic + i}.jpg`
-
-//       // state.cabTime.photos
-//       photosFromEmit.push(imageName)
-
-//       formData.set(`photo${unic + i}`, e, imageName)
-//     })
-
-//     // UPLOAD PHOTOS
-//     const { request, response } = useFetch(
-//       '/api/blob?container=cabtime-photo&test=true',
-//       {
-//         method: 'POST',
-//         body: formData,
-//       }
-//     )
-//     await request()
-//   }
-// }
-const mainEmitFromPhotos = async (e) => {
-  state.cabTime.photos = await e
-  postCabtime()
+const updatePhotoCollection = (e: Array<string>) => {
+  state.updatedPhotos = e
 }
-
 const postCabtime = async () => {
+  const photos = state.updatedPhotos
   const { request } = useFetch('/api/post_item', {
     method: 'POST', // или 'PUT'
     body: JSON.stringify({
       ...state.cabTime,
-      body: state.cabTime.body.filter((e) => e.value),
+      body: state.cabTime!.body.filter((e) => e.value),
+      photos,
     }),
   })
   await request()
+  await store.dispatch('UPLOAD_PHOTOS', 'cabtime-photo')
+  // await store.dispatch('DELETE_PHOTOS')
 
   await getCabTime()
   await store.dispatch('getCabinetsInfo', route.params.cabtimeId)
@@ -178,20 +146,28 @@ const postCabtime = async () => {
   state.changeCabTime = !state.changeCabTime
 }
 const deleteCabTime = async () => {
-  state.cabTime.photos?.length > 0 &&
-    (await Promise.all(
-      state.cabTime.photos.map(async (e) => {
-        await fetch(
-          `/api/blob?container=cabtime-photo&fileName=${e}&delblob=true`
-        )
-      })
-    ))
+  // state.cabTime.photos?.length > 0 &&
+  //   (await Promise.all(
+  //     state.cabTime.photos.map(async (e) => {
+  //       await fetch(
+  //         `/api/blob?container=cabtime-photo&fileName=${e}&delblob=true`
+  //       )
+  //     })
+  //   ))
+
+  if (state.cabTime!.photos!.length > 0) {
+    store.commit('PreparePhotosToDelete', {
+      photos: state.cabTime!.photos,
+      container: 'cabtime-photo',
+    })
+    await store.dispatch('DELETE_PHOTOS')
+  }
 
   const { request: deleteCabTimeReq } = useFetch('/api/post_item', {
     method: 'POST', // или 'PUT'
     body: JSON.stringify({
-      ttl: 10,
       ...state.cabTime,
+      ttl: 10,
     }),
   })
   await deleteCabTimeReq()
@@ -208,6 +184,16 @@ const popupConfirmed = async () => {
 </script>
 
 <style lang="css" scoped>
+.cancel {
+  min-width: 100px;
+  width: fit-content;
+  border: 1px solid green;
+}
+.confirm {
+  min-width: 100px;
+  width: fit-content;
+  border: 1px solid red;
+}
 h2 {
   margin: 1vh auto;
 }
@@ -227,5 +213,8 @@ button {
 }
 .wo__clicked:hover {
   color: blueviolet;
+}
+h2 i {
+  color: gray;
 }
 </style>

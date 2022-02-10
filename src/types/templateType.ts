@@ -1,4 +1,5 @@
 import { cabtimeType } from './cabtimeTypes'
+import { projectInfoType } from '@/types/projectInfoType'
 
 export type Extend = {
   _field: string
@@ -6,9 +7,31 @@ export type Extend = {
   value: string | string[]
   min?: number
   max?: number
+  search?: [{ id: string, givenName: string, surname: string }]
+}
+type Extends = {
+  "Specific requirement field": string,
+  "senior fitter": string,
+  "status project": string,
+  "Hours calculated": string,
+  "Hours actual": string,
+  "Comments field": string,
+  "Shipping date": string
 }
 
-export interface templateType {
+type Base = {
+  "Project Name": string,
+  "SZ №": number,
+  "PM": string,
+  "Buyer": string,
+  "Contract Administrator": string,
+  "Buyout Administrator": string,
+  "Lead Engineer"?: string
+}
+
+
+type a = keyof Extends
+export type templateType = {
   id: 'ver1'
   type: 'templateProject'
   template: {
@@ -17,10 +40,10 @@ export interface templateType {
       'status project': string[]
     }
     extendManual: {
-      [index: string]: Extend
+      [key in keyof projectInfoType]: Extend
     }
     extend: {
-      [index: string]: Extend
+      [key in keyof Extends]: Extend
     }
   }
   CabTimeV3: cabtimeType

@@ -1,10 +1,6 @@
 <template>
-  <section v-if="state.ctv3.groupByType">
-    <div
-      v-for="(t, i) in state.ctv3.groupByType"
-      :key="i"
-      class="table__wrapper"
-    >
+  <section v-if="state.ctv3 && state.ctv3.groupByType">
+    <div v-for="(t, i) in state.ctv3.groupByType" :key="i" class="table__wrapper">
       <table>
         <colgroup>
           <col span="1" class="collgroup1" />
@@ -12,14 +8,18 @@
           <col span="1" class="collgroup3" />
           <col span="1" class="collgroup4" />
           <col span="1" class="collgroup5" />
+          <col v-if="showHistory" span="1" class="collgroup6" />
+          <col v-if="showHistory" span="1" class="collgroup7" />
         </colgroup>
         <tbody>
           <tr class="head">
             <th>№</th>
             <th>{{ t.type }}</th>
             <th>Кол-во</th>
-            <th>Const</th>
+            <th>Норма</th>
             <th>{{ state.ctv3.groupByType[i].total }}</th>
+            <th v-if="showHistory">Фамилия</th>
+            <th v-if="showHistory">Дата</th>
           </tr>
           <tr v-for="(value, index) in groupBy(t.type)" :key="index">
             <td>{{ value._id }}</td>
@@ -59,10 +59,22 @@
               <p v-else>{{ value._const }}</p>
             </td>
             <td>{{ value.result }}</td>
+            <td v-if="showHistory">
+              <span
+                v-if="value.fitter"
+                :style="randomIntFromInterval(0, 4)"
+                class="stamp"
+              >{{ value.fitter.split('@')[0].split('.')[1] }}</span>
+            </td>
+            <td v-if="showHistory">
+              <span
+                v-if="value.date"
+                class="stamp date"
+                :style="randomIntFromInterval(1, 3)"
+              >{{ new Date(value.date).toLocaleString().split(',')[0] }}</span>
+            </td>
           </tr>
-          <div v-if="changeData" class="add__row" @click="addNewRow(t.type)">
-            +
-          </div>
+          <div v-if="changeData" class="add__row" @click="addNewRow(t.type)">+</div>
         </tbody>
       </table>
     </div>
@@ -116,28 +128,26 @@
           <th>Сборка + Админ</th>
         </tr>
         <tr>
-          <td v-for="(val, index) in cabtimeResult" :key="index">
-            {{ val ? val : 0 }}
-          </td>
+          <td v-for="(val, index) in cabtimeResult" :key="index">{{ val ? val : 0 }}</td>
         </tr>
       </tbody>
     </table>
   </section>
   <div class="error-photos">
     <!-- <error-photos
-      :change-photos="changeData"
+      :change-photos-flag="changeData"
       container="cabtime-photo"
       :current-photos="inputData.photos"
       @resized-blob="addPhotos($event)"
       @delete-blob="delPhotos($event)"
-    /> -->
+    />-->
   </div>
 
   <!-- 
-        @resized-blob="errorPhotosBlob($event)" -->
+  @resized-blob="errorPhotosBlob($event)"-->
 </template>
 
-<script setup>
+<script setup lang="ts">
 import itemPhotoUploader from '@/components/itemPhotoUploader.vue'
 import conditionalRender from '@/components/conditionalRender.vue'
 import chooseWoNumber from '@/components/chooseWoNumber.vue'
@@ -150,9 +160,12 @@ import {
   computed,
   nextTick,
   onMounted,
+  PropType,
   watchEffect,
 } from 'vue'
 import { useFetch } from '@/hooks/fetch'
+import { cabtimeType, cabtimeBody } from '@/types/cabtimeTypes'
+import { templateType } from '@/types/templateType'
 
 const store = useStore()
 const router = useRouter()
@@ -167,7 +180,7 @@ const router = useRouter()
 // eslint-disable-next-line no-undef
 const props = defineProps({
   inputData: {
-    type: Object,
+    type: Object as PropType<cabtimeType>,
     required: true,
   },
   changeData: {
@@ -179,8 +192,12 @@ const props = defineProps({
     default: () => false,
   },
   templateData: {
-    type: Object,
+    type: Object as PropType<templateType['CabTimeV3']>,
     required: true,
+  },
+  showHistory: {
+    type: Boolean,
+    default: () => false,
   },
 })
 // eslint-disable-next-line no-undef
@@ -188,13 +205,13 @@ const emit = defineEmits(['final'])
 const state = reactive({
   blobFiles: null,
   projectInformation: null,
-  ctv3: null,
+  ctv3: <cabtimeType>{},
 })
 // DEEP COPY OBJECT
 // const { inputData } = props
-const { inputData, changeData, templateData, taskEdit } = toRefs(props)
+const { inputData, changeData, templateData, taskEdit, showHistory } = toRefs(props)
 
-const mergeObject = (templateObj, cabTimeObj) => {
+const mergeObject = (templateObj: templateType['CabTimeV3'], cabTimeObj: cabtimeType) => {
   const bodyResult = [
     ...cabTimeObj.body,
     ...templateObj.body.filter(
@@ -226,9 +243,10 @@ const inputDataComputed = computed(() =>
 )
 const projectInfoState = computed(() => store.state.projectInfo)
 
-const calculateLogic = ($event, key, val) => {
+const calculateLogic = ($event: Event, key: string, val: 'name' | 'value' | '_const') => {
   // console.log($event, key, val)
-  let arr, coef, arr2, coef2
+  // if (!($event.target instanceof HTMLInputElement)) return
+  let arr: Array<string>, coef: number, arr2: Array<string>, coef2: number
   switch (key) {
     case '1.3':
       arr = ['2.3', '2.4']
@@ -275,33 +293,35 @@ const calculateLogic = ($event, key, val) => {
     default:
       break
   }
+
   state.ctv3.body.map((e) => {
     arr &&
       arr.forEach((el) => {
         if (e._id === el) {
-          e[val] = $event.target.value * coef
-          e.result = Math.round(e.value * e._const)
+          e[val] = (+(<HTMLInputElement>$event.target).value * coef).toString()
+          e.result = Math.round(+e.value * +e._const)
         }
       })
     arr2 &&
       arr2.forEach((el) => {
         if (e._id === el) {
-          e[val] = $event.target.value * coef2
-          e.result = Math.round(e.value * e._const)
+          e[val] = (+(<HTMLInputElement>$event.target).value * coef2).toString()
+          e.result = Math.round(+e.value * +e._const)
         }
       })
     if (e._id === key) {
       console.log('tada', e._id, key)
-      e[val] = $event.target.value
-      e.result = Math.round(e.value * e._const)
+      e[val] = (<HTMLInputElement>$event.target).value
+      e.result = Math.round(+e.value * +e._const)
     }
   })
+
   state.ctv3.groupByType.map((e) => {
     return (e.total = state.ctv3.body
       .filter((f) => f._type === e.type)
       .reduce((acc, m) => {
         return m.result ? (acc += +m.result) : acc
-      }, 0))
+      }, 0).toString())
   })
 
   updateEmit()
@@ -309,6 +329,7 @@ const calculateLogic = ($event, key, val) => {
 
 const updateEmit = () => {
   const cabTimeToEmit = {
+    ...state.ctv3,
     id: `cabtime__${projectInfoState.value.wo}`,
     info: {
       Проект: projectInfoState.value['project number'],
@@ -316,7 +337,6 @@ const updateEmit = () => {
       wo: projectInfoState.value.wo.toString(),
     },
     type: 'cabtime',
-    ...state.ctv3,
     groupByType: state.ctv3.groupByType.filter((e) => e.total),
     // body: state.ctv3.body.filter((e) => e.value),
     result: cabtimeResult.value,
@@ -333,7 +353,7 @@ const updateEmit = () => {
 // }
 const finalResult = computed(() =>
   state.ctv3.groupByType.reduce(
-    (acc, e) => (e.type === 'Тестирование и Поверка' ? acc : (acc += e.total)),
+    (acc, e) => (e.type === 'Тестирование и Поверка' ? acc : (acc += +e.total)),
     0
   )
 )
@@ -341,46 +361,45 @@ const cabtimeResult = computed(() => {
   return {
     assemble: Math.round(finalResult.value / 60),
     test: Math.round(
-      state.ctv3.groupByType.find((e) => e.type === 'Тестирование и Поверка')
-        ?.total / 60
+      +(state.ctv3.groupByType.find((e) => e.type === 'Тестирование и Поверка')!.total) / 60
     ),
     admin: Math.round(
       Math.round(
         (+finalResult.value * +state.ctv3.control.adminCoef) / 100 +
-          +state.ctv3.control.documents
+        +state.ctv3.control.documents
       ) / 60
     ),
     final: Math.round(
       (+finalResult.value +
         Math.round(
           (+finalResult.value * +state.ctv3.control.adminCoef) / 100 +
-            +state.ctv3.control.documents
+          +state.ctv3.control.documents
         )) /
-        60
+      60
     ),
   }
 })
-const groupBy = (t) =>
+const groupBy = (t: string) =>
   state.ctv3?.body
     .filter((g) => g._type === t)
-    .sort((a, b) => a._id.split('.')[1] - b._id.split('.')[1])
+    .sort((a, b) => +a._id.split('.')[1] - +b._id.split('.')[1])
 
-const chooseCabinet = (e) => {
-  // state.cabinet = e.split('   ')[0];
-  store.commit('SETcabinetInfo', e)
-  //   this.woState = true;
-}
-const choose = ($event) => {
-  if (!$event) {
-    state.projectInformation = false
-    return
-  }
-  state.projectInformation = state.fetchProject.filter(
-    (e) => e.id === $event
-  )[0]
-  //   console.log(this.projectInformation, "this.projectInformation");
-  store.commit('SETprojectInfo', state.projectInformation)
-}
+// const chooseCabinet = (e) => {
+//   // state.cabinet = e.split('   ')[0];
+//   store.commit('SETcabinetInfo', e)
+//   //   this.woState = true;
+// }
+// const choose = ($event) => {
+//   if (!$event) {
+//     state.projectInformation = false
+//     return
+//   }
+//   state.projectInformation = state.fetchProject.filter(
+//     (e) => e.id === $event
+//   )[0]
+//   //   console.log(this.projectInformation, "this.projectInformation");
+//   store.commit('SETprojectInfo', state.projectInformation)
+// }
 
 // const postCabTime = async () => {
 //   const cabTime = {
@@ -430,12 +449,18 @@ const choose = ($event) => {
 //   await request()
 // }
 
-const addNewRow = (e) => {
+function randomIntFromInterval(min: number, max: number) { // min and max included 
+  // Math.floor(Math.random() * (max - min + 1) + min)
+  const random = ((Math.random() < 0.5) ? -1 : 1) * Math.floor(Math.random() * (max - min + 1) + min)
+  return { transform: ` translateX(${random}px)  translateY(${random}px) rotate(${random}deg)` }
+}
+
+const addNewRow = (e: string) => {
   console.log(e)
   //filter by type
   const ff = state.ctv3.body
     .filter((g) => g._type === e)
-    .sort((a, b) => a._id.split('.')[1] - b._id.split('.')[1])
+    .sort((a, b) => +a._id.split('.')[1] - +b._id.split('.')[1])
   //take last and create array by dot
   const id = ff[ff.length - 1]._id.split('.')
   // increese the last element and joy
@@ -449,6 +474,8 @@ const addNewRow = (e) => {
     _type: e,
     _field: '',
     value: '',
+    status: '',
+    result: 0
   })
   // console.log(e)
 }
@@ -457,9 +484,9 @@ const clearstate = () => {
   state.projectInformation = null
   state.ctv3 = JSON.parse(JSON.stringify(store.state.template.CabTimeV3))
 }
-const deleteRow = (id) => {
+const deleteRow = (id: string) => {
   const currentArrow = state.ctv3.body.find((e) => e._id === id)
-  const index = state.ctv3.body.indexOf(currentArrow)
+  const index = state.ctv3.body.indexOf(currentArrow!)
   state.ctv3.body.splice(index, 1)
   updateEmit()
 }
@@ -548,14 +575,14 @@ label {
   text-align: start;
   /* display: in; */
 }
-input[type='radio'] {
+input[type="radio"] {
   margin: 0;
 }
 .collgroup1 {
   width: 5%;
 }
 .collgroup2 {
-  width: 65%;
+  width: 35%;
 }
 .collgroup3 {
   width: 10%;
@@ -565,6 +592,12 @@ input[type='radio'] {
 }
 .collgroup5 {
   width: 10%;
+}
+.collgroup6 {
+  width: 15%;
+}
+.collgroup7 {
+  width: 15%;
 }
 
 @media only screen and (max-width: 600px) {
@@ -596,4 +629,23 @@ input[type='radio'] {
   margin: 2vh auto;
   width: min(800px, 95vw);
 }
+/* url("/img/stamp.png"); */
+.stamp {
+  /* transform: rotate(2deg); */
+  color: rgb(47, 96, 168);
+  font-size: 16px;
+  font-weight: 700;
+  border: 2px solid rgb(5, 67, 160);
+  display: inline-block;
+  padding: 2px 5px;
+  text-transform: uppercase;
+  border-radius: 2px;
+  /* font-family: "Courier"; */
+  /*  url("/img/stamp.png");
+  -webkit-mask-size: 200px 604px; */
+  mix-blend-mode: multiply;
+}
+/* .date {
+  transform: rotate(-4deg);
+} */
 </style>

@@ -12,9 +12,9 @@
       <option value="open">Открыто</option>
       <option value="confirmed">Принято</option>
     </select>
-  </div> -->
+  </div>-->
   <!-- <h3 class="search__title">Поиск</h3> -->
-  <label for="search">Поиск: </label>
+  <label for="search">Поиск:</label>
   <input
     id="search"
     @keyup.enter="$event.target.blur()"
@@ -22,9 +22,11 @@
     class="choose"
     type="text"
     placeholder="WO или номер проекта"
+    @keyup.enter="keyEnter"
   />
-  <br /><br />
-  <div v-if="state.errors" class="errors__holder">
+  <br />
+  <br />
+  <div v-if="state.modErrors" class="errors__holder">
     <div
       v-for="(value, key, index) in filter"
       :key="index"
@@ -70,33 +72,86 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import itemPhotoUploader from '@/components/itemPhotoUploader.vue'
 import { reactive, computed, watch, ref } from 'vue'
 import { useFetch } from '@/hooks/fetch'
 import { onBeforeRouteLeave, onBeforeRouteUpdate } from 'vue-router'
+import { errorType } from '@/types/errorType'
+import { useStore } from 'vuex'
 // export default {
+type modType = {
+  id: string
+  info: {
+    Проект: string
+    Шкаф: string
+    wo: string
+    Добавил: string
+    Мастер: string
+    status?: string
+    Описание: string
+  }
+  type: 'f_error' | 't_error'
+}
 
-//   setup() {
 const state = reactive({
-  errors: null,
   phList: [],
+  modErrors: <modType[]>{},
+  search: '',
   // resErrors: null,
   fetchStatus: null,
   // errorMessage: "",
 })
 const selectedStatus = ref('open')
+
+const store = useStore()
+
+const keyEnter = (e: Event) => {
+  if (!(e.target instanceof HTMLInputElement)) return
+  e.target.blur()
+}
+
 const getErrors = async () => {
-  const { request, response } = useFetch(`/api/errors`)
-  state.errors = response
-  await request()
+  const { request, response } = useFetch<errorType[]>(`/api/errors`)
+
+  try {
+    if (Object.keys(store.state.activeErrors).length === 0) {
+      await request()
+      store.commit('SET_activeErrors', response.value!)
+      console.log(store.state.activeErrors)
+    }
+
+    state.modErrors = store.state.activeErrors.map((e) => {
+      return {
+        id: e.id,
+        type: e.type,
+        info: {
+          ...e.info,
+          Описание: e.body.at(-1)!.Открыто.Описание,
+        },
+      }
+    })
+  } catch (error) {
+    console.log('err get errors', error)
+  }
 }
 
 getErrors()
+
 watch(selectedStatus, () => getErrors())
 
+const filter = computed(() => {
+  return state.search
+    ? state.modErrors.filter((e) =>
+        [e?.info.wo, e?.info['Проект']].some(
+          (s) => s && s.toLowerCase().includes(state.search.toLowerCase())
+        )
+      )
+    : state.modErrors
+})
+
 onBeforeRouteUpdate(async (to, from) => {
-  if (from.contains('error')) {
+  if (from.fullPath.includes('error')) {
     alert('a')
   }
 })
@@ -104,15 +159,7 @@ onBeforeRouteLeave((to, from) => {
   console.log(to, 'onBeforeRouteLeave')
   console.log(from, 'onBeforeRouteLeave')
 })
-const filter = computed(() => {
-  return state.search
-    ? state.errors.filter((e) =>
-        [e?.info.wo, e?.info['Проект']].some(
-          (s) => s && s.toLowerCase().includes(state.search.toLowerCase())
-        )
-      )
-    : state.errors
-})
+
 // return {
 //   selectedStatus,
 //   ...toRefs(state),
@@ -178,7 +225,7 @@ input {
   display: grid;
   width: 98%;
   margin: auto;
-  grid-template-columns: repeat(auto-fill, minmax(max(25vw, 250px), 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(max(18vw, 250px), 1fr));
   column-gap: 2vh;
   row-gap: 2vh;
 }

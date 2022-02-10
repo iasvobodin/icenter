@@ -5,8 +5,11 @@
       "type": "httpTrigger",
       "direction": "in",
       "name": "req",
-      "route": "errors/{id}",
-      "methods": ["get", "post"]
+      "route": "getitembyid/{id}",
+      "methods": [
+        "get",
+        "post"
+      ]
     },
     {
       "type": "http",

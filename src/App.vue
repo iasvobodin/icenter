@@ -4,7 +4,7 @@
     <router-view />
   </div>
   <app-header v-if="match()" />
-  <loader />
+  <fetch-loader />
 
   <!-- <input v-model="state.mess" type="text" name="" id="" /><br /><br /><button
     @click="sendmessage"
@@ -13,16 +13,16 @@
   ><br /><br />
   <div :key="index" v-for="(message, index) in state.messages">
     <p>{{ message }}</p>
-  </div> -->
+  </div>-->
 </template>
 
 <script setup>
-import loader from '@/components/loader.vue'
-import appHeader from '@/components/header.vue'
+import fetchLoader from '@/components/fetchLoader.vue'
+import appHeader from '@/components/appHeader.vue'
 import * as signalR from '@microsoft/signalr'
 import { useRoute, onBeforeRouteUpdate } from 'vue-router'
 import { useStore } from 'vuex'
-import { ref, computed, onBeforeMount, reactive } from 'vue'
+import { ref, computed, onBeforeMount, reactive, watchEffect } from 'vue'
 
 const store = useStore()
 const route = useRoute()
@@ -72,8 +72,12 @@ const connect = async () => {
     console.log('SignalR connection disconnected')
     setTimeout(() => connect(), 2000)
   })
-  connection.on('newMessage', (message) => state.messages.push(message))
+  connection.on('newMessage', (message) => {
+    console.log(message, 'newMessage')
+    store.commit('UPDATE_cabinets', message)
+  }) // state.messages.push(message))
   connection.on('updated', (updatedStock) => {
+    console.log(updatedStock, 'updatedStock')
     // NEED TO UPDATE IDB!!!
     //DISPATCH STORE
 
@@ -115,15 +119,16 @@ const connect = async () => {
 }
 
 // import.meta.env.MODE !== 'development'&&
+// Object.keys(store.state.user).length !== 0 &&
 connect()
 
-const onNewMessage = (message) => state.messages.push(message)
-const sendmessage = async () => {
-  fetch('/api/getUserHeader', {
-    method: 'post',
-    body: state.mess,
-  })
-}
+// const onNewMessage = (message) => state.messages.push(message)
+// const sendmessage = async () => {
+//   fetch('/api/getUserHeader', {
+//     method: 'post',
+//     body: state.mess,
+//   })
+// }
 // const ttemp = ref(null)
 // onBeforeRouteUpdate(async ( to, from, next) => {
 //   console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
@@ -139,19 +144,28 @@ const sendmessage = async () => {
 // computed(()=> {
 //   return
 // })
-onBeforeMount(() => {
-  const userFromLocal = JSON.parse(window.localStorage.getItem('user'))
-  if (userFromLocal) {
-    document.documentElement.style.setProperty(
-      '--bg',
-      `${userFromLocal.body?.bg}`
-    )
-    document.documentElement.style.setProperty(
-      '--cursor',
-      `${userFromLocal.body?.customCursor}`
-    )
-  }
+const userData = computed(() => store.state.user.body)
+
+watchEffect(() => {
+  document.documentElement.style.setProperty('--bg', `${userData.value?.bg}`)
+  document.documentElement.style.setProperty(
+    '--cursor',
+    `${userData.value?.customCursor}`
+  )
 })
+// onBeforeMount(() => {
+//   const userFromLocal = JSON.parse(window.localStorage.getItem('user'))
+//   if (userFromLocal) {
+//     document.documentElement.style.setProperty(
+//       '--bg',
+//       `${userFromLocal.body?.bg}`
+//     )
+//     document.documentElement.style.setProperty(
+//       '--cursor',
+//       `${userFromLocal.body?.customCursor}`
+//     )
+//   }
+// })
 
 // document.documentElement.style.setProperty('--bg', `${store.state.user.body?.bg}`)
 // document.documentElement.style.setProperty('--cursor', `${store.state.user.body?.customCursor}`)
@@ -178,7 +192,17 @@ onBeforeMount(() => {
 </script>
 
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400&display=swap");
+:root {
+  --size-300: clamp(0.7rem, 0.66rem + 0.2vw, 0.8rem);
+  --size-400: clamp(0.88rem, 0.83rem + 0.24vw, 1rem);
+  --size-500: clamp(1.09rem, 1rem + 0.47vw, 1.33rem);
+  --size-600: clamp(1.37rem, 1.21rem + 0.8vw, 1.78rem);
+  --size-700: clamp(1.71rem, 1.45rem + 1.29vw, 2.37rem);
+  --size-800: clamp(2.14rem, 1.74rem + 1.99vw, 3.16rem);
+  --size-900: clamp(2.67rem, 2.07rem + 3vw, 4.21rem);
+  --size-1000: clamp(3.34rem, 2.45rem + 4.43vw, 5.61rem);
+}
 *,
 *:before,
 *:after {
@@ -205,8 +229,8 @@ body {
 }
 textarea,
 select,
-input[type='text'],
-input[type='number'] {
+input[type="text"],
+input[type="number"] {
   font-size: 16px;
   font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica,
     Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji;
@@ -214,7 +238,7 @@ input[type='number'] {
 }
 
 button,
-input[type='submit'] {
+input[type="submit"] {
   height: 30px;
   background-color: #ffffff;
   /* border: none; */
@@ -227,13 +251,14 @@ input[type='submit'] {
   display: inline-block;
   box-sizing: border-box;
   font-size: 16px;
+  margin: 5px 1vw;
 }
 button,
-input[type='submit'] {
-  width: min(95vw, 400px);
-  margin: auto;
+input[type="submit"] {
+  width: min(85vw, 350px);
+  /* margin: auto; */
 }
-input[type='submit']:hover {
+input[type="submit"]:hover {
   background-color: #00a2ff5b;
 }
 button:hover:enabled {
@@ -280,7 +305,7 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: 'Roboto Slab', serif;
+  font-family: "Roboto Slab", serif;
   font-weight: normal;
 }
 h1 {
@@ -323,5 +348,67 @@ h1 {
 }
 .gap {
   height: 50px;
+}
+
+thead tr th {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+table {
+  margin: auto;
+  margin-top: 2vh;
+  border-collapse: collapse;
+  border-radius: 5px;
+  /* overflow: hidden; */
+  box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px,
+    rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+  padding: 2vw;
+  width: min(95vw, 800px);
+}
+
+td,
+th {
+  box-shadow: rgba(0, 0, 0, 0.15) 2.4px 2.4px 3.2px;
+  box-shadow: rgba(0, 0, 0, 0.18) 0px 2px 4px;
+  box-shadow: rgba(9, 30, 66, 0.25) 0px 1px 1px,
+    rgba(9, 30, 66, 0.13) 0px 0px 1px 1px;
+  box-shadow: rgba(17, 17, 26, 0.1) 0px 1px 0px;
+
+  /* padding: 3px; */
+  /* padding-right: 1ch; */
+  /* text-align: start; */
+  font-size: 12px;
+}
+td input {
+  text-align: center;
+}
+
+tbody tr:nth-child(odd) {
+  background: #f3f3f3;
+}
+table tbody .partially {
+  background: hsl(252deg 100% 95%);
+}
+table tbody .done {
+  background: hsl(120deg 100% 95%);
+}
+tbody tr {
+  margin-bottom: 10px;
+  height: 40px;
+}
+.head {
+  border-bottom: solid 1px orange;
+  background: white;
+  border-radius: 3px;
+  height: 40px;
+  position: sticky;
+  top: 50px;
+}
+tbody tr:hover {
+  /* background: rgba(255, 166, 0, 0.1); */
+  border-radius: 3px;
+  box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
+  box-shadow: rgba(14, 30, 37, 0.12) 0px 2px 4px 0px,
+    rgba(14, 30, 37, 0.32) 0px 2px 16px 0px;
 }
 </style>

@@ -19,13 +19,19 @@ export function useFetch<T>(
       // console.log(res)
 
       if (res.ok) {
-        response.value = await res.json()
+        // console.log(res)
+        try {
+          response.value = await res.json()
+        } catch (error) {
+          console.log(error)
+        }
       }
       if (res.status === 404) {
         throw new Error('404')
       }
     } catch (error) {
       console.log(error, 'eops')
+      throw new Error('404')
     } finally {
       store.commit('changeLoader', false)
     }

@@ -2,7 +2,16 @@ import { h, defineComponent, PropType } from 'vue'
 import { Extend } from '@/types/templateType'
 
 export default defineComponent({
-  name: 'renderInputs',
+  name: 'RenderInputs',
+  methods: {
+    addVmodel($event: Event, key: string) {
+      this.$emit('update:modelValue', {
+        ...this.modelValue,
+        [key]: ($event.target as HTMLInputElement).value,
+      })
+    },
+  },
+  // eslint-disable-next-line vue/require-render-return
   render() {
     switch (this.dataRender._field) {
       case 'select':
@@ -54,14 +63,6 @@ export default defineComponent({
             this.addVmodel($event, this.dataRender.name),
         })
     }
-  },
-  methods: {
-    addVmodel($event: Event, key: string) {
-      this.$emit('update:modelValue', {
-        ...this.modelValue,
-        [key]: ($event.target as HTMLInputElement).value,
-      })
-    },
   },
   props: {
     modelValue: {

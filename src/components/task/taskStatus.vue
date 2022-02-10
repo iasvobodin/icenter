@@ -1,31 +1,21 @@
 <template>
   <div>
+    <div class="description">
+      <h3>Выбор задач</h3>
+      <p>Выберите задачи которые полностью или частично выполнены</p>
+    </div>
     <table>
       <colgroup>
-        <!-- <col span="1" class="collgroup1" /> -->
         <col span="1" class="collgroup2" />
-        <col v-if="statusMark" span="1" class="collgroup3" />
-        <col v-if="statusMark" span="1" class="collgroup4" />
-        <col v-if="!statusMark" span="1" class="collgroup5" />
-        <col v-if="!statusMark" span="1" class="collgroup5" />
+        <col span="1" class="collgroup3" />
+        <col span="1" class="collgroup4" />
       </colgroup>
       <thead class="head">
         <tr>
           <th rowspan="2">Задача</th>
-          <th style="text-align: center" v-if="statusMark" colspan="2">
-            Выполнено
-          </th>
-          <th class="vertical" v-if="!statusMark" rowspan="1">CabTime (мин)</th>
-          <th
-            style="text-align: center"
-            class="vertical"
-            v-if="!statusMark"
-            rowspan="1"
-          >
-            Авто-расчёт (мин)
-          </th>
+          <th style="text-align: center" colspan="2">Выполнено</th>
         </tr>
-        <tr v-if="statusMark">
+        <tr>
           <th style="text-align: center" class="vertical">Частично</th>
           <th style="text-align: center" class="vertical">Полностью</th>
         </tr>
@@ -39,47 +29,33 @@
             done: value.status === 'done',
           }"
         >
-          <td class="desc">{{ value._id }}{{ value.name }}</td>
-          <td style="text-align: center" v-if="statusMark">
+          <td class="desc">{{ value.name }}</td>
+          <td style="text-align: center">
             <input
-              @input="changeStatus($event, value._id, 'partially')"
               :checked="value.status === 'partially'"
               type="checkbox"
-              name=""
-              id=""
+              @input="changeStatus($event, value._id, 'partially')"
             />
           </td>
-          <td style="text-align: center" v-if="statusMark">
+          <td style="text-align: center">
             <input
-              @input="changeStatus($event, value._id, 'done')"
               :checked="value.status === 'done'"
               type="checkbox"
-              name=""
-              id=""
+              @input="changeStatus($event, value._id, 'done')"
             />
           </td>
-          <td style="text-align: center" v-if="!statusMark">
-            {{ value.result }}
-          </td>
-          <td v-if="!statusMark">
-            <input
-              @input="changePartyalyyTime($event, value._id)"
-              class="cabtime__input"
-              type="number"
-              :value="value.propTime"
-            />
-          </td>
-        </tr>
-        <tr v-if="!statusMark">
-          <td>Суммарно</td>
-          <td>{{ state.allSumm }}</td>
-          <td>test</td>
         </tr>
       </tbody>
     </table>
-    {{ state.alertMessage ? state.alertMessage : '' }}
-    <button v-if="statusMark" @click="firstCaptureData">test</button>
+    <br />
+    <br />
+    <button @click="firstCaptureData">Далее</button>
+    <button @click="resetStatus">Сбросить</button>
   </div>
+  <div
+    v-if="state.alertMessage && $store.state.cabtimeWithStatus.length > 0"
+    class="message"
+  >{{ state.alertMessage }}</div>
 </template>
 
 <script setup lang="ts">
@@ -114,8 +90,9 @@ const props = defineProps({
 })
 const state = reactive({
   alertMessage: '',
-  allSumm: 0 as number,
-  partiallySumm: 0 as number,
+  allSumm: 0,
+  partiallySumm: 0,
+  wellDone: true,
 })
 const emit = defineEmits({
   cabtimeWithStatus: null,
@@ -130,20 +107,76 @@ inputData.value.body
 const timeToCalc = computed(() => store.state.passedTime)
 const firstCaptureData = () => {
   const rawData = toRaw(unref(inputData))
+  const modArr = rawData.body.filter((f) => f.status && f.status !== 'open')
+
+  const particalCalculate = (
+    taskArray: cabtimeType['body'],
+    spentTime: number,
+    timeAll: number,
+    timeDone: number
+  ) => {
+    taskArray.forEach((e) => {
+      e.fitter = store.state.user.info.userDetails
+      e.date = Date.now()
+    })
+
+    if (spentTime > timeDone && spentTime < timeAll) {
+      console.log('ALL OK')
+
+      state.alertMessage = 'Время на полностью закрытые задачи будет списано согласно CabTime, а на частично выполненные задачи, пропорционально.(ok)'
+      const difTime = spentTime - timeDone
+      const partiallyTime = timeAll - timeDone
+      taskArray.forEach((e) => {
+        if (e.status === 'done') {
+          e.propTime = e.result
+        }
+        if (e.status === 'partially') {
+          e.propTime = Math.round((e.result / partiallyTime) * difTime)
+        }
+      })
+    }
+
+    if (spentTime < timeDone) {
+      state.alertMessage = 'Сумма минут на полностью закрытые задачи, превышает время работы, автоматический расчёт будет меньше чем по CadTime.(Быстро)'
+      //CALCULATE ONLY DONE
+      console.log('TO FAST')
+      taskArray.forEach((e) => {
+        if (e.status === 'done') {
+          e.propTime = Math.round((e.result / timeDone) * spentTime)
+        }
+        if (e.status === 'partially') {
+          e.propTime = 0
+        }
+      })
+    }
+
+    if (spentTime > timeAll) {
+      state.alertMessage = 'Списываемое время, меньше чем сумма минут на полностью закрытые задачи, автоматический расчёт будет больше чем по CadTime.(Медленно)'
+      console.log('TO SLOW')
+      taskArray.forEach((e) => {
+        e.propTime = Math.round((e.result / timeAll) * spentTime)
+      })
+    }
+    return taskArray
+  }
 
   state.allSumm = rawData.body.reduce((acc: number, e) => {
     if (e?.status && e.status !== 'open') {
-      console.log(e.result)
-
       acc += e.result
     }
     return acc
   }, 0)
-  console.log(state.allSumm)
-  const partiallySumm = rawData.body.reduce(
-    (acc: number, e) => (acc += e.propTime!),
-    0
-  )
+  console.log(state.allSumm, 'allSumm')
+
+  const partiallySumm = rawData.body.reduce((acc: number, e) => {
+    if (e?.status && e.status === 'partially') {
+      acc += e.result
+    }
+    return acc
+  }, 0)
+
+  console.log(partiallySumm, 'partiallySumm')
+
   const doneSumm = rawData.body.reduce((acc: number, e) => {
     if (e?.status === 'done') {
       acc += e.result
@@ -151,21 +184,31 @@ const firstCaptureData = () => {
     return acc
   }, 0)
 
-  if (timeToCalc.value > doneSumm && timeToCalc.value < state.allSumm) {
-    state.alertMessage = 'all ok'
-  }
+  console.log(doneSumm, 'doneSumm')
+  // store.commit('SET_TASK_DONE_SUMM',doneSumm)
 
-  if (timeToCalc.value < doneSumm) {
-    state.alertMessage = 'to fast'
-  }
+  console.log(
+    particalCalculate(modArr, timeToCalc.value, state.allSumm, doneSumm),
+    'TADA'
+  )
+  // if (timeToCalc.value > doneSumm && timeToCalc.value < state.allSumm) {
+  //   state.alertMessage = 'all ok'
+  //   //ALL OK
+  //   timeToCalc.value - doneSumm
+  // }
 
-  if (timeToCalc.value > state.allSumm) {
-    state.alertMessage = 'to slow'
-  }
+  // if (timeToCalc.value < doneSumm) {
+  //   state.alertMessage = 'to fast'
+  // }
 
-  rawData.body.forEach((e) => {
-    e.propTime = Math.round((e.result / state.allSumm) * timeToCalc.value)
-  })
+  // if (timeToCalc.value > state.allSumm) {
+  //   state.alertMessage = 'to slow'
+  // }
+
+  // rawData.body.forEach((e) => {
+  //   e.propTime = Math.round((e.result / state.allSumm) * timeToCalc.value)
+  // })
+
   // console.log(timeToCalc.value);
 
   //    rawData.sort((a, b) => {
@@ -175,7 +218,8 @@ const firstCaptureData = () => {
   // })
   store.commit(
     'setCabtimeWithStatus',
-    rawData.body.filter((f) => f.status && f.status !== 'open')
+    particalCalculate(modArr, timeToCalc.value, state.allSumm, doneSumm)
+    // rawData.body.filter((f) => f.status && f.status !== 'open')
   )
 }
 // watchEffect(() => {
@@ -225,30 +269,44 @@ const firstCaptureData = () => {
 //     })
 //   }
 // })
+
+const calculatePartiallySumm = () => {
+  state.partiallySumm = inputData.value.body.reduce(
+    (acc: number, e) => (acc += e.propTime!),
+    0
+  )
+  // debugger
+  const difTime = timeToCalc.value - state.partiallySumm
+
+  // console.log(difTime, 'eee')
+  if (difTime >= -10 && difTime <= 10) {
+    state.wellDone = false
+  } else state.wellDone = true
+}
+
+calculatePartiallySumm()
 const changePartyalyyTime = (ev: Event, id: string) => {
   if (!(ev.target instanceof HTMLInputElement)) return
   const item = inputData.value.body.find((e) => e._id === id)
   item && (item.propTime = +ev.target.value)
+  calculatePartiallySumm()
+  // state.partiallySumm = inputData.value.body.reduce(
+  //   (acc: number, e) => (acc += e.propTime!),
+  //   0
+  // )
 
-  const partiallySumm = inputData.value.body.reduce(
-    (acc: number, e) => (acc += e.propTime!),
-    0
-  )
-  console.log(partiallySumm)
+  //   if (difTime < -10) {
+
+  //   console.log(difTime, 'www')
+  // }
+}
+function resetStatus() {
+  inputData.value.body.forEach((e) => (e.status = 'open'))
 }
 const changeStatus = (ev: Event, id: string, val: string) => {
   if (!(ev.target instanceof HTMLInputElement)) return
-  // const input = ev.target as HTMLInputElement;
-
   const item = inputData.value.body.find((e) => e._id === id)
-  
   ev.target.checked ? (item!.status = val) : (item!.status = 'open')
-  console.log(item)
-
-  // emit(
-  //   'cabtimeWithStatus',
-  //   inputData.value.body.filter((f) => f.status && f.status !== 'open')
-  // )
 }
 </script>
 
@@ -292,6 +350,17 @@ td input {
 tbody tr:nth-child(odd) {
   background: #ececec5d;
 }
+table tbody .partially {
+  background: hsl(252deg 100% 95%);
+}
+table tbody .done {
+  background: hsl(120deg 100% 95%);
+}
+tbody tr {
+  margin-bottom: 10px;
+  height: 40px;
+}
+
 .desc {
   text-align: start;
   padding-left: 1ch;
@@ -315,13 +384,10 @@ label {
   text-align: start;
   /* display: in; */
 }
-input[type='radio'] {
+input[type="radio"] {
   margin: 0;
 }
-tbody tr {
-  margin-bottom: 10px;
-  height: 40px;
-}
+
 .collgroup1 {
   width: 5%;
 }
@@ -336,13 +402,6 @@ tbody tr {
 }
 .collgroup5 {
   width: 15%;
-}
-
-table tbody .partially {
-  background: hsl(252deg 100% 95%);
-}
-table tbody .done {
-  background: hsl(120deg 100% 95%);
 }
 
 @media only screen and (max-width: 600px) {
@@ -366,5 +425,13 @@ table tbody .done {
     transform: rotate(-180deg);
     min-height: 110px;
   } */
+}
+.message {
+  width: min(95vw, 800px);
+  margin: auto;
+  margin-top: 2vh;
+  border: 1px solid orange;
+  border-radius: 5px;
+  padding: 10px;
 }
 </style>

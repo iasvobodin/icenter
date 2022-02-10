@@ -1,62 +1,69 @@
 <template>
   <div class="scaner">
-    <h1>Шкафы</h1>
-    <div class="qr__holder">
-      <input
-        v-model="state.search"
-        class="choose"
-        type="text"
-        @keyup.enter="$event.target.blur()"
-        placeholder="wo или название шкафа"
-      />
-      <img
-        class="qr__icon"
-        src="/img/qr-code.svg"
-        alt=""
-        @click="changeView = !changeView"
-      />
+    <div class="main__header">
+      <h1>Шкафы</h1>
+      <div class="qr__icon" @click="changeView = !changeView" />
     </div>
     <div v-show="!changeView" class="scanner__holder">
-      <img class="frame" src="/img/scanner.svg" alt="" />
-      <video
-        ref="streamVideo"
-        class="video__stream"
-        playsinline="true"
-        autoplay="true"
-      ></video>
-      <canvas
-        v-show="false"
-        id="canvas"
-        ref="vCanvas"
-        height="auto"
-        width="100%"
-      ></canvas>
+      <img class="frame" src="/img/scanner.svg" alt />
+      <video ref="streamVideo" class="video__stream" playsinline="true" autoplay="true"></video>
+      <canvas v-show="false" id="canvas" ref="vCanvas" height="auto" width="100%"></canvas>
     </div>
+  </div>
+  <h2
+    style="cursor: pointer"
+    @click="state.additionalSearch = !state.additionalSearch"
+  >Расширенный поиск {{ state.additionalSearch ? '&#9650;' : '&#9660;' }}</h2>
+  <div class="filter__holder">
+    <transition name="slide-fade">
+      <div v-show="state.additionalSearch" class="additional__filter">
+        <h3>Статус проекта</h3>
+        <ul>
+          <li v-for="(status, index) in state.actualStatus" :key="index">
+            <input v-model="state.filterStatus" type="checkbox" :value="status" />
+            {{ status }}
+          </li>
+        </ul>
+        <h3>CabTime расчитан</h3>
+        <ul>
+          <li>
+            <input v-model="state.hasCabTime" type="checkbox" /> CabTime
+          </li>
+        </ul>
+        <h3>Поиск</h3>
+        <input
+          v-model="state.search"
+          class="choose"
+          type="text"
+          placeholder="WO или название шкафа"
+        />
+      </div>
+    </transition>
+  </div>
+
+  <br />
+  <div
+    v-for="(val, key, index) in state.actualProjects"
+    v-show="state.groupCabinets(val).length != 0"
+    :key="index"
+  >
+    <h2 class="group__items">Проект {{ val }}</h2>
     <br />
-    <div
-      v-for="(val, key, index) in state.actualRojects"
-      v-show="state.groupCabinets(val).length != 0"
-      :key="index"
-    >
-      <h2 class="group__items">Проект {{ val }}</h2>
-      <br />
-      <div class="errors__holder">
-        <div
-          v-for="(v, k, i) in state.groupCabinets(val)"
-          :key="i"
-          class="error__card__holder"
-        >
-          <div class="item__card" @click="$router.push(`/cabinets/${v.wo}`)">
-            WO {{ v.wo }}
-            <br />
-            {{ v['cab name'] }} <br />
-          </div>
+    <div class="errors__holder">
+      <div v-for="(v, k, i) in state.groupCabinets(val)" :key="i" class="error__card__holder">
+        <div class="item__card" @click="$router.push(`/cabinets/${v.info.wo}`)">
+          WO {{ v.info.wo }}
+          <br />
+          {{ v.info['cab name'] }}
+          <br />
+          <p v-if="v.stats?.errors?.length > 0">Ошибок - {{ v.stats?.errors?.length }}</p>
+          <br />
         </div>
       </div>
-      <br />
-      <!-- <hr> -->
-      <br />
     </div>
+    <br />
+    <!-- <hr> -->
+    <br />
   </div>
 </template>
 <script setup>
@@ -72,6 +79,7 @@ import {
   computed,
   onUnmounted,
   watch,
+  watchEffect,
 } from 'vue'
 import { useRouter } from 'vue-router'
 // export default {
@@ -92,8 +100,12 @@ const state = reactive({
   cabinets: null,
   filter: null,
   groupCabinets: null,
-  actualRojects: null,
+  actualProjects: null,
   search: '',
+  actualStatus: null,
+  filterStatus: ['04-Сборка/Assembly'],
+  hasCabTime: false,
+  additionalSearch: false,
 })
 watch(qr, (newValue, oldValue) => {
   router.push(`/cabinets/${newValue}`)
@@ -114,37 +126,188 @@ const routeToCabinet = (wo, val) => {
   // console.log(state.projects.find(c => c.id === val));
 }
 
-const getCabinets = async () => {
+const postCabinets = async () => {
+  //getAllCabinet
+  const { request: reqProjects, response } = useFetch(
+    '/api/projects?status=open'
+  )
+  await reqProjects()
+
+  const projects = response.value //.filter((pr) => ['01', '02', '03', '04'].some((s) => pr.info.extends['status project'].includes(s) ) )
+  projects.map((c) =>
+    c.cabinets.map(async (cc) => {
+      const body = {
+        id: cc.wo,
+        status: 'open',
+        info: {
+          ...cc,
+          'project number': c.id,
+          'project name': c.info.base['Project Name'],
+          'project status': c.info.extends['status project'],
+        },
+        extend: {},
+        stats: {},
+      }
+      const { request: postCabinet } = useFetch('api/createCabinets', {
+        method: 'post',
+        body: JSON.stringify(body),
+      })
+      await postCabinet()
+    })
+  )
+}
+
+const someUpdate = async () => {
+  const { request: reqCabinets, response: resCabinets } =
+    useFetch(`/api/GET_cabinet`)
+  await reqCabinets()
+
+  // console.log(resCabinets.value);
+
+  const cabinets = resCabinets.value
+  console.log(cabinets, 'CABINETS')
+
+  cabinets.map(async (e) => {
+    const { request, response: cabError } = useFetch(
+      `/api/cabinetItems_copy?wo=${e.id}`
+    )
+    await request()
+    e.stats.errors = cabError.value
+    // console.log(e, 'EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE')
+
+    if (e.stats.errors.length > 0) {
+      const { request: postCabinets } = useFetch(`/api/GET_cabinet?post=true`, {
+        method: 'post',
+        body: JSON.stringify(e),
+      })
+
+      await postCabinets()
+    }
+  })
+}
+
+// someUpdate()
+
+const getCabinets2 = async () => {
   const { request, response } = useFetch('/api/projects?status=open')
   await request()
-  state.projects = response.value.filter((pr) =>
-    ['01', '02', '03', '04'].some((s) =>
-      pr.info.extends['status project'].includes(s)
-    )
-  )
-  state.actualRojects = state.projects.map((p) => p.id)
-  state.cabinets = state.projects
-    .map((c) =>
-      c.cabinets.map((cc) => {
-        return {
-          ...cc,
-          project: c.id,
-        }
-      })
-    )
-    .flat()
-  state.groupCabinets = (project) =>
-    filter.value.filter((c) => c.project === project)
+  const projects = response.value
+
+  projects.map(project => {
+
+    const modCab = project.cabinets.map(async cabinet => {
+
+      //GET CABINET ITEMS
+      const { request, response: cabError } = useFetch(
+        `/api/cabinetItems_copy?wo=${cabinet.wo}`
+      )
+      await request()
+
+      const cabinetItems = response.value
+
+      return {
+        wo: cabinet.wo,
+        'cab name': cabinet['cab name'],
+        cabTime: cabinetItems.filter(e => e.type === 'cabtime').length,
+        errors: cabinetItems.filter(e => e.type.includes('error')).length
+      }
+
+    })
+
+    return //someph
+  })
+
 }
-getCabinets()
+
+
+
+
+// const getCabinets = async () => {
+//   const { request, response } = useFetch('/api/projects?status=open')
+//   await request()
+//   state.projects = response.value.filter((pr) =>
+//     ['01', '02', '03', '04'].some((s) =>
+//       pr.info.extends['status project'].includes(s)
+//     )
+//   )
+//   state.actualProjects = state.projects.map((p) => p.id)
+//   state.cabinets = state.projects
+//     .map((c) =>
+//       c.cabinets.map((cc) => {
+//         return {
+//           ...cc,
+//           project: c.id,
+//         }
+//       })
+//     )
+//     .flat()
+//   state.groupCabinets = (project) => filter.value.filter((c) => c.project === project)
+// }
+// getCabinets()
+const getCabinets = () => {
+  // const { request, response } = useFetch('/api/GET_cabinet')
+  // await request()
+  // state.projects = response.value
+  // if(store.state.cabinets.length ===0){
+  //   await store.dispatch('GET_cabinets')
+  // }
+  // console.log(store.state.cabinets,'store.state.cabinets');
+  // state.projects = JSON.parse(JSON.stringify(store.state.cabinets))
+
+  state.actualProjects = state.cabinets.reduce(
+    (acc, p) => acc.add(p.info['project number']),
+    new Set()
+  )
+  state.actualStatus = [
+    ...state.cabinets.reduce(
+      (acc, p) => acc.add(p.info['project status']),
+      new Set()
+    ),
+  ].sort()
+
+  // state.cabinets = state.projects
+
+  state.groupCabinets = (project) =>
+    filter.value.filter((c) => c.info['project number'] === project)
+}
+
+watchEffect(async () => {
+  if (store.state.cabinets.length === 0) {
+    await store.dispatch('GET_cabinets')
+  }
+  // console.log(store.state.cabinets,'store.state.cabinets');
+  state.cabinets = JSON.parse(JSON.stringify(store.state.cabinets))
+  getCabinets()
+})
+
 const filter = computed(() => {
-  return state.search
-    ? state.cabinets.filter((e) =>
-        [e?.wo, e?.['cab name']].some(
+  let cc
+  if (state.cabinets && state.filterStatus.length > 0) {
+    cc = state.cabinets.filter((e) =>
+      state.filterStatus.some((s) => e.info['project status'].includes(s))
+    )
+    if (state.hasCabTime) {
+      cc = cc.filter((f) => f.stats.cabTime)
+    }
+    // console.log(cc)
+    // const cc = ff.filter(f => f.state.cabTime)
+    if (state.search) {
+      cc = cc.filter((e) =>
+        [e?.info.wo, e?.info['cab name']].some(
           (s) => s && s.toLowerCase().includes(state.search.toLowerCase())
         )
       )
-    : state.cabinets
+    }
+    return cc
+  }
+  // if (state.search) {
+  //   return state.cabinets.filter((e) =>
+  //     [e?.info.wo, e?.info['cab name']].some(
+  //       (s) => s && s.toLowerCase().includes(state.search.toLowerCase())
+  //     )
+  //   )
+  // }
+  return []
 })
 onUnmounted(() => {
   clearInterval(tick.value)
@@ -212,6 +375,59 @@ onMounted(async () => {
 </script>
 
 <style lang="css" scoped>
+.filter__holder {
+  overflow: hidden;
+}
+.slide-fade-enter-active {
+  transition: opacity 1.3s;
+}
+
+.slide-fade-leave-active {
+  /* transition: all .8s cubic-bezier(1.0, 0.5, 0.8, 1.0); */
+}
+
+.slide-fade-enter-to,
+.slide-fade-leave-from {
+  /* transform: translateY(100%); */
+  opacity: 1;
+}
+
+.slide-fade-enter-from,
+.slide-fade-leave-to {
+  /* transform: translateY(-100%); */
+  opacity: 0;
+}
+.main__header {
+  display: grid;
+  grid-auto-flow: column;
+  width: fit-content;
+  margin: auto;
+}
+h1 {
+  width: fit-content;
+  display: block;
+  /* margin: auto; */
+}
+.additional__filter {
+  position: relative;
+  width: fit-content;
+  margin: auto;
+}
+.additional__filter ul {
+  margin: 0;
+  padding: 0;
+}
+.additional__filter ul li {
+  text-align: start;
+  list-style: none;
+}
+.additional__filter ul li input {
+  width: 15px;
+  height: 15px;
+  min-width: 15px;
+  vertical-align: middle;
+  margin-right: 1ch;
+}
 .project__number {
   position: sticky;
   top: 50px;
@@ -263,12 +479,36 @@ input {
   justify-content: center;
 }
 .qr__icon {
+  display: inline-block;
+  background-color: blue;
+  mask: url(/img/qr-code.svg) no-repeat center / contain;
+  -webkit-mask: url(/img/qr-code.svg) no-repeat center / contain;
+  animation: pulse 5s infinite;
   width: 30px;
   height: 30px;
   cursor: pointer;
-  place-self: start;
-  align-self: start;
-  margin-top: 5px;
+  place-self: center;
+  /* align-self: start; */
+  /* margin-top: 5px; */
+}
+@keyframes pulse {
+  0% {
+    /* transform: scale(0.9); */
+    background-color: blue;
+    /* box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.7); */
+  }
+
+  50% {
+    /* transform: scale(1.1); */
+    background-color: orange;
+    /* box-shadow: 0 0 0 10px rgba(0, 0, 0, 0); */
+  }
+
+  100% {
+    /* transform: scale(0.9); */
+    background-color: blue;
+    /* box-shadow: 0 0 0 0 rgba(0, 0, 0, 0); */
+  }
 }
 .choose {
   margin: 0;
