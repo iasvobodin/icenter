@@ -1,19 +1,8 @@
 <template>
   <div class="scanner__holder">
     <img class="frame" src="/img/scanner.svg" alt="scanner" />
-    <video
-      ref="streamVideo"
-      class="video__stream"
-      playsinline="true"
-      autoplay="true"
-    ></video>
-    <canvas
-      v-show="false"
-      id="canvas"
-      ref="vCanvas"
-      height="auto"
-      width="100%"
-    ></canvas>
+    <video ref="streamVideo" class="video__stream" playsinline="true" autoplay="true"></video>
+    <canvas v-show="false" id="canvas" ref="vCanvas" height="auto" width="100%"></canvas>
   </div>
 </template>
 
@@ -99,9 +88,9 @@ onUnmounted(() => {
 .frame {
   position: absolute;
   margin: auto;
-  width: min(100vw - 10px, 400px);
+  /* width: min(100vw - 10px, 400px);
   height: min(100vw - 10px, 400px);
-  color: #ff5100;
+  color: #ff5100; */
 }
 .video__stream {
   width: 100%;

@@ -8,7 +8,7 @@ module.exports = async function (context, req) {
   }
   if (req.query.wo) {
     const currentWo = context.bindings.inputWO.find(
-      (e) => e.id === req.query.wo
+      (e) => e.wo === req.query.wo
     )
     context.res = {
       body: clearData(currentWo),
@@ -23,7 +23,8 @@ module.exports = async function (context, req) {
 
   context.res = {
     body: context.bindings.inputWO.map((e) => {
-      return clearData(e)
+      e['project number'] = e.id
+      return { info: e }
     }),
   }
 

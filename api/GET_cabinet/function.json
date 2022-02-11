@@ -5,7 +5,10 @@
       "type": "httpTrigger",
       "direction": "in",
       "name": "req",
-      "methods": ["get", "post"]
+      "methods": [
+        "get",
+        "post"
+      ]
     },
     {
       "type": "http",
@@ -18,8 +21,8 @@
       "name": "inputWO",
       "ConnectionStringSetting": "legendstats_DOCUMENTDB",
       "databaseName": "icenter",
-      "collectionName": "icenterCabinets",
-      "sqlQuery": "SELECT * from c"
+      "collectionName": "projects",
+      "sqlQuery": "SELECT c.id, c.info.extends['status project'], c.status, t.wo, t['cab name'] FROM c JOIN t IN c.cabinets WHERE c.status = 'open'"
     },
     {
       "type": "cosmosDB",
