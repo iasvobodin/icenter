@@ -17,7 +17,6 @@
   <label for="search">Поиск:</label>
   <input
     id="search"
-    @keyup.enter="$event.target.blur()"
     v-model="state.search"
     class="choose"
     type="text"
@@ -42,15 +41,11 @@
         <h3
           :class="{ error__item__vertical__title: k === 'Описание' }"
           class="error__item__title"
-        >
-          {{ k }}:
-        </h3>
+        >{{ k }}:</h3>
         <p
           :class="{ error__item__vertical__title: k === 'Описание' }"
           class="error__item__desc"
-        >
-          {{ v?.includes('@') ? v.split('@')[0].replace('.', ' ') : v }}
-        </p>
+        >{{ v?.includes('@') ? v.split('@')[0].replace('.', ' ') : v }}</p>
       </div>
     </div>
   </div>
@@ -143,10 +138,10 @@ watch(selectedStatus, () => getErrors())
 const filter = computed(() => {
   return state.search
     ? state.modErrors.filter((e) =>
-        [e?.info.wo, e?.info['Проект']].some(
-          (s) => s && s.toLowerCase().includes(state.search.toLowerCase())
-        )
+      [e?.info.wo, e?.info['Проект']].some(
+        (s) => s && s.toLowerCase().includes(state.search.toLowerCase())
       )
+    )
     : state.modErrors
 })
 
