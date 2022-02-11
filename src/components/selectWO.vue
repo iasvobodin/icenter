@@ -60,10 +60,10 @@
               v-for="(cabinet, index) in filterCabinets"
               :key="index"
               class="project_item"
-              @mousedown="chooseCabinet(cabinet.id)"
+              @mousedown="chooseCabinet(cabinet.info.id)"
             >
               <p class="p__holder">
-                {{ cabinet.id }}
+                {{ cabinet.info.id }}
                 <br />
                 <small>{{ cabinet.info['cab name'] }}</small>
               </p>
@@ -127,7 +127,7 @@ const filterCabinets = computed(() =>
         filterProject.value.some((s) => el.info['project number'] === s)
       )
       .filter((f) =>
-        [f.id, f.info['cab name']].some((ss) =>
+        [f.info.id, f.info['cab name']].some((ss) =>
           ss.includes(state.searchCabinet)
         )
       )

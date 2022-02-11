@@ -11,6 +11,16 @@ import { errorType } from '@/types/errorType'
 import { strictEqual } from 'assert'
 import { taskType } from '@/types/taskType'
 import { cabinetInfo } from '@/types/cabinetsType'
+type cabinets = {
+  info: {
+    "cab name": string
+    id: string
+    "project number": string
+    status: string
+    "status project": string
+    wo: string
+  }
+}
 // type cabinetInfo = {
 //   "id": string,
 //   "type": 'info',
@@ -57,8 +67,9 @@ export interface State {
   selectedProjectNumber: string
   projectInfo: assign
   user: userType
+  cabinetInfo: cabinets | null
   userTask: taskType | null
-  cabinets: cabinetsType[]
+  cabinets: cabinets[]
   currentError: null
   cabinetItems: cabItems | null
   passedTime: number
@@ -73,6 +84,7 @@ export interface State {
 
 export const store = createStore<State>({
   state: {
+    cabinetInfo: <cabinets | null>null,
     activeErrors: <errorType[]>{},
     taskResult: {},
     photosToUpload: new FormData(),
@@ -103,20 +115,20 @@ export const store = createStore<State>({
     SET_cabinets(state, payload: cabinetsType[]) {
       state.cabinets = payload
     },
-    UPDATE_cabinets(state, payload: cabinetsType) {
-      console.log('inside commit updatecabinets', payload)
+    // UPDATE_cabinets(state, payload: cabinetsType) {
+    //   console.log('inside commit updatecabinets', payload)
 
-      const update = state.cabinets.map((x) => {
-        if (x.id === payload.id) {
-          console.log('match')
+    //   const update = state.cabinets.map((x) => {
+    //     if (x.id === payload.id) {
+    //       console.log('match')
 
-          return payload
-        } else {
-          return x
-        }
-      })
-      state.cabinets = update
-    },
+    //       return payload
+    //     } else {
+    //       return x
+    //     }
+    //   })
+    //   state.cabinets = update
+    // },
     SetPhotosToUpload(state, payload: FormData) {
       state.photosToUpload = payload
     },
@@ -178,8 +190,10 @@ export const store = createStore<State>({
     SETprojectNumber(state, payload) {
       state.selectedProjectNumber = payload
     },
-    SETcurrentProject(state, payload: assign) {
-      state.projectInfo = payload
+    SETcurrentProject(state, payload: string) {
+      debugger
+      state.cabinetInfo = state.cabinets.find((e) => e.info.wo === payload)!
+      // state.projectInfo =  payload
       // console.log(state.projectInfo, "state.projectInfo");
     },
     SETprojectInfo(state, payload) {
@@ -412,11 +426,14 @@ export const store = createStore<State>({
     // },
     async getCabinetsInfo({ commit }, payload: string) {
 
+      const { request: reqCabinets, response: resCabinetInfo } =
+        useFetch<cabinets[]>(`/api/GET_cabinet?wo=${payload}`)
+      await reqCabinets()
 
-      const { request: reqCabinetInfo, response: resCabinetInfo } = useFetch<cabinetInfo>(
-        `/api/getitembyid/info__${payload}`
-      )
-      await reqCabinetInfo()
+      // const { request: reqCabinetInfo, response: resCabinetInfo } = useFetch<cabinetInfo>(
+      //   `/api/getitembyid/info__${payload}`
+      // )
+      // await reqCabinetInfo()
 
 
       // const projects: projectInfoType[] = []
@@ -463,7 +480,7 @@ export const store = createStore<State>({
       // commit('SETcurrentProject', currentInfo)
       // console.log(resCabinetInfo.value!.info, 'resCabinetInfo.value!.info');
 
-      commit('SETcurrentProject', resCabinetInfo.value!.info)
+      commit('SETcurrentProject', resCabinetInfo.value)
     },
     async GET_cabinetItems({ commit }, payload: string) {
       const { request, response } = useFetch<cabItems[]>(

@@ -74,7 +74,7 @@ const connect = async () => {
   })
   connection.on('newMessage', (message) => {
     console.log(message, 'newMessage')
-    store.commit('UPDATE_cabinets', message)
+    // store.commit('UPDATE_cabinets', message)
   }) // state.messages.push(message))
   connection.on('updated', (updatedStock) => {
     console.log(updatedStock, 'updatedStock')

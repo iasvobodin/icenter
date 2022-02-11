@@ -119,9 +119,9 @@ const state = reactive({
   hasCabTime: false,
   additionalSearch: false,
 })
-watch(qr, (newValue, oldValue) => {
-  router.push(`/cabinets/${newValue}`)
-})
+// watch(qr, (newValue, oldValue) => {
+//   router.push(`/cabinets/${newValue}`)
+// })
 
 // const routeToCabinet = (wo, val) => {
 //   router.push(`/cabinets/${wo}`)
@@ -257,9 +257,9 @@ watch(qr, (newValue, oldValue) => {
 // }
 // getCabinets()
 const getCabinets = async () => {
-  const { request, response } = useFetch<cabinets[]>('/api/GET_cabinet')
-  await request()
-  state.cabinets = response.value!
+  // const { request, response } = useFetch<cabinets[]>('/api/GET_cabinet')
+  // await request()
+  // state.cabinets = response.value!
   // if(store.state.cabinets.length ===0){
   //   await store.dispatch('GET_cabinets')
   // }
@@ -328,69 +328,6 @@ const scannedEmit = (e: string) => {
   // state.searchCabinet = e
   // emit('selectedWo', e)
 }
-// onUnmounted(() => {
-//   clearInterval(tick.value)
-//   vCanvas.value = null
-//   stream.value = null
-// })
-// onMounted(async () => {
-//   // const canvasElement = document.getElementById("canvas");
-//   const canvas = vCanvas.value.getContext('2d')
-
-//   try {
-//     stream.value = await navigator.mediaDevices.getUserMedia({
-//       audio: false,
-//       video: {
-//         facingMode: 'environment',
-//         width: {
-//           min: 640,
-//           max: 1024,
-//         },
-//         height: {
-//           min: 480,
-//           max: 768,
-//         },
-//       },
-//     })
-//   } catch (err) {
-//     console.log(err.name + ': ' + err.message)
-//   }
-
-//   const video = streamVideo.value
-//   video.srcObject = stream.value
-
-//   // if (!changeView.value) {
-
-//   tick.value = setInterval(() => {
-//     if (video.readyState === video.HAVE_ENOUGH_DATA && !changeView.value) {
-//       vCanvas.value.height = video.videoHeight
-//       vCanvas.value.width = video.videoWidth
-//       canvas.drawImage(video, 0, 0, vCanvas.value.width, vCanvas.value.height)
-//       const imageData = canvas.getImageData(
-//         0,
-//         0,
-//         vCanvas.value.width,
-//         vCanvas.value.height
-//       )
-//       const code = jsQR(imageData.data, imageData.width, imageData.height, {
-//         inversionAttempts: 'dontInvert',
-//       })
-//       code && (qr.value = code.data)
-//     }
-//   }, 500)
-//   // }
-// })
-
-//     return {
-//       vCanvas,
-//       changeView,
-//       streamVideo,
-//       qr,
-//       filter,
-//       ...toRefs(state)
-//     }
-//   },
-// };
 </script>
 
 <style lang="css" scoped>

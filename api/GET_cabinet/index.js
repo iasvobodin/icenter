@@ -10,8 +10,10 @@ module.exports = async function (context, req) {
     const currentWo = context.bindings.inputWO.find(
       (e) => e.wo === req.query.wo
     )
+    currentWo['project number'] = currentWo.id
+    delete currentWo.id
     context.res = {
-      body: clearData(currentWo),
+      body: currentWo// { info: currentWo }// clearData(currentWo),
     }
     return
   }

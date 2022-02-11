@@ -15,19 +15,21 @@ export type cabinetInfo = {
   "ttl"?: number
 }
 export interface cabinetsType {
-  id: string
-  status: string
+  // id: string
+  // status: string
   info: {
     wo: string
+    status: string
     'cab name': string
     'project number': string
-    'project name': string
-    'project status': string
+    'Project Name': string
+    'status project': string
+    id: string
   }
-  extend: Record<string, unknown>
-  stats: {
-    cabTime: cabtimeType
-    time: number
-    errors: errorType[]
-  }
+  // extend: Record<string, unknown>
+  // stats: {
+  //   cabTime: cabtimeType
+  //   time: number
+  //   errors: errorType[]
+  // }
 }

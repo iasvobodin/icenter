@@ -91,7 +91,8 @@ const route = useRoute()
 const router = useRouter()
 
 const setState = async () => {
-  debugger
+  // await store.dispatch('getCabinetsInfo', route.params.cabinetId)
+  // await getCabinetInfo()
   await store.dispatch('getCabinetsInfo', route.params.cabtimeId)
   // await store.dispatch('GET_cabinetItems', route.params.cabtimeId)
 }
