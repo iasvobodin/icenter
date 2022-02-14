@@ -1,21 +1,24 @@
+import { InjectionKey, Ref } from 'vue'
 import { createStore, Store } from 'vuex'
 import { useFetch } from '@/hooks/fetch'
-// import { timeTracking, timeTrackingType } from './timeTracking'
-import { InjectionKey, Ref } from 'vue'
+import timeTracking from './timeTracking'
 import { userType, azureAuth } from '@/types/userType'
 import { templateType } from '@/types/templateType'
 import { projectInfoType, projectType } from '@/types/projectInfoType'
 import { cabinetsType } from '@/types/cabinetsType'
 import { cabtimeType } from '@/types/cabtimeTypes'
 import { errorType } from '@/types/errorType'
-import { strictEqual } from 'assert'
 import { taskType } from '@/types/taskType'
 import { cabinetInfo } from '@/types/cabinetsType'
+import { rootState } from '@/types/rootState'
+
+
 type cabinets = {
   info: {
     "cab name": string
     id: string
     "project number": string
+    "Project Name": string
     status: string
     "status project": string
     wo: string
@@ -59,7 +62,7 @@ type cabItems = Array<cabinetInfo | errorType | cabtimeType | taskType>
 
 
 
-export interface State {
+export type State = {
   activeErrors: errorType[]
   loader: false
   template: templateType
@@ -82,7 +85,7 @@ export interface State {
   taskResult: { [index: string]: number }
 }
 
-export const store = createStore<State>({
+export const store = createStore<rootState>({
   state: {
     cabinetInfo: <cabinets | null>null,
     activeErrors: <errorType[]>{},
@@ -648,9 +651,12 @@ export const store = createStore<State>({
     // },
   },
   modules: {
-    // timeTracking,
+    timeTracking,
   },
 })
+// store.registerModule('timeTracking', {
+//   // ...
+// })
 
 // export function useStore() {
 //   return baseUseStore(key)

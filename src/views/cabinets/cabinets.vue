@@ -84,11 +84,17 @@ import {
 } from 'vue'
 import { useRouter } from 'vue-router'
 import qrScanner from '@/components/qrScanner.vue'
+import { useCounterStore } from '@/stores/counterStore'
 // export default {
 //     components: {
 //     // chooseProjectNumber,
 //   },
 // setup() {
+const counterStore = useCounterStore()
+console.log(counterStore.$state.counter);
+
+
+
 type cabinets = {
   info: {
     "cab name": string
@@ -293,7 +299,7 @@ watchEffect(async () => {
   state.cabinets = JSON.parse(JSON.stringify(store.state.cabinets))
   getCabinets()
 })
-
+// store.state.
 const filter = computed(() => {
   let cc
   if (state.cabinets && state.filterStatus.length > 0) {

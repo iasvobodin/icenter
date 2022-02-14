@@ -22,7 +22,7 @@
       "ConnectionStringSetting": "legendstats_DOCUMENTDB",
       "databaseName": "icenter",
       "collectionName": "projects",
-      "sqlQuery": "SELECT c.id, c.info.base['Project Name'], c.info.extends['status project'], c.status, t.wo, t['cab name'] FROM c JOIN t IN c.cabinets "
+      "sqlQuery": "SELECT c.id, c.info.base['Project Name'], c.info.extends['status project'], c.status, t.wo, t['cab name'] FROM c JOIN t IN c.cabinets WHERE c.status = 'open'"
     },
     {
       "type": "cosmosDB",
