@@ -5,7 +5,7 @@
     проектам ICenter.
   </p>
   <br />
-  <input id="select__filter" v-model="state.search" type="text" placeholder="SF, PM, №" />
+  <input v-model="state.search" class="select__filter" type="text" placeholder="SF, PM, №" />
   <br />
   <button class="my__projects" @click="myProjects">Мои проекты</button>
   <br />
@@ -33,11 +33,11 @@
   </div>
   <div v-if="view === 'grid'" class="groupOptions">
     <h3>Группировать по</h3>
-    <select v-model="grrr" style="width: 400px; margin: auto;">
+    <br />
+    <select v-model="grrr" class="select__filter">
       <option value="senior fitter">senior fitter</option>
       <option value="status project">status project</option>
     </select>
-    <!-- <input v-model="grrr" type="text" /> -->
   </div>
   <br />
   <div v-if="state.errors && view === 'grid'">
@@ -179,6 +179,15 @@ import { onBeforeRouteLeave, onBeforeRouteUpdate, useRouter } from 'vue-router'
 import renderInputs from '@/components/renderInputs'
 import { projectType } from '@/types/projectType'
 
+type groupType = {
+  "PM": string,
+  "Buyer": string,
+  "Contract Administrator": string,
+  "Buyout Administrator": string,
+  "Lead Engineer": string
+  "status project": string
+  "senior fitter": string
+}
 
 // type projectType = {
 //   "id": string,
@@ -587,16 +596,16 @@ table {
   width: max(95vw, 1200px);
 }
 
-input[type="number"],
+/* input[type="number"],
 input[type="text"] {
   width: 100%;
   text-align: center;
-}
+} */
 textarea {
   height: 90px;
   border-radius: 1px;
 }
-#select__filter {
+.select__filter {
   height: 30px;
   border: 1px solid orange;
   border-radius: 5px;
