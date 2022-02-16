@@ -1,6 +1,7 @@
 <template>
   <form class="project__info project__holder" @submit.prevent="postProject">
     <h1>Adding a project manually</h1>
+    <p>office365 {{ token ? 'yes' : 'not' }}</p>
     <br />
     <div v-for="(v, k, i) in state.extend" :key="i" class="error__item">
       <h4 style="text-align: start;">{{ k }}</h4>
