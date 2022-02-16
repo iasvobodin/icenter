@@ -1,13 +1,13 @@
 import { ComponentCustomProperties } from 'vue'
 import { Store } from 'vuex'
-import { State } from './store/index'
+import { rootState } from '@/types/rootState'
 
 declare module '@vue/runtime-core' {
   interface ComponentCustomProperties {
-    $store: Store<State>
+    $store: Store<rootState>
   }
 }
 
 declare module 'vuex' {
-  export function useStore(key?: string): Store<State>
+  export function useStore(key?: string): Store<rootState>
 }

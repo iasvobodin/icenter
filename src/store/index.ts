@@ -4,19 +4,19 @@ import { useFetch } from '@/hooks/fetch'
 import timeTracking from './timeTracking'
 import { userType, azureAuth } from '@/types/userType'
 import { templateType } from '@/types/templateType'
-import { projectInfoType, projectType } from '@/types/projectInfoType'
+import { projectInfoType } from '@/types/projectInfoType'
 import { cabinetsType } from '@/types/cabinetsType'
 import { cabtimeType } from '@/types/cabtimeTypes'
 import { errorType } from '@/types/errorType'
 import { taskType } from '@/types/taskType'
 import { cabinetInfo } from '@/types/cabinetsType'
-import { rootState } from '@/types/rootState'
-
+import { rootState, state } from '@/types/rootState'
+import { projectType } from '@/types/projectType'
 
 type cabinets = {
   info: {
     "cab name": string
-    id: string
+    id?: string
     "project number": string
     "Project Name": string
     status: string
@@ -62,33 +62,36 @@ type cabItems = Array<cabinetInfo | errorType | cabtimeType | taskType>
 
 
 
-export type State = {
-  activeErrors: errorType[]
-  loader: false
-  template: templateType
-  projectList: null
-  selectedProjectNumber: string
-  projectInfo: assign
-  user: userType
-  cabinetInfo: cabinets | null
-  userTask: taskType | null
-  cabinets: cabinets[]
-  currentError: null
-  cabinetItems: cabItems | null
-  passedTime: number
-  cabtimeWithStatus: cabtimeType['body']
-  allSumm: number
-  photosToUpload: FormData
-  compressBlob: Blob[]
-  photosToDelete: string[]
-  photoContainer: string
-  taskResult: { [index: string]: number }
-}
+// export type State = {
+//   projects: projectType[]|null
+//   activeErrors: errorType[]
+//   loader: false
+//   template: templateType
+//   projectList: null
+//   selectedProjectNumber: string
+//   projectInfo: assign
+//   user: userType
+//   cabinetInfo: cabinets | null
+//   userTask: taskType | null
+//   cabinets: cabinets[]
+//   currentError: null
+//   cabinetItems: cabItems | null
+//   passedTime: number
+//   cabtimeWithStatus: cabtimeType['body']
+//   allSumm: number
+//   photosToUpload: FormData
+//   compressBlob: Blob[]
+//   photosToDelete: string[]
+//   photoContainer: string
+//   taskResult: { [index: string]: number }
+// }
 
 export const store = createStore<rootState>({
   state: {
-    cabinetInfo: <cabinets | null>null,
-    activeErrors: <errorType[]>{},
+    openCabinets: <cabinets[]>{},
+    projects: null,
+    cabinetInfo: null,
+    activeErrors: [],
     taskResult: {},
     photosToUpload: new FormData(),
     photosToDelete: [],
@@ -100,7 +103,7 @@ export const store = createStore<rootState>({
     selectedProjectNumber: '',
     projectInfo: <assign>{},
     user: <userType>{},
-    userTask: <taskType | null>null,
+    userTask: null,
     currentError: null,
     cabinetItems: null,
     cabinets: [],
@@ -183,18 +186,18 @@ export const store = createStore<rootState>({
       state.user = JSON.parse(payload)
     },
 
-    setTemplate(state, payload) {
+    setTemplate(state, payload: templateType) {
       state.template = payload
     },
-    extendTemplate(state, payload) {
-      state.template as templateType
+    extendTemplate(state, payload: templateType['template']) {
+      // state.template as templateType
       state.template.template = payload
     },
     SETprojectNumber(state, payload) {
       state.selectedProjectNumber = payload
     },
     SETcurrentProject(state, payload: string) {
-      debugger
+      // debugger
       state.cabinetInfo = state.cabinets.find((e) => e.info.wo === payload)!
       // state.projectInfo =  payload
       // console.log(state.projectInfo, "state.projectInfo");
@@ -217,6 +220,26 @@ export const store = createStore<rootState>({
     },
     SET_projectList(state, payload) {
       state.projectList = payload
+    },
+    SET_projects(state, payload: projectType[]) {
+      state.projects = payload
+    },
+    SET_openCabinets(state, payload: projectType[]) {
+      const openCabinets = payload.reduce((acc, project) => {
+        project.cabinets.forEach(cabinet => {
+          acc.push({
+            info: {
+              ...cabinet,
+              "project number": project.id,
+              "Project Name": project.info.base['Project Name'],
+              status: project.status,
+              "status project": project.info.extends['status project'],
+            }
+          })
+        })
+        return acc
+      }, <Array<cabinets>>[])
+      state.openCabinets = openCabinets
     },
   },
   actions: {
@@ -502,17 +525,13 @@ export const store = createStore<rootState>({
       commit('SET_cabinetItems', response.value)
     },
     async GET_template({ commit, state }) {
-      console.log('GET TEMPLATE')
-
-      !state.loader && commit('changeLoader', true)
+      const { request, response: resTemplate } = useFetch<templateType>(
+        '/api/templates/templateProject/ver1'
+      )
 
       try {
-        const resposeTemplate = await fetch(
-          '/api/templates/templateProject/ver1'
-        )
-        const template = await resposeTemplate.json()
-        commit('setTemplate', template)
-        commit('changeLoader', false)
+        await request()
+        commit('setTemplate', resTemplate.value)
       } catch (error) {
         console.log(error, 'GETTEMPLATEERROR')
       }
@@ -570,6 +589,18 @@ export const store = createStore<rootState>({
       try {
         await request()
         commit('SET_userTask', response.value)
+      } catch (error) {
+        console.log(error)
+      }
+    },
+    async GET_projects({ commit }, payload: 'open' | 'closed') {
+
+      const { request: reqProjects, response: resProjects } = useFetch<projectType[]>(`/api/projects?status=${payload}`)
+
+      try {
+        await reqProjects()
+        commit('SET_projects', resProjects.value!)
+        commit('SET_openCabinets', resProjects.value!)
       } catch (error) {
         console.log(error)
       }

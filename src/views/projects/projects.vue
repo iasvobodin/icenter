@@ -168,39 +168,39 @@ import infoRender from '@/components/infoRender.vue'
 import { useStore } from 'vuex'
 import { onBeforeRouteLeave, onBeforeRouteUpdate, useRouter } from 'vue-router'
 import renderInputs from '@/components/renderInputs'
-// import { projectType } from '@/projectType'
+import { projectType } from '@/types/projectType'
 
 
-type projectType = {
-  "id": string,
-  "status": "open" | 'closed',
-  "info": {
-    "base": {
-      "Project Name": string,
-      "SZ №": number,
-      "PM": string,
-      "Buyer": string,
-      "Contract Administrator": string,
-      "Buyout Administrator": string,
-      "Lead Engineer"?: string
-    },
-    "extends": {
-      "Specific requirement field": string,
-      "senior fitter": string,
-      "status project": string,
-      "Hours calculated": string,
-      "Hours actual": string,
-      "Comments field": string,
-      "Shipping date": string
-    }
-  },
-  "cabinets": [
-    {
-      "wo": string,
-      "cab name": string
-    } | null
-  ],
-}
+// type projectType = {
+//   "id": string,
+//   "status": "open" | 'closed',
+//   "info": {
+//     "base": {
+//       "Project Name": string,
+//       "SZ №": number,
+//       "PM": string,
+//       "Buyer": string,
+//       "Contract Administrator": string,
+//       "Buyout Administrator": string,
+//       "Lead Engineer"?: string
+//     },
+//     "extends": {
+//       "Specific requirement field": string,
+//       "senior fitter": string,
+//       "status project": string,
+//       "Hours calculated": string,
+//       "Hours actual": string,
+//       "Comments field": string,
+//       "Shipping date": string
+//     }
+//   },
+//   "cabinets": [
+//     {
+//       "wo": string,
+//       "cab name": string
+//     } | null
+//   ],
+// }
 
 const router = useRouter()
 const store = useStore()
@@ -243,10 +243,10 @@ const extendTemplate = computed(() => store.state.template.template.extend)
 watch(selectedStatus, (newValue, oldValue) => {
   if (newValue === true) {
     state.changeTable = false
-    getErrors('closed')
+    getProjects('closed')
   }
   if (newValue === false) {
-    getErrors('open')
+    getProjects('open')
   }
 })
 
@@ -267,10 +267,13 @@ const groupProjects = (status: string) =>
   })
 
 
+store.dispatch('GET_projects', 'open')
 
-const getErrors = async (status: 'open' | 'closed') => {
+const getProjects = async (status: 'open' | 'closed') => {
   const { request: reqProjects, response: resProjects } = useFetch<projectType[]>(`/api/projects?status=${status}`)
   await reqProjects()
+
+
   state.errors = resProjects.value!
 
   state.projects = JSON.parse(JSON.stringify(resProjects.value))
@@ -294,7 +297,7 @@ const getErrors = async (status: 'open' | 'closed') => {
     return 0
   })
 }
-getErrors('open')
+getProjects('open')
 
 
 // console.log(Array.from({ length: 20 }).map(()=> ));
@@ -314,7 +317,7 @@ const updateChangedProjects = async () => {
     })
   )
   state.changeAllFlag = !state.changeAllFlag
-  selectedStatus.value === true ? getErrors('closed') : getErrors('open')
+  selectedStatus.value === true ? getProjects('closed') : getProjects('open')
 }
 
 
