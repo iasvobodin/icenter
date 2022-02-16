@@ -31,19 +31,28 @@
       <span class="sspan2" :class="{ activegrid: view === 'grid' }"></span>
     </label>
   </div>
+  <div v-if="view === 'grid'" class="groupOptions">
+    <h3>Группировать по</h3>
+    <select v-model="grrr" style="width: 400px; margin: auto;">
+      <option value="senior fitter">senior fitter</option>
+      <option value="status project">status project</option>
+    </select>
+    <!-- <input v-model="grrr" type="text" /> -->
+  </div>
   <br />
   <div v-if="state.errors && view === 'grid'">
     <div
       v-for="status in state.actualStatus"
-      v-show="groupProjects(status).length != 0"
+      v-show="groupProjects(status, grrr).length != 0"
       :key="status"
     >
       <div class="group__items">
-        <h3>{{ status?.split('-')[1].split('/')[0] }}</h3>
+        <!-- status?.split('-')[1]?.split('/')[0] || -->
+        <h3>{{ status }}</h3>
       </div>
       <div class="errors__holder">
         <div
-          v-for="(value, key, index) in groupProjects(status)"
+          v-for="(value, key, index) in groupProjects(status, grrr)"
           :key="index"
           class="error__card__holder"
           @click="
@@ -162,7 +171,7 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, toRefs, watch, computed, ref } from 'vue'
+import { reactive, watchEffect, DebuggerEvent, toRefs, watch, computed, ref } from 'vue'
 import { useFetch } from '@/hooks/fetch'
 import infoRender from '@/components/infoRender.vue'
 import { useStore } from 'vuex'
@@ -201,7 +210,7 @@ import { projectType } from '@/types/projectType'
 //     } | null
 //   ],
 // }
-
+const grrr = ref<keyof projectType['info']['extends']>('senior fitter')
 const router = useRouter()
 const store = useStore()
 
@@ -250,10 +259,46 @@ watch(selectedStatus, (newValue, oldValue) => {
   }
 })
 
-const groupProjects = (status: string) =>
-  filterProjects.value &&
-  filterProjects.value.filter(
-    (f) => f.info?.extends['status project'] === status
+
+
+
+store.dispatch('GET_projects', 'open')
+
+
+
+
+// function watchEffect(
+//   effect: (onCleanup: OnCleanup) => void,
+//   options?: WatchEffectOptions
+// ): StopHandle
+
+
+
+// type OnCleanup = (cleanupFn: () => void) => void
+
+// interface WatchEffectOptions {
+//   flush?: 'pre' | 'post' | 'sync' // default: 'pre'
+//   onTrack?: (event: DebuggerEvent) => void
+//   onTrigger?: (event: DebuggerEvent) => void
+// }
+
+// type StopHandle = () => void
+
+
+const openCabinets = computed(() => store.state.projects)
+
+function groupBy(projectData: projectType[], sortOptions: keyof projectType['info']['extends']) {
+  state.actualStatus = [
+    ...projectData.reduce(
+      (acc, pr) => acc.add(pr.info?.['extends'][sortOptions]),
+      new Set() as Set<string>
+    ),
+  ].sort()
+}
+
+function groupProjects(status: string, sortOptions: keyof projectType['info']['extends']) {
+  return filterProjects.value.filter(
+    (f) => f.info?.extends[sortOptions] === status
   ).sort(function (a, b) {
     const nameA = a.id.toLowerCase()
     const nameB = b.id.toLowerCase()
@@ -265,9 +310,38 @@ const groupProjects = (status: string) =>
     }
     return 0
   })
+}
+
+watchEffect(() => {
+  if (openCabinets.value) {
+
+    // state.errors = resProjects.value!
+
+    state.errors = state.projects = JSON.parse(JSON.stringify(openCabinets.value))
+
+    groupBy(openCabinets.value, grrr.value)
+    // state.actualStatus = [
+    //   ...openCabinets.value.reduce(
+    //     (acc, pr) => acc.add(pr.info?.extends['status project']),
+    //     new Set() as Set<string>
+    //   ),
+    // ].sort()
 
 
-store.dispatch('GET_projects', 'open')
+    state.errors.sort(function (a, b) {
+      const nameA = a.info?.extends['status project']?.toLowerCase()
+      const nameB = b.info?.extends['status project']?.toLowerCase()
+      if (nameA < nameB) {
+        return -1
+      }
+      if (nameA > nameB) {
+        return 1
+      }
+      return 0
+    })
+  }
+
+}, { flush: 'post' })
 
 const getProjects = async (status: 'open' | 'closed') => {
   const { request: reqProjects, response: resProjects } = useFetch<projectType[]>(`/api/projects?status=${status}`)

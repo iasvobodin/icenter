@@ -19,8 +19,8 @@
               v-for="(user, index) in state.extend[k].search"
               :key="index"
               class="search__result"
-              @click="choosePeople(k, `${user.surname} ${user.givenName}`)"
-            >{{ user.surname }} {{ user.givenName }}</p>
+              @click="choosePeople(k, `${user?.surname} ${user?.givenName}`)"
+            >{{ user?.surname }} {{ user?.givenName }}</p>
           </div>
         </div>
         <render-inputs
