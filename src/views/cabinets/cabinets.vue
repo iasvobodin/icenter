@@ -478,12 +478,12 @@ input {
   justify-self: end;
   align-self: center;
 }
-.frame {
+/* .frame {
   position: absolute;
   width: min(500px, 95vw);
   height: min(500px, 95vw);
   color: #ff5100;
-}
+} */
 .video__stream {
   width: 100%;
   height: 100%;
