@@ -219,7 +219,7 @@ type groupType = {
 //     } | null
 //   ],
 // }
-const grrr = ref<keyof projectType['info']['extends']>('senior fitter')
+const grrr = ref<keyof projectType['info']['extends']>('status project')
 const router = useRouter()
 const store = useStore()
 
