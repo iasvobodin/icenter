@@ -1,24 +1,43 @@
 <template>
   <h1>Проекты.</h1>
-  <p>
+  <!-- <p>
     В данном разделе можно добавлять и редактировать информацию по текущим
     проектам ICenter.
-  </p>
-  <br />
-  <input v-model="state.search" class="select__filter" type="text" placeholder="SF, PM, №" />
-  <br />
-  <button class="my__projects" @click="myProjects">Мои проекты</button>
-  <br />
-  <div class="holder__switch">
-    <div class="open" :class="{ isactive: !selectedStatus }">
-      <h3>Открытые</h3>
+  </p>-->
+  <h2
+    style="cursor: pointer"
+    @click="state.additionalSearch = !state.additionalSearch"
+  >Расширенный поиск {{ state.additionalSearch ? '&#9650;' : '&#9660;' }}</h2>
+  <div v-show="state.additionalSearch">
+    <br />
+    <input v-model="state.search" class="select__filter" type="text" placeholder="SF, PM, №" />
+    <br />
+    <button class="my__projects" @click="myProjects">Мои проекты</button>
+    <br />
+    <div class="holder__switch">
+      <div class="open" :class="{ isactive: !selectedStatus }">
+        <h3>Открытые</h3>
+      </div>
+      <div class="switch">
+        <input id="switch-1" v-model="selectedStatus" type="checkbox" class="switch-input" />
+        <label for="switch-1" class="switch-label">Switch</label>
+      </div>
+      <div class="close" :class="{ isactive: selectedStatus }">
+        <h3>Закрытые</h3>
+      </div>
     </div>
-    <div class="switch">
-      <input id="switch-1" v-model="selectedStatus" type="checkbox" class="switch-input" />
-      <label for="switch-1" class="switch-label">Switch</label>
-    </div>
-    <div class="close" :class="{ isactive: selectedStatus }">
-      <h3>Закрытые</h3>
+    <div v-if="view === 'grid'" class="groupOptions">
+      <br />
+      <h3>Группировать по</h3>
+      <br />
+      <select v-model="grrr" class="select__filter">
+        <option value="senior fitter">senior fitter</option>
+        <option value="status project">status project</option>
+        <option value="PM">PM</option>
+        <option value="Buyer">Buyer</option>
+        <option value="Contract Administrator">Contract Administrator</option>
+        <option value="Lead Engineer">Lead Engineer</option>
+      </select>
     </div>
   </div>
   <div class="ddiv" data-tid="f22fdef8">
@@ -31,14 +50,7 @@
       <span class="sspan2" :class="{ activegrid: view === 'grid' }"></span>
     </label>
   </div>
-  <div v-if="view === 'grid'" class="groupOptions">
-    <h3>Группировать по</h3>
-    <br />
-    <select v-model="grrr" class="select__filter">
-      <option value="senior fitter">senior fitter</option>
-      <option value="status project">status project</option>
-    </select>
-  </div>
+
   <br />
   <div v-if="state.errors && view === 'grid'">
     <div
@@ -64,7 +76,7 @@
           <div class="item__card" :class="{ closed__card: selectedStatus }">
             <div class="double">
               <h2>{{ value.id }}:</h2>
-              <p class="over">{{ value.info?.base?.['Project Name'] }}</p>
+              <p class="over">{{ value.info?.['Project Name'] }}</p>
             </div>
             <hr style="margin: 0" />
             <div class="double">
@@ -72,7 +84,7 @@
                 <p>
                   <b>PM:</b>
                 </p>
-                <p class="over">{{ value.info?.base?.PM }}</p>
+                <p class="over">{{ value.info?.PM }}</p>
               </div>
               <div class="cabinet__info__item">
                 <p>
@@ -80,7 +92,7 @@
                 </p>
                 <p
                   class="over"
-                >{{ value.info?.extends?.['senior fitter']?.includes('@') ? value.info?.extends?.['senior fitter']?.split('@')[0].split('.')[1] : value.info?.extends?.['senior fitter']?.split('.')[0] }}</p>
+                >{{ value.info?.['senior fitter']?.includes('@') ? value.info?.['senior fitter']?.split('@')[0].split('.')[1] : value.info?.['senior fitter']?.split('.')[0] }}</p>
               </div>
             </div>
             <hr style="margin: 0" />
@@ -90,7 +102,7 @@
                 <p>
                   <b>Отгрузка:</b>
                 </p>
-                <p class="over">{{ value.info?.extends?.['Shipping date'] }}</p>
+                <p class="over">{{ value.info?.['Shipping date'] }}</p>
               </div>
               <div class="cabinet__info__item">
                 <p>
@@ -103,7 +115,7 @@
             <div class="vertical">
               <p>
                 <b>Comments:</b>
-                {{ value.info?.extends?.['Comments field'] }}
+                {{ value.info?.['Comments field'] }}
               </p>
             </div>
           </div>
@@ -124,33 +136,37 @@
         <col span="1" style="width: 10%" />
         <col span="1" style="width: auto" />
         <col span="1" style="width: auto" />
-        <col span="1" style="width: 6%" />
-        <col span="1" style="width: 6%" />
+        <col span="1" style="width: 5%" />
+        <col span="1" style="width: 5%" />
         <col span="1" style="width: 6%" />
       </colgroup>
       <tr class="head">
         <th>№</th>
-        <th v-for="(vv, kk) in extendTemplate" :key="kk" @click="sortBy(kk, 'extends')">{{ kk }}</th>
+        <th v-for="(vv, kk) in extendTemplate" :key="kk" @click="sortBy(kk)">{{ kk }}</th>
       </tr>
       <tbody>
         <tr v-for="(value, key, index) in state.projects" :key="index" @click="getIndex(key)">
-          <td
-            style="cursor: pointer;"
-            @click="
+          <!-- @click="
               !selectedStatus
                 ? $router.push(`/projects/${value.id}`)
                 : $router.push(`/projects/${value.id}?status=closed`)
-            "
-          >
-            <h2 class="project__number">{{ value.id }}</h2>
+          "-->
+          <td style="cursor: pointer;">
+            <router-link
+              :to="!selectedStatus
+              ? `/projects/${value.id}`
+              : `/projects/${value.id}?status=closed`"
+            >
+              <h2 class="project__number">{{ value.id }}</h2>
+            </router-link>
           </td>
           <td v-for="(v, k) in extendTemplate" :key="k">
             <render-inputs
               v-if="state.changeTable"
-              v-model="state.projects[key].info.extends"
+              v-model="state.projects[key].info"
               :data-render="v"
             />
-            <p v-else>{{ state.projects[key].info.extends[k] }}</p>
+            <p v-else>{{ state.projects[key].info[k] }}</p>
           </td>
         </tr>
       </tbody>
@@ -177,7 +193,7 @@ import infoRender from '@/components/infoRender.vue'
 import { useStore } from 'vuex'
 import { onBeforeRouteLeave, onBeforeRouteUpdate, useRouter } from 'vue-router'
 import renderInputs from '@/components/renderInputs'
-import { projectType } from '@/types/projectType'
+import { projectType, ProjectFlatInfoType } from '@/types/projectType'
 
 type groupType = {
   "PM": string,
@@ -219,7 +235,7 @@ type groupType = {
 //     } | null
 //   ],
 // }
-const grrr = ref<keyof projectType['info']['extends']>('status project')
+const grrr = ref<keyof ProjectFlatInfoType['info']>('status project')
 const router = useRouter()
 const store = useStore()
 
@@ -235,12 +251,13 @@ const view = ref('grid')
 
 const state = reactive({
   changeAllFlag: false,
-  errors: <projectType[]>{},
+  errors: <ProjectFlatInfoType[]>{},
   actualStatus: <string[]>{},
   search: '',
-  projects: <projectType[]>{},
+  projects: <ProjectFlatInfoType[]>{},
   updateIndex: new Set() as Set<number>,
-  changeTable: false
+  changeTable: false,
+  additionalSearch: false
 })
 
 const getIndex = (i: number) => state.updateIndex.add(i)
@@ -249,7 +266,7 @@ const filterProjects = computed(() => {
   //  debugger
   return state.search
     ? state.errors.filter((e) =>
-      [e?.id, e.info.base?.PM, e.info.extends?.['senior fitter']].some(
+      [e?.id, e.info?.PM, e.info?.['senior fitter']].some(
         (s) => s && s.toLowerCase().includes(state.search.toLowerCase())
       )
     )
@@ -261,53 +278,39 @@ const extendTemplate = computed(() => store.state.template.template.extend)
 watch(selectedStatus, (newValue, oldValue) => {
   if (newValue === true) {
     state.changeTable = false
-    getProjects('closed')
+    // getProjects('closed')
+    store.dispatch('GET_projects', 'closed')
   }
   if (newValue === false) {
-    getProjects('open')
+    // getProjects('open')
+    store.dispatch('GET_projects', 'open')
   }
 })
 
 
 
 
-store.dispatch('GET_projects', 'open')
+// store.dispatch('GET_projects', 'open')
 
 
 
 
-// function watchEffect(
-//   effect: (onCleanup: OnCleanup) => void,
-//   options?: WatchEffectOptions
-// ): StopHandle
 
+const projectsFromStore = computed(() => store.state.projects)
 
-
-// type OnCleanup = (cleanupFn: () => void) => void
-
-// interface WatchEffectOptions {
-//   flush?: 'pre' | 'post' | 'sync' // default: 'pre'
-//   onTrack?: (event: DebuggerEvent) => void
-//   onTrigger?: (event: DebuggerEvent) => void
-// }
-
-// type StopHandle = () => void
-
-
-const openCabinets = computed(() => store.state.projects)
-
-function groupBy(projectData: projectType[], sortOptions: keyof projectType['info']['extends']) {
+function groupBy(projectData: ProjectFlatInfoType[], sortOptions: keyof ProjectFlatInfoType['info']) {
   state.actualStatus = [
     ...projectData.reduce(
-      (acc, pr) => acc.add(pr.info?.['extends'][sortOptions]),
+      (acc, pr) => acc.add(pr.info?.[sortOptions]),
       new Set() as Set<string>
     ),
   ].sort()
 }
 
-function groupProjects(status: string, sortOptions: keyof projectType['info']['extends']) {
+function groupProjects(status: string, sortOptions: keyof ProjectFlatInfoType['info']) {
+
   return filterProjects.value.filter(
-    (f) => f.info?.extends[sortOptions] === status
+    (f) => f.info[sortOptions] === status
   ).sort(function (a, b) {
     const nameA = a.id.toLowerCase()
     const nameB = b.id.toLowerCase()
@@ -322,24 +325,60 @@ function groupProjects(status: string, sortOptions: keyof projectType['info']['e
 }
 
 watchEffect(() => {
-  if (openCabinets.value) {
+  if (projectsFromStore.value) {
 
+    //         type cabinets = {
+    //     'wo': string,
+    //     'cab name': string
+    // }
+    // type ProjectFlatInfoType = {
+    //     "id": string,
+    //     "status": "open" | 'closed',
+    //     "info": {
+
+    //             "Project Name": string,
+    //             "SZ №": string,
+    //             "PM": string,
+    //             "Buyer": string,
+    //             "Contract Administrator": string,
+    //             "Buyout Administrator": string,
+    //             "Lead Engineer": string
+    //             "Specific requirement field": string,
+    //             "senior fitter": string,
+    //             "status project": string,
+    //             "Hours calculated": string,
+    //             "Hours actual": string,
+    //             "Comments field": string,
+    //             "Shipping date": string
+    //     },
+    //     'cabinets': cabinets[],
+    // }
+    const projetcFaltInfo: ProjectFlatInfoType[] = projectsFromStore.value.map(project => {
+
+      //     type FlatInfo = projectType['info']['base'] & projectType['info']['extends']
+      //     type ProjetcFaltInfo = projectType & {info : FlatInfo}
+      // const projetcFaltInfo: ProjetcFaltInfo[] = projectsFromStore.value.map(project => {
+      const info = { ...project.info.extends, ...project.info.base }
+      return {
+        ...project, info
+      }
+    })
     // state.errors = resProjects.value!
 
-    state.errors = state.projects = JSON.parse(JSON.stringify(openCabinets.value))
+    state.errors = state.projects = projetcFaltInfo// JSON.parse(JSON.stringify(projectsFromStore.value))
 
-    groupBy(openCabinets.value, grrr.value)
+    groupBy(projetcFaltInfo, grrr.value)
     // state.actualStatus = [
-    //   ...openCabinets.value.reduce(
-    //     (acc, pr) => acc.add(pr.info?.extends['status project']),
+    //   ...projectsFromStore.value.reduce(
+    //     (acc, pr) => acc.add(pr.info['status project']),
     //     new Set() as Set<string>
     //   ),
     // ].sort()
 
 
     state.errors.sort(function (a, b) {
-      const nameA = a.info?.extends['status project']?.toLowerCase()
-      const nameB = b.info?.extends['status project']?.toLowerCase()
+      const nameA = a.info['status project']?.toLowerCase()
+      const nameB = b.info['status project']?.toLowerCase()
       if (nameA < nameB) {
         return -1
       }
@@ -352,35 +391,35 @@ watchEffect(() => {
 
 }, { flush: 'post' })
 
-const getProjects = async (status: 'open' | 'closed') => {
-  const { request: reqProjects, response: resProjects } = useFetch<projectType[]>(`/api/projects?status=${status}`)
-  await reqProjects()
+// const getProjects = async (status: 'open' | 'closed') => {
+//   const { request: reqProjects, response: resProjects } = useFetch<projectType[]>(`/api/projects?status=${status}`)
+//   await reqProjects()
 
 
-  state.errors = resProjects.value!
+//   state.errors = resProjects.value!
 
-  state.projects = JSON.parse(JSON.stringify(resProjects.value))
+//   state.projects = JSON.parse(JSON.stringify(resProjects.value))
 
-  state.actualStatus = [
-    ...resProjects.value!.reduce(
-      (acc, pr) => acc.add(pr.info?.extends['status project']),
-      new Set() as Set<string>
-    ),
-  ].sort()
+//   state.actualStatus = [
+//     ...resProjects.value!.reduce(
+//       (acc, pr) => acc.add(pr.info['status project']),
+//       new Set() as Set<string>
+//     ),
+//   ].sort()
 
-  state.errors.sort(function (a, b) {
-    const nameA = a.info?.extends['status project']?.toLowerCase()
-    const nameB = b.info?.extends['status project']?.toLowerCase()
-    if (nameA < nameB) {
-      return -1
-    }
-    if (nameA > nameB) {
-      return 1
-    }
-    return 0
-  })
-}
-getProjects('open')
+//   state.errors.sort(function (a, b) {
+//     const nameA = a.info['status project']?.toLowerCase()
+//     const nameB = b.info['status project']?.toLowerCase()
+//     if (nameA < nameB) {
+//       return -1
+//     }
+//     if (nameA > nameB) {
+//       return 1
+//     }
+//     return 0
+//   })
+// }
+// getProjects('open')
 
 
 // console.log(Array.from({ length: 20 }).map(()=> ));
@@ -400,15 +439,15 @@ const updateChangedProjects = async () => {
     })
   )
   state.changeAllFlag = !state.changeAllFlag
-  selectedStatus.value === true ? getProjects('closed') : getProjects('open')
+  selectedStatus.value === true ? store.dispatch('GET_projects', 'closed') : store.dispatch('GET_projects', 'open')
 }
 
 
-const sortBy = (el: keyof projectType['info']['extends'], p: 'extends') => {
+const sortBy = (el: keyof projectType['info']['extends'],) => {
 
   state.projects.sort(function (a, b) {
-    const nameA = a.info[p][el]?.toString().toLowerCase()
-    const nameB = b.info[p][el]?.toString().toLowerCase()
+    const nameA = a.info[el]?.toString().toLowerCase()
+    const nameB = b.info[el]?.toString().toLowerCase()
     if (nameA < nameB) {
       return -1
     }

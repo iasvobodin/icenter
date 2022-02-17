@@ -27,6 +27,8 @@ import { ref, computed, onBeforeMount, reactive, watchEffect } from 'vue'
 const store = useStore()
 const route = useRoute()
 
+store.dispatch('GET_projects', 'open')
+
 const match = () =>
   route.path.includes('role') || route.path.includes('login') ? false : true
 
@@ -410,5 +412,13 @@ tbody tr:hover {
   box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
   box-shadow: rgba(14, 30, 37, 0.12) 0px 2px 4px 0px,
     rgba(14, 30, 37, 0.32) 0px 2px 16px 0px;
+}
+a {
+  /* width: 100%; */
+  /* display: block; */
+  text-decoration-line: none;
+  /* color: #ffffff; */
+  /* text-decoration-color: rgb(255, 255, 255); */
+  /* line-height: 40px; */
 }
 </style>

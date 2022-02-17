@@ -198,7 +198,7 @@ export const store = createStore<rootState>({
     },
     SETcurrentProject(state, payload: string) {
       // debugger
-      state.cabinetInfo = state.cabinets.find((e) => e.info.wo === payload)!
+      state.cabinetInfo = state.openCabinets.find((e) => e.info.wo === payload)!
       // state.projectInfo =  payload
       // console.log(state.projectInfo, "state.projectInfo");
     },
@@ -600,7 +600,7 @@ export const store = createStore<rootState>({
       try {
         await reqProjects()
         commit('SET_projects', resProjects.value!)
-        commit('SET_openCabinets', resProjects.value!)
+        payload === 'open' && commit('SET_openCabinets', resProjects.value!)
       } catch (error) {
         console.log(error)
       }

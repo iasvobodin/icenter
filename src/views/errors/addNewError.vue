@@ -1,7 +1,7 @@
 <template>
   <div>
     <h2>Добавление новой ошибки.</h2>
-    <div v-if="!$store.state.projectInfo?.wo">
+    <div v-if="!$store.state.cabinetInfo">
       <choose-project-number
         v-if="!$store.state.projectInfo?.pm"
         :data-to-render="state.projectData"
@@ -22,13 +22,13 @@
     </div>
     <div v-else>
       <h3>
-        Номер проекта {{ projectInfoState['project number'] }}
+        Номер проекта {{ projectInfoState.info['project number'] }}
         <span
           style="cursor: pointer"
           @click="clearstate"
         >&#10060;</span>
       </h3>
-      <h3>Номер WO {{ projectInfoState['wo'] }}</h3>
+      <h3>Номер WO {{ projectInfoState.info['wo'] }}</h3>
       <set-error />
     </div>
   </div>
@@ -58,7 +58,7 @@ router.afterEach((to, from) => {
   }
 })
 // onUnmounted(()=> store.commit('SETcurrentProject', null))
-const projectInfoState = computed(() => store.state.projectInfo)
+const projectInfoState = computed(() => store.state.cabinetInfo)
 const chooseCabinet = (e) => {
   state.cabinet = e.split('   ')[0]
   store.commit('SETcabinetInfo', e)
