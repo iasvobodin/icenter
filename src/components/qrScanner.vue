@@ -91,6 +91,7 @@ onUnmounted(() => {
   /* width: min(100vw - 10px, 400px);
   height: min(100vw - 10px, 400px);
   color: #ff5100; */
+  width: 100%;
 }
 .video__stream {
   width: 100%;

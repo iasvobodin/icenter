@@ -199,6 +199,7 @@ export const store = createStore<rootState>({
     SETcurrentProject(state, payload: string) {
       // debugger
       state.cabinetInfo = state.openCabinets.find((e) => e.info.wo === payload)!
+      payload === '' && (state.cabinetInfo = null)
       // state.projectInfo =  payload
       // console.log(state.projectInfo, "state.projectInfo");
     },

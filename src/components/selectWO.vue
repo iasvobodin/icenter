@@ -60,7 +60,7 @@
               v-for="(cabinet, index) in filterCabinets"
               :key="index"
               class="project_item"
-              @mousedown="chooseCabinet(cabinet.info.id)"
+              @mousedown="chooseCabinet(cabinet.info.id!)"
             >
               <p class="p__holder">
                 {{ cabinet.info.id }}
@@ -80,8 +80,8 @@
 
 <script setup lang="ts">
 import qrScanner from '@/components/qrScanner.vue'
-import { computed, ComputedRef, reactive } from '@vue/reactivity'
-import { ssrContextKey } from '@vue/runtime-core'
+import { computed, ComputedRef, reactive } from 'vue'
+// import { ssrContextKey } from '@vue/runtime-core'
 import { useStore } from 'vuex'
 
 const emit = defineEmits({
@@ -98,7 +98,7 @@ const state = reactive({
   changeView: true,
 })
 const store = useStore()
-const cabinets = computed(() => store.state.cabinets)
+const cabinets = computed(() => store.state.openCabinets)
 
 const actualProjects = computed(
   () =>
@@ -128,7 +128,7 @@ const filterCabinets = computed(() =>
       )
       .filter((f) =>
         [f.info.id, f.info['cab name']].some((ss) =>
-          ss.includes(state.searchCabinet)
+          ss && ss.includes(state.searchCabinet)
         )
       )
     : store.state.cabinets.filter((el) =>
