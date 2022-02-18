@@ -55,10 +55,10 @@
         <div class="item__card" @click="$router.push(`/cabinets/${v.info.wo}`)">
           WO {{ v.info.wo }}
           <br />
+          <!-- <br /> -->
           {{ v.info['cab name'] }}
-          <br />
           <!-- <p v-if="v.stats?.errors?.length > 0">Ошибок - {{ v.stats?.errors?.length }}</p> -->
-          <br />
+          <!-- <br /> -->
         </div>
       </div>
     </div>
@@ -84,14 +84,9 @@ import {
 } from 'vue'
 import { useRouter } from 'vue-router'
 import qrScanner from '@/components/qrScanner.vue'
-import { useCounterStore } from '@/stores/counterStore'
-// export default {
-//     components: {
-//     // chooseProjectNumber,
-//   },
-// setup() {
-const counterStore = useCounterStore()
-console.log(counterStore.$state.counter);
+// import { useCounterStore } from '@/stores/counterStore'
+// const counterStore = useCounterStore()
+// console.log(counterStore.$state.counter);
 
 
 
@@ -117,7 +112,6 @@ const state = reactive({
   projects: null,
   cabinets: <cabinets[] | null>null,
   filter: null,
-  // groupCabinets: <cabinets[] | null>null,
   actualProjects: <Set<string> | null>null,
   search: '',
   actualStatus: <Array<string> | null>null,
@@ -292,11 +286,11 @@ const getCabinets = async () => {
 const groupCabinets = (project: string) => filter.value.filter((c) => c.info['project number'] === project)
 
 watchEffect(async () => {
-  if (store.state.cabinets.length === 0) {
-    await store.dispatch('GET_cabinets')
-  }
+  // if (store.state.cabinets.length === 0) {
+  //   await store.dispatch('GET_cabinets')
+  // }
   // console.log(store.state.cabinets,'store.state.cabinets');
-  state.cabinets = JSON.parse(JSON.stringify(store.state.cabinets))
+  state.cabinets = JSON.parse(JSON.stringify(store.state.openCabinets))
   getCabinets()
 })
 // store.state.
