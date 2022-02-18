@@ -163,10 +163,10 @@
           <td v-for="(v, k) in extendTemplate" :key="k">
             <render-inputs
               v-if="state.changeTable"
-              v-model="state.projects[key].info"
+              v-model="state.prTest[key].info.extends"
               :data-render="v"
             />
-            <p v-else>{{ state.projects[key].info[k] }}</p>
+            <p v-else>{{ state.prTest[key].info.extends[k] }}</p>
           </td>
         </tr>
       </tbody>
@@ -180,8 +180,8 @@
       $store.state.user.info.userRoles.includes('godmode')
     "
     @click="state.changeTable = !state.changeTable"
-  >Change ALL</button>
-  <button v-if="state.changeTable && state.errors" @click="updateChangedProjects">Update</button>
+  >{{ !state.changeTable ? 'Редактировать' : 'Выйти из режима редактирования' }}</button>
+  <button v-if="state.changeTable && state.errors" @click="updateChangedProjects">Обновить</button>
   <br />
   <br />
 </template>
@@ -254,6 +254,7 @@ const state = reactive({
   errors: <ProjectFlatInfoType[]>{},
   actualStatus: <string[]>{},
   search: '',
+  prTest: <projectType[]>{},
   projects: <ProjectFlatInfoType[]>{},
   updateIndex: new Set() as Set<number>,
   changeTable: false,
@@ -273,7 +274,12 @@ const filterProjects = computed(() => {
     : state.errors
 })
 // store.dispatch('extendProject')
-const extendTemplate = computed(() => store.state.template.template.extend)
+const extendTemplate = computed(() => {
+  return {
+    ...store.state.template.template.extend,
+    // ...store.state.template.template.base 
+  }
+})
 
 watch(selectedStatus, (newValue, oldValue) => {
   if (newValue === true) {
@@ -353,6 +359,7 @@ watchEffect(() => {
     //     },
     //     'cabinets': cabinets[],
     // }
+    state.prTest = JSON.parse(JSON.stringify(projectsFromStore.value)) //projectsFromStore.value
     const projetcFaltInfo: ProjectFlatInfoType[] = projectsFromStore.value.map(project => {
 
       //     type FlatInfo = projectType['info']['base'] & projectType['info']['extends']
@@ -424,33 +431,33 @@ watchEffect(() => {
 
 // console.log(Array.from({ length: 20 }).map(()=> ));
 const postProject = async (index: number) => {
-  const infoBaseExtends = {
-    base: {
-      'Project Name': state.projects[index].info['Project Name'],
-      'SZ №': state.projects[index].info['SZ №'],
-      PM: state.projects[index].info['PM'],
-      Buyer: state.projects[index].info['Buyer'],
-      'Contract Administrator': state.projects[index].info['Contract Administrator'],
-      'Buyout Administrator': state.projects[index].info['Buyout Administrator'],
-      'Lead Engineer': state.projects[index].info['Lead Engineer'],
-    },
-    extends: {
-      'Specific requirement field':
-        state.projects[index].info['Specific requirement field'],
-      'status project': state.projects[index].info['status project'],
-      'senior fitter': state.projects[index].info['senior fitter'],
-      'Comments field': state.projects[index].info['Comments field'],
-      'Shipping date': state.projects[index].info['Shipping date'],
-      "Hours calculated": state.projects[index].info['Hours calculated'],
-      "Hours actual": state.projects[index].info['Hours actual'],
-    },
-  }
+  // const infoBaseExtends = {
+  //   base: {
+  //     'Project Name': state.projects[index].info['Project Name'],
+  //     'SZ №': state.projects[index].info['SZ №'],
+  //     PM: state.projects[index].info['PM'],
+  //     Buyer: state.projects[index].info['Buyer'],
+  //     'Contract Administrator': state.projects[index].info['Contract Administrator'],
+  //     'Buyout Administrator': state.projects[index].info['Buyout Administrator'],
+  //     'Lead Engineer': state.projects[index].info['Lead Engineer'],
+  //   },
+  //   extends: {
+  //     'Specific requirement field':
+  //       state.projects[index].info['Specific requirement field'],
+  //     'status project': state.projects[index].info['status project'],
+  //     'senior fitter': state.projects[index].info['senior fitter'],
+  //     'Comments field': state.projects[index].info['Comments field'],
+  //     'Shipping date': state.projects[index].info['Shipping date'],
+  //     "Hours calculated": state.projects[index].info['Hours calculated'],
+  //     "Hours actual": state.projects[index].info['Hours actual'],
+  //   },
+  // }
 
   const { request: postProject } = useFetch('/api/POST_project', {
     method: 'POST', // или 'PUT'
     body: JSON.stringify({
-      ...state.projects[index],
-      info: infoBaseExtends
+      ...state.prTest[index],
+      // info: infoBaseExtends
     }),
   })
   await postProject()
@@ -463,6 +470,7 @@ const updateChangedProjects = async () => {
   )
   state.changeAllFlag = !state.changeAllFlag
   selectedStatus.value === true ? store.dispatch('GET_projects', 'closed') : store.dispatch('GET_projects', 'open')
+  state.changeTable = !state.changeTable
 }
 
 

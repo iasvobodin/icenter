@@ -415,7 +415,7 @@ const postProject = async () => {
   if (!state.verificationWO) {
     return
   }
-  debugger
+  // debugger
   //CHECK DOUBLES
   const sanitizeCabinets = state.newCabinets.reduce((acc, cab) => {
     if (acc.map[cab.wo])
