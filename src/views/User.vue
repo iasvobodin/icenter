@@ -206,7 +206,7 @@ const tryToGetToken = async () => {
 
 const savePhoto = async () => {
   const updateUser = JSON.parse(JSON.stringify(store.state.user))
-  updateUser.body.photo = `https://icaenter.blob.core.windows.net/user-photo/${store.state.user.info.userDetails}`
+  updateUser.body.photo = `https://icaenter.blob.core.windows.net/user-photo/${store.state.user.info.userDetails.toLowerCase()}`
 
   await store.dispatch('CHECK_AUTH_SERVER', updateUser)
 }
@@ -251,7 +251,7 @@ const getPhoto = async (token: string) => {
   const photo = await resPhoto.blob()
 
   const formData = new FormData()
-  formData.set('photo', photo, store.state.user.info.userDetails)
+  formData.set('photo', photo, store.state.user.info.userDetails.toLowerCase())
   store.commit('SetPhotosToUpload', formData)
   console.log('commit formdata')
   try {

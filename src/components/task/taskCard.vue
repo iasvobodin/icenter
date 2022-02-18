@@ -1,6 +1,6 @@
 <template>
     <div
-        v-if="userTask?.status === 'active' && !minifyView"
+        v-if="!minifyView"
         style="cursor: pointer"
         class="task_card item__card"
         @click="$router.push(`/tasks/${userTask.id}`)"

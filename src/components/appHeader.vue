@@ -114,6 +114,7 @@ async function createTask() {
       status: 'active',
       body: {
         timeStart: Date.now(),
+        timeStartUTC: new Date(Date.now()).toISOString(),
         timeEnd: null,
         timePassed: null,
         completeTask: [],

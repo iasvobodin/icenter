@@ -163,10 +163,10 @@
           <td v-for="(v, k) in extendTemplate" :key="k">
             <render-inputs
               v-if="state.changeTable"
-              v-model="state.prTest[key].info.extends"
+              v-model="state.projectsForTable[key].info.extends"
               :data-render="v"
             />
-            <p v-else>{{ state.prTest[key].info.extends[k] }}</p>
+            <p v-else>{{ state.projectsForTable[key].info.extends[k] }}</p>
           </td>
         </tr>
       </tbody>
@@ -254,7 +254,7 @@ const state = reactive({
   errors: <ProjectFlatInfoType[]>{},
   actualStatus: <string[]>{},
   search: '',
-  prTest: <projectType[]>{},
+  projectsForTable: <projectType[]>{},
   projects: <ProjectFlatInfoType[]>{},
   updateIndex: new Set() as Set<number>,
   changeTable: false,
@@ -359,7 +359,7 @@ watchEffect(() => {
     //     },
     //     'cabinets': cabinets[],
     // }
-    state.prTest = JSON.parse(JSON.stringify(projectsFromStore.value)) //projectsFromStore.value
+    state.projectsForTable = JSON.parse(JSON.stringify(projectsFromStore.value)) //projectsFromStore.value
     const projetcFaltInfo: ProjectFlatInfoType[] = projectsFromStore.value.map(project => {
 
       //     type FlatInfo = projectType['info']['base'] & projectType['info']['extends']
@@ -456,7 +456,7 @@ const postProject = async (index: number) => {
   const { request: postProject } = useFetch('/api/POST_project', {
     method: 'POST', // или 'PUT'
     body: JSON.stringify({
-      ...state.prTest[index],
+      ...state.projectsForTable[index],
       // info: infoBaseExtends
     }),
   })
