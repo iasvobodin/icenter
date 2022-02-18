@@ -14,7 +14,7 @@
         <div class="task__description">
             <p>Проект : {{ userTask.info['project number'] }}</p>
             <p>Шкаф : {{ userTask.info['Шкаф'] }}</p>
-            <p>Время работы: {{ time }}</p>
+            <p>Время работы: {{ userTask?.status === 'active' ? time : userTask.body.timePassed }}</p>
         </div>
     </div>
     <div v-if="minifyView" class="minify" @click="$router.push(`/tasks/${userTask.id}`)">

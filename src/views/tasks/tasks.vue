@@ -13,7 +13,7 @@
     <!-- <button @click="updateTasks">Update</button> -->
     <!-- <delete-photos /> -->
     <!-- <test-promise :test-flag="state.ff" @promise="awaitPr($event)" /> -->
-    <div v-if="state.tasks">
+    <div v-if="state.tasks" class="tasks">
       <div v-for="task in state.tasks" :key="task.id">
         <task-card v-if="state.tasks" :user-task="task" />
       </div>
@@ -72,4 +72,13 @@ const updateTasks = async () => {
 // }
 </script>
 
-<style lang="scss" scoped></style>
+<style  scoped>
+.tasks {
+  display: grid;
+  width: 98%;
+  margin: auto;
+  grid-template-columns: repeat(auto-fill, minmax(max(25vw, 250px), 1fr));
+  column-gap: 2vh;
+  row-gap: 2vh;
+}
+</style>
