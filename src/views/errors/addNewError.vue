@@ -3,12 +3,7 @@
     <h2>Добавление новой ошибки.</h2>
 
     <teleport to="body">
-      <confirm-popup
-        v-if="!projectInfoState"
-        :opened="state.popupOpened"
-        @closed="popupClosed"
-        @confirm="popupConfirmed"
-      >
+      <confirm-popup :opened="!!!projectInfoState" @closed="popupClosed" @confirm="popupConfirmed">
         <template #header>
           <h3>Выберите шкаф.</h3>
         </template>
@@ -16,10 +11,11 @@
           <selectWO @selected-wo="emitAlteredWo" />
           <!-- <p class="message">{{ state.message }}</p> -->
         </template>
-        <!-- <template #buttons>
-          <button disabled class="popup__cancel__button" @click="createTask">Запустить задачу</button>
-          <button class="popup__confirm__button" @click="popupClosed">Отмена</button>
-        </template>-->
+        <template #buttons>
+          <br />
+          <!--<button disabled class="popup__cancel__button" @click="createTask">Запустить задачу</button>
+          <button class="popup__confirm__button" @click="popupClosed">Отмена</button>-->
+        </template>
       </confirm-popup>
     </teleport>
 
@@ -79,7 +75,7 @@ const state = reactive({
 
 const emitAlteredWo = (e: string) => store.commit('SETcurrentProject', e)
 function popupClosed() {
-  state.popupOpened = !state.popupOpened
+  state.popupOpened = false
   // state.message = 'По выбранному WO должен быть расчитан CabTime'
 }
 async function popupConfirmed() {
@@ -89,7 +85,9 @@ async function popupConfirmed() {
 // console.log(router, 'router');
 router.afterEach((to, from) => {
   if (from.fullPath === '/errors') {
+    console.log('ROUTE FROM ERRORS');
     store.commit('SETcurrentProject', '')
+    state.popupOpened = true
   }
 })
 // onUnmounted(()=> store.commit('SETcurrentProject', null))

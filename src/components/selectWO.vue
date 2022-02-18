@@ -60,10 +60,10 @@
               v-for="(cabinet, index) in filterCabinets"
               :key="index"
               class="project_item"
-              @mousedown="chooseCabinet(cabinet.info.id!)"
+              @mousedown="chooseCabinet(cabinet.info.wo!)"
             >
               <p class="p__holder">
-                {{ cabinet.info.id }}
+                {{ cabinet.info.wo }}
                 <br />
                 <small>{{ cabinet.info['cab name'] }}</small>
               </p>
@@ -122,26 +122,26 @@ const filterProject = computed(() =>
 
 const filterCabinets = computed(() =>
   state.searchCabinet
-    ? store.state.cabinets
+    ? store.state.openCabinets
       .filter((el) =>
         filterProject.value.some((s) => el.info['project number'] === s)
       )
       .filter((f) =>
-        [f.info.id, f.info['cab name']].some((ss) =>
+        [f.info.wo, f.info['cab name']].some((ss) =>
           ss && ss.includes(state.searchCabinet)
         )
       )
-    : store.state.cabinets.filter((el) =>
+    : store.state.openCabinets.filter((el) =>
       filterProject.value.some((s) => el.info['project number'] === s)
     )
 )
 
-async function checkStore() {
-  if (store.state.cabinets.length === 0) {
-    await store.dispatch('GET_cabinets')
-  }
-}
-checkStore()
+// async function checkStore() {
+//   if (store.state.openCabinets.length === 0) {
+//     await store.dispatch('GET_cabinets')
+//   }
+// }
+// checkStore()
 
 const scannedEmit = (e: string) => {
   state.searchCabinet = e

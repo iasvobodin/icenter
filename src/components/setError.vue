@@ -1,24 +1,14 @@
 <template>
   <div v-if="$store.state.template">
     <form id="postError" name="postError" @submit.prevent="postError">
-      <div
-        v-if="$store.state.user.info.userRoles.includes('admin')"
-        class="error__item"
-      >
+      <div v-if="$store.state.user.info.userRoles.includes('admin')" class="error__item">
         <h4 class="error__item__title">Выберете роль</h4>
-        <select
-          v-model="role"
-          form="postError"
-          class="change__status error__item__desc"
-        >
+        <select v-model="role" form="postError" class="change__status error__item__desc">
           <option selected value="f_error">Сборщик</option>
           <option value="t_error">Тестировщик</option>
         </select>
       </div>
-      <div
-        v-for="(value, key, index) in $store.state.template.error[role]"
-        :key="index"
-      >
+      <div v-for="(value, key, index) in $store.state.template.error[role]" :key="index">
         <section v-if="returnRender(key)">
           <h3>Статус ошибки: {{ key }}</h3>
           <!-- <conditional-render v-model="errorBody[key]" form-id="postError" :data-render="value" /> -->
@@ -31,16 +21,12 @@
             <h4
               :class="{ error__item__vertical__title: k === 'Описание' }"
               class="error__item__title"
-            >
-              {{ k }}
-            </h4>
+            >{{ k }}</h4>
             <render-inputs v-model="errorBody[key]" :data-render="v" />
           </div>
           <div v-if="errorBody[key] && errorBody[key]['Ответственный']">
             <div class="error__item">
-              <h4 class="error__item__title">
-                {{ errorBody[key]['Ответственный'] }}
-              </h4>
+              <h4 class="error__item__title">{{ errorBody[key]['Ответственный'] }}</h4>
               <select
                 v-model="errorBody[key]['Ошибку допустил']"
                 required
@@ -53,9 +39,7 @@
                     errorBody[key]['Ответственный']
                   ]"
                   :key="index2"
-                >
-                  {{ value2 }}
-                </option>
+                >{{ value2 }}</option>
               </select>
             </div>
           </div>
@@ -83,14 +67,13 @@
     <button
       v-if="$store.state.user.info.userRoles.includes('admin')"
       @click="statusConfirmed = !statusConfirmed"
-    >
-      Изменить статус на "Принято"
-    </button>
+    >Изменить статус на "Принято"</button>
     <br />
     <br />
-    <button v-if="statusConfirmed" @click="statusClosed = !statusClosed">
-      Изменить статус на "Устранено"
-    </button>
+    <button
+      v-if="statusConfirmed"
+      @click="statusClosed = !statusClosed"
+    >Изменить статус на "Устранено"</button>
     <br />
     <br />
   </div>
@@ -163,16 +146,16 @@ export default {
       const error = {
         id: this.id,
         info: {
-          Проект: this.$store.state.projectInfo['project number'],
-          Шкаф: this.$store.state.projectInfo['cab name'],
-          wo: this.$store.state.projectInfo.wo.toString(),
+          Проект: this.$store.state.cabinetInfo['project number'],
+          Шкаф: this.$store.state.cabinetInfo['cab name'],
+          wo: this.$store.state.cabinetInfo.wo.toString(),
           Добавил: this.$store.state.user.info.userDetails.toLowerCase(),
-          Мастер: this.$store.state.projectInfo['senior fitter'].toLowerCase(),
+          Мастер: this.$store.state.cabinetInfo['senior fitter'].toLowerCase(),
           status: Object.values(this.errorBody.Устранено)[0]
             ? 'closed'
             : Object.values(this.errorBody.Принято)[0]
-            ? 'confirmed'
-            : 'open',
+              ? 'confirmed'
+              : 'open',
         },
         photos: this.photos,
         type: this.role,
@@ -273,14 +256,14 @@ form {
   text-align: center;
   margin: 5px;
 }
-input[type='submit'] {
+input[type="submit"] {
   border: 1px solid green;
   background-color: rgba(0, 207, 0, 0.205);
 }
-input[type='number'] {
+input[type="number"] {
   height: 30px;
 }
-input[type='submit']:hover {
+input[type="submit"]:hover {
   background-color: rgb(0, 83, 0);
   color: white;
 }

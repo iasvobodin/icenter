@@ -22,6 +22,7 @@ type cabinets = {
     status: string
     "status project": string
     wo: string
+    "senior fitter": string
   }
 }
 // type cabinetInfo = {
@@ -235,6 +236,7 @@ export const store = createStore<rootState>({
               "Project Name": project.info.base['Project Name'],
               status: project.status,
               "status project": project.info.extends['status project'],
+              "senior fitter": project.info.extends['senior fitter'],
             }
           })
         })
