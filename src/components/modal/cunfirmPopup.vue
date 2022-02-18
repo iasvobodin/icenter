@@ -1,7 +1,7 @@
 <template>
   <div v-if="opened" role="dialog" class="popup">
     <div class="overlay" role="button" tabindex="0" @click="closed" />
-    <div class="dialog">
+    <div class="dialog dialog__custom">
       <div class="header">
         <slot name="header"></slot>
       </div>
@@ -57,6 +57,10 @@ onBeforeUnmount(() => {
 </script>
 
 <style lang="css" scoped>
+.dialog__custom {
+  align-self: start;
+  justify-self: center;
+}
 .popup {
   position: fixed;
   display: grid;
@@ -85,6 +89,7 @@ onBeforeUnmount(() => {
   width: min(500px, 100vw - 10px);
   min-height: 150px;
 }
+
 .select {
   /* position: absolute; */
   /* grid-area: 1/1/2/2; */
@@ -102,6 +107,13 @@ onBeforeUnmount(() => {
   margin: auto;
   min-height: 60px;
   align-content: center;
+}
+@media (orientation: portrait) {
+  .dialog__custom {
+    margin-top: 50px;
+    align-self: start;
+    justify-self: center;
+  }
 }
 </style>
 
