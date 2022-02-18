@@ -1,14 +1,8 @@
 <template>
   <div v-if="computedItems.length > 0">
-    <div
-      v-for="(item, key) in computedItems"
-      :key="item.id"
-      class="error__holder"
-    >
+    <div v-for="(item, key) in computedItems" :key="item.id" class="error__holder">
       <h2 @click="$router.push(`/errors/${item.id}`)">{{ item.id }}</h2>
-      <small :style="{ backgroundColor: statusColor[item.status] }"
-        >Статус: {{ item.status }}</small
-      >
+      <small :style="{ backgroundColor: statusColor[item.status] }">Статус: {{ item.status }}</small>
       <br />
       <br />
       <div class="err__tabs">
@@ -28,9 +22,7 @@
           <info-render :info-data="{ ...item.body[currentTab[key]] }" />
         </div>
         <div v-for="ph in item.photos" v-else :key="ph" class="photo__holder">
-          <a
-            :href="`https://icaenter.blob.core.windows.net/errors-photo/${ph}`"
-          >
+          <a :href="`https://icaenter.blob.core.windows.net/errors-photo/${ph}`">
             <img
               :src="`https://icaenter.blob.core.windows.net/errors-photo/thumb__${ph}`"
               alt="photo error"
@@ -44,9 +36,7 @@
     <h2>Безошибочный шкаф</h2>
   </div>
   <br />
-  <button v-if="computedItems && computedItems.length > 0" @click="saveBook">
-    Экспорт excel
-  </button>
+  <button v-if="computedItems && computedItems.length > 0" @click="saveBook">Экспорт excel</button>
   <br />
   <router-link to="/errors/addnewerror">
     <img class="add__button" src="/img/add.svg" alt="Добавить новую ошибку" />
@@ -82,7 +72,7 @@ export default {
       store.state.cabinetItems?.filter((e) => e.type.endsWith('error'))
     )
 
-    computedItems.value.forEach((e, i) => {
+    computedItems.value && computedItems.value.forEach((e, i) => {
       state.currentTab[i] = 'Открыто'
     })
 
@@ -170,7 +160,7 @@ export default {
   height: 40px;
   cursor: pointer;
 }
-[type='radio'] {
+[type="radio"] {
   display: none;
 }
 
@@ -195,7 +185,7 @@ label {
   width: 100%;
 }
 
-[type='radio']:checked ~ label {
+[type="radio"]:checked ~ label {
   background: white;
   background-color: rgb(255, 255, 255);
   /* color: aliceblue; */

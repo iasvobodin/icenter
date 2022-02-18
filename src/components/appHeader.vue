@@ -129,6 +129,9 @@ async function createTask() {
 </script>
 
 <style lang="css" scoped>
+.dialog {
+  align-self: start;
+}
 .message {
   text-align: center;
 }

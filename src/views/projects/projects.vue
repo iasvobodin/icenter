@@ -424,10 +424,33 @@ watchEffect(() => {
 
 // console.log(Array.from({ length: 20 }).map(()=> ));
 const postProject = async (index: number) => {
+  const infoBaseExtends = {
+    base: {
+      'Project Name': state.projects[index].info['Project Name'],
+      'SZ №': state.projects[index].info['SZ №'],
+      PM: state.projects[index].info['PM'],
+      Buyer: state.projects[index].info['Buyer'],
+      'Contract Administrator': state.projects[index].info['Contract Administrator'],
+      'Buyout Administrator': state.projects[index].info['Buyout Administrator'],
+      'Lead Engineer': state.projects[index].info['Lead Engineer'],
+    },
+    extends: {
+      'Specific requirement field':
+        state.projects[index].info['Specific requirement field'],
+      'status project': state.projects[index].info['status project'],
+      'senior fitter': state.projects[index].info['senior fitter'],
+      'Comments field': state.projects[index].info['Comments field'],
+      'Shipping date': state.projects[index].info['Shipping date'],
+      "Hours calculated": state.projects[index].info['Hours calculated'],
+      "Hours actual": state.projects[index].info['Hours actual'],
+    },
+  }
+
   const { request: postProject } = useFetch('/api/POST_project', {
     method: 'POST', // или 'PUT'
     body: JSON.stringify({
       ...state.projects[index],
+      info: infoBaseExtends
     }),
   })
   await postProject()

@@ -146,11 +146,11 @@ export default {
       const error = {
         id: this.id,
         info: {
-          Проект: this.$store.state.cabinetInfo['project number'],
-          Шкаф: this.$store.state.cabinetInfo['cab name'],
-          wo: this.$store.state.cabinetInfo.wo.toString(),
+          Проект: this.$store.state.cabinetInfo.info['project number'],
+          Шкаф: this.$store.state.cabinetInfo.info['cab name'],
+          wo: this.$store.state.cabinetInfo.info.wo.toString(),
           Добавил: this.$store.state.user.info.userDetails.toLowerCase(),
-          Мастер: this.$store.state.cabinetInfo['senior fitter'].toLowerCase(),
+          Мастер: this.$store.state.cabinetInfo.info['senior fitter'].toLowerCase(),
           status: Object.values(this.errorBody.Устранено)[0]
             ? 'closed'
             : Object.values(this.errorBody.Принято)[0]
