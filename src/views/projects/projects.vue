@@ -52,7 +52,7 @@
   </div>
 
   <br />
-  <div v-if="state.errors && view === 'grid'">
+  <div v-if="state.projects && view === 'grid'">
     <div
       v-for="status in state.actualStatus"
       v-show="groupProjects(status, grrr).length != 0"
@@ -142,10 +142,18 @@
       </colgroup>
       <tr class="head">
         <th>№</th>
-        <th v-for="(vv, kk) in extendTemplate" :key="kk" @click="sortBy(kk)">{{ kk }}</th>
+        <th
+          v-for="(vv, kk) in extendTemplate"
+          :key="kk"
+          @click="sortBy(kk)"
+        >{{ kk }} {{ state.sortBy === kk ? '&#8628;' : '' }}</th>
       </tr>
       <tbody>
-        <tr v-for="(value, key, index) in state.projects" :key="index" @click="getIndex(key)">
+        <tr
+          v-for="(value, key, index) in state.projectsForTable"
+          :key="index"
+          @click="getIndex(key)"
+        >
           <!-- @click="
               !selectedStatus
                 ? $router.push(`/projects/${value.id}`)
@@ -176,12 +184,12 @@
   <br />
   <button
     v-if="
-      state.errors && view === 'table' && !selectedStatus &&
+      state.projects && view === 'table' && !selectedStatus &&
       $store.state.user.info.userRoles.includes('godmode')
     "
     @click="state.changeTable = !state.changeTable"
   >{{ !state.changeTable ? 'Редактировать' : 'Выйти из режима редактирования' }}</button>
-  <button v-if="state.changeTable && state.errors" @click="updateChangedProjects">Обновить</button>
+  <button v-if="state.changeTable && state.projects" @click="updateChangedProjects">Обновить</button>
   <br />
   <br />
 </template>
@@ -258,7 +266,8 @@ const state = reactive({
   projects: <ProjectFlatInfoType[]>{},
   updateIndex: new Set() as Set<number>,
   changeTable: false,
-  additionalSearch: false
+  additionalSearch: false,
+  sortBy: 'id'
 })
 
 const getIndex = (i: number) => state.updateIndex.add(i)
@@ -266,12 +275,12 @@ const getIndex = (i: number) => state.updateIndex.add(i)
 const filterProjects = computed(() => {
   //  debugger
   return state.search
-    ? state.errors.filter((e) =>
+    ? state.projects.filter((e) =>
       [e?.id, e.info?.PM, e.info?.['senior fitter']].some(
         (s) => s && s.toLowerCase().includes(state.search.toLowerCase())
       )
     )
-    : state.errors
+    : state.projects
 })
 // store.dispatch('extendProject')
 const extendTemplate = computed(() => {
@@ -292,15 +301,6 @@ watch(selectedStatus, (newValue, oldValue) => {
     store.dispatch('GET_projects', 'open')
   }
 })
-
-
-
-
-// store.dispatch('GET_projects', 'open')
-
-
-
-
 
 const projectsFromStore = computed(() => store.state.projects)
 
@@ -332,58 +332,31 @@ function groupProjects(status: string, sortOptions: keyof ProjectFlatInfoType['i
 
 watchEffect(() => {
   if (projectsFromStore.value) {
-
-    //         type cabinets = {
-    //     'wo': string,
-    //     'cab name': string
-    // }
-    // type ProjectFlatInfoType = {
-    //     "id": string,
-    //     "status": "open" | 'closed',
-    //     "info": {
-
-    //             "Project Name": string,
-    //             "SZ №": string,
-    //             "PM": string,
-    //             "Buyer": string,
-    //             "Contract Administrator": string,
-    //             "Buyout Administrator": string,
-    //             "Lead Engineer": string
-    //             "Specific requirement field": string,
-    //             "senior fitter": string,
-    //             "status project": string,
-    //             "Hours calculated": string,
-    //             "Hours actual": string,
-    //             "Comments field": string,
-    //             "Shipping date": string
-    //     },
-    //     'cabinets': cabinets[],
-    // }
-    state.projectsForTable = JSON.parse(JSON.stringify(projectsFromStore.value)) //projectsFromStore.value
+    state.projectsForTable = JSON.parse(JSON.stringify(projectsFromStore.value)).sort(function (a, b) {
+      const nameA = a.id.toLowerCase()
+      const nameB = b.id.toLowerCase()
+      if (nameA < nameB) {
+        return -1
+      }
+      if (nameA > nameB) {
+        return 1
+      }
+      return 0
+    }) //projectsFromStore.value
     const projetcFaltInfo: ProjectFlatInfoType[] = projectsFromStore.value.map(project => {
 
-      //     type FlatInfo = projectType['info']['base'] & projectType['info']['extends']
-      //     type ProjetcFaltInfo = projectType & {info : FlatInfo}
-      // const projetcFaltInfo: ProjetcFaltInfo[] = projectsFromStore.value.map(project => {
       const info = { ...project.info.extends, ...project.info.base }
       return {
         ...project, info
       }
     })
-    // state.errors = resProjects.value!
 
-    state.errors = state.projects = projetcFaltInfo// JSON.parse(JSON.stringify(projectsFromStore.value))
+    state.projects = projetcFaltInfo// JSON.parse(JSON.stringify(projectsFromStore.value))
 
     groupBy(projetcFaltInfo, grrr.value)
-    // state.actualStatus = [
-    //   ...projectsFromStore.value.reduce(
-    //     (acc, pr) => acc.add(pr.info['status project']),
-    //     new Set() as Set<string>
-    //   ),
-    // ].sort()
 
 
-    state.errors.sort(function (a, b) {
+    state.projects.sort(function (a, b) {
       const nameA = a.info['status project']?.toLowerCase()
       const nameB = b.info['status project']?.toLowerCase()
       if (nameA < nameB) {
@@ -403,7 +376,7 @@ watchEffect(() => {
 //   await reqProjects()
 
 
-//   state.errors = resProjects.value!
+//   state.projects = resProjects.value!
 
 //   state.projects = JSON.parse(JSON.stringify(resProjects.value))
 
@@ -414,7 +387,7 @@ watchEffect(() => {
 //     ),
 //   ].sort()
 
-//   state.errors.sort(function (a, b) {
+//   state.projects.sort(function (a, b) {
 //     const nameA = a.info['status project']?.toLowerCase()
 //     const nameB = b.info['status project']?.toLowerCase()
 //     if (nameA < nameB) {
@@ -431,27 +404,6 @@ watchEffect(() => {
 
 // console.log(Array.from({ length: 20 }).map(()=> ));
 const postProject = async (index: number) => {
-  // const infoBaseExtends = {
-  //   base: {
-  //     'Project Name': state.projects[index].info['Project Name'],
-  //     'SZ №': state.projects[index].info['SZ №'],
-  //     PM: state.projects[index].info['PM'],
-  //     Buyer: state.projects[index].info['Buyer'],
-  //     'Contract Administrator': state.projects[index].info['Contract Administrator'],
-  //     'Buyout Administrator': state.projects[index].info['Buyout Administrator'],
-  //     'Lead Engineer': state.projects[index].info['Lead Engineer'],
-  //   },
-  //   extends: {
-  //     'Specific requirement field':
-  //       state.projects[index].info['Specific requirement field'],
-  //     'status project': state.projects[index].info['status project'],
-  //     'senior fitter': state.projects[index].info['senior fitter'],
-  //     'Comments field': state.projects[index].info['Comments field'],
-  //     'Shipping date': state.projects[index].info['Shipping date'],
-  //     "Hours calculated": state.projects[index].info['Hours calculated'],
-  //     "Hours actual": state.projects[index].info['Hours actual'],
-  //   },
-  // }
 
   const { request: postProject } = useFetch('/api/POST_project', {
     method: 'POST', // или 'PUT'
@@ -475,10 +427,10 @@ const updateChangedProjects = async () => {
 
 
 const sortBy = (el: keyof projectType['info']['extends'],) => {
-
-  state.projects.sort(function (a, b) {
-    const nameA = a.info[el]?.toString().toLowerCase()
-    const nameB = b.info[el]?.toString().toLowerCase()
+  state.sortBy = el
+  state.projectsForTable.sort(function (a, b) {
+    const nameA = a.info.extends[el]?.toString().toLowerCase()
+    const nameB = b.info.extends[el]?.toString().toLowerCase()
     if (nameA < nameB) {
       return -1
     }
@@ -826,5 +778,17 @@ tbody tr td {
 }
 tbody tr td p {
   text-align: left;
+}
+a {
+  text-decoration-color: black;
+}
+a:visited {
+  color: black;
+}
+a:link {
+  color: black;
+}
+a:hover {
+  color: orange;
 }
 </style>

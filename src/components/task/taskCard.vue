@@ -7,7 +7,7 @@
     >
         <div class="user__photo__holder">
             <picture>
-                <source :srcset="linkPhoto + userTask.info.user" />
+                <source :srcset="linkPhoto + 'thumb__' + userTask.info.user" />
                 <img src="/img/user.png" alt="user photo" />
             </picture>
         </div>
