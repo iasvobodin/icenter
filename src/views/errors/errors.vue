@@ -208,7 +208,7 @@ const saveBook = async () => {
     const row = [
       e.info.wo,
       'TBD',
-      e.info.Добавил,
+      e.type === 't_error' ? e.body.at(-1)!.Открыто['Ошибку допустил'] : e.info.Добавил,
       e.type === 't_error' ? e.info.Добавил : '',
       'TBD',
       e.type === 't_error' ? 'FFI' : 'Сборка',
