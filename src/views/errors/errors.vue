@@ -144,7 +144,7 @@
           status {{ task.info.status }}
         </div>
       </div>
-      <button @click="saveBook">IMPORT EXCEL</button>
+      <button @click="saveBook">EXPORT EXCEL</button>
     </div>
   </section>
 </template>
@@ -206,6 +206,8 @@ const saveBook = async () => {
 
   state.errorsByT.map((e, i) => {
     const row = [
+      e.info.Проект,
+      e.info.Шкаф,
       e.info.wo,
       'TBD',
       e.body.at(-1)!.Открыто['Ошибку допустил'] ? e.body.at(-1)!.Открыто['Ошибку допустил']! : e.info.Добавил,
@@ -220,6 +222,8 @@ const saveBook = async () => {
   })
   const worksheet = XLSX.utils.aoa_to_sheet([
     [
+      'Проект',
+      'Название шкафа',
       'WO',
       'Проектировщик',
       'Сборщик',
