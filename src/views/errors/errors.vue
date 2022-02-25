@@ -65,9 +65,92 @@
       @click="$router.push('/errors/addnewerror')"
     />
   </div>
+  <section>
+    <table v-show="false" v-if="storeTemplate">
+      <colgroup>
+        <col span="1" style="width: 100px" />
+        <col span="1" style="width: 100px" />
+        <col span="1" style="width: 100px" />
+        <col span="1" style="width: 100px" />
+        <col span="1" style="width: 100px" />
+        <col span="1" style="width: 100px" />
+        <col span="1" style="width: auto" />
+        <col v-if="state.editTable" span="1" style="width: 200px" />
+        <col v-if="state.editTable" span="1" style="width: 200px" />
+        <col v-if="state.editTable" span="1" style="width: 200px" />
+        <col v-if="state.editTable" span="1" style="width: 200px" />
+        <col v-if="state.editTable" span="1" style="width: auto" />
+      </colgroup>
+      <tr class="head">
+        <th v-for="(vv, kk) in state.errors[0]?.info" :key="kk" rowspan="2">{{ kk }}</th>
+        <th rowspan="2">Описание ошибки</th>
+        <th v-if="state.editTable">Статус решения</th>
+        <th v-if="state.editTable">Описание решения</th>
+        <th v-if="state.editTable">Статус устранения</th>
+        <th v-if="state.editTable">Описание устранения</th>
+        <th v-if="state.editTable">Время на устранения</th>
+      </tr>
+      <tbody>
+        <tr v-for="(value, key, index) in state.errors" :key="index">
+          <td
+            v-for="(vv, kk, ii) in value.info"
+            :key="ii"
+          >{{ vv?.endsWith('@emerson.com') ? vv.split('@')[0].split('.')[1] : vv }}</td>
+          <td>{{ value.body.at(-1)?.Открыто.Описание }}</td>
+          <!-- eslint-disable-next-line vue/no-use-v-if-with-v-for -->
+          <td
+            v-for="(vvv, kkk, iii) in storeTemplate?.error?.f_error?.Принято"
+            v-if="state.editTable"
+            :key="iii"
+          >
+            <render-inputs
+              v-model="state.errors[key].body[state.errors[key].body.length - 1].Принято"
+              :data-render="vvv"
+            />
+          </td>
+          <!-- eslint-disable-next-line vue/no-use-v-if-with-v-for -->
+          <td
+            v-for="(vvv, kkk, iii) in storeTemplate?.error?.f_error?.Устранено"
+            v-if="state.editTable"
+            :key="iii"
+          >
+            <render-inputs
+              v-model="state.errors[key].body[state.errors[key].body.length - 1].Устранено"
+              :data-render="vvv"
+            />
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+  <section
+    v-if="$store.state.user.info.userRoles.includes('testengeneer') || $store.state.user.info.userRoles.includes('godmode')"
+  >
+    <h2>Типа отчёт</h2>
+    <div>
+      <br />FROM
+      <input v-model="state.dateFrom" type="date" />
+      <!-- {{ Date.parse(state.date) / 1000 }} -->
+      <br />
+      <br />TO
+      <input v-model="state.dateTo" type="date" />
+      <!-- {{ new Date(state.date2) }} -->
+      <br />
+      <br />
+      <button @click="getErrorsByTime">Запрос</button>
+      <div v-if="state.errorsByT" class="tasks">
+        <div v-for="task in state.errorsByT" :key="task.id">
+          {{ task.id }}
+          status {{ task.info.status }}
+        </div>
+      </div>
+      <button @click="saveBook">IMPORT EXCEL</button>
+    </div>
+  </section>
 </template>
 
 <script setup lang="ts">
+import renderInputs from '@/components/renderInputs'
 import itemPhotoUploader from '@/components/itemPhotoUploader.vue'
 import { reactive, computed, watch, ref } from 'vue'
 import { useFetch } from '@/hooks/fetch'
@@ -90,8 +173,13 @@ type modType = {
 }
 
 const state = reactive({
+  dateFrom: "",
+  dateTo: "",
+  editTable: false,
   phList: [],
   modErrors: <modType[]>{},
+  errors: <errorType[]>{},
+  errorsByT: <errorType[]>{},
   search: '',
   // resErrors: null,
   fetchStatus: null,
@@ -100,6 +188,69 @@ const state = reactive({
 const selectedStatus = ref('open')
 
 const store = useStore()
+
+
+const getErrorsByTime = async () => {
+  const { request: reqTasks, response: resTasks } = useFetch<errorType[]>(`/api/errorsByTime?from=${new Date(state.dateFrom).toISOString()}&to=${new Date(state.dateTo).toISOString()}`)
+  await reqTasks()
+  state.errorsByT = resTasks.value!
+}
+
+
+const saveBook = async () => {
+  const XLSX = await import('xlsx')
+  // function formatDate(date) {
+  //   return `${date.getDate()}.0${date.getMonth() + 1}.${date.getFullYear()}`
+  // }
+  const arrArr: string[][] = []
+
+  state.errorsByT.map((e, i) => {
+    const row = [
+      e.info.wo,
+      'TBD',
+      e.info.Добавил,
+      e.type === 't_error' ? e.info.Добавил : '',
+      'TBD',
+      e.type === 't_error' ? 'FFI' : 'Сборка',
+      e.body.at(-1)!.Устранено['Время на устранение']?.toString() ? e.body.at(-1)!.Устранено['Время на устранение']!.toString() : '',
+      e.body.at(-1)!.Открыто['Количество ошибок']?.toString() ? e.body.at(-1)!.Открыто['Количество ошибок']!.toString() : '',
+      e.body.at(-1)!.Открыто.Описание!
+    ]
+    arrArr.push(row)
+  })
+  const worksheet = XLSX.utils.aoa_to_sheet([
+    [
+      'WO',
+      'Проектировщик',
+      'Сборщик',
+      'Проверил',
+      'Код ошибки',
+      'Этап',
+      'Влияние на трудозатраты',
+      'Кол-во ошибок',
+      'Описание',
+    ],
+    ...arrArr,
+  ])
+  const new_workbook = XLSX.utils.book_new()
+  XLSX.utils.book_append_sheet(
+    new_workbook,
+    worksheet,
+    // route.params.cabinetId
+  )
+  XLSX.writeFile(new_workbook, `${Date.now()}.xlsx`)
+}
+
+
+
+
+
+
+
+
+
+
+const storeTemplate = computed(() => store.state.template)
 
 const keyEnter = (e: Event) => {
   if (!(e.target instanceof HTMLInputElement)) return
@@ -113,8 +264,19 @@ const getErrors = async () => {
     if (Object.keys(store.state.activeErrors).length === 0) {
       await request()
       store.commit('SET_activeErrors', response.value!)
-      console.log(store.state.activeErrors)
+      // console.log(store.state.activeErrors)
     }
+
+    state.errors = JSON.parse(JSON.stringify(store.state.activeErrors)) //.map((e) => {
+    //   return {
+    //     id: e.id,
+    //     type: e.type,
+    //     info: {
+    //       ...e.info,
+    //       Описание: e.body.at(-1)!.Открыто.Описание,
+    //     },
+    //   }
+    // })
 
     state.modErrors = store.state.activeErrors.map((e) => {
       return {
@@ -126,6 +288,7 @@ const getErrors = async () => {
         },
       }
     })
+
   } catch (error) {
     console.log('err get errors', error)
   }
@@ -275,5 +438,20 @@ input {
   margin: 5px;
   white-space: pre-wrap;
   word-wrap: break-word;
+}
+td input {
+  min-width: auto;
+  width: 5ch;
+  border-color: black;
+  line-height: 1.1;
+  height: auto;
+  padding: 2px;
+}
+td select {
+  width: 90%;
+}
+table {
+  width: auto;
+  /* width: max(98vw, 800px); */
 }
 </style>

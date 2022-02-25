@@ -41,6 +41,10 @@ const routes = [
   },
   {
     path: '/errors',
+    beforeEnter: async (to, from) => {
+      !store.state.template.error && (await store.dispatch('GET_template'))
+      return true
+    },
     component: () => import('@/views/errors/errors.vue'),
     // beforeEnter: async (to, from) => {
     //   Object.keys(store.state.template).length===0 && (await store.dispatch('GET_template'))

@@ -8,8 +8,7 @@
       "methods": [
         "get",
         "post"
-      ],
-      "route": "errors"
+      ]
     },
     {
       "type": "http",
@@ -19,19 +18,11 @@
     {
       "type": "cosmosDB",
       "direction": "in",
-      "name": "data",
+      "name": "tasks",
       "ConnectionStringSetting": "legendstats_DOCUMENTDB",
       "databaseName": "icenter",
       "collectionName": "icenterDB",
-      "sqlQuery": "SELECT * FROM c where (c.type = 'f_error' or c.type = 't_error' ) and (c.info.status = 'open' or c.info.status = 'confirmed')"
-    },
-    {
-      "type": "cosmosDB",
-      "direction": "out",
-      "name": "errorOut",
-      "ConnectionStringSetting": "legendstats_DOCUMENTDB",
-      "databaseName": "icenter",
-      "collectionName": "icenterErrors"
+      "sqlQuery": "SELECT * FROM c WHERE (c.type = 'f_error' or c.type = 't_error') and c._createUTC >= {from} and c._createUTC <= {to}"
     }
   ]
 }

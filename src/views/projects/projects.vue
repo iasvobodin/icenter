@@ -40,7 +40,7 @@
       </select>
     </div>
   </div>
-  <div class="ddiv" data-tid="f22fdef8">
+  <div class="ddiv">
     <label class="llable">
       <input v-model="view" type="radio" class="iinput" value="table" name="viewType" checked />
       <span class="sspan" :class="{ activetable: view === 'table' }"></span>
@@ -332,7 +332,9 @@ function groupProjects(status: string, sortOptions: keyof ProjectFlatInfoType['i
 
 watchEffect(() => {
   if (projectsFromStore.value) {
-    state.projectsForTable = JSON.parse(JSON.stringify(projectsFromStore.value)).sort(function (a, b) {
+    state.projectsForTable = JSON.parse(JSON.stringify(projectsFromStore.value))
+
+    state.projectsForTable.sort(function (a, b) {
       const nameA = a.id.toLowerCase()
       const nameB = b.id.toLowerCase()
       if (nameA < nameB) {

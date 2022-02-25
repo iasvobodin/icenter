@@ -246,7 +246,7 @@ const returnRender = (key: string) => {
   if (
     state.changeInfo &&
     store.state.user.info.userDetails.toLowerCase() ===
-      state.error!.info.Добавил
+    state.error!.info.Добавил
   ) {
     if (key === 'Открыто') {
       return true
@@ -279,9 +279,11 @@ const updateErorData = async () => {
       status: Object.values(state.error!.body[0].Устранено)[0]
         ? 'closed'
         : Object.values(state.error!.body[0].Принято)[0]
-        ? 'confirmed'
-        : 'open',
+          ? 'confirmed'
+          : 'open',
+
     },
+    _createUTC: new Date(+err!.id.split('__')[1] * 1000).toISOString(),
     body: [
       ...err!.body, //CURRENT BODY +
       {

@@ -32,6 +32,7 @@ export interface errorType {
     Мастер: string
     status?: string
   }
+  _createUTC?: string
   photos?: string[]
   type: 'f_error' | 't_error'
   body: errorBodyType[]

@@ -145,6 +145,7 @@ export default {
 
       const error = {
         id: this.id,
+        _createUTC = new Date(Date.now()).toISOString()
         info: {
           Проект: this.$store.state.cabinetInfo.info['project number'],
           Шкаф: this.$store.state.cabinetInfo.info['cab name'],
