@@ -16,8 +16,8 @@
       </div>
     </div>
   </div>
-  <button @click="getErrors">geterrors</button>
-  <button @click="updateElements">updateerrors</button>
+  <!-- <button @click="getErrors">geterrors</button>
+  <button @click="updateElements">updateerrors</button>-->
 </template>
 
 <script setup lang="ts">
