@@ -357,7 +357,7 @@ watchEffect(() => {
 
     groupBy(projetcFlatInfo, grrr.value)
 
-    alert('watch')
+    // alert('watch')
     state.projects.sort(function (a, b) {
       const nameA = a.info['status project']?.toLowerCase()
       const nameB = b.info['status project']?.toLowerCase()
