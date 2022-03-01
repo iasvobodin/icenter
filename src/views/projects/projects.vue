@@ -128,7 +128,7 @@
     </router-link>
   </div>
 
-  <section v-if="view === 'table'" class="table">
+  <section v-if="view === 'table' && state.projectsForTable" class="table">
     <table :class="{ closed__card: selectedStatus }">
       <colgroup>
         <col span="1" style="width: 6%" />
@@ -262,7 +262,7 @@ const state = reactive({
   errors: <ProjectFlatInfoType[]>{},
   actualStatus: <string[]>{},
   search: '',
-  projectsForTable: <projectType[]>{},
+  projectsForTable: <projectType[] | null>null,
   projects: <ProjectFlatInfoType[]>{},
   updateIndex: new Set() as Set<number>,
   changeTable: false,
@@ -332,9 +332,9 @@ function groupProjects(status: string, sortOptions: keyof ProjectFlatInfoType['i
 
 watchEffect(() => {
   if (projectsFromStore.value) {
-    state.projectsForTable = JSON.parse(JSON.stringify(projectsFromStore.value))
+    !state.projectsForTable && (state.projectsForTable = JSON.parse(JSON.stringify(projectsFromStore.value)))
 
-    state.projectsForTable.sort(function (a, b) {
+    state.sortBy === 'id' && state.projectsForTable!.sort(function (a, b) {
       const nameA = a.id.toLowerCase()
       const nameB = b.id.toLowerCase()
       if (nameA < nameB) {
@@ -345,7 +345,7 @@ watchEffect(() => {
       }
       return 0
     }) //projectsFromStore.value
-    const projetcFaltInfo: ProjectFlatInfoType[] = projectsFromStore.value.map(project => {
+    const projetcFlatInfo: ProjectFlatInfoType[] = projectsFromStore.value.map(project => {
 
       const info = { ...project.info.extends, ...project.info.base }
       return {
@@ -353,11 +353,11 @@ watchEffect(() => {
       }
     })
 
-    state.projects = projetcFaltInfo// JSON.parse(JSON.stringify(projectsFromStore.value))
+    state.projects = projetcFlatInfo// JSON.parse(JSON.stringify(projectsFromStore.value))
 
-    groupBy(projetcFaltInfo, grrr.value)
+    groupBy(projetcFlatInfo, grrr.value)
 
-
+    alert('watch')
     state.projects.sort(function (a, b) {
       const nameA = a.info['status project']?.toLowerCase()
       const nameB = b.info['status project']?.toLowerCase()
@@ -410,7 +410,7 @@ const postProject = async (index: number) => {
   const { request: postProject } = useFetch('/api/POST_project', {
     method: 'POST', // или 'PUT'
     body: JSON.stringify({
-      ...state.projectsForTable[index],
+      ...state.projectsForTable![index],
       // info: infoBaseExtends
     }),
   })
@@ -430,7 +430,7 @@ const updateChangedProjects = async () => {
 
 const sortBy = (el: keyof projectType['info']['extends'],) => {
   state.sortBy = el
-  state.projectsForTable.sort(function (a, b) {
+  state.projectsForTable && state.projectsForTable.sort(function (a, b) {
     // debugger
     const nameA = a.info.extends[el]?.toLowerCase()
     const nameB = b.info.extends[el]?.toLowerCase()
@@ -679,11 +679,11 @@ textarea {
   justify-content: space-between;
   margin-bottom: 1vh;
 }
-.double:first-child > p {
-  /* place-self: center;
+/* .double:first-child > p {
+  place-self: center;
   white-space: pre-wrap;
-  word-wrap: break-word; */
-}
+  word-wrap: break-word;
+} */
 .vertical {
   grid-auto-flow: row;
   grid-template-columns: 1fr;
