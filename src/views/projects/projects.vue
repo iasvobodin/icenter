@@ -431,8 +431,9 @@ const updateChangedProjects = async () => {
 const sortBy = (el: keyof projectType['info']['extends'],) => {
   state.sortBy = el
   state.projectsForTable.sort(function (a, b) {
-    const nameA = a.info.extends[el]?.toString().toLowerCase()
-    const nameB = b.info.extends[el]?.toString().toLowerCase()
+    // debugger
+    const nameA = a.info.extends[el]?.toLowerCase()
+    const nameB = b.info.extends[el]?.toLowerCase()
     if (nameA < nameB) {
       return -1
     }
