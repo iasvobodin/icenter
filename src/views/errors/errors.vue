@@ -24,8 +24,9 @@
     @keyup.enter="keyEnter"
   />
   <br />
+  <table-grid-view v-if="$store.state.user.info.userRoles.includes('admin')" @view="view = $event" />
   <br />
-  <div v-if="state.modErrors" class="errors__holder">
+  <div v-if="state.errorsForGrid && view === 'grid'" class="errors__holder">
     <div
       v-for="(value, key, index) in filter"
       :key="index"
@@ -65,8 +66,9 @@
       @click="$router.push('/errors/addnewerror')"
     />
   </div>
-  <section>
-    <table v-show="false" v-if="storeTemplate">
+  <section v-if="view === 'table' && storeTemplate" class="table__holder">
+    <!-- v-show="false" -->
+    <table>
       <colgroup>
         <col span="1" style="width: 100px" />
         <col span="1" style="width: 100px" />
@@ -74,29 +76,39 @@
         <col span="1" style="width: 100px" />
         <col span="1" style="width: 100px" />
         <col span="1" style="width: 100px" />
-        <col span="1" style="width: auto" />
+        <col span="1" style="width: 20vw" />
         <col v-if="state.editTable" span="1" style="width: 200px" />
+        <col v-if="state.editTable" span="1" style="width: 20vw" />
+        <!-- <col v-if="state.editTable" span="1" style="width: 200px" />
         <col v-if="state.editTable" span="1" style="width: 200px" />
-        <col v-if="state.editTable" span="1" style="width: 200px" />
-        <col v-if="state.editTable" span="1" style="width: 200px" />
-        <col v-if="state.editTable" span="1" style="width: auto" />
+        <col v-if="state.editTable" span="1" style="width: auto" />-->
       </colgroup>
       <tr class="head">
         <th v-for="(vv, kk) in state.errors[0]?.info" :key="kk" rowspan="2">{{ kk }}</th>
         <th rowspan="2">Описание ошибки</th>
         <th v-if="state.editTable">Статус решения</th>
         <th v-if="state.editTable">Описание решения</th>
-        <th v-if="state.editTable">Статус устранения</th>
+        <!-- <th v-if="state.editTable">Статус устранения</th>
         <th v-if="state.editTable">Описание устранения</th>
-        <th v-if="state.editTable">Время на устранения</th>
+        <th v-if="state.editTable">Время на устранения</th>-->
       </tr>
       <tbody>
-        <tr v-for="(value, key, index) in state.errors" :key="index">
+        <tr
+          v-for="(value, key, index) in state.errors"
+          :key="index"
+          @click="state.editTable && getIndex(key)"
+        >
           <td
             v-for="(vv, kk, ii) in value.info"
             :key="ii"
           >{{ vv?.endsWith('@emerson.com') ? vv.split('@')[0].split('.')[1] : vv }}</td>
-          <td>{{ value.body.at(-1)?.Открыто.Описание }}</td>
+          <td v-if="!state.editTable">{{ value.body.at(-1)?.Открыто.Описание }}</td>
+          <td v-else>
+            <render-inputs
+              v-model="state.errors[key].body[state.errors[key].body.length - 1].Открыто"
+              :data-render="storeTemplate?.error?.f_error?.Открыто.Описание"
+            />
+          </td>
           <!-- eslint-disable-next-line vue/no-use-v-if-with-v-for -->
           <td
             v-for="(vvv, kkk, iii) in storeTemplate?.error?.f_error?.Принято"
@@ -109,7 +121,7 @@
             />
           </td>
           <!-- eslint-disable-next-line vue/no-use-v-if-with-v-for -->
-          <td
+          <!-- <td
             v-for="(vvv, kkk, iii) in storeTemplate?.error?.f_error?.Устранено"
             v-if="state.editTable"
             :key="iii"
@@ -118,16 +130,22 @@
               v-model="state.errors[key].body[state.errors[key].body.length - 1].Устранено"
               :data-render="vvv"
             />
-          </td>
+          </td>-->
         </tr>
       </tbody>
     </table>
+    <br />
+    <button
+      @click="state.editTable = !state.editTable"
+    >{{ !state.editTable ? 'Редактировать' : 'Отменить редактирование' }}</button>
+
+    <button @click="updateErrors">Обновить ошибки</button>
   </section>
   <section
     v-if="$store.state.user.info.userRoles.includes('testengeneer') || $store.state.user.info.userRoles.includes('godmode')"
   >
     <h2>Типа отчёт</h2>
-    <div>
+    <div class="view__holder">
       <br />FROM
       <input v-model="state.dateFrom" type="date" />
       <!-- {{ Date.parse(state.date) / 1000 }} -->
@@ -137,20 +155,23 @@
       <!-- {{ new Date(state.date2) }} -->
       <br />
       <br />
-      <button @click="getErrorsByTime">Запрос</button>
-      <div v-if="state.errorsByT" class="tasks">
-        <div v-for="task in state.errorsByT" :key="task.id">
+    </div>
+    <div>
+      <button style="text-align: center;" @click="getErrorsByTime">Запрос</button>
+      <div v-if="state.errByTime" class="tasks">
+        <div v-for="task in state.errByTime" :key="task.id">
           {{ task.id }}
           status {{ task.info.status }}
         </div>
+        <button @click="saveBook">EXPORT EXCEL</button>
       </div>
-      <button @click="saveBook">EXPORT EXCEL</button>
     </div>
   </section>
 </template>
 
 <script setup lang="ts">
 import renderInputs from '@/components/renderInputs'
+import tableGridView from '@/components/tableGridView.vue'
 import itemPhotoUploader from '@/components/itemPhotoUploader.vue'
 import { reactive, computed, watch, ref } from 'vue'
 import { useFetch } from '@/hooks/fetch'
@@ -177,10 +198,11 @@ const state = reactive({
   dateTo: "",
   editTable: false,
   phList: [],
-  modErrors: <modType[]>{},
+  errorsForGrid: <modType[]>{},
   errors: <errorType[]>{},
-  errorsByT: <errorType[]>{},
+  errByTime: <errorType[] | null>null,
   search: '',
+  updateIndex: new Set() as Set<number>,
   // resErrors: null,
   fetchStatus: null,
   // errorMessage: "",
@@ -189,22 +211,22 @@ const selectedStatus = ref('open')
 
 const store = useStore()
 
+const view = ref('grid')
+
+const getIndex = (i: number) => state.updateIndex.add(i)
 
 const getErrorsByTime = async () => {
   const { request: reqTasks, response: resTasks } = useFetch<errorType[]>(`/api/errorsByTime?from=${new Date(state.dateFrom).toISOString()}&to=${new Date(state.dateTo).toISOString()}`)
   await reqTasks()
-  state.errorsByT = resTasks.value!
+  state.errByTime = resTasks.value!
 }
-
 
 const saveBook = async () => {
   const XLSX = await import('xlsx')
-  // function formatDate(date) {
-  //   return `${date.getDate()}.0${date.getMonth() + 1}.${date.getFullYear()}`
-  // }
+
   const arrArr: string[][] = []
 
-  state.errorsByT.map((e, i) => {
+  state.errByTime && state.errByTime.map((e, i) => {
     const row = [
       e.info.Проект,
       e.info.Шкаф,
@@ -245,15 +267,6 @@ const saveBook = async () => {
   XLSX.writeFile(new_workbook, `${Date.now()}.xlsx`)
 }
 
-
-
-
-
-
-
-
-
-
 const storeTemplate = computed(() => store.state.template)
 
 const keyEnter = (e: Event) => {
@@ -272,17 +285,8 @@ const getErrors = async () => {
     }
 
     state.errors = JSON.parse(JSON.stringify(store.state.activeErrors)) //.map((e) => {
-    //   return {
-    //     id: e.id,
-    //     type: e.type,
-    //     info: {
-    //       ...e.info,
-    //       Описание: e.body.at(-1)!.Открыто.Описание,
-    //     },
-    //   }
-    // })
 
-    state.modErrors = store.state.activeErrors.map((e) => {
+    state.errorsForGrid = store.state.activeErrors.map((e) => {
       return {
         id: e.id,
         type: e.type,
@@ -300,16 +304,46 @@ const getErrors = async () => {
 
 getErrors()
 
+
+
+
+
+const updateErrors = async () => {
+  const copyErrors: errorType[] = JSON.parse(JSON.stringify(store.state.activeErrors))
+
+  const postError = async (index: number) => {
+
+    copyErrors[index].body.push({
+      ...state.errors[index].body.at(-1)!,
+      _changed: store.state.user.info.userDetails.toLowerCase(),
+      _time: `${Date.now()}`,
+    })
+
+    const { request, response } = useFetch('/api/post_item', {
+      method: 'POST', // или 'PUT'
+      body: JSON.stringify(copyErrors[index]),
+    })
+    await request()
+
+  }
+  await Promise.all(
+    [...state.updateIndex].map(async (e) => {
+      await postError(e)
+    })
+  )
+  state.editTable = !state.editTable
+}
+
 watch(selectedStatus, () => getErrors())
 
 const filter = computed(() => {
   return state.search
-    ? state.modErrors.filter((e) =>
+    ? state.errorsForGrid.filter((e) =>
       [e?.info.wo, e?.info['Проект']].some(
         (s) => s && s.toLowerCase().includes(state.search.toLowerCase())
       )
     )
-    : state.modErrors
+    : state.errorsForGrid
 })
 
 onBeforeRouteUpdate(async (to, from) => {
@@ -390,6 +424,7 @@ input {
   grid-template-columns: repeat(auto-fill, minmax(max(18vw, 250px), 1fr));
   column-gap: 2vh;
   row-gap: 2vh;
+  padding-bottom: 7vh;
 }
 .errors__card {
   border: 1px solid orange;
@@ -457,5 +492,13 @@ td select {
 table {
   width: auto;
   /* width: max(98vw, 800px); */
+}
+.table__holder {
+  padding-bottom: 7vh;
+}
+.view__holder {
+  text-align: end;
+  width: fit-content;
+  margin: auto;
 }
 </style>

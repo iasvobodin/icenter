@@ -40,7 +40,9 @@
       </select>
     </div>
   </div>
-  <div class="ddiv">
+  <table-grid-view @view="view = $event" />
+
+  <!-- <div class="ddiv">
     <label class="llable">
       <input v-model="view" type="radio" class="iinput" value="table" name="viewType" checked />
       <span class="sspan" :class="{ activetable: view === 'table' }"></span>
@@ -49,7 +51,7 @@
       <input v-model="view" type="radio" class="iinput" value="grid" name="viewType" />
       <span class="sspan2" :class="{ activegrid: view === 'grid' }"></span>
     </label>
-  </div>
+  </div>-->
 
   <br />
   <div v-if="state.projects && view === 'grid'">
@@ -201,6 +203,7 @@ import infoRender from '@/components/infoRender.vue'
 import { useStore } from 'vuex'
 import { onBeforeRouteLeave, onBeforeRouteUpdate, useRouter } from 'vue-router'
 import renderInputs from '@/components/renderInputs'
+import tableGridView from '@/components/tableGridView.vue'
 import { projectType, ProjectFlatInfoType } from '@/types/projectType'
 
 type groupType = {
@@ -213,45 +216,10 @@ type groupType = {
   "senior fitter": string
 }
 
-// type projectType = {
-//   "id": string,
-//   "status": "open" | 'closed',
-//   "info": {
-//     "base": {
-//       "Project Name": string,
-//       "SZ №": number,
-//       "PM": string,
-//       "Buyer": string,
-//       "Contract Administrator": string,
-//       "Buyout Administrator": string,
-//       "Lead Engineer"?: string
-//     },
-//     "extends": {
-//       "Specific requirement field": string,
-//       "senior fitter": string,
-//       "status project": string,
-//       "Hours calculated": string,
-//       "Hours actual": string,
-//       "Comments field": string,
-//       "Shipping date": string
-//     }
-//   },
-//   "cabinets": [
-//     {
-//       "wo": string,
-//       "cab name": string
-//     } | null
-//   ],
-// }
+
 const grrr = ref<keyof ProjectFlatInfoType['info']>('status project')
 const router = useRouter()
 const store = useStore()
-
-// store.dispatch('createProjectInfo')
-// router.beforeEach(async (to, from) => {
-//   !store.state.template && (await store.dispatch('extendProject'))
-//   return true
-// })
 
 const selectedStatus = ref(false)
 const view = ref('grid')
@@ -373,45 +341,13 @@ watchEffect(() => {
 
 }, { flush: 'post' })
 
-// const getProjects = async (status: 'open' | 'closed') => {
-//   const { request: reqProjects, response: resProjects } = useFetch<projectType[]>(`/api/projects?status=${status}`)
-//   await reqProjects()
 
-
-//   state.projects = resProjects.value!
-
-//   state.projects = JSON.parse(JSON.stringify(resProjects.value))
-
-//   state.actualStatus = [
-//     ...resProjects.value!.reduce(
-//       (acc, pr) => acc.add(pr.info['status project']),
-//       new Set() as Set<string>
-//     ),
-//   ].sort()
-
-//   state.projects.sort(function (a, b) {
-//     const nameA = a.info['status project']?.toLowerCase()
-//     const nameB = b.info['status project']?.toLowerCase()
-//     if (nameA < nameB) {
-//       return -1
-//     }
-//     if (nameA > nameB) {
-//       return 1
-//     }
-//     return 0
-//   })
-// }
-// getProjects('open')
-
-
-// console.log(Array.from({ length: 20 }).map(()=> ));
 const postProject = async (index: number) => {
 
   const { request: postProject } = useFetch('/api/POST_project', {
     method: 'POST', // или 'PUT'
     body: JSON.stringify({
       ...state.projectsForTable![index],
-      // info: infoBaseExtends
     }),
   })
   await postProject()
@@ -431,7 +367,6 @@ const updateChangedProjects = async () => {
 const sortBy = (el: keyof projectType['info']['extends'],) => {
   state.sortBy = el
   state.projectsForTable && state.projectsForTable.sort(function (a, b) {
-    // debugger
     const nameA = a.info.extends[el]?.toLowerCase()
     const nameB = b.info.extends[el]?.toLowerCase()
     if (nameA < nameB) {
@@ -451,19 +386,6 @@ const myProjects = () => {
     state.search = ''
   }
 }
-    // return {
-    //   myProjects,
-    //   extendTemplate,
-    //   updateChangedProjects,
-    //   getIndex,
-    //   sortBy,
-    //   groupProjects,
-    //   selectedStatus,
-    //   filterProjects,
-    //   ...toRefs(state),
-    // }
-  // },
-// }
 </script>
 
 <style lang="css" scoped>
