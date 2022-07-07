@@ -48,7 +48,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { useFetch } from '@/hooks/fetch'
 import { reactive, ref, toRefs } from '@vue/reactivity'
 import {
@@ -60,7 +60,9 @@ import {
 } from '@vue/runtime-core'
 import * as imageConversion from 'image-conversion'
 import { useStore } from 'vuex'
+
 const store = useStore()
+
 const props = defineProps({
   currentPhotos: {
     type: Array,
@@ -99,7 +101,7 @@ const {
   objectId,
 } = toRefs(props)
 
-const fileInput = ref(null)
+const fileInput = ref<HTMLInputElement|null>(null)
 
 // store.commit('SetPhotosContainer', props.container)
 
@@ -115,10 +117,10 @@ const state = reactive({
 })
 
 const firedFileInput = () => {
-  fileInput.value.click()
+  fileInput.value!.click()
 }
 
-const photosForDelete = []
+const photosForDelete:string[] = []
 
 const deleteCurrentPhoto = (el, i) => {
   photosForDelete.push(
@@ -257,7 +259,7 @@ watch(saveChangesPhoto, (newV, oldV) => {
 //   // )
 //   emit('resizedBlob', state.files.compressBlob)
 // }
-const retrieveImageFromClipboardAsBlob = (pasteEvent) => {
+const retrieveImageFromClipboardAsBlob = (pasteEvent:Event) => {
   const items = pasteEvent.clipboardData.items
   const pasteFiles = []
   for (var i = 0; i < items.length; i++) {
